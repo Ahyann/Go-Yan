@@ -1,6 +1,6 @@
 import PetaStatus from '../components/PetaStatus.jsx'
 
-export default function HomeTab({ permintaan, onSimulasiTerima }) {
+export default function HomeTab({ permintaan }) {
   return (
     <div style={s.wrap}>
       <div style={s.headerFloat}>
@@ -8,14 +8,12 @@ export default function HomeTab({ permintaan, onSimulasiTerima }) {
         <h1 style={s.title}>Halo, Fajri</h1>
       </div>
 
-      <PetaStatus permintaan={permintaan} onSimulasiTerima={onSimulasiTerima} />
+      <PetaStatus permintaan={permintaan} />
     </div>
   )
 }
 
 const s = {
-  // relative + maxWidth ini KUNCI-nya — jadi "kotak" yang dipatuhin
-  // sama PetaStatus yang absolute/inset:0 di dalamnya.
   wrap: {
     position: 'relative',
     height: '100%',
@@ -28,7 +26,7 @@ const s = {
     top: 'calc(var(--safe-top) + 16px)',
     left: 20,
     right: 20,
-    zIndex: 5,
+    zIndex: 1000,
   },
   eyebrow: {
     fontSize: 11, letterSpacing: '0.12em', color: 'var(--text-dim)', marginBottom: 4,

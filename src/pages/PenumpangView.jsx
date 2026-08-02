@@ -6,11 +6,10 @@ import BottomNav from '../components/BottomNav.jsx'
 import HomeTab from './HomeTab.jsx'
 import RiwayatTab from './RiwayatTab.jsx'
 
-export default function PenumpangView() {
+export default function PenumpangView({ permintaanAktif, setPermintaanAktif }) {
   const [tabAktif, setTabAktif] = useState('home')
   const [jadwal, setJadwal] = useState(dummyJadwal)
   const [showGo, setShowGo] = useState(false)
-  const [permintaanAktif, setPermintaanAktif] = useState(null)
 
   function handleKirimGo({ aksi, where, waktu }) {
     const labelAksi = aksi === AKSI.JEMPUT ? 'Jemput' : 'Antar'
@@ -30,12 +29,7 @@ export default function PenumpangView() {
     <>
       <div style={s.stage}>
         {tabAktif === 'home' ? (
-          <HomeTab
-            permintaan={permintaanAktif}
-            onSimulasiTerima={() =>
-              setPermintaanAktif((p) => ({ ...p, status: STATUS_PERMINTAAN.DITERIMA }))
-            }
-          />
+          <HomeTab permintaan={permintaanAktif} />
         ) : (
           <RiwayatTab jadwal={jadwal} riwayat={dummyRiwayat} />
         )}

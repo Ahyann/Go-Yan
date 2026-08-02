@@ -45,7 +45,7 @@ const s = {
     display: 'grid',
     gridTemplateColumns: '1fr auto 1fr',
     alignItems: 'center',
-    zIndex: 20,
+    zIndex: 2000,
   },
   iconBtn: {
     color: 'var(--text-dim)',

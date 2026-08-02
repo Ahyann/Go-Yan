@@ -4,7 +4,7 @@ import { STATUS_PERMINTAAN } from '../lib/constants'
 
 const PUSAT_DEFAULT = [-6.2088, 106.8456]
 
-export default function PetaStatus({ permintaan, onSimulasiTerima }) {
+export default function PetaStatus({ permintaan }) {
   return (
     <div style={s.wrap}>
       <MapContainer
@@ -24,10 +24,7 @@ export default function PetaStatus({ permintaan, onSimulasiTerima }) {
 
         {permintaan?.status === STATUS_PERMINTAAN.MENUNGGU && (
           <div style={s.badgeMenunggu}>
-            <div><span style={s.dotKuning} />Menunggu Ahyan menerima…</div>
-            <button style={s.simulasiBtn} onClick={onSimulasiTerima}>
-              (sementara, buat testing) anggap Ahyan sudah terima
-            </button>
+            <span style={s.dotKuning} />Menunggu Ahyan menerima…
           </div>
         )}
 
@@ -50,6 +47,7 @@ const s = {
     left: 16,
     right: 16,
     bottom: 'calc(var(--safe-bottom) + 100px)',
+    zIndex: 1000,
   },
   badgeIdle: {
     background: 'rgba(11,14,26,0.9)', color: 'var(--text-dim)', fontSize: 13,
@@ -58,13 +56,11 @@ const s = {
   },
   badgeMenunggu: {
     background: 'rgba(11,14,26,0.95)', color: 'var(--text)', fontSize: 13,
-    padding: '12px 14px', borderRadius: 'var(--radius)',
-    display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'center', textAlign: 'center',
+    padding: '10px 14px', borderRadius: 999, textAlign: 'center',
     border: '1px solid var(--warn)',
   },
   dotKuning: { width: 7, height: 7, borderRadius: '50%', background: 'var(--warn)', display: 'inline-block', marginRight: 6 },
   dotHijau: { width: 7, height: 7, borderRadius: '50%', background: 'var(--signal)', display: 'inline-block', marginRight: 6 },
-  simulasiBtn: { fontSize: 10.5, color: 'var(--text-dim)', textDecoration: 'underline' },
   badgeLive: {
     background: 'rgba(11,14,26,0.95)', color: 'var(--text)', fontSize: 13.5, fontWeight: 600,
     padding: '10px 14px', borderRadius: 999, textAlign: 'center',

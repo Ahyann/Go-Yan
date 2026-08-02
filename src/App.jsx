@@ -1,14 +1,33 @@
+import { useState } from 'react'
 import { Routes, Route, Navigate, Link, useLocation } from 'react-router-dom'
 import OjekView from './pages/OjekView.jsx'
 import PenumpangView from './pages/PenumpangView.jsx'
+import { STATUS_PERMINTAAN } from './lib/constants'
 
 export default function App() {
+  const [permintaanAktif, setPermintaanAktif] = useState(null)
+
+  function terimaPermintaan() {
+    setPermintaanAktif((p) => (p ? { ...p, status: STATUS_PERMINTAAN.DITERIMA } : p))
+  }
+
   return (
     <>
       <Routes>
         <Route path="/" element={<Navigate to="/ojek" replace />} />
-        <Route path="/ojek" element={<OjekView />} />
-        <Route path="/penumpang" element={<PenumpangView />} />
+        <Route
+          path="/ojek"
+          element={<OjekView permintaan={permintaanAktif} onTerima={terimaPermintaan} />}
+        />
+        <Route
+          path="/penumpang"
+          element={
+            <PenumpangView
+              permintaanAktif={permintaanAktif}
+              setPermintaanAktif={setPermintaanAktif}
+            />
+          }
+        />
         <Route path="*" element={<Navigate to="/ojek" replace />} />
       </Routes>
       <RoleSwitcher />
@@ -16,9 +35,6 @@ export default function App() {
   )
 }
 
-// Sementara doang — belum ada Auth, jadi kita butuh cara manual
-// buat gonta-ganti liat tampilan siapa pas development.
-// Ini bakal DIHAPUS begitu Fase 2 (login) selesai.
 function RoleSwitcher() {
   const { pathname } = useLocation()
   return (

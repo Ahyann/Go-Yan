@@ -1,8 +1,9 @@
 import { useState } from 'react'
+import { createPortal } from 'react-dom'
 import { AKSI } from '../lib/constants'
 
 export default function GoPopup({ onClose, onSubmit }) {
-  const jamSekarang = new Date().toTimeString().slice(0, 5) // "14:30"
+  const jamSekarang = new Date().toTimeString().slice(0, 5)
 
   const [aksi, setAksi] = useState(AKSI.JEMPUT)
   const [where, setWhere] = useState('')
@@ -15,12 +16,9 @@ export default function GoPopup({ onClose, onSubmit }) {
     onSubmit({ aksi, where: where.trim(), waktu })
   }
 
-  return (
+  return createPortal(
     <div style={s.overlay} onClick={onClose}>
-      {/* stopPropagation: klik di dalam kartu jangan ikut nutup popup */}
       <div style={s.sheet} onClick={(e) => e.stopPropagation()}>
-        <div style={s.handle} />
-
         <div style={s.toggleRow}>
           <button
             style={aksi === AKSI.JEMPUT ? s.toggleActive : s.toggle}
@@ -61,7 +59,8 @@ export default function GoPopup({ onClose, onSubmit }) {
           Kirim ke Ahyan
         </button>
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }
 
@@ -74,7 +73,7 @@ const s = {
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
-    zIndex: 100,
+    zIndex: 9999,
   },
   sheet: {
     width: '100%',
@@ -86,14 +85,6 @@ const s = {
     display: 'flex',
     flexDirection: 'column',
     gap: 16,
-  },
-  handle: {
-    width: 36,
-    height: 4,
-    borderRadius: 999,
-    background: 'var(--line)',
-    alignSelf: 'center',
-    margin: '4px 0 6px',
   },
   toggleRow: { display: 'flex', gap: 8 },
   toggle: {
