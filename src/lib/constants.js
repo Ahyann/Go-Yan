@@ -17,6 +17,18 @@ export const STATUS_BAYAR = {
   LUNAS: 'lunas',
 }
 
+export const AKSI = {
+  JEMPUT: 'jemput',
+  ANTAR: 'antar',
+}
+
+export const WAKTU = {
+  PAGI: 'pagi',
+  SIANG: 'siang',
+  SORE: 'sore',
+  MALAM: 'malam',
+}
+
 export const formatRupiah = (angka) =>
   new Intl.NumberFormat('id-ID', {
     style: 'currency',
