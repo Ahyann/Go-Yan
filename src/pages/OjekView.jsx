@@ -4,7 +4,15 @@ import OjekHomeTab from './OjekHomeTab.jsx'
 import OjekJadwalTab from './OjekJadwalTab.jsx'
 import OjekRiwayatTab from './OjekRiwayatTab.jsx'
 
-export default function OjekView({ permintaan, riwayat, onTerima, onTolak, onSelesai, onTandaiLunas }) {
+export default function OjekView({
+  permintaan,
+  riwayat,
+  jadwalMingguan,
+  onTerima,
+  onTolak,
+  onSelesai,
+  onTandaiLunas,
+}) {
   const [tabAktif, setTabAktif] = useState('home')
 
   return (
@@ -17,7 +25,7 @@ export default function OjekView({ permintaan, riwayat, onTerima, onTolak, onSel
           onSelesai={onSelesai}
         />
       )}
-      {tabAktif === 'jadwal' && <OjekJadwalTab />}
+      {tabAktif === 'jadwal' && <OjekJadwalTab jadwalMingguan={jadwalMingguan} />}
       {tabAktif === 'riwayat' && (
         <OjekRiwayatTab riwayat={riwayat} onTandaiLunas={onTandaiLunas} />
       )}

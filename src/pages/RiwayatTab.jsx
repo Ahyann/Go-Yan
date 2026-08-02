@@ -1,26 +1,22 @@
 import { useState } from 'react'
 import { STATUS_BAYAR, formatRupiah } from '../lib/constants'
-import JadwalCard from '../components/JadwalCard.jsx'
 import MonthPickerPopup from '../components/MonthPickerPopup.jsx'
 
 const NAMA_BULAN = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember']
 
-export default function RiwayatTab({ jadwal, riwayat }) {
+export default function RiwayatTab({ riwayat }) {
   const [showBulan, setShowBulan] = useState(false)
 
   const sekarang = new Date()
   const [bulanAktif, setBulanAktif] = useState(sekarang.getMonth())
   const [tahunAktif, setTahunAktif] = useState(sekarang.getFullYear())
 
-  const cocokBulan = (tanggal) => {
-    const [tahun, bulan] = tanggal.split('-').map(Number)
+  const riwayatTerfilter = riwayat.filter((r) => {
+    const [tahun, bulan] = r.tanggal.split('-').map(Number)
     return bulan - 1 === bulanAktif && tahun === tahunAktif
-  }
+  })
 
-  const jadwalTerfilter = jadwal.filter((j) => cocokBulan(j.tanggal))
-  const riwayatTerfilter = riwayat.filter((r) => cocokBulan(r.tanggal))
-
-  const belumBayar = riwayatTerfilter.filter((r) => r.statusBayar === STATUS_BAYAR.BELUM)
+  const belumBayar = riwayat.filter((r) => r.statusBayar === STATUS_BAYAR.BELUM)
   const totalBelumBayar = belumBayar.reduce((jumlah, r) => jumlah + r.tarif, 0)
 
   function handlePilihBulan(bulan, tahun) {
@@ -68,19 +64,6 @@ export default function RiwayatTab({ jadwal, riwayat }) {
                   </div>
                 </div>
               </div>
-            ))
-          )}
-        </div>
-      </section>
-
-      <section>
-        <h2 style={s.sectionTitle}>Jadwal</h2>
-        <div style={s.list}>
-          {jadwalTerfilter.length === 0 ? (
-            <div style={s.kosong}>Belum ada jadwal bulan ini.</div>
-          ) : (
-            jadwalTerfilter.map((j) => (
-              <JadwalCard key={j.id} tanggal={j.tanggal} jam={j.jam} catatan={j.catatan} />
             ))
           )}
         </div>

@@ -11,7 +11,11 @@ export default function BottomNav({ tabAktif, onTabChange, onGoClick }) {
         GO
       </button>
 
-      <div style={{ justifySelf: 'end' }}>
+      <div style={{ justifySelf: 'end', display: 'flex', gap: 16 }}>
+        <IconBtn label="Jadwal" aktif={tabAktif === 'jadwal'} onClick={() => onTabChange('jadwal')}>
+          <rect x="3" y="5" width="18" height="16" rx="2" />
+          <path d="M3 10h18M8 3v4M16 3v4" />
+        </IconBtn>
         <IconBtn label="Riwayat" aktif={tabAktif === 'riwayat'} onClick={() => onTabChange('riwayat')}>
           <circle cx="12" cy="12" r="9" />
           <path d="M12 7v5l3.5 2" />
@@ -45,7 +49,7 @@ const s = {
     display: 'grid',
     gridTemplateColumns: '1fr auto 1fr',
     alignItems: 'center',
-    zIndex: 2000,
+    zIndex: 1000,
   },
   iconBtn: {
     color: 'var(--text-dim)',

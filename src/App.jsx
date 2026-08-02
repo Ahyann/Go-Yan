@@ -1,6 +1,7 @@
 import { AuthProvider, useAuth } from './context/AuthContext.jsx'
 import { usePermintaanAktif } from './lib/usePermintaanAktif'
 import { useRiwayat } from './lib/useRiwayat'
+import { useJadwalMingguan } from './lib/useJadwalMingguan'
 import LoginPage from './pages/LoginPage.jsx'
 import OjekView from './pages/OjekView.jsx'
 import PenumpangView from './pages/PenumpangView.jsx'
@@ -18,6 +19,7 @@ function AppIsi() {
   const { user, role, logout } = useAuth()
   const { permintaan, kirimGo, terima, tolak, selesai } = usePermintaanAktif()
   const { riwayat, tambahRiwayat, tandaiLunas } = useRiwayat()
+  const { jadwal: jadwalMingguan, simpanJadwal } = useJadwalMingguan()
 
   async function selesaikanRide() {
     if (!permintaan) return
@@ -56,13 +58,20 @@ function AppIsi() {
         <OjekView
           permintaan={permintaan}
           riwayat={riwayat}
+          jadwalMingguan={jadwalMingguan}
           onTerima={terima}
           onTolak={tolak}
           onSelesai={selesaikanRide}
           onTandaiLunas={tandaiLunas}
         />
       ) : (
-        <PenumpangView permintaanAktif={permintaan} riwayat={riwayat} kirimGo={kirimGo} />
+        <PenumpangView
+          permintaanAktif={permintaan}
+          riwayat={riwayat}
+          jadwalMingguan={jadwalMingguan}
+          simpanJadwal={simpanJadwal}
+          kirimGo={kirimGo}
+        />
       )}
       <button style={s.logoutFloat} onClick={logout} aria-label="Keluar">
         ⎋

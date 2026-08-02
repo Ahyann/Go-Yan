@@ -16,10 +16,12 @@ export default function OjekRiwayatTab({ riwayat, onTandaiLunas }) {
     return bulan - 1 === bulanAktif && tahun === tahunAktif
   })
 
-  const belumBayar = riwayatBulanIni.filter((r) => r.statusBayar === STATUS_BAYAR.BELUM)
+  // Kartu ringkasan pakai TOTAL KESELURUHAN (bukan riwayatBulanIni) —
+  // utang & pendapatan gak boleh "hilang" cuma gara-gara lagi liat bulan lain.
+  const belumBayar = riwayat.filter((r) => r.statusBayar === STATUS_BAYAR.BELUM)
   const totalBelumBayar = belumBayar.reduce((jumlah, r) => jumlah + r.tarif, 0)
 
-  const sudahBayar = riwayatBulanIni.filter((r) => r.statusBayar === STATUS_BAYAR.LUNAS)
+  const sudahBayar = riwayat.filter((r) => r.statusBayar === STATUS_BAYAR.LUNAS)
   const totalSudahDiterima = sudahBayar.reduce((jumlah, r) => jumlah + r.tarif, 0)
 
   function handlePilihBulan(bulan, tahun) {

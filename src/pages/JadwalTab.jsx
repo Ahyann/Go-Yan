@@ -1,17 +1,17 @@
 import JadwalMingguan from '../components/JadwalMingguan.jsx'
 
-export default function OjekJadwalTab({ jadwalMingguan }) {
+export default function JadwalTab({ jadwalMingguan, simpanJadwal }) {
   return (
     <main style={s.wrap}>
       <header style={s.header}>
         <div style={s.eyebrow}>JADWAL</div>
-        <h1 style={s.title}>Jadwal mingguan Fajri</h1>
+        <h1 style={s.title}>Jadwal mingguan</h1>
       </header>
 
-      <JadwalMingguan jadwal={jadwalMingguan} bisaEdit={false} />
+      <JadwalMingguan jadwal={jadwalMingguan} onSimpan={simpanJadwal} bisaEdit />
 
       <p style={s.catatan}>
-        Jadwal ini otomatis kosong lagi tiap awal minggu (Senin), nunggu Fajri atur ulang.
+        Jadwal ini otomatis kosong lagi tiap awal minggu (Senin) — atur ulang tiap minggu sesuai kebutuhan.
       </p>
     </main>
   )

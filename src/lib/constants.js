@@ -35,6 +35,14 @@ export const STATUS_PERMINTAAN = {
   DITOLAK: 'ditolak',
 }
 
+export const HARI_KERJA = [
+  { key: 'senin', label: 'Senin' },
+  { key: 'selasa', label: 'Selasa' },
+  { key: 'rabu', label: 'Rabu' },
+  { key: 'kamis', label: 'Kamis' },
+  { key: 'jumat', label: "Jum'at" },
+]
+
 export const formatRupiah = (angka) =>
   new Intl.NumberFormat('id-ID', {
     style: 'currency',
