@@ -1,4 +1,4 @@
-export default function BottomNav({ tabAktif, onTabChange, onGoClick }) {
+export default function BottomNav({ tabAktif, onTabChange, onGoClick, bisaGo = true }) {
   return (
     <nav style={s.nav}>
       <div style={{ justifySelf: 'start' }}>
@@ -7,7 +7,12 @@ export default function BottomNav({ tabAktif, onTabChange, onGoClick }) {
         </IconBtn>
       </div>
 
-      <button style={s.goBtn} onClick={onGoClick} aria-label="Kirim sinyal jemput atau antar">
+      <button
+        style={bisaGo ? s.goBtn : s.goBtnDisabled}
+        onClick={bisaGo ? onGoClick : undefined}
+        disabled={!bisaGo}
+        aria-label={bisaGo ? 'Kirim sinyal jemput atau antar' : 'Masih ada perjalanan aktif'}
+      >
         GO
       </button>
 
@@ -80,5 +85,19 @@ const s = {
     boxShadow: '0 4px 16px rgba(226,54,54,0.45)',
     border: '3px solid var(--bg)',
     justifySelf: 'center',
+  },
+  goBtnDisabled: {
+    width: 58,
+    height: 58,
+    borderRadius: '50%',
+    background: 'var(--surface-2)',
+    color: 'var(--text-dim)',
+    fontSize: 15,
+    fontWeight: 700,
+    letterSpacing: '0.02em',
+    marginTop: -26,
+    border: '3px solid var(--bg)',
+    justifySelf: 'center',
+    cursor: 'not-allowed',
   },
 }

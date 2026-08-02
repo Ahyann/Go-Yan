@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { STATUS_PERMINTAAN } from '../lib/constants'
 import GoPopup from '../components/GoPopup.jsx'
 import BottomNav from '../components/BottomNav.jsx'
 import HomeTab from './HomeTab.jsx'
@@ -14,6 +15,10 @@ export default function PenumpangView({
 }) {
   const [tabAktif, setTabAktif] = useState('home')
   const [showGo, setShowGo] = useState(false)
+
+  const sedangAktif =
+    permintaanAktif?.status === STATUS_PERMINTAAN.MENUNGGU ||
+    permintaanAktif?.status === STATUS_PERMINTAAN.DITERIMA
 
   async function handleKirimGo({ aksi, where, waktu }) {
     await kirimGo({ aksi, where, waktu })
@@ -34,6 +39,7 @@ export default function PenumpangView({
         tabAktif={tabAktif}
         onTabChange={setTabAktif}
         onGoClick={() => setShowGo(true)}
+        bisaGo={!sedangAktif}
       />
 
       {showGo && <GoPopup onClose={() => setShowGo(false)} onSubmit={handleKirimGo} />}
