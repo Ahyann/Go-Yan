@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { createPortal } from 'react-dom'
 import { AKSI } from '../lib/constants'
+import TimeWheelPicker from './TimeWheelPicker.jsx'
 
 export default function GoPopup({ onClose, onSubmit }) {
   const jamSekarang = new Date().toTimeString().slice(0, 5)
@@ -45,15 +46,10 @@ export default function GoPopup({ onClose, onSubmit }) {
           />
         </label>
 
-        <label style={s.label}>
+        <div style={s.label}>
           Time
-          <input
-            style={s.input}
-            type="time"
-            value={waktu}
-            onChange={(e) => setWaktu(e.target.value)}
-          />
-        </label>
+          <TimeWheelPicker value={waktu} onChange={setWaktu} />
+        </div>
 
         <button style={bisaKirim ? s.kirim : s.kirimDisabled} onClick={handleKirim}>
           Kirim ke Ahyan

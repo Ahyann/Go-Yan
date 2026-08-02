@@ -51,3 +51,7 @@ button {
   outline: 2px solid var(--web-blue);
   outline-offset: 2px;
 }
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
