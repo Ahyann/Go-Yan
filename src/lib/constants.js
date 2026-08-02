@@ -29,6 +29,11 @@ export const WAKTU = {
   MALAM: 'malam',
 }
 
+export const STATUS_PERMINTAAN = {
+  MENUNGGU: 'menunggu',
+  DITERIMA: 'diterima',
+}
+
 export const formatRupiah = (angka) =>
   new Intl.NumberFormat('id-ID', {
     style: 'currency',

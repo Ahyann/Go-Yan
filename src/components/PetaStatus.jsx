@@ -1,0 +1,88 @@
+import { MapContainer, TileLayer } from 'react-leaflet'
+import 'leaflet/dist/leaflet.css'
+import { STATUS_PERMINTAAN } from '../lib/constants'
+
+const PUSAT_DEFAULT = [-6.2088, 106.8456]
+
+export default function PetaStatus({ permintaan, onSimulasiTerima }) {
+  return (
+    <div style={s.wrap}>
+      <MapContainer
+        center={PUSAT_DEFAULT}
+        zoom={13}
+        style={s.map}
+        zoomControl={false}
+        attributionControl={false}
+        dragging={false}
+        scrollWheelZoom={false}
+      >
+        <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" />
+      </MapContainer>
+
+      <div style={s.grid} />
+
+      <div style={s.overlay}>
+        {!permintaan && <div style={s.badgeIdle}>Belum ada perjalanan aktif</div>}
+
+        {permintaan?.status === STATUS_PERMINTAAN.MENUNGGU && (
+          <div style={s.badgeMenunggu}>
+            <div><span style={s.dotKuning} />Menunggu Ahyan menerima…</div>
+            <button style={s.simulasiBtn} onClick={onSimulasiTerima}>
+              (sementara, buat testing) anggap Ahyan sudah terima
+            </button>
+          </div>
+        )}
+
+        {permintaan?.status === STATUS_PERMINTAAN.DITERIMA && (
+          <div style={s.badgeLive}>
+            <span style={s.dotHijau} />
+            Ahyan otw {permintaan.aksi === 'jemput' ? 'menjemput' : 'mengantar'} kamu
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+const s = {
+  wrap: { position: 'absolute', inset: 0 },
+  map: {
+    height: '100%',
+    width: '100%',
+    filter: 'brightness(0.75) saturate(1.4) hue-rotate(180deg) contrast(1.1)',
+  },
+  grid: {
+    position: 'absolute',
+    inset: 0,
+    pointerEvents: 'none',
+    backgroundImage: `
+      repeating-linear-gradient(0deg, rgba(43,108,232,0.18) 0px, rgba(43,108,232,0.18) 1px, transparent 1px, transparent 28px),
+      repeating-linear-gradient(90deg, rgba(43,108,232,0.18) 0px, rgba(43,108,232,0.18) 1px, transparent 1px, transparent 28px)
+    `,
+  },
+  overlay: {
+    position: 'absolute',
+    left: 16,
+    right: 16,
+    bottom: 'calc(var(--safe-bottom) + 100px)',
+  },
+  badgeIdle: {
+    background: 'rgba(11,14,26,0.9)', color: 'var(--text-dim)', fontSize: 13,
+    padding: '10px 14px', borderRadius: 999, textAlign: 'center',
+    border: '1px solid var(--line)',
+  },
+  badgeMenunggu: {
+    background: 'rgba(11,14,26,0.95)', color: 'var(--text)', fontSize: 13,
+    padding: '12px 14px', borderRadius: 'var(--radius)',
+    display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'center', textAlign: 'center',
+    border: '1px solid var(--warn)',
+  },
+  dotKuning: { width: 7, height: 7, borderRadius: '50%', background: 'var(--warn)', display: 'inline-block', marginRight: 6 },
+  dotHijau: { width: 7, height: 7, borderRadius: '50%', background: 'var(--signal)', display: 'inline-block', marginRight: 6 },
+  simulasiBtn: { fontSize: 10.5, color: 'var(--text-dim)', textDecoration: 'underline' },
+  badgeLive: {
+    background: 'rgba(11,14,26,0.95)', color: 'var(--text)', fontSize: 13.5, fontWeight: 600,
+    padding: '10px 14px', borderRadius: 999, textAlign: 'center',
+    border: '1px solid var(--signal)',
+  },
+}
