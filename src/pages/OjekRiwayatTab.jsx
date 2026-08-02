@@ -1,27 +1,64 @@
+import { useState } from 'react'
 import { STATUS_BAYAR, formatRupiah } from '../lib/constants'
+import MonthPickerPopup from '../components/MonthPickerPopup.jsx'
+
+const NAMA_BULAN = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember']
 
 export default function OjekRiwayatTab({ riwayat, onTandaiLunas }) {
-  const belumBayar = riwayat.filter((r) => r.statusBayar === STATUS_BAYAR.BELUM)
+  const [showBulan, setShowBulan] = useState(false)
+
+  const sekarang = new Date()
+  const [bulanAktif, setBulanAktif] = useState(sekarang.getMonth())
+  const [tahunAktif, setTahunAktif] = useState(sekarang.getFullYear())
+
+  const riwayatBulanIni = riwayat.filter((r) => {
+    const [tahun, bulan] = r.tanggal.split('-').map(Number)
+    return bulan - 1 === bulanAktif && tahun === tahunAktif
+  })
+
+  const belumBayar = riwayatBulanIni.filter((r) => r.statusBayar === STATUS_BAYAR.BELUM)
   const totalBelumBayar = belumBayar.reduce((jumlah, r) => jumlah + r.tarif, 0)
+
+  const sudahBayar = riwayatBulanIni.filter((r) => r.statusBayar === STATUS_BAYAR.LUNAS)
+  const totalSudahDiterima = sudahBayar.reduce((jumlah, r) => jumlah + r.tarif, 0)
+
+  function handlePilihBulan(bulan, tahun) {
+    setBulanAktif(bulan)
+    setTahunAktif(tahun)
+    setShowBulan(false)
+  }
 
   return (
     <main style={s.wrap}>
-      <header style={s.header}>
-        <div style={s.eyebrow}>RIWAYAT</div>
-        <h1 style={s.title}>Tagihan sepupu</h1>
-      </header>
+      <div style={s.sectionHead}>
+        <div>
+          <div style={s.eyebrow}>RIWAYAT</div>
+          <h1 style={s.title}>Tagihan sepupu</h1>
+        </div>
+        <button style={s.bulanBtn} onClick={() => setShowBulan(true)}>
+          {NAMA_BULAN[bulanAktif]} {tahunAktif} ▾
+        </button>
+      </div>
 
-      <section style={s.tagihanCard}>
-        <div style={s.tagihanLabel}>Belum ditransfer</div>
-        <div style={s.tagihanAngka}>{formatRupiah(totalBelumBayar)}</div>
-        <div style={s.tagihanSub}>{belumBayar.length} perjalanan</div>
-      </section>
+      <div style={s.ringkasanRow}>
+        <section style={s.tagihanCard}>
+          <div style={s.tagihanLabel}>Belum ditransfer</div>
+          <div style={s.tagihanAngka}>{formatRupiah(totalBelumBayar)}</div>
+          <div style={s.tagihanSub}>{belumBayar.length} perjalanan</div>
+        </section>
+
+        <section style={s.pendapatanCard}>
+          <div style={s.tagihanLabel}>Sudah diterima</div>
+          <div style={s.pendapatanAngka}>{formatRupiah(totalSudahDiterima)}</div>
+          <div style={s.tagihanSub}>{sudahBayar.length} perjalanan</div>
+        </section>
+      </div>
 
       <div style={s.list}>
-        {riwayat.length === 0 ? (
-          <div style={s.kosong}>Belum ada riwayat.</div>
+        {riwayatBulanIni.length === 0 ? (
+          <div style={s.kosong}>Belum ada riwayat bulan ini.</div>
         ) : (
-          riwayat.map((r) => (
+          riwayatBulanIni.map((r) => (
             <div key={r.id} style={s.item}>
               <div>
                 <div style={s.itemJam}>{r.jam} · {r.tanggal}</div>
@@ -43,6 +80,15 @@ export default function OjekRiwayatTab({ riwayat, onTandaiLunas }) {
           ))
         )}
       </div>
+
+      {showBulan && (
+        <MonthPickerPopup
+          bulan={bulanAktif}
+          tahun={tahunAktif}
+          onClose={() => setShowBulan(false)}
+          onSelect={handlePilihBulan}
+        />
+      )}
     </main>
   )
 }
@@ -57,18 +103,33 @@ const s = {
     flexDirection: 'column',
     gap: 20,
   },
-  header: {},
+  sectionHead: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' },
   eyebrow: { fontSize: 11, letterSpacing: '0.12em', color: 'var(--text-dim)', marginBottom: 4 },
   title: { fontSize: 26, letterSpacing: '-0.01em' },
-  tagihanCard: {
-    background: 'linear-gradient(135deg, var(--surface-2), var(--surface))',
-    border: '1px solid var(--line)',
-    borderRadius: 'var(--radius)',
-    padding: 20,
+  bulanBtn: {
+    fontSize: 13, fontWeight: 600, color: 'var(--text)',
+    background: 'var(--surface)', border: '1px solid var(--line)',
+    borderRadius: 999, padding: '6px 12px',
   },
-  tagihanLabel: { fontSize: 13, color: 'var(--text-dim)', marginBottom: 6 },
-  tagihanAngka: { fontSize: 32, fontWeight: 700, color: 'var(--web-red)', letterSpacing: '-0.02em' },
-  tagihanSub: { fontSize: 13, color: 'var(--text-dim)', marginTop: 4 },
+  ringkasanRow: { display: 'flex', gap: 10 },
+  tagihanCard: {
+    flex: 1,
+    background: 'linear-gradient(135deg, var(--surface-2), var(--surface))',
+    border: '1px solid var(--web-red)',
+    borderRadius: 'var(--radius)',
+    padding: 16,
+  },
+  pendapatanCard: {
+    flex: 1,
+    background: 'linear-gradient(135deg, var(--surface-2), var(--surface))',
+    border: '1px solid var(--signal)',
+    borderRadius: 'var(--radius)',
+    padding: 16,
+  },
+  tagihanLabel: { fontSize: 12.5, color: 'var(--text-dim)', marginBottom: 6 },
+  tagihanAngka: { fontSize: 22, fontWeight: 700, color: 'var(--web-red)', letterSpacing: '-0.02em' },
+  pendapatanAngka: { fontSize: 22, fontWeight: 700, color: 'var(--signal)', letterSpacing: '-0.02em' },
+  tagihanSub: { fontSize: 12, color: 'var(--text-dim)', marginTop: 4 },
   list: { display: 'flex', flexDirection: 'column', gap: 10 },
   kosong: { fontSize: 13.5, color: 'var(--text-dim)', textAlign: 'center', padding: '20px 0' },
   item: {
