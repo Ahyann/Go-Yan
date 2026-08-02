@@ -35,7 +35,21 @@ export function playThwip() {
 // ditekan — respons jadi lebih cepat.
 const spiderAudio =
   typeof window !== 'undefined' ? new Audio('/sounds/spider_sound.mp3') : null
-if (spiderAudio) spiderAudio.preload = 'auto'
+
+if (spiderAudio) {
+  spiderAudio.preload = 'auto'
+  spiderAudio.muted = true
+  spiderAudio
+    .play()
+    .then(() => {
+      spiderAudio.pause()
+      spiderAudio.currentTime = 0
+      spiderAudio.muted = false
+    })
+    .catch(() => {
+      spiderAudio.muted = false
+    })
+}
 
 export function playSpiderSound() {
   if (!spiderAudio) return
