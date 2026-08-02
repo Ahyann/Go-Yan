@@ -1,9 +1,10 @@
-import { useState } from 'react'
 import { AuthProvider, useAuth } from './context/AuthContext.jsx'
+import { usePermintaanAktif } from './lib/usePermintaanAktif'
+import { useRiwayat } from './lib/useRiwayat'
 import LoginPage from './pages/LoginPage.jsx'
 import OjekView from './pages/OjekView.jsx'
 import PenumpangView from './pages/PenumpangView.jsx'
-import { ROLE, STATUS_PERMINTAAN } from './lib/constants'
+import { ROLE, TARIF_PER_RIDE, STATUS_BAYAR } from './lib/constants'
 
 export default function App() {
   return (
@@ -15,14 +16,20 @@ export default function App() {
 
 function AppIsi() {
   const { user, role, logout } = useAuth()
-  const [permintaanAktif, setPermintaanAktif] = useState(null)
+  const { permintaan, kirimGo, terima, tolak, selesai } = usePermintaanAktif()
+  const { riwayat, tambahRiwayat, tandaiLunas } = useRiwayat()
 
-  function terimaPermintaan() {
-    setPermintaanAktif((p) => (p ? { ...p, status: STATUS_PERMINTAAN.DITERIMA } : p))
-  }
-
-  function tolakPermintaan() {
-    setPermintaanAktif((p) => (p ? { ...p, status: STATUS_PERMINTAAN.DITOLAK } : p))
+  async function selesaikanRide() {
+    if (!permintaan) return
+    await tambahRiwayat({
+      tanggal: new Date().toISOString().slice(0, 10),
+      jam: new Date().toTimeString().slice(0, 5),
+      tarif: TARIF_PER_RIDE,
+      statusBayar: STATUS_BAYAR.BELUM,
+      aksi: permintaan.aksi,
+      where: permintaan.where,
+    })
+    await selesai()
   }
 
   if (user === undefined) {
@@ -46,9 +53,16 @@ function AppIsi() {
   return (
     <>
       {role === ROLE.OJEK ? (
-        <OjekView permintaan={permintaanAktif} onTerima={terimaPermintaan} onTolak={tolakPermintaan} />
+        <OjekView
+          permintaan={permintaan}
+          riwayat={riwayat}
+          onTerima={terima}
+          onTolak={tolak}
+          onSelesai={selesaikanRide}
+          onTandaiLunas={tandaiLunas}
+        />
       ) : (
-        <PenumpangView permintaanAktif={permintaanAktif} setPermintaanAktif={setPermintaanAktif} />
+        <PenumpangView permintaanAktif={permintaan} riwayat={riwayat} kirimGo={kirimGo} />
       )}
       <button style={s.logoutFloat} onClick={logout} aria-label="Keluar">
         ⎋
@@ -58,16 +72,6 @@ function AppIsi() {
 }
 
 const s = {
-  uidDebug: {
-    fontSize: 12,
-    fontFamily: 'monospace',
-    color: 'var(--text-dim)',
-    background: 'var(--surface)',
-    border: '1px solid var(--line)',
-    borderRadius: 8,
-    padding: '8px 12px',
-    userSelect: 'all',
-  },
   loading: {
     minHeight: '100dvh',
     display: 'flex',
@@ -79,6 +83,16 @@ const s = {
     fontSize: 14,
     padding: 24,
     textAlign: 'center',
+  },
+  uidDebug: {
+    fontSize: 12,
+    fontFamily: 'monospace',
+    color: 'var(--text-dim)',
+    background: 'var(--surface)',
+    border: '1px solid var(--line)',
+    borderRadius: 8,
+    padding: '8px 12px',
+    userSelect: 'all',
   },
   logoutBtn: {
     background: 'var(--surface)',
