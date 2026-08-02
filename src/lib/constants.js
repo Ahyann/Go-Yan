@@ -32,6 +32,7 @@ export const WAKTU = {
 export const STATUS_PERMINTAAN = {
   MENUNGGU: 'menunggu',
   DITERIMA: 'diterima',
+  DITOLAK: 'ditolak',
 }
 
 export const formatRupiah = (angka) =>

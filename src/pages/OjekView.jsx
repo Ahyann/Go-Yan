@@ -2,7 +2,7 @@ import { dummyJadwal, dummyRiwayat } from '../lib/dummyData'
 import { STATUS_BAYAR, STATUS_PERMINTAAN, AKSI, formatRupiah } from '../lib/constants'
 import JadwalCard from '../components/JadwalCard.jsx'
 
-export default function OjekView({ permintaan, onTerima }) {
+export default function OjekView({ permintaan, onTerima, onTolak }) {
   const belumBayar = dummyRiwayat.filter((r) => r.statusBayar === STATUS_BAYAR.BELUM)
   const totalBelumBayar = belumBayar.reduce((jumlah, r) => jumlah + r.tarif, 0)
   const jemputanBerikutnya = dummyJadwal[0]
@@ -24,9 +24,10 @@ export default function OjekView({ permintaan, onTerima }) {
             {permintaan.aksi === AKSI.JEMPUT ? 'Jemput' : 'Antar'} · {permintaan.waktu}
           </div>
           <div style={s.permintaanWhere}>{permintaan.where}</div>
-          <button style={s.terimaBtn} onClick={onTerima}>
-            Terima
-          </button>
+          <div style={s.tombolRow}>
+            <button style={s.tolakBtn} onClick={onTolak}>Tolak</button>
+            <button style={s.terimaBtn} onClick={onTerima}>Terima</button>
+          </div>
         </section>
       )}
 
@@ -86,8 +87,19 @@ const s = {
   permintaanLabel: { fontSize: 13, color: 'var(--text-dim)', marginBottom: 6 },
   permintaanAksi: { fontSize: 22, fontWeight: 700, letterSpacing: '-0.01em' },
   permintaanWhere: { fontSize: 14.5, color: 'var(--text-dim)', marginTop: 4, marginBottom: 16 },
+  tombolRow: { display: 'flex', gap: 10 },
+  tolakBtn: {
+    flex: 1,
+    background: 'var(--surface-2)',
+    color: 'var(--text-dim)',
+    fontSize: 15,
+    fontWeight: 600,
+    padding: '13px',
+    borderRadius: 999,
+    border: '1px solid var(--line)',
+  },
   terimaBtn: {
-    width: '100%',
+    flex: 1,
     background: 'var(--web-red)',
     color: '#fff',
     fontSize: 15,

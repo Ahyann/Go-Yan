@@ -28,10 +28,14 @@ export default function PetaStatus({ permintaan }) {
           </div>
         )}
 
+        {permintaan?.status === STATUS_PERMINTAAN.DITOLAK && (
+          <div style={s.badgeTolak}>Tidak bisa mengantar hari ini</div>
+        )}
+
         {permintaan?.status === STATUS_PERMINTAAN.DITERIMA && (
           <div style={s.badgeLive}>
             <span style={s.dotHijau} />
-            Ahyan otw {permintaan.aksi === 'jemput' ? 'menjemput' : 'mengantar'} kamu
+            OTWWW!!!
           </div>
         )}
       </div>
@@ -58,6 +62,11 @@ const s = {
     background: 'rgba(11,14,26,0.95)', color: 'var(--text)', fontSize: 13,
     padding: '10px 14px', borderRadius: 999, textAlign: 'center',
     border: '1px solid var(--warn)',
+  },
+  badgeTolak: {
+    background: 'rgba(11,14,26,0.95)', color: 'var(--text-dim)', fontSize: 13,
+    padding: '10px 14px', borderRadius: 999, textAlign: 'center',
+    border: '1px solid var(--web-red)',
   },
   dotKuning: { width: 7, height: 7, borderRadius: '50%', background: 'var(--warn)', display: 'inline-block', marginRight: 6 },
   dotHijau: { width: 7, height: 7, borderRadius: '50%', background: 'var(--signal)', display: 'inline-block', marginRight: 6 },

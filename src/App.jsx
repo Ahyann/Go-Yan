@@ -11,13 +11,17 @@ export default function App() {
     setPermintaanAktif((p) => (p ? { ...p, status: STATUS_PERMINTAAN.DITERIMA } : p))
   }
 
+  function tolakPermintaan() {
+    setPermintaanAktif((p) => (p ? { ...p, status: STATUS_PERMINTAAN.DITOLAK } : p))
+  }
+
   return (
     <>
       <Routes>
         <Route path="/" element={<Navigate to="/ojek" replace />} />
         <Route
           path="/ojek"
-          element={<OjekView permintaan={permintaanAktif} onTerima={terimaPermintaan} />}
+          element={<OjekView permintaan={permintaanAktif} onTerima={terimaPermintaan} onTolak={tolakPermintaan} />}
         />
         <Route
           path="/penumpang"
