@@ -1,10 +1,20 @@
 import { useState } from 'react'
-import { Routes, Route, Navigate, Link, useLocation } from 'react-router-dom'
+import { AuthProvider, useAuth } from './context/AuthContext.jsx'
+import LoginPage from './pages/LoginPage.jsx'
 import OjekView from './pages/OjekView.jsx'
 import PenumpangView from './pages/PenumpangView.jsx'
-import { STATUS_PERMINTAAN } from './lib/constants'
+import { ROLE, STATUS_PERMINTAAN } from './lib/constants'
 
 export default function App() {
+  return (
+    <AuthProvider>
+      <AppIsi />
+    </AuthProvider>
+  )
+}
+
+function AppIsi() {
+  const { user, role, logout } = useAuth()
   const [permintaanAktif, setPermintaanAktif] = useState(null)
 
   function terimaPermintaan() {
@@ -15,66 +25,80 @@ export default function App() {
     setPermintaanAktif((p) => (p ? { ...p, status: STATUS_PERMINTAAN.DITOLAK } : p))
   }
 
+  if (user === undefined) {
+    return <div style={s.loading}>Memuat…</div>
+  }
+
+  if (!user) {
+    return <LoginPage />
+  }
+
+  if (!role) {
+    return (
+      <div style={s.loading}>
+        <p>Akun ini belum terdaftar sebagai ojek atau penumpang.</p>
+        <p style={s.uidDebug}>UID: {user.uid}</p>
+        <button style={s.logoutBtn} onClick={logout}>Keluar</button>
+      </div>
+    )
+  }
+
   return (
     <>
-      <Routes>
-        <Route path="/" element={<Navigate to="/ojek" replace />} />
-        <Route
-          path="/ojek"
-          element={<OjekView permintaan={permintaanAktif} onTerima={terimaPermintaan} onTolak={tolakPermintaan} />}
-        />
-        <Route
-          path="/penumpang"
-          element={
-            <PenumpangView
-              permintaanAktif={permintaanAktif}
-              setPermintaanAktif={setPermintaanAktif}
-            />
-          }
-        />
-        <Route path="*" element={<Navigate to="/ojek" replace />} />
-      </Routes>
-      <RoleSwitcher />
+      {role === ROLE.OJEK ? (
+        <OjekView permintaan={permintaanAktif} onTerima={terimaPermintaan} onTolak={tolakPermintaan} />
+      ) : (
+        <PenumpangView permintaanAktif={permintaanAktif} setPermintaanAktif={setPermintaanAktif} />
+      )}
+      <button style={s.logoutFloat} onClick={logout} aria-label="Keluar">
+        ⎋
+      </button>
     </>
   )
 }
 
-function RoleSwitcher() {
-  const { pathname } = useLocation()
-  return (
-    <div style={s.switcher}>
-      <Link to="/ojek" style={pathname === '/ojek' ? s.active : s.link}>Ojek</Link>
-      <Link to="/penumpang" style={pathname === '/penumpang' ? s.active : s.link}>Penumpang</Link>
-    </div>
-  )
-}
-
 const s = {
-  switcher: {
-    position: 'fixed',
-    top: 'calc(var(--safe-top) + 10px)',
-    right: 16,
+  uidDebug: {
+    fontSize: 12,
+    fontFamily: 'monospace',
+    color: 'var(--text-dim)',
+    background: 'var(--surface)',
+    border: '1px solid var(--line)',
+    borderRadius: 8,
+    padding: '8px 12px',
+    userSelect: 'all',
+  },
+  loading: {
+    minHeight: '100dvh',
     display: 'flex',
-    gap: 6,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 16,
+    color: 'var(--text-dim)',
+    fontSize: 14,
+    padding: 24,
+    textAlign: 'center',
+  },
+  logoutBtn: {
     background: 'var(--surface)',
     border: '1px solid var(--line)',
     borderRadius: 999,
-    padding: 4,
-    zIndex: 10,
+    padding: '10px 18px',
+    color: 'var(--text)',
+    fontSize: 13.5,
   },
-  link: {
-    fontSize: 12,
-    padding: '6px 12px',
-    borderRadius: 999,
+  logoutFloat: {
+    position: 'fixed',
+    top: 'calc(var(--safe-top) + 12px)',
+    right: 16,
+    width: 36,
+    height: 36,
+    borderRadius: '50%',
+    background: 'var(--surface)',
+    border: '1px solid var(--line)',
     color: 'var(--text-dim)',
-    textDecoration: 'none',
-  },
-  active: {
-    fontSize: 12,
-    padding: '6px 12px',
-    borderRadius: 999,
-    background: 'var(--web-red)',
-    color: '#fff',
-    textDecoration: 'none',
+    fontSize: 16,
+    zIndex: 1000,
   },
 }
