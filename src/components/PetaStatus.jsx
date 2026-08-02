@@ -19,8 +19,6 @@ export default function PetaStatus({ permintaan, onSimulasiTerima }) {
         <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" />
       </MapContainer>
 
-      <div style={s.grid} />
-
       <div style={s.overlay}>
         {!permintaan && <div style={s.badgeIdle}>Belum ada perjalanan aktif</div>}
 
@@ -46,20 +44,7 @@ export default function PetaStatus({ permintaan, onSimulasiTerima }) {
 
 const s = {
   wrap: { position: 'absolute', inset: 0 },
-  map: {
-    height: '100%',
-    width: '100%',
-    filter: 'brightness(0.75) saturate(1.4) hue-rotate(180deg) contrast(1.1)',
-  },
-  grid: {
-    position: 'absolute',
-    inset: 0,
-    pointerEvents: 'none',
-    backgroundImage: `
-      repeating-linear-gradient(0deg, rgba(43,108,232,0.18) 0px, rgba(43,108,232,0.18) 1px, transparent 1px, transparent 28px),
-      repeating-linear-gradient(90deg, rgba(43,108,232,0.18) 0px, rgba(43,108,232,0.18) 1px, transparent 1px, transparent 28px)
-    `,
-  },
+  map: { height: '100%', width: '100%' },
   overlay: {
     position: 'absolute',
     left: 16,
