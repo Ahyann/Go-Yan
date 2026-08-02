@@ -1,8 +1,14 @@
 import { STATUS_PERMINTAAN, AKSI } from '../lib/constants'
+import { playSpiderSound } from '../lib/sound'
 
 export default function OjekHomeTab({ permintaan, onTerima, onTolak, onSelesai }) {
   const adaPermintaanMasuk = permintaan?.status === STATUS_PERMINTAAN.MENUNGGU
   const sedangJalan = permintaan?.status === STATUS_PERMINTAAN.DITERIMA
+
+  function handleTerima() {
+    playSpiderSound()
+    onTerima()
+  }
 
   return (
     <main style={s.wrap}>
@@ -20,7 +26,7 @@ export default function OjekHomeTab({ permintaan, onTerima, onTolak, onSelesai }
           <div style={s.permintaanWhere}>{permintaan.where}</div>
           <div style={s.tombolRow}>
             <button style={s.tolakBtn} onClick={onTolak}>Tolak</button>
-            <button style={s.terimaBtn} onClick={onTerima}>Terima</button>
+            <button style={s.terimaBtn} onClick={handleTerima}>Terima</button>
           </div>
         </section>
       )}
