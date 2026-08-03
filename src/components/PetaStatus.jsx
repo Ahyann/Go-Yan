@@ -37,11 +37,18 @@ function InvalidateOnResize() {
   useEffect(() => {
     function handleResize() {
       setTimeout(() => map.invalidateSize(), 150)
+      setTimeout(() => map.invalidateSize(), 400)
     }
 
+    window.addEventListener('resize', handleResize)
     if (window.visualViewport) {
       window.visualViewport.addEventListener('resize', handleResize)
-      return () => window.visualViewport.removeEventListener('resize', handleResize)
+    }
+    return () => {
+      window.removeEventListener('resize', handleResize)
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener('resize', handleResize)
+      }
     }
   }, [map])
 
