@@ -1,11 +1,9 @@
 import { MapContainer, TileLayer, Marker, ZoomControl, useMap } from 'react-leaflet'
+import { useEffect } from 'react'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { STATUS_PERMINTAAN } from '../lib/constants'
 import { useLokasiOjek } from '../lib/useLokasiOjek'
-import { MapContainer, TileLayer, Marker, ZoomControl, useMap } from 'react-leaflet'
-import { useEffect } from 'react'
-import L from 'leaflet'
 
 const PUSAT_DEFAULT = [-6.2088, 106.8456]
 
