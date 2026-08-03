@@ -51,6 +51,8 @@ const s = {
     alignItems: 'center',
     justifyItems: 'center',
     flexShrink: 0,
+    position: 'relative',
+    zIndex: 10,
   },
   iconBtn: {
     color: 'rgba(255,255,255,0.55)',

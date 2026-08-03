@@ -121,7 +121,7 @@ const s = {
     position: 'absolute',
     left: 16,
     right: 16,
-    bottom: 'calc(var(--safe-bottom) + 100px)',
+    bottom: 16,
     zIndex: 1000,
   },
   badgeIdle: {
