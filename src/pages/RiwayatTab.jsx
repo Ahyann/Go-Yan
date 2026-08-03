@@ -52,7 +52,7 @@ export default function RiwayatTab({ riwayat }) {
             riwayatTerfilter.map((r) => (
               <div key={r.id} style={s.item}>
                 <div>
-                  <div style={s.itemJam}>{r.jam} · {r.tanggal}</div>
+                  <div style={s.itemJam}>{r.jam} · {r.tanggal.split('-')[2]}</div>
                   <div style={s.itemDesc}>
                     {r.aksi === 'jemput' ? 'Jemput' : 'Antar'} · {r.where}
                   </div>
