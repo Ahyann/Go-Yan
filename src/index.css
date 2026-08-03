@@ -78,3 +78,7 @@ button {
 .spider-loading {
   animation: spider-pulse 1.1s ease-in-out infinite;
 }
+
+.leaflet-top.leaflet-right {
+  margin-top: calc(var(--safe-top) + 6px) !important;
+}
