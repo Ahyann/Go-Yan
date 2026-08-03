@@ -41,7 +41,7 @@ export default function GoPopup({ onClose, onSubmit }) {
             style={s.input}
             value={where}
             onChange={(e) => setWhere(e.target.value)}
-            placeholder="Contoh: Kampus, gerbang depan"
+            placeholder="Contoh: Kantor"
             autoFocus
           />
         </label>

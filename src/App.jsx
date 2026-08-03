@@ -55,15 +55,20 @@ function AppIsi() {
   return (
     <>
       {role === ROLE.OJEK ? (
-        <OjekView
-          permintaan={permintaan}
-          riwayat={riwayat}
-          jadwalMingguan={jadwalMingguan}
-          onTerima={terima}
-          onTolak={tolak}
-          onSelesai={selesaikanRide}
-          onTandaiLunas={tandaiLunas}
-        />
+        <>
+          <OjekView
+            permintaan={permintaan}
+            riwayat={riwayat}
+            jadwalMingguan={jadwalMingguan}
+            onTerima={terima}
+            onTolak={tolak}
+            onSelesai={selesaikanRide}
+            onTandaiLunas={tandaiLunas}
+          />
+          <button style={s.logoutFloat} onClick={logout} aria-label="Keluar">
+            ⎋
+          </button>
+        </>
       ) : (
         <PenumpangView
           permintaanAktif={permintaan}
@@ -73,9 +78,6 @@ function AppIsi() {
           kirimGo={kirimGo}
         />
       )}
-      <button style={s.logoutFloat} onClick={logout} aria-label="Keluar">
-        ⎋
-      </button>
     </>
   )
 }

@@ -1,11 +1,14 @@
 export default function BottomNav({ tabAktif, onTabChange, onGoClick, bisaGo = true }) {
   return (
     <nav style={s.nav}>
-      <div style={{ justifySelf: 'start' }}>
-        <IconBtn label="Home" aktif={tabAktif === 'home'} onClick={() => onTabChange('home')}>
-          <path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10" />
-        </IconBtn>
-      </div>
+      <IconBtn label="Home" aktif={tabAktif === 'home'} onClick={() => onTabChange('home')}>
+        <path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10" />
+      </IconBtn>
+
+      <IconBtn label="Jadwal" aktif={tabAktif === 'jadwal'} onClick={() => onTabChange('jadwal')}>
+        <rect x="3" y="5" width="18" height="16" rx="2" />
+        <path d="M3 10h18M8 3v4M16 3v4" />
+      </IconBtn>
 
       <button
         style={bisaGo ? s.goBtn : s.goBtnDisabled}
@@ -16,16 +19,15 @@ export default function BottomNav({ tabAktif, onTabChange, onGoClick, bisaGo = t
         GO
       </button>
 
-      <div style={{ justifySelf: 'end', display: 'flex', gap: 16 }}>
-        <IconBtn label="Jadwal" aktif={tabAktif === 'jadwal'} onClick={() => onTabChange('jadwal')}>
-          <rect x="3" y="5" width="18" height="16" rx="2" />
-          <path d="M3 10h18M8 3v4M16 3v4" />
-        </IconBtn>
-        <IconBtn label="Riwayat" aktif={tabAktif === 'riwayat'} onClick={() => onTabChange('riwayat')}>
-          <circle cx="12" cy="12" r="9" />
-          <path d="M12 7v5l3.5 2" />
-        </IconBtn>
-      </div>
+      <IconBtn label="Riwayat" aktif={tabAktif === 'riwayat'} onClick={() => onTabChange('riwayat')}>
+        <circle cx="12" cy="12" r="9" />
+        <path d="M12 7v5l3.5 2" />
+      </IconBtn>
+
+      <IconBtn label="Akun" aktif={tabAktif === 'akun'} onClick={() => onTabChange('akun')}>
+        <circle cx="12" cy="8" r="3.5" />
+        <path d="M5 20c1.5-4 5-5.5 7-5.5s5.5 1.5 7 5.5" />
+      </IconBtn>
     </nav>
   )
 }
@@ -49,16 +51,17 @@ const s = {
     maxWidth: 480,
     margin: '0 auto',
     background: 'var(--nav-red)',
-    padding: '12px 22px calc(var(--safe-bottom) + 12px)',
+    padding: '12px 12px calc(var(--safe-bottom) + 10px)',
     display: 'grid',
-    gridTemplateColumns: '1fr auto 1fr',
+    gridTemplateColumns: 'repeat(5, 1fr)',
     alignItems: 'center',
+    justifyItems: 'center',
     zIndex: 1000,
   },
   iconBtn: {
     color: 'rgba(255,255,255,0.55)',
-    width: 44,
-    height: 44,
+    width: 40,
+    height: 40,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -66,8 +69,8 @@ const s = {
   iconBtnAktif: {
     color: 'var(--glow-blue)',
     filter: 'drop-shadow(0 0 4px var(--glow-blue-mid))',
-    width: 44,
-    height: 44,
+    width: 40,
+    height: 40,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -86,7 +89,6 @@ const s = {
     marginTop: -30,
     boxShadow: '0 0 10px var(--glow-blue), 0 0 22px var(--glow-blue-mid)',
     border: '3px solid var(--nav-red)',
-    justifySelf: 'center',
   },
   goBtnDisabled: {
     width: 58,
@@ -100,7 +102,6 @@ const s = {
     letterSpacing: '0.03em',
     marginTop: -30,
     border: '3px solid var(--nav-red)',
-    justifySelf: 'center',
     cursor: 'not-allowed',
   },
 }

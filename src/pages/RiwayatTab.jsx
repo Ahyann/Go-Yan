@@ -116,7 +116,7 @@ const s = {
   tagihanLabel: { fontSize: 13, color: '#9FC3E8', marginBottom: 6 },
   angkaBelum: {
     fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 26,
-    color: 'var(--warn)', textShadow: '0 0 6px rgba(251,191,36,0.5)',
+    color: '#FF4C4C', textShadow: '0 0 6px rgba(255,76,76,0.6)',
   },
   tagihanSub: { fontSize: 12, color: '#8FB4DC', marginTop: 4 },
   sectionTitle: { fontSize: 14, color: 'var(--text-dim)', marginBottom: 10 },
@@ -142,6 +142,6 @@ const s = {
   },
   badgeBelum: {
     fontFamily: 'var(--font-data)', fontSize: 11.5,
-    color: 'var(--warn)', textShadow: '0 0 5px rgba(251,191,36,0.5)',
+    color: '#FF4C4C', textShadow: '0 0 6px rgba(255,76,76,0.6)',
   },
 }

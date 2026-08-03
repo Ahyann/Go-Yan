@@ -5,6 +5,7 @@ import BottomNav from '../components/BottomNav.jsx'
 import HomeTab from './HomeTab.jsx'
 import JadwalTab from './JadwalTab.jsx'
 import RiwayatTab from './RiwayatTab.jsx'
+import AccountTab from './AccountTab.jsx'
 
 export default function PenumpangView({
   permintaanAktif,
@@ -33,6 +34,7 @@ export default function PenumpangView({
           <JadwalTab jadwalMingguan={jadwalMingguan} simpanJadwal={simpanJadwal} />
         )}
         {tabAktif === 'riwayat' && <RiwayatTab riwayat={riwayat} />}
+        {tabAktif === 'akun' && <AccountTab />}
       </div>
 
       <BottomNav
