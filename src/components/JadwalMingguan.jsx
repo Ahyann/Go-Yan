@@ -94,7 +94,7 @@ const s = {
   aksiLabel: { fontSize: 13.5, color: '#8FB4DC' },
   jamInput: {
     fontFamily: 'var(--font-data)',
-    fontSize: 13,
+    fontSize: 16,
     background: 'rgba(255,255,255,0.06)',
     border: '1px solid var(--blue-border)',
     borderRadius: 8,
