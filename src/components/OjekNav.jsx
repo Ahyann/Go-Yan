@@ -29,17 +29,11 @@ function IconBtn({ label, aktif, onClick, children }) {
 
 const s = {
   nav: {
-    position: 'fixed',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    maxWidth: 480,
-    margin: '0 auto',
     background: 'var(--nav-red)',
     padding: '12px 20px calc(var(--safe-bottom) + 10px)',
     display: 'flex',
     justifyContent: 'space-around',
-    zIndex: 1000,
+    flexShrink: 0,
   },
   iconBtn: {
     color: 'rgba(255,255,255,0.55)',

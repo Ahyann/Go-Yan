@@ -29,7 +29,7 @@ export default function PenumpangView({
   }
 
   return (
-    <>
+    <div style={s.appWrap}>
       <div style={tabAktif === 'home' ? s.stageMap : s.stageScroll}>
         {tabAktif === 'home' && <HomeTab permintaan={permintaanAktif} />}
         {tabAktif === 'jadwal' && (
@@ -47,11 +47,12 @@ export default function PenumpangView({
       />
 
       {showGo && <GoPopup onClose={() => setShowGo(false)} onSubmit={handleKirimGo} />}
-    </>
+    </div>
   )
 }
 
 const s = {
-  stageMap: { height: '100dvh', overflow: 'hidden' },
-  stageScroll: { minHeight: '100dvh', overflowY: 'auto' },
+  appWrap: { display: 'flex', flexDirection: 'column', height: '100dvh' },
+  stageMap: { flex: 1, position: 'relative', overflow: 'hidden' },
+  stageScroll: { flex: 1, overflowY: 'auto' },
 }
