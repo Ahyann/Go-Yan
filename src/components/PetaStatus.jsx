@@ -1,5 +1,4 @@
 import { MapContainer, TileLayer, Marker, ZoomControl, useMap } from 'react-leaflet'
-import { useEffect } from 'react'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { STATUS_PERMINTAAN } from '../lib/constants'
@@ -7,11 +6,9 @@ import { useLokasiOjek } from '../lib/useLokasiOjek'
 
 const PUSAT_DEFAULT = [-6.2088, 106.8456]
 
-// Batas area yang boleh digeser — kira-kira mencakup Jabodetabek,
-// biar gak bisa digeser sampai nemu area kosong di luar situ.
 const BATAS_PETA = [
-  [-11.5, 94.5],  // pojok barat daya (dekat Aceh/Sumatera)
-  [6.5, 141.5],   // pojok timur laut (dekat Papua)
+  [-11.5, 94.5],
+  [6.5, 141.5],
 ]
 
 const ikonOjek = L.divIcon({
@@ -28,30 +25,6 @@ const ikonOjek = L.divIcon({
 function GeserKePosisi({ lat, lng }) {
   const map = useMap()
   map.setView([lat, lng])
-  return null
-}
-
-function InvalidateOnResize() {
-  const map = useMap()
-
-  useEffect(() => {
-    function handleResize() {
-      setTimeout(() => map.invalidateSize(), 150)
-      setTimeout(() => map.invalidateSize(), 400)
-    }
-
-    window.addEventListener('resize', handleResize)
-    if (window.visualViewport) {
-      window.visualViewport.addEventListener('resize', handleResize)
-    }
-    return () => {
-      window.removeEventListener('resize', handleResize)
-      if (window.visualViewport) {
-        window.visualViewport.removeEventListener('resize', handleResize)
-      }
-    }
-  }, [map])
-
   return null
 }
 
@@ -80,7 +53,7 @@ export default function PetaStatus({ permintaan }) {
       <MapContainer
         center={PUSAT_DEFAULT}
         zoom={15}
-        minZoom={5}
+        minZoom={14}
         maxBounds={BATAS_PETA}
         maxBoundsViscosity={1.0}
         style={s.map}
@@ -90,7 +63,6 @@ export default function PetaStatus({ permintaan }) {
         scrollWheelZoom={true}
       >
         <ZoomControl position="topright" />
-        <InvalidateOnResize />
 
         <TileLayer
           url={`https://api.maptiler.com/maps/streets-v4-dark/{z}/{x}/{y}.png?key=${import.meta.env.VITE_MAPTILER_KEY}`}
