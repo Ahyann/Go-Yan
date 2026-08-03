@@ -66,7 +66,9 @@ export default function PetaStatus({ permintaan }) {
       >
         <ZoomControl position="topright" />
 
-        <TileLayer url="https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png" />
+        <TileLayer
+          url={`https://api.maptiler.com/maps/streets-v4-dark/{z}/{x}/{y}.png?key=${import.meta.env.VITE_MAPTILER_KEY}`}
+        />
 
         {adaLokasiLive && (
           <>
