@@ -41,6 +41,10 @@ export default function GoPopup({ onClose, onSubmit }) {
             style={s.input}
             value={where}
             onChange={(e) => setWhere(e.target.value)}
+            onBlur={() => {
+              window.scrollTo(0, 0)
+              setTimeout(() => window.scrollTo(0, 0), 300)
+            }}
             placeholder="Contoh: Kantor"
             autoFocus
           />
