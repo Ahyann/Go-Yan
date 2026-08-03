@@ -3,9 +3,6 @@ import { useState } from 'react'
 const NAMA_BULAN = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des']
 
 export default function MonthPickerPopup({ bulan, tahun, onClose, onSelect }) {
-  // Tahun yang lagi "dilihat" di popup ini terpisah dari tahun yang beneran
-  // aktif di halaman utama — biar geser-geser tahun di sini gak langsung
-  // ngubah apa pun sebelum kamu beneran tap salah satu bulan.
   const [tahunLihat, setTahunLihat] = useState(tahun)
 
   return (
@@ -40,19 +37,19 @@ const s = {
   overlay: {
     position: 'fixed',
     inset: 0,
-    background: 'rgba(0,0,0,0.6)',
+    background: 'rgba(0,0,0,0.65)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
-    zIndex: 100,
+    zIndex: 9999,
   },
   sheet: {
     width: '100%',
     maxWidth: 360,
-    background: 'var(--surface)',
-    border: '1px solid var(--line)',
-    borderRadius: 'var(--radius)',
+    background: `linear-gradient(160deg, var(--card-blue-grad-a), var(--card-blue-grad-b))`,
+    border: '1px solid var(--blue-border)',
+    borderRadius: 16,
     padding: 20,
     display: 'flex',
     flexDirection: 'column',
@@ -61,16 +58,17 @@ const s = {
   yearRow: { display: 'flex', alignItems: 'center', justifyContent: 'space-between' },
   arrow: {
     width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center',
-    fontSize: 20, color: 'var(--text-dim)', borderRadius: '50%',
+    fontSize: 20, color: '#8FB4DC', borderRadius: '50%',
   },
-  yearLabel: { fontSize: 17, fontWeight: 700 },
+  yearLabel: { fontFamily: 'var(--font-data)', fontSize: 17, fontWeight: 700, color: 'var(--text)' },
   grid: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 },
   cell: {
-    padding: '12px 0', borderRadius: 'var(--radius)',
-    background: 'var(--surface-2)', color: 'var(--text)', fontSize: 14,
+    padding: '12px 0', borderRadius: 10,
+    background: 'rgba(255,255,255,0.06)', color: 'var(--text)', fontSize: 14,
+    border: '1px solid var(--blue-border)',
   },
   cellAktif: {
-    padding: '12px 0', borderRadius: 'var(--radius)',
-    background: 'var(--web-red)', color: '#fff', fontSize: 14, fontWeight: 600,
+    padding: '12px 0', borderRadius: 10,
+    background: 'var(--nav-red)', color: '#fff', fontSize: 14, fontWeight: 600,
   },
 }
