@@ -1,10 +1,17 @@
-import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, ZoomControl, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { STATUS_PERMINTAAN } from '../lib/constants'
 import { useLokasiOjek } from '../lib/useLokasiOjek'
 
 const PUSAT_DEFAULT = [-6.2088, 106.8456]
+
+// Batas area yang boleh digeser — kira-kira mencakup Jabodetabek,
+// biar gak bisa digeser sampai nemu area kosong di luar situ.
+const BATAS_PETA = [
+  [-11.5, 94.5],  // pojok barat daya (dekat Aceh/Sumatera)
+  [6.5, 141.5],   // pojok timur laut (dekat Papua)
+]
 
 const ikonOjek = L.divIcon({
   className: '',
@@ -32,13 +39,18 @@ export default function PetaStatus({ permintaan }) {
       <MapContainer
         center={PUSAT_DEFAULT}
         zoom={15}
+        minZoom={5}
+        maxBounds={BATAS_PETA}
+        maxBoundsViscosity={1.0}
         style={s.map}
         zoomControl={false}
         attributionControl={false}
-        dragging={false}
-        scrollWheelZoom={false}
+        dragging={true}
+        scrollWheelZoom={true}
       >
-        <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" />
+        <ZoomControl position="topright" />
+
+        <TileLayer url="https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png" />
 
         {adaLokasiLive && (
           <>
@@ -47,6 +59,8 @@ export default function PetaStatus({ permintaan }) {
           </>
         )}
       </MapContainer>
+
+      <div style={s.tint} />
 
       <div style={s.overlay}>
         {!permintaan && <div style={s.badgeIdle}>Belum ada perjalanan aktif</div>}
@@ -75,6 +89,15 @@ export default function PetaStatus({ permintaan }) {
 const s = {
   wrap: { position: 'absolute', inset: 0 },
   map: { height: '100%', width: '100%' },
+  tint: {
+    position: 'absolute',
+    inset: 0,
+    pointerEvents: 'none',
+    background: 'var(--glow-blue-mid)',
+    opacity: 0.5,
+    mixBlendMode: 'color',
+    zIndex: 1000,
+  },
   overlay: {
     position: 'absolute',
     left: 16,
