@@ -53,7 +53,7 @@ export default function PetaStatus({ permintaan }) {
       <MapContainer
         center={PUSAT_DEFAULT}
         zoom={15}
-        minZoom={14}
+        minZoom={5}
         maxBounds={BATAS_PETA}
         maxBoundsViscosity={1.0}
         style={s.map}
