@@ -3,6 +3,9 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { STATUS_PERMINTAAN } from '../lib/constants'
 import { useLokasiOjek } from '../lib/useLokasiOjek'
+import { MapContainer, TileLayer, Marker, ZoomControl, useMap } from 'react-leaflet'
+import { useEffect } from 'react'
+import L from 'leaflet'
 
 const PUSAT_DEFAULT = [-6.2088, 106.8456]
 
@@ -27,6 +30,23 @@ const ikonOjek = L.divIcon({
 function GeserKePosisi({ lat, lng }) {
   const map = useMap()
   map.setView([lat, lng])
+  return null
+}
+
+function InvalidateOnResize() {
+  const map = useMap()
+
+  useEffect(() => {
+    function handleResize() {
+      setTimeout(() => map.invalidateSize(), 150)
+    }
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', handleResize)
+      return () => window.visualViewport.removeEventListener('resize', handleResize)
+    }
+  }, [map])
+
   return null
 }
 
@@ -65,6 +85,7 @@ export default function PetaStatus({ permintaan }) {
         scrollWheelZoom={true}
       >
         <ZoomControl position="topright" />
+        <InvalidateOnResize />
 
         <TileLayer
           url={`https://api.maptiler.com/maps/streets-v4-dark/{z}/{x}/{y}.png?key=${import.meta.env.VITE_MAPTILER_KEY}`}
