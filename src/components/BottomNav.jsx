@@ -51,7 +51,7 @@ const s = {
     maxWidth: 480,
     margin: '0 auto',
     background: 'var(--nav-red)',
-    padding: '12px 12px calc(var(--safe-bottom) + 10px)',
+    padding: '12px 12px calc(var(--safe-bottom) + 24px)',
     display: 'grid',
     gridTemplateColumns: 'repeat(5, 1fr)',
     alignItems: 'center',
