@@ -15,6 +15,16 @@ export default function JadwalMingguan({ jadwal, onSimpan, bisaEdit }) {
 
   if (!draft) return null
 
+  function toggleAksi(hari, aksi) {
+    setDraft((d) => ({
+      ...d,
+      [hari]: {
+        ...d[hari],
+        [aksi]: d[hari]?.[aksi] ? '' : (aksi === 'antar' ? '07:00' : '15:30'),
+      },
+    }))
+  }
+
   function ubahJam(hari, aksi, jam) {
     setDraft((d) => ({ ...d, [hari]: { ...d[hari], [aksi]: jam } }))
   }
@@ -36,31 +46,23 @@ export default function JadwalMingguan({ jadwal, onSimpan, bisaEdit }) {
         <div key={key} style={s.hariBlok}>
           <div style={s.hariLabel}>{label}</div>
 
-          <div style={s.aksiRow}>
-            <span style={s.aksiLabel}>Antar</span>
-            {bisaEdit ? (
-              <button style={s.jamBtn} onClick={() => setEditing({ hari: key, aksi: 'antar' })}>
-                {draft[key]?.antar || 'Atur jam'}
-              </button>
-            ) : (
-              <span style={draft[key]?.antar ? s.jamBaca : s.jamKosong}>
-                {draft[key]?.antar || 'Belum diisi'}
-              </span>
-            )}
-          </div>
+          <AksiBaris
+            label="Antar"
+            aktif={Boolean(draft[key]?.antar)}
+            jam={draft[key]?.antar}
+            bisaEdit={bisaEdit}
+            onToggle={() => toggleAksi(key, 'antar')}
+            onBukaJam={() => setEditing({ hari: key, aksi: 'antar' })}
+          />
 
-          <div style={s.aksiRow}>
-            <span style={s.aksiLabel}>Jemput</span>
-            {bisaEdit ? (
-              <button style={s.jamBtn} onClick={() => setEditing({ hari: key, aksi: 'jemput' })}>
-                {draft[key]?.jemput || 'Atur jam'}
-              </button>
-            ) : (
-              <span style={draft[key]?.jemput ? s.jamBaca : s.jamKosong}>
-                {draft[key]?.jemput || 'Belum diisi'}
-              </span>
-            )}
-          </div>
+          <AksiBaris
+            label="Jemput"
+            aktif={Boolean(draft[key]?.jemput)}
+            jam={draft[key]?.jemput}
+            bisaEdit={bisaEdit}
+            onToggle={() => toggleAksi(key, 'jemput')}
+            onBukaJam={() => setEditing({ hari: key, aksi: 'jemput' })}
+          />
         </div>
       ))}
 
@@ -91,6 +93,27 @@ export default function JadwalMingguan({ jadwal, onSimpan, bisaEdit }) {
   )
 }
 
+function AksiBaris({ label, aktif, jam, bisaEdit, onToggle, onBukaJam }) {
+  if (!bisaEdit && !aktif) return null
+
+  return (
+    <div style={s.aksiRow}>
+      {bisaEdit ? (
+        <button style={aktif ? s.chipAktif : s.chip} onClick={onToggle}>
+          {label}
+        </button>
+      ) : (
+        <span style={s.chipBaca}>{label}</span>
+      )}
+
+      {aktif && bisaEdit && (
+        <button style={s.jamBtn} onClick={onBukaJam}>{jam}</button>
+      )}
+      {aktif && !bisaEdit && <span style={s.jamBacaTeks}>{jam}</span>}
+    </div>
+  )
+}
+
 const s = {
   wrap: { display: 'flex', flexDirection: 'column', gap: 12 },
   hariBlok: {
@@ -107,9 +130,28 @@ const s = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingLeft: 12,
+    paddingLeft: 4,
   },
-  aksiLabel: { fontSize: 13.5, color: '#8FB4DC' },
+  chip: {
+    fontSize: 13,
+    fontWeight: 600,
+    padding: '7px 14px',
+    borderRadius: 999,
+    background: 'rgba(255,255,255,0.06)',
+    color: '#8FB4DC',
+    border: '1px solid var(--blue-border)',
+  },
+  chipAktif: {
+    fontSize: 13,
+    fontWeight: 600,
+    padding: '7px 14px',
+    borderRadius: 999,
+    background: 'rgba(94,208,255,0.18)',
+    color: 'var(--glow-blue)',
+    border: '1px solid var(--glow-blue-mid)',
+    textShadow: '0 0 4px var(--glow-blue-mid)',
+  },
+  chipBaca: { fontSize: 13, fontWeight: 600, color: '#8FB4DC' },
   jamBtn: {
     fontFamily: 'var(--font-data)',
     fontSize: 13,
@@ -118,14 +160,13 @@ const s = {
     borderRadius: 8,
     padding: '7px 12px',
     color: 'var(--text)',
-    minWidth: 96,
+    minWidth: 80,
     textAlign: 'center',
   },
-  jamBaca: {
+  jamBacaTeks: {
     fontFamily: 'var(--font-data)', fontSize: 13,
     color: 'var(--glow-blue)', textShadow: '0 0 4px var(--glow-blue-mid)',
   },
-  jamKosong: { fontSize: 13, color: 'var(--text-dim)', fontStyle: 'italic' },
   simpanBtn: {
     marginTop: 6,
     background: 'var(--nav-red)',
