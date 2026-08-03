@@ -34,6 +34,10 @@
 
 html, body, #root { height: 100%; }
 
+html {
+  background: var(--bg);
+}
+
 body {
   background: var(--bg);
   color: var(--text);
