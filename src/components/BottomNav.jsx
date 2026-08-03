@@ -44,13 +44,19 @@ function IconBtn({ label, aktif, onClick, children }) {
 
 const s = {
   nav: {
+    position: 'fixed',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    maxWidth: 480,
+    margin: '0 auto',
     background: 'var(--nav-red)',
-    padding: '12px 12px calc(var(--safe-bottom) + 12px)',
+    padding: '12px 12px calc(var(--safe-bottom) + 10px)',
     display: 'grid',
     gridTemplateColumns: 'repeat(5, 1fr)',
     alignItems: 'center',
     justifyItems: 'center',
-    flexShrink: 0,
+    zIndex: 1000,
   },
   iconBtn: {
     color: 'rgba(255,255,255,0.55)',
