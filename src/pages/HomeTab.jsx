@@ -33,7 +33,11 @@ const s = {
     textShadow: '0 1px 4px rgba(0,0,0,0.8)',
   },
   title: {
-    fontSize: 26, letterSpacing: '-0.01em',
+    fontFamily: 'var(--font-judul)',
+    fontSize: 26,
+    color: 'var(--text)',
+    letterSpacing: '1px',
+    lineHeight: 1.3,
     textShadow: '0 1px 6px rgba(0,0,0,0.8)',
   },
 }

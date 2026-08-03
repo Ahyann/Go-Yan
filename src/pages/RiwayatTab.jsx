@@ -37,9 +37,9 @@ export default function RiwayatTab({ riwayat }) {
         </button>
       </div>
 
-      <section style={s.tagihanCard}>
+      <section style={s.cardBiru}>
         <div style={s.tagihanLabel}>Belum ditransfer</div>
-        <div style={s.tagihanAngka}>{formatRupiah(totalBelumBayar)}</div>
+        <div style={s.angkaBelum}>{formatRupiah(totalBelumBayar)}</div>
         <div style={s.tagihanSub}>{belumBayar.length} perjalanan</div>
       </section>
 
@@ -93,21 +93,32 @@ const s = {
   },
   sectionHead: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' },
   eyebrow: { fontSize: 11, letterSpacing: '0.12em', color: 'var(--text-dim)', marginBottom: 4 },
-  title: { fontSize: 26, letterSpacing: '-0.01em' },
+  title: {
+    fontFamily: 'var(--font-judul)',
+    fontSize: 22,
+    color: 'var(--text)',
+    letterSpacing: '1px',
+    lineHeight: 1.3,
+    marginTop: 2,
+    whiteSpace: 'nowrap',
+  },
   bulanBtn: {
     fontSize: 13, fontWeight: 600, color: 'var(--text)',
-    background: 'var(--surface)', border: '1px solid var(--line)',
+    background: 'var(--card-blue)', border: '1px solid var(--blue-border)',
     borderRadius: 999, padding: '6px 12px',
   },
-  tagihanCard: {
-    background: 'linear-gradient(135deg, var(--surface-2), var(--surface))',
-    border: '1px solid var(--line)',
-    borderRadius: 'var(--radius)',
+  cardBiru: {
+    background: `linear-gradient(160deg, var(--card-blue-grad-a), var(--card-blue-grad-b))`,
+    border: '1px solid var(--blue-border)',
+    borderRadius: 12,
     padding: 20,
   },
-  tagihanLabel: { fontSize: 13, color: 'var(--text-dim)', marginBottom: 6 },
-  tagihanAngka: { fontSize: 32, fontWeight: 700, color: 'var(--web-red)', letterSpacing: '-0.02em' },
-  tagihanSub: { fontSize: 13, color: 'var(--text-dim)', marginTop: 4 },
+  tagihanLabel: { fontSize: 13, color: '#9FC3E8', marginBottom: 6 },
+  angkaBelum: {
+    fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 26,
+    color: 'var(--warn)', textShadow: '0 0 6px rgba(251,191,36,0.5)',
+  },
+  tagihanSub: { fontSize: 12, color: '#8FB4DC', marginTop: 4 },
   sectionTitle: { fontSize: 14, color: 'var(--text-dim)', marginBottom: 10 },
   list: { display: 'flex', flexDirection: 'column', gap: 10 },
   kosong: { fontSize: 13.5, color: 'var(--text-dim)', textAlign: 'center', padding: '20px 0' },
@@ -115,16 +126,22 @@ const s = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    background: 'var(--surface)',
-    border: '1px solid var(--line)',
-    borderRadius: 'var(--radius)',
-    padding: '14px 16px',
+    background: 'var(--card-blue)',
+    border: '1px solid var(--blue-border)',
+    borderRadius: 10,
+    padding: '12px 14px',
     gap: 12,
   },
-  itemJam: { fontSize: 14.5, fontWeight: 600 },
-  itemDesc: { fontSize: 13, color: 'var(--text-dim)', marginTop: 2 },
+  itemJam: { fontFamily: 'var(--font-data)', fontSize: 13, color: 'var(--text)' },
+  itemDesc: { fontSize: 11.5, color: '#8FB4DC', marginTop: 2 },
   itemKanan: { display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 },
-  itemTarif: { fontSize: 14.5, fontWeight: 700 },
-  badgeLunas: { fontSize: 11.5, color: 'var(--signal)', fontWeight: 600 },
-  badgeBelum: { fontSize: 11.5, color: 'var(--warn)', fontWeight: 600 },
+  itemTarif: { fontFamily: 'var(--font-data)', fontSize: 13, color: 'var(--text)' },
+  badgeLunas: {
+    fontFamily: 'var(--font-data)', fontSize: 11.5,
+    color: 'var(--signal)', textShadow: '0 0 5px rgba(74,222,128,0.5)',
+  },
+  badgeBelum: {
+    fontFamily: 'var(--font-data)', fontSize: 11.5,
+    color: 'var(--warn)', textShadow: '0 0 5px rgba(251,191,36,0.5)',
+  },
 }

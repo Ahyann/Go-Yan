@@ -26,13 +26,13 @@ export default function JadwalMingguan({ jadwal, onSimpan, bisaEdit }) {
     setDraft((d) => ({ ...d, [hari]: { ...d[hari], [aksi]: jam } }))
   }
 
-    async function handleSimpan() {
-        setMenyimpan(true)
-        await onSimpan(draft)
-        setMenyimpan(false)
-        setTersimpan(true)
-        setTimeout(() => setTersimpan(false), 2000)
-    }
+  async function handleSimpan() {
+    setMenyimpan(true)
+    await onSimpan(draft)
+    setMenyimpan(false)
+    setTersimpan(true)
+    setTimeout(() => setTersimpan(false), 2000)
+  }
 
   return (
     <div style={s.wrap}>
@@ -103,14 +103,14 @@ const s = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    background: 'var(--surface)',
-    border: '1px solid var(--line)',
-    borderRadius: 'var(--radius)',
+    background: 'var(--card-blue)',
+    border: '1px solid var(--blue-border)',
+    borderRadius: 10,
     padding: '12px 14px',
     gap: 10,
     flexWrap: 'wrap',
   },
-  hariLabel: { fontSize: 14, fontWeight: 600, minWidth: 56 },
+  hariLabel: { fontSize: 14, fontWeight: 600, color: 'var(--text)', minWidth: 56 },
   aksiCol: { display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'flex-end', flex: 1 },
   aksiRow: { display: 'flex', alignItems: 'center', gap: 6 },
   chip: {
@@ -118,40 +118,45 @@ const s = {
     fontWeight: 600,
     padding: '6px 12px',
     borderRadius: 999,
-    background: 'var(--surface-2)',
-    color: 'var(--text-dim)',
-    border: '1px solid var(--line)',
+    background: 'rgba(255,255,255,0.06)',
+    color: '#8FB4DC',
+    border: '1px solid var(--blue-border)',
   },
   chipAktif: {
     fontSize: 12.5,
     fontWeight: 600,
     padding: '6px 12px',
     borderRadius: 999,
-    background: 'var(--web-red)',
-    color: '#fff',
+    background: 'rgba(94,208,255,0.15)',
+    color: 'var(--glow-blue)',
+    border: '1px solid var(--glow-blue-mid)',
+    textShadow: '0 0 4px var(--glow-blue-mid)',
   },
   chipBaca: {
     fontSize: 12.5,
     fontWeight: 600,
     padding: '6px 12px',
     borderRadius: 999,
-    background: 'var(--web-red)',
-    color: '#fff',
+    background: 'rgba(94,208,255,0.15)',
+    color: 'var(--glow-blue)',
+    border: '1px solid var(--glow-blue-mid)',
+    textShadow: '0 0 4px var(--glow-blue-mid)',
   },
   jamInput: {
+    fontFamily: 'var(--font-data)',
     fontSize: 12.5,
-    background: 'var(--surface-2)',
-    border: '1px solid var(--line)',
+    background: 'rgba(255,255,255,0.06)',
+    border: '1px solid var(--blue-border)',
     borderRadius: 8,
     padding: '5px 6px',
     color: 'var(--text)',
     width: 78,
   },
-  jamBaca: { fontSize: 12.5, color: 'var(--text-dim)' },
+  jamBaca: { fontFamily: 'var(--font-data)', fontSize: 12.5, color: '#8FB4DC' },
   kosongLabel: { fontSize: 12.5, color: 'var(--text-dim)', fontStyle: 'italic' },
   simpanBtn: {
     marginTop: 6,
-    background: 'var(--web-red)',
+    background: 'var(--nav-red)',
     color: '#fff',
     fontSize: 15,
     fontWeight: 600,
