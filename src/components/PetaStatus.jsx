@@ -30,6 +30,22 @@ function GeserKePosisi({ lat, lng }) {
   return null
 }
 
+function IkonLabaLaba() {
+  return (
+    <svg
+      className="spider-loading"
+      width="36" height="36" viewBox="0 0 24 24"
+      fill="none" stroke="var(--glow-blue)" strokeWidth="1.6" strokeLinecap="round"
+      style={{ display: 'block', margin: '0 auto 4px' }}
+    >
+      <circle cx="12" cy="10" r="3" />
+      <circle cx="12" cy="15.5" r="4" />
+      <path d="M9 8 L4 5 M9 9.5 L3 9.5 M9 11.5 L4 13.5 M9 13.5 L5 16.5" />
+      <path d="M15 8 L20 5 M15 9.5 L21 9.5 M15 11.5 L20 13.5 M15 13.5 L19 16.5" />
+    </svg>
+  )
+}
+
 export default function PetaStatus({ permintaan }) {
   const lokasiOjek = useLokasiOjek()
   const adaLokasiLive = lokasiOjek && permintaan?.status === STATUS_PERMINTAAN.DITERIMA
@@ -67,7 +83,10 @@ export default function PetaStatus({ permintaan }) {
 
         {permintaan?.status === STATUS_PERMINTAAN.MENUNGGU && (
           <div style={s.badgeMenunggu}>
-            <span style={s.dotKuning} />Menunggu Ahyan menerima…
+            <IkonLabaLaba />
+            <div style={s.menungguText}>
+              <span style={s.dotKuning} />Menunggu Ahyan menerima…
+            </div>
           </div>
         )}
 
@@ -103,6 +122,7 @@ const s = {
     left: 16,
     right: 16,
     bottom: 'calc(var(--safe-bottom) + 100px)',
+    zIndex: 1000,
   },
   badgeIdle: {
     background: 'rgba(11,14,26,0.9)', color: 'var(--text-dim)', fontSize: 13,
@@ -111,9 +131,10 @@ const s = {
   },
   badgeMenunggu: {
     background: 'rgba(11,14,26,0.95)', color: 'var(--text)', fontSize: 13,
-    padding: '10px 14px', borderRadius: 999, textAlign: 'center',
+    padding: '14px', borderRadius: 'var(--radius)', textAlign: 'center',
     border: '1px solid var(--warn)',
   },
+  menungguText: { display: 'flex', alignItems: 'center', justifyContent: 'center' },
   badgeTolak: {
     background: 'rgba(11,14,26,0.95)', color: 'var(--text-dim)', fontSize: 13,
     padding: '10px 14px', borderRadius: 999, textAlign: 'center',

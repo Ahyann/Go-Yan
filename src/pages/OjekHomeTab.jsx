@@ -26,6 +26,7 @@ export default function OjekHomeTab({ permintaan, onTerima, onTolak, onSelesai }
 
       {adaPermintaanMasuk && (
         <section style={s.permintaanCard}>
+          <IkonLabaLaba />
           <div style={s.permintaanLabel}>Permintaan baru dari Fajri</div>
           <div style={s.permintaanAksi}>
             {permintaan.aksi === AKSI.JEMPUT ? 'Jemput' : 'Antar'} · {permintaan.waktu}
@@ -66,6 +67,22 @@ export default function OjekHomeTab({ permintaan, onTerima, onTolak, onSelesai }
   )
 }
 
+function IkonLabaLaba() {
+  return (
+    <svg
+      className="spider-loading"
+      width="44" height="44" viewBox="0 0 24 24"
+      fill="none" stroke="var(--glow-blue)" strokeWidth="1.6" strokeLinecap="round"
+      style={{ display: 'block', margin: '0 auto 4px' }}
+    >
+      <circle cx="12" cy="10" r="3" />
+      <circle cx="12" cy="15.5" r="4" />
+      <path d="M9 8 L4 5 M9 9.5 L3 9.5 M9 11.5 L4 13.5 M9 13.5 L5 16.5" />
+      <path d="M15 8 L20 5 M15 9.5 L21 9.5 M15 11.5 L20 13.5 M15 13.5 L19 16.5" />
+    </svg>
+  )
+}
+
 const s = {
   wrap: {
     minHeight: '100%',
@@ -91,6 +108,7 @@ const s = {
     border: '1px solid var(--warn)',
     borderRadius: 12,
     padding: 20,
+    textAlign: 'center',
   },
   permintaanLabel: { fontSize: 13, color: '#9FC3E8', marginBottom: 6 },
   permintaanAksi: {
@@ -98,7 +116,7 @@ const s = {
     color: 'var(--warn)', textShadow: '0 0 6px rgba(251,191,36,0.5)',
   },
   permintaanWhere: { fontSize: 14, color: '#8FB4DC', marginTop: 4, marginBottom: 16 },
-  tombolRow: { display: 'flex', gap: 10 },
+  tombolRow: { display: 'flex', gap: 10, textAlign: 'initial' },
   tolakBtn: {
     flex: 1,
     background: 'rgba(255,255,255,0.06)',

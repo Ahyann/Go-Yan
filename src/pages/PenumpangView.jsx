@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { STATUS_PERMINTAAN } from '../lib/constants'
+import { playSpiderSound } from '../lib/sound'
 import GoPopup from '../components/GoPopup.jsx'
 import BottomNav from '../components/BottomNav.jsx'
 import HomeTab from './HomeTab.jsx'
@@ -22,6 +23,7 @@ export default function PenumpangView({
     permintaanAktif?.status === STATUS_PERMINTAAN.DITERIMA
 
   async function handleKirimGo({ aksi, where, waktu }) {
+    playSpiderSound()
     await kirimGo({ aksi, where, waktu })
     setShowGo(false)
   }
