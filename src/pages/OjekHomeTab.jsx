@@ -1,13 +1,20 @@
 import { STATUS_PERMINTAAN, AKSI } from '../lib/constants'
 import { playSpiderSound } from '../lib/sound'
+import { useLokasiSaya } from '../lib/useLokasiSaya'
 
 export default function OjekHomeTab({ permintaan, onTerima, onTolak, onSelesai }) {
   const adaPermintaanMasuk = permintaan?.status === STATUS_PERMINTAAN.MENUNGGU
   const sedangJalan = permintaan?.status === STATUS_PERMINTAAN.DITERIMA
+  const { aktif: lokasiAktif, error: lokasiError, mulai: mulaiLokasi, berhenti: berhentiLokasi } = useLokasiSaya()
 
   function handleTerima() {
     playSpiderSound()
     onTerima()
+  }
+
+  function handleSelesai() {
+    berhentiLokasi()
+    onSelesai()
   }
 
   return (
@@ -37,7 +44,16 @@ export default function OjekHomeTab({ permintaan, onTerima, onTolak, onSelesai }
             <span style={s.dotHijau} />
             Sedang {permintaan.aksi === AKSI.JEMPUT ? 'menjemput' : 'mengantar'} Fajri · {permintaan.where}
           </div>
-          <button style={s.selesaiBtn} onClick={onSelesai}>
+
+          <button
+            style={lokasiAktif ? s.lokasiBtnAktif : s.lokasiBtn}
+            onClick={lokasiAktif ? berhentiLokasi : mulaiLokasi}
+          >
+            {lokasiAktif ? '● Live location aktif — tekan buat matikan' : 'Nyalain live location'}
+          </button>
+          {lokasiError && <div style={s.lokasiError}>{lokasiError}</div>}
+
+          <button style={s.selesaiBtn} onClick={handleSelesai}>
             Selesai
           </button>
         </section>
@@ -105,6 +121,25 @@ const s = {
   },
   jalanRow: { display: 'flex', alignItems: 'center', fontSize: 14.5, fontWeight: 600 },
   dotHijau: { width: 7, height: 7, borderRadius: '50%', background: 'var(--signal)', display: 'inline-block', marginRight: 8 },
+  lokasiBtn: {
+    background: 'var(--surface-2)',
+    color: 'var(--text)',
+    fontSize: 13.5,
+    fontWeight: 600,
+    padding: '12px',
+    borderRadius: 999,
+    border: '1px solid var(--line)',
+  },
+  lokasiBtnAktif: {
+    background: 'rgba(74,222,128,0.12)',
+    color: 'var(--signal)',
+    fontSize: 13.5,
+    fontWeight: 600,
+    padding: '12px',
+    borderRadius: 999,
+    border: '1px solid var(--signal)',
+  },
+  lokasiError: { fontSize: 12, color: 'var(--web-red)', textAlign: 'center' },
   selesaiBtn: {
     background: 'var(--signal)',
     color: '#08130d',

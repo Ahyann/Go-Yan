@@ -22,7 +22,7 @@ function IconBtn({ label, aktif, onClick, children }) {
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         {children}
       </svg>
-      <span style={s.label}>{label}</span>
+      <span style={aktif ? s.labelAktif : s.label}>{label}</span>
     </button>
   )
 }
@@ -35,26 +35,27 @@ const s = {
     right: 0,
     maxWidth: 480,
     margin: '0 auto',
-    background: 'var(--surface)',
-    borderTop: '1px solid var(--line)',
-    padding: '10px 20px calc(var(--safe-bottom) + 8px)',
+    background: 'var(--nav-red)',
+    padding: '12px 20px calc(var(--safe-bottom) + 10px)',
     display: 'flex',
     justifyContent: 'space-around',
     zIndex: 1000,
   },
   iconBtn: {
-    color: 'var(--text-dim)',
+    color: 'rgba(255,255,255,0.55)',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     gap: 3,
   },
   iconBtnAktif: {
-    color: 'var(--web-red)',
+    color: 'var(--glow-blue)',
+    filter: 'drop-shadow(0 0 4px var(--glow-blue-mid))',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     gap: 3,
   },
-  label: { fontSize: 10.5 },
+  label: { fontSize: 10.5, color: 'rgba(255,255,255,0.55)' },
+  labelAktif: { fontSize: 10.5, color: 'var(--glow-blue)' },
 }

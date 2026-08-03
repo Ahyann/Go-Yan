@@ -17,6 +17,17 @@
 
   --safe-top:    env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
+
+  --nav-red:        #B8242F;
+  --card-blue:       #123A60;
+  --card-blue-grad-a:#1B4A78;
+  --card-blue-grad-b:#123A60;
+  --blue-border:     #1E5590;
+  --glow-blue:       #5ED0FF;
+  --glow-blue-mid:   #2B9EE8;
+  --glow-blue-dark:  #1B6FB8;
+  --font-judul: 'Bangers', cursive;
+  --font-data:  'JetBrains Mono', monospace;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }

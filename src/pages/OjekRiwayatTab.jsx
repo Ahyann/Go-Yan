@@ -16,8 +16,6 @@ export default function OjekRiwayatTab({ riwayat, onTandaiLunas }) {
     return bulan - 1 === bulanAktif && tahun === tahunAktif
   })
 
-  // Kartu ringkasan pakai TOTAL KESELURUHAN (bukan riwayatBulanIni) —
-  // utang & pendapatan gak boleh "hilang" cuma gara-gara lagi liat bulan lain.
   const belumBayar = riwayat.filter((r) => r.statusBayar === STATUS_BAYAR.BELUM)
   const totalBelumBayar = belumBayar.reduce((jumlah, r) => jumlah + r.tarif, 0)
 
@@ -43,15 +41,15 @@ export default function OjekRiwayatTab({ riwayat, onTandaiLunas }) {
       </div>
 
       <div style={s.ringkasanRow}>
-        <section style={s.tagihanCard}>
+        <section style={s.cardBiru}>
           <div style={s.tagihanLabel}>Belum ditransfer</div>
-          <div style={s.tagihanAngka}>{formatRupiah(totalBelumBayar)}</div>
+          <div style={s.angkaBelum}>{formatRupiah(totalBelumBayar)}</div>
           <div style={s.tagihanSub}>{belumBayar.length} perjalanan</div>
         </section>
 
-        <section style={s.pendapatanCard}>
+        <section style={s.cardBiru}>
           <div style={s.tagihanLabel}>Sudah diterima</div>
-          <div style={s.pendapatanAngka}>{formatRupiah(totalSudahDiterima)}</div>
+          <div style={s.angkaSudah}>{formatRupiah(totalSudahDiterima)}</div>
           <div style={s.tagihanSub}>{sudahBayar.length} perjalanan</div>
         </section>
       </div>
@@ -107,59 +105,59 @@ const s = {
   },
   sectionHead: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' },
   eyebrow: { fontSize: 11, letterSpacing: '0.12em', color: 'var(--text-dim)', marginBottom: 4 },
-  title: { fontSize: 26, letterSpacing: '-0.01em' },
+  title: { fontFamily: 'var(--font-judul)', fontSize: 26, color: 'var(--text)', letterSpacing: '1px', lineHeight: 1.3, marginTop: 2, },
   bulanBtn: {
     fontSize: 13, fontWeight: 600, color: 'var(--text)',
-    background: 'var(--surface)', border: '1px solid var(--line)',
+    background: 'var(--card-blue)', border: '1px solid var(--blue-border)',
     borderRadius: 999, padding: '6px 12px',
   },
   ringkasanRow: { display: 'flex', gap: 10 },
-  tagihanCard: {
+  cardBiru: {
     flex: 1,
-    background: 'linear-gradient(135deg, var(--surface-2), var(--surface))',
-    border: '1px solid var(--web-red)',
-    borderRadius: 'var(--radius)',
+    background: `linear-gradient(160deg, var(--card-blue-grad-a), var(--card-blue-grad-b))`,
+    border: '1px solid var(--blue-border)',
+    borderRadius: 12,
     padding: 16,
   },
-  pendapatanCard: {
-    flex: 1,
-    background: 'linear-gradient(135deg, var(--surface-2), var(--surface))',
-    border: '1px solid var(--signal)',
-    borderRadius: 'var(--radius)',
-    padding: 16,
+  tagihanLabel: { fontSize: 12.5, color: '#9FC3E8', marginBottom: 6 },
+  angkaBelum: {
+    fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 19,
+    color: 'var(--warn)', textShadow: '0 0 6px rgba(251,191,36,0.5)',
   },
-  tagihanLabel: { fontSize: 12.5, color: 'var(--text-dim)', marginBottom: 6 },
-  tagihanAngka: { fontSize: 22, fontWeight: 700, color: 'var(--web-red)', letterSpacing: '-0.02em' },
-  pendapatanAngka: { fontSize: 22, fontWeight: 700, color: 'var(--signal)', letterSpacing: '-0.02em' },
-  tagihanSub: { fontSize: 12, color: 'var(--text-dim)', marginTop: 4 },
+  angkaSudah: {
+    fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 19,
+    color: 'var(--signal)', textShadow: '0 0 6px rgba(74,222,128,0.5)',
+  },
+  tagihanSub: { fontSize: 12, color: '#8FB4DC', marginTop: 4 },
   list: { display: 'flex', flexDirection: 'column', gap: 10 },
   kosong: { fontSize: 13.5, color: 'var(--text-dim)', textAlign: 'center', padding: '20px 0' },
   item: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    background: 'var(--surface)',
-    border: '1px solid var(--line)',
-    borderRadius: 'var(--radius)',
-    padding: '14px 16px',
+    background: 'var(--card-blue)',
+    border: '1px solid var(--blue-border)',
+    borderRadius: 10,
+    padding: '12px 14px',
     gap: 12,
   },
-  itemJam: { fontSize: 14.5, fontWeight: 600 },
-  itemDesc: { fontSize: 13, color: 'var(--text-dim)', marginTop: 2 },
+  itemJam: { fontFamily: 'var(--font-data)', fontSize: 13, color: 'var(--text)' },
+  itemDesc: { fontSize: 11.5, color: '#8FB4DC', marginTop: 2 },
   itemKanan: { display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 },
-  itemTarif: { fontSize: 14.5, fontWeight: 700 },
+  itemTarif: { fontFamily: 'var(--font-data)', fontSize: 13, color: 'var(--text)' },
   lunasBtn: {
-    fontSize: 12,
+    fontSize: 11.5,
     fontWeight: 600,
-    color: 'var(--web-red)',
+    color: 'var(--glow-blue)',
     background: 'transparent',
-    border: '1px solid var(--web-red)',
+    border: '1px solid var(--glow-blue-mid)',
     borderRadius: 999,
     padding: '5px 10px',
   },
   lunasBadge: {
-    fontSize: 11.5,
+    fontFamily: 'var(--font-data)',
+    fontSize: 12,
     color: 'var(--signal)',
-    fontWeight: 600,
+    textShadow: '0 0 5px rgba(74,222,128,0.5)',
   },
 }
