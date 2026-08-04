@@ -2,6 +2,7 @@ import { initializeApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
 import { getFirestore } from 'firebase/firestore'
 import { getDatabase } from 'firebase/database'
+import { getMessaging, isSupported } from 'firebase/messaging'
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FB_API_KEY,
@@ -15,10 +16,15 @@ const firebaseConfig = {
 
 export const isFirebaseConfigured = Boolean(firebaseConfig.apiKey)
 
-// Kalau .env belum diisi, jangan coba nyalain Firebase sama sekali —
-// biar app tetap kebuka & nunjukkin status "belum siap", bukan crash.
 const app = isFirebaseConfigured ? initializeApp(firebaseConfig) : null
 
 export const auth = app ? getAuth(app) : null
 export const db = app ? getFirestore(app) : null
 export const rtdb = app ? getDatabase(app) : null
+
+export async function getMessagingInstance() {
+  if (!app) return null
+  const didukung = await isSupported().catch(() => false)
+  if (!didukung) return null
+  return getMessaging(app)
+}
