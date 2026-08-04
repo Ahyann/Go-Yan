@@ -92,13 +92,6 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true }) {
               position={[lokasiOjek.lat, lokasiOjek.lng]}
               icon={ikonOjek}
               eventHandlers={{
-                click: (e) => {
-                  if (e.target.isPopupOpen()) {
-                    e.target.closePopup()
-                  } else {
-                    e.target.openPopup()
-                  }
-                },
                 popupclose: () => {
                   if (pesan) hapusPesan()
                 },
