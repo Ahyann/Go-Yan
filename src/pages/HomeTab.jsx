@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { STATUS_PERMINTAAN } from '../lib/constants'
 import { useLokasiSayaPenumpang } from '../lib/useLokasiSayaPenumpang'
 import PetaStatus from '../components/PetaStatus.jsx'
@@ -11,6 +12,7 @@ export default function HomeTab({ permintaan }) {
   useEffect(() => {
     if (!sedangJalan && lokasiAktif) {
       berhentiLokasi()
+      setShowToast(false)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sedangJalan])
@@ -21,6 +23,11 @@ export default function HomeTab({ permintaan }) {
     setTimeout(() => setShowToast(false), 2500)
   }
 
+  function handleBerhenti() {
+    berhentiLokasi()
+    setShowToast(false)
+  }
+
   return (
     <div style={s.wrap}>
       <div style={s.headerFloat}>
@@ -28,26 +35,29 @@ export default function HomeTab({ permintaan }) {
         <h1 style={s.title}>Halo, Fajri</h1>
       </div>
 
-      {sedangJalan && (
-        <button
-          style={lokasiAktif ? s.shareIconAktif : s.shareIcon}
-          onClick={lokasiAktif ? berhentiLokasi : handleMulai}
-          aria-label={lokasiAktif ? 'Matikan share lokasi' : 'Share lokasi ke Ahyan'}
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 2C8 2 5 5 5 9c0 5.5 7 13 7 13s7-7.5 7-13c0-4-3-7-7-7z" />
-            <circle cx="12" cy="9" r="2.5" />
-          </svg>
-        </button>
-      )}
-      {sedangJalan && showToast && (
-        <div style={s.statusAktifFloat}>Kamu menyalakan live location</div>
-      )}
-      {sedangJalan && lokasiError && (
-        <div style={s.lokasiErrorFloat}>{lokasiError}</div>
-      )}
-
       <PetaStatus permintaan={permintaan} />
+
+      {sedangJalan && createPortal(
+        <>
+          <button
+            style={lokasiAktif ? s.shareIconAktif : s.shareIcon}
+            onClick={lokasiAktif ? handleBerhenti : handleMulai}
+            aria-label={lokasiAktif ? 'Matikan share lokasi' : 'Share lokasi ke Ahyan'}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 2C8 2 5 5 5 9c0 5.5 7 13 7 13s7-7.5 7-13c0-4-3-7-7-7z" />
+              <circle cx="12" cy="9" r="2.5" />
+            </svg>
+          </button>
+          {showToast && (
+            <div style={s.statusAktifFloat}>Kamu menyalakan live location</div>
+          )}
+          {lokasiError && (
+            <div style={s.lokasiErrorFloat}>{lokasiError}</div>
+          )}
+        </>,
+        document.body
+      )}
     </div>
   )
 }
@@ -80,23 +90,22 @@ const s = {
     textShadow: '0 1px 6px rgba(0,0,0,0.8)',
   },
   shareIcon: {
-    position: 'absolute',
+    position: 'fixed',
     top: 'calc(var(--safe-top) + 86px)',
     right: 10,
     width: 36,
     height: 36,
     borderRadius: 8,
-    background: '#fff',
+    background: '#ffffff',
     color: '#333',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     boxShadow: '0 1px 5px rgba(0,0,0,0.4)',
-    zIndex: 1000,
-    isolation: 'isolate',
+    zIndex: 99999,
   },
   shareIconAktif: {
-    position: 'absolute',
+    position: 'fixed',
     top: 'calc(var(--safe-top) + 86px)',
     right: 10,
     width: 36,
@@ -108,34 +117,33 @@ const s = {
     alignItems: 'center',
     justifyContent: 'center',
     boxShadow: '0 0 10px #B8242F, 0 1px 5px rgba(0,0,0,0.4)',
-    zIndex: 1000,
-    isolation: 'isolate',
+    zIndex: 99999,
   },
   statusAktifFloat: {
-    position: 'absolute',
+    position: 'fixed',
     top: 'calc(var(--safe-top) + 128px)',
     right: 10,
     maxWidth: 150,
-    background: 'rgba(184,36,47,0.92)',
+    background: '#B8242F',
     color: '#fff',
     fontSize: 11,
     fontWeight: 600,
     padding: '6px 10px',
     borderRadius: 8,
     textAlign: 'center',
-    zIndex: 1000,
+    zIndex: 99999,
   },
   lokasiErrorFloat: {
-    position: 'absolute',
+    position: 'fixed',
     top: 'calc(var(--safe-top) + 128px)',
     right: 10,
     maxWidth: 160,
-    background: 'rgba(11,14,26,0.95)',
-    color: 'var(--web-red)',
+    background: '#0B0E1A',
+    color: '#E23636',
     fontSize: 11,
     padding: '6px 8px',
     borderRadius: 8,
     textAlign: 'center',
-    zIndex: 1000,
+    zIndex: 99999,
   },
 }
