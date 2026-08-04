@@ -167,8 +167,12 @@ const s = {
   },
   lunasBadge: {
     fontFamily: 'var(--font-data)',
-    fontSize: 12,
+    fontSize: 11.5,
+    fontWeight: 600,
     color: 'var(--signal)',
     textShadow: '0 0 5px rgba(74,222,128,0.5)',
+    padding: '5px 10px',
+    borderRadius: 999,
+    border: '1px solid transparent',
   },
 }
