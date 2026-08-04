@@ -22,6 +22,7 @@ const ikonOjek = L.divIcon({
   </div>`,
   iconSize: [32, 32],
   iconAnchor: [16, 16],
+  popupAnchor: [42, 0],
 })
 
 function GeserKePosisi({ lat, lng }) {
@@ -73,7 +74,15 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true }) {
         {adaLokasiLive && (
           <>
             <GeserKePosisi lat={lokasiOjek.lat} lng={lokasiOjek.lng} />
-            <Marker position={[lokasiOjek.lat, lokasiOjek.lng]} icon={ikonOjek}>
+            <Marker
+              position={[lokasiOjek.lat, lokasiOjek.lng]}
+              icon={ikonOjek}
+              eventHandlers={{
+                popupopen: (e) => {
+                  setTimeout(() => e.target.closePopup(), 2000)
+                },
+              }}
+            >
               <Popup closeButton={false}>
                 <div style={s.bubbleWrap}>
                   <span style={s.bubbleText}>Otw dutzz!</span>
@@ -137,19 +146,21 @@ const s = {
     backgroundSize: '100% 100%',
     backgroundRepeat: 'no-repeat',
     imageRendering: 'pixelated',
-    width: 170,
-    height: 85,
+    width: 102,
+    height: 51,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingBottom: 16,
+    paddingBottom: 8,
+    paddingLeft: 6,
+    paddingRight: 6,
   },
   bubbleText: {
     fontFamily: 'var(--font-pixel)',
-    fontSize: 11,
+    fontSize: 9,
     color: '#0B0E1A',
     textAlign: 'center',
-    lineHeight: 1.4,
+    lineHeight: 1.2,
   },
   badgeIdle: {
     background: 'rgba(11,14,26,0.9)', color: 'var(--text-dim)', fontSize: 13,
