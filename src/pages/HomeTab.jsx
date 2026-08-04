@@ -92,7 +92,7 @@ const s = {
   shareIcon: {
     position: 'fixed',
     top: 'calc(var(--safe-top) + 86px)',
-    right: 10,
+    right: 'calc(max(0px, (100vw - 480px) / 2) + 10px)',
     width: 36,
     height: 36,
     borderRadius: 8,
@@ -107,7 +107,7 @@ const s = {
   shareIconAktif: {
     position: 'fixed',
     top: 'calc(var(--safe-top) + 86px)',
-    right: 10,
+    right: 'calc(max(0px, (100vw - 480px) / 2) + 10px)',
     width: 36,
     height: 36,
     borderRadius: 8,
@@ -122,7 +122,7 @@ const s = {
   statusAktifFloat: {
     position: 'fixed',
     top: 'calc(var(--safe-top) + 128px)',
-    right: 10,
+    right: 'calc(max(0px, (100vw - 480px) / 2) + 10px)',
     maxWidth: 150,
     background: '#B8242F',
     color: '#fff',
@@ -136,7 +136,7 @@ const s = {
   lokasiErrorFloat: {
     position: 'fixed',
     top: 'calc(var(--safe-top) + 128px)',
-    right: 10,
+    right: 'calc(max(0px, (100vw - 480px) / 2) + 10px)',
     maxWidth: 160,
     background: '#0B0E1A',
     color: '#E23636',
