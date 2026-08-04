@@ -120,8 +120,8 @@ const s = {
   map: { height: '100%', width: '100%' },
   lokasiIcon: {
     position: 'absolute',
-    top: 100,
-    right: 16,
+    top: 88,
+    right: 10,
     width: 32,
     height: 32,
     borderRadius: 8,
@@ -135,8 +135,8 @@ const s = {
   },
   lokasiIconAktif: {
     position: 'absolute',
-    top: 100,
-    right: 16,
+    top: 88,
+    right: 10,
     width: 32,
     height: 32,
     borderRadius: 8,
