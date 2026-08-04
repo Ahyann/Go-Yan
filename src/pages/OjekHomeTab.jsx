@@ -43,7 +43,13 @@ export default function OjekHomeTab({ permintaan, onTerima, onTolak, onSelesai }
 
       <section style={s.mainCard}>
         <div style={s.mapArea}>
-          <PetaLokasiPenumpang lokasi={lokasiPenumpang} teksKosong={teksKosongPeta} isiPenuh />
+          <PetaLokasiPenumpang
+            lokasi={lokasiPenumpang}
+            teksKosong={teksKosongPeta}
+            isiPenuh
+            lokasiAktif={sedangJalan ? lokasiAktif : undefined}
+            onToggleLokasi={sedangJalan ? (lokasiAktif ? berhentiLokasi : mulaiLokasi) : undefined}
+          />
         </div>
 
         {adaPermintaanMasuk && (
@@ -78,12 +84,6 @@ export default function OjekHomeTab({ permintaan, onTerima, onTolak, onSelesai }
               <button style={s.pesanBtn} onClick={handleKirimPesan}>Kirim</button>
             </div>
 
-            <button
-              style={lokasiAktif ? s.lokasiBtnAktif : s.lokasiBtn}
-              onClick={lokasiAktif ? berhentiLokasi : mulaiLokasi}
-            >
-              {lokasiAktif ? '● Live location aktif — tekan buat matikan' : 'Nyalain live location'}
-            </button>
             {lokasiError && <div style={s.lokasiError}>{lokasiError}</div>}
 
             <button style={s.selesaiBtn} onClick={handleSelesai}>
@@ -189,25 +189,6 @@ const s = {
     fontWeight: 600,
     padding: '10px 16px',
     borderRadius: 10,
-  },
-  lokasiBtn: {
-    background: 'rgba(255,255,255,0.06)',
-    color: '#8FB4DC',
-    fontSize: 13.5,
-    fontWeight: 600,
-    padding: '12px',
-    borderRadius: 999,
-    border: '1px solid var(--blue-border)',
-  },
-  lokasiBtnAktif: {
-    background: 'rgba(94,208,255,0.12)',
-    color: 'var(--glow-blue)',
-    fontSize: 13.5,
-    fontWeight: 600,
-    padding: '12px',
-    borderRadius: 999,
-    border: '1px solid var(--glow-blue-mid)',
-    textShadow: '0 0 4px var(--glow-blue-mid)',
   },
   lokasiError: { fontSize: 12, color: 'var(--web-red)', textAlign: 'center' },
   selesaiBtn: {

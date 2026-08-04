@@ -1,4 +1,4 @@
-import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, ZoomControl, useMap } from 'react-leaflet'
 import { useEffect } from 'react'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
@@ -38,9 +38,16 @@ function GeserKePosisi({ lat, lng }) {
   return null
 }
 
-export default function PetaLokasiPenumpang({ lokasi, teksKosong = 'Fajri belum nyalain share lokasi', isiPenuh = false }) {
+export default function PetaLokasiPenumpang({
+  lokasi,
+  teksKosong = 'Fajri belum nyalain share lokasi',
+  isiPenuh = false,
+  lokasiAktif,
+  onToggleLokasi,
+}) {
   const lokasiSaya = useLokasiOjek()
   const pusat = lokasi ? [lokasi.lat, lokasi.lng] : PUSAT_DEFAULT
+  const tampilkanTombolLokasi = typeof onToggleLokasi === 'function'
 
   return (
     <div style={isiPenuh ? s.wrapPolos : s.wrap}>
@@ -53,6 +60,8 @@ export default function PetaLokasiPenumpang({ lokasi, teksKosong = 'Fajri belum 
         dragging={true}
         scrollWheelZoom={true}
       >
+        <ZoomControl position="topright" />
+
         <TileLayer
           url={`https://api.maptiler.com/maps/streets-v4-dark/{z}/{x}/{y}.png?key=${import.meta.env.VITE_MAPTILER_KEY}`}
         />
@@ -68,6 +77,19 @@ export default function PetaLokasiPenumpang({ lokasi, teksKosong = 'Fajri belum 
           <Marker position={[lokasiSaya.lat, lokasiSaya.lng]} icon={ikonSaya} />
         )}
       </MapContainer>
+
+      {tampilkanTombolLokasi && (
+        <button
+          style={lokasiAktif ? s.lokasiIconAktif : s.lokasiIcon}
+          onClick={onToggleLokasi}
+          aria-label={lokasiAktif ? 'Matikan live location' : 'Nyalain live location'}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 2C8 2 5 5 5 9c0 5.5 7 13 7 13s7-7.5 7-13c0-4-3-7-7-7z" />
+            <circle cx="12" cy="9" r="2.5" />
+          </svg>
+        </button>
+      )}
 
       {!lokasi && (
         <div style={s.badgeKosong}>{teksKosong}</div>
@@ -96,6 +118,36 @@ const s = {
     height: '100%',
   },
   map: { height: '100%', width: '100%' },
+  lokasiIcon: {
+    position: 'absolute',
+    top: 60,
+    right: 10,
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    background: '#fff',
+    color: '#333',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    boxShadow: '0 1px 5px rgba(0,0,0,0.4)',
+    zIndex: 1000,
+  },
+  lokasiIconAktif: {
+    position: 'absolute',
+    top: 60,
+    right: 10,
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    background: '#B8242F',
+    color: '#fff',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    boxShadow: '0 0 10px #B8242F, 0 1px 5px rgba(0,0,0,0.4)',
+    zIndex: 1000,
+  },
   badgeKosong: {
     position: 'absolute',
     left: 12,
