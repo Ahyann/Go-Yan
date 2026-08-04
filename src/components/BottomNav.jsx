@@ -1,4 +1,4 @@
-export default function BottomNav({ tabAktif, onTabChange, onGoClick, bisaGo = true }) {
+export default function BottomNav({ tabAktif, onTabChange, onGoClick, modeGo = 'go' }) {
   return (
     <nav style={s.nav}>
       <IconBtn label="Home" aktif={tabAktif === 'home'} onClick={() => onTabChange('home')}>
@@ -11,12 +11,22 @@ export default function BottomNav({ tabAktif, onTabChange, onGoClick, bisaGo = t
       </IconBtn>
 
       <button
-        style={bisaGo ? s.goBtn : s.goBtnDisabled}
-        onClick={bisaGo ? onGoClick : undefined}
-        disabled={!bisaGo}
-        aria-label={bisaGo ? 'Kirim sinyal jemput atau antar' : 'Masih ada perjalanan aktif'}
+        style={modeGo === 'disabled' ? s.goBtnDisabled : modeGo === 'batal' ? s.goBtnBatal : s.goBtn}
+        onClick={modeGo === 'disabled' ? undefined : onGoClick}
+        disabled={modeGo === 'disabled'}
+        aria-label={
+          modeGo === 'go' ? 'Kirim sinyal jemput atau antar'
+          : modeGo === 'batal' ? 'Batalkan permintaan'
+          : 'Masih ada perjalanan aktif'
+        }
       >
-        GO
+        {modeGo === 'batal' ? (
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+            <path d="M6 6l12 12M18 6L6 18" />
+          </svg>
+        ) : (
+          'GO'
+        )}
       </button>
 
       <IconBtn label="Riwayat" aktif={tabAktif === 'riwayat'} onClick={() => onTabChange('riwayat')}>
@@ -89,6 +99,22 @@ const s = {
     marginTop: -30,
     boxShadow: '0 0 10px var(--glow-blue), 0 0 22px var(--glow-blue-mid)',
     border: '3px solid var(--nav-red)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  goBtnBatal: {
+    width: 58,
+    height: 58,
+    borderRadius: '50%',
+    background: 'var(--bg)',
+    color: 'var(--web-red)',
+    marginTop: -30,
+    boxShadow: '0 0 10px var(--web-red), 0 0 22px rgba(226,54,54,0.5)',
+    border: '3px solid var(--nav-red)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   goBtnDisabled: {
     width: 58,
@@ -103,5 +129,8 @@ const s = {
     marginTop: -30,
     border: '3px solid var(--nav-red)',
     cursor: 'not-allowed',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 }

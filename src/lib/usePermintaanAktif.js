@@ -37,5 +37,9 @@ export function usePermintaanAktif() {
     await deleteDoc(REF)
   }
 
-  return { permintaan, kirimGo, terima, tolak, selesai }
+  async function batal() {
+      await deleteDoc(REF)
+    }
+
+  return { permintaan, kirimGo, terima, tolak, selesai, batal }
 }

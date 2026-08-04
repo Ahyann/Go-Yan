@@ -17,7 +17,7 @@ export default function App() {
 
 function AppIsi() {
   const { user, role, logout } = useAuth()
-  const { permintaan, kirimGo, terima, tolak, selesai } = usePermintaanAktif()
+  const { permintaan, kirimGo, terima, tolak, selesai, batal } = usePermintaanAktif()
   const { riwayat, tambahRiwayat, tandaiLunas, hapusRiwayat } = useRiwayat()
   const { jadwal: jadwalMingguan, simpanJadwal } = useJadwalMingguan()
 
@@ -77,6 +77,7 @@ function AppIsi() {
           jadwalMingguan={jadwalMingguan}
           simpanJadwal={simpanJadwal}
           kirimGo={kirimGo}
+          onBatal={batal}
         />
       )}
     </>

@@ -14,13 +14,24 @@ export default function PenumpangView({
   jadwalMingguan,
   simpanJadwal,
   kirimGo,
+  onBatal,
 }) {
   const [tabAktif, setTabAktif] = useState('home')
   const [showGo, setShowGo] = useState(false)
 
-  const sedangAktif =
-    permintaanAktif?.status === STATUS_PERMINTAAN.MENUNGGU ||
-    permintaanAktif?.status === STATUS_PERMINTAAN.DITERIMA
+  const statusSekarang = permintaanAktif?.status
+
+  let modeGo = 'go'
+  if (statusSekarang === STATUS_PERMINTAAN.MENUNGGU) modeGo = 'batal'
+  else if (statusSekarang === STATUS_PERMINTAAN.DITERIMA) modeGo = 'disabled'
+
+  function handleGoButtonClick() {
+    if (modeGo === 'go') {
+      setShowGo(true)
+    } else if (modeGo === 'batal') {
+      onBatal()
+    }
+  }
 
   async function handleKirimGo({ aksi, where, waktu }) {
     playSpiderSound()
@@ -42,8 +53,8 @@ export default function PenumpangView({
       <BottomNav
         tabAktif={tabAktif}
         onTabChange={setTabAktif}
-        onGoClick={() => setShowGo(true)}
-        bisaGo={!sedangAktif}
+        onGoClick={handleGoButtonClick}
+        modeGo={modeGo}
       />
 
       {showGo && <GoPopup onClose={() => setShowGo(false)} onSubmit={handleKirimGo} />}
