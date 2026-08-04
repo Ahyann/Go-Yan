@@ -3,7 +3,7 @@ import { AuthProvider, useAuth } from './context/AuthContext.jsx'
 import { usePermintaanAktif } from './lib/usePermintaanAktif'
 import { useRiwayat } from './lib/useRiwayat'
 import { useJadwalMingguan } from './lib/useJadwalMingguan'
-import { mintaIzinDanSimpanToken } from './lib/notifikasi'
+import { mintaIzinDanSimpanToken, dengarkanNotifForeground } from './lib/notifikasi'
 import LoginPage from './pages/LoginPage.jsx'
 import OjekView from './pages/OjekView.jsx'
 import PenumpangView from './pages/PenumpangView.jsx'
@@ -28,6 +28,10 @@ function AppIsi() {
     if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
       setNotifOjek('ok')
     }
+
+    dengarkanNotifForeground((payload) => {
+      console.log('Notif diterima saat app kebuka:', payload)
+    })
   }, [])
 
   async function handleAktifkanNotifOjek() {
