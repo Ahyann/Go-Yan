@@ -1,11 +1,14 @@
 import { STATUS_PERMINTAAN, AKSI } from '../lib/constants'
 import { playSpiderSound } from '../lib/sound'
 import { useLokasiSaya } from '../lib/useLokasiSaya'
+import { useLokasiPenumpang } from '../lib/useLokasiPenumpang'
+import PetaLokasiPenumpang from '../components/PetaLokasiPenumpang.jsx'
 
 export default function OjekHomeTab({ permintaan, onTerima, onTolak, onSelesai }) {
   const adaPermintaanMasuk = permintaan?.status === STATUS_PERMINTAAN.MENUNGGU
   const sedangJalan = permintaan?.status === STATUS_PERMINTAAN.DITERIMA
   const { aktif: lokasiAktif, error: lokasiError, mulai: mulaiLokasi, berhenti: berhentiLokasi } = useLokasiSaya()
+  const lokasiPenumpang = useLokasiPenumpang()
 
   function handleTerima() {
     playSpiderSound()
@@ -45,6 +48,8 @@ export default function OjekHomeTab({ permintaan, onTerima, onTolak, onSelesai }
             <span style={s.dotHijau} />
             Sedang {permintaan.aksi === AKSI.JEMPUT ? 'menjemput' : 'mengantar'} Fajri · {permintaan.where}
           </div>
+
+          <PetaLokasiPenumpang lokasi={lokasiPenumpang} />
 
           <button
             style={lokasiAktif ? s.lokasiBtnAktif : s.lokasiBtn}
