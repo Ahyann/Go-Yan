@@ -11,6 +11,7 @@ export default function HomeTab({ permintaan }) {
     if (!sedangJalan && lokasiAktif) {
       berhentiLokasi()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sedangJalan])
 
   return (
@@ -31,6 +32,9 @@ export default function HomeTab({ permintaan }) {
             <circle cx="12" cy="9" r="2.5" />
           </svg>
         </button>
+      )}
+      {sedangJalan && lokasiAktif && (
+        <div style={s.statusAktifFloat}>Kamu menyalakan live location</div>
       )}
       {sedangJalan && lokasiError && (
         <div style={s.lokasiErrorFloat}>{lokasiError}</div>
@@ -95,7 +99,21 @@ const s = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    boxShadow: '0 0 10px var(--glow-blue), 0 1px 5px rgba(0,0,0,0.4)',
+    boxShadow: '0 0 10px var(--nav-red), 0 1px 5px rgba(0,0,0,0.4)',
+    zIndex: 1000,
+  },
+  statusAktifFloat: {
+    position: 'absolute',
+    top: 'calc(var(--safe-top) + 128px)',
+    right: 10,
+    maxWidth: 150,
+    background: 'rgba(184,36,47,0.92)',
+    color: '#fff',
+    fontSize: 11,
+    fontWeight: 600,
+    padding: '6px 10px',
+    borderRadius: 8,
+    textAlign: 'center',
     zIndex: 1000,
   },
   lokasiErrorFloat: {
