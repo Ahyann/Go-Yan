@@ -92,7 +92,7 @@ const s = {
     position: 'absolute',
     left: 12,
     right: 12,
-    bottom: 60,
+    bottom: 24,
     background: 'rgba(11,14,26,0.9)',
     color: 'var(--text-dim)',
     fontSize: 13,
