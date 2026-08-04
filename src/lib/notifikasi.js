@@ -52,12 +52,12 @@ export function dengarkanNotifForeground(callback) {
   })
 }
 
-export async function kirimNotifikasi(targetRole, title, body) {
+export async function kirimNotifikasi(targetRole, title, body, type = 'umum') {
   try {
     await fetch('/api/send-notification', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ targetRole, title, body }),
+      body: JSON.stringify({ targetRole, title, body, type }),
     })
   } catch (err) {
     console.error('Gagal kirim notifikasi:', err)

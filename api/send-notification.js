@@ -14,7 +14,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  const { targetRole, title, body } = req.body
+  const { targetRole, title, body, type = 'umum' } = req.body
 
   if (!targetRole || !title || !body) {
     return res.status(400).json({ error: 'targetRole, title, dan body wajib diisi' })
@@ -41,7 +41,7 @@ export default async function handler(req, res) {
     const messaging = getMessaging()
     const hasil = await messaging.sendEachForMulticast({
       tokens,
-      data: { title, body },
+      data: { title, body, type },
       webpush: {
         fcmOptions: {
           link: 'https://go-yan.vercel.app',

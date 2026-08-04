@@ -13,7 +13,13 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging()
 
-messaging.onBackgroundMessage((payload) => {
+messaging.onBackgroundMessage(async (payload) => {
+  if (payload.data?.type === 'pesan') {
+    const semuaClient = await self.clients.matchAll({ type: 'window', includeUncontrolled: true })
+    const adaYangKebuka = semuaClient.some((c) => c.visibilityState === 'visible')
+    if (adaYangKebuka) return
+  }
+
   const judul = payload.data?.title || 'Go-Yan'
   const opsi = {
     body: payload.data?.body || '',

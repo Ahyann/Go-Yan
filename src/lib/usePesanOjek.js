@@ -18,7 +18,7 @@ export function usePesanOjek() {
   async function kirimPesan(teks) {
     if (!teks.trim()) return
     await set(PESAN_REF, { teks: teks.trim(), dibuatPada: Date.now() })
-    kirimNotifikasi('penumpang', 'Pesan dari Ahyan 🕸️', teks.trim())
+    kirimNotifikasi('penumpang', 'Pesan dari Ahyan 🕸️', teks.trim(), 'pesan')
   }
 
   async function hapusPesan() {
