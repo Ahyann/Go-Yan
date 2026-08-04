@@ -18,7 +18,7 @@ export default function App() {
 function AppIsi() {
   const { user, role, logout } = useAuth()
   const { permintaan, kirimGo, terima, tolak, selesai } = usePermintaanAktif()
-  const { riwayat, tambahRiwayat, tandaiLunas } = useRiwayat()
+  const { riwayat, tambahRiwayat, tandaiLunas, hapusRiwayat } = useRiwayat()
   const { jadwal: jadwalMingguan, simpanJadwal } = useJadwalMingguan()
 
   async function selesaikanRide() {
@@ -64,6 +64,7 @@ function AppIsi() {
             onTolak={tolak}
             onSelesai={selesaikanRide}
             onTandaiLunas={tandaiLunas}
+            onHapusRiwayat={hapusRiwayat}
           />
           <button style={s.logoutFloat} onClick={logout} aria-label="Keluar">
             ⎋
