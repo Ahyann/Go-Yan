@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { STATUS_BAYAR, formatRupiah } from '../lib/constants'
 import MonthPickerPopup from '../components/MonthPickerPopup.jsx'
+import SwipeableItem from '../components/SwipeableItem.jsx'
 
 const NAMA_BULAN = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember']
 
-export default function OjekRiwayatTab({ riwayat, onTandaiLunas }) {
+export default function OjekRiwayatTab({ riwayat, onTandaiLunas, onHapusRiwayat }) {
   const [showBulan, setShowBulan] = useState(false)
 
   const sekarang = new Date()
@@ -59,24 +60,26 @@ export default function OjekRiwayatTab({ riwayat, onTandaiLunas }) {
           <div style={s.kosong}>Belum ada riwayat bulan ini.</div>
         ) : (
           riwayatBulanIni.map((r) => (
-            <div key={r.id} style={s.item}>
-              <div>
-                <div style={s.itemJam}>{r.jam} · {r.tanggal.split('-')[2]}</div>
-                <div style={s.itemDesc}>
-                  {r.aksi === 'jemput' ? 'Jemput' : 'Antar'} · {r.where}
+            <SwipeableItem key={r.id} onDelete={() => onHapusRiwayat(r.id)}>
+              <div style={s.item}>
+                <div>
+                  <div style={s.itemJam}>{r.jam} · {r.tanggal.split('-')[2]}</div>
+                  <div style={s.itemDesc}>
+                    {r.aksi === 'jemput' ? 'Jemput' : 'Antar'} · {r.where}
+                  </div>
+                </div>
+                <div style={s.itemKanan}>
+                  <div style={s.itemTarif}>{formatRupiah(r.tarif)}</div>
+                  {r.statusBayar === STATUS_BAYAR.BELUM ? (
+                    <button style={s.lunasBtn} onClick={() => onTandaiLunas(r.id)}>
+                      Tandai Lunas
+                    </button>
+                  ) : (
+                    <div style={s.lunasBadge}>Lunas</div>
+                  )}
                 </div>
               </div>
-              <div style={s.itemKanan}>
-                <div style={s.itemTarif}>{formatRupiah(r.tarif)}</div>
-                {r.statusBayar === STATUS_BAYAR.BELUM ? (
-                  <button style={s.lunasBtn} onClick={() => onTandaiLunas(r.id)}>
-                    Tandai Lunas
-                  </button>
-                ) : (
-                  <div style={s.lunasBadge}>Lunas</div>
-                )}
-              </div>
-            </div>
+            </SwipeableItem>
           ))
         )}
       </div>
@@ -105,7 +108,15 @@ const s = {
   },
   sectionHead: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' },
   eyebrow: { fontSize: 11, letterSpacing: '0.12em', color: 'var(--text-dim)', marginBottom: 4 },
-  title: { fontFamily: 'var(--font-judul)', fontSize: 26, color: 'var(--text)', letterSpacing: '1px', lineHeight: 1.3, marginTop: 2, },
+  title: {
+    fontFamily: 'var(--font-judul)',
+    fontSize: 24,
+    color: 'var(--text)',
+    letterSpacing: '1px',
+    lineHeight: 1.3,
+    marginTop: 2,
+    whiteSpace: 'nowrap',
+  },
   bulanBtn: {
     fontSize: 13, fontWeight: 600, color: 'var(--text)',
     background: 'var(--card-blue)', border: '1px solid var(--blue-border)',

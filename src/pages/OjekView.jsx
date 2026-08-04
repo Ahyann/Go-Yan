@@ -12,6 +12,7 @@ export default function OjekView({
   onTolak,
   onSelesai,
   onTandaiLunas,
+  onHapusRiwayat,
 }) {
   const [tabAktif, setTabAktif] = useState('home')
 
@@ -28,7 +29,7 @@ export default function OjekView({
         )}
         {tabAktif === 'jadwal' && <OjekJadwalTab jadwalMingguan={jadwalMingguan} />}
         {tabAktif === 'riwayat' && (
-          <OjekRiwayatTab riwayat={riwayat} onTandaiLunas={onTandaiLunas} />
+          <OjekRiwayatTab riwayat={riwayat} onTandaiLunas={onTandaiLunas} onHapusRiwayat={onHapusRiwayat} />
         )}
       </div>
 
