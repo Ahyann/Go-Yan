@@ -3,6 +3,7 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { STATUS_PERMINTAAN } from '../lib/constants'
 import { useLokasiOjek } from '../lib/useLokasiOjek'
+import { usePesanOjek } from '../lib/usePesanOjek'
 
 const PUSAT_DEFAULT = [-6.2088, 106.8456]
 
@@ -49,6 +50,7 @@ function IkonLabaLaba() {
 
 export default function PetaStatus({ permintaan, tampilkanOverlay = true }) {
   const lokasiOjek = useLokasiOjek()
+  const { pesan, hapusPesan } = usePesanOjek()
   const adaLokasiLive = lokasiOjek && permintaan?.status === STATUS_PERMINTAAN.DITERIMA
 
   return (
@@ -81,11 +83,14 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true }) {
                 popupopen: (e) => {
                   setTimeout(() => e.target.closePopup(), 2000)
                 },
+                popupclose: () => {
+                  if (pesan) hapusPesan()
+                },
               }}
             >
               <Popup closeButton={false}>
                 <div style={s.bubbleWrap}>
-                  <span style={s.bubbleText}>Otw dutzz!</span>
+                  <span style={s.bubbleText}>{pesan?.teks || 'Otw dutzz!'}</span>
                 </div>
               </Popup>
             </Marker>

@@ -1,7 +1,9 @@
+import { useState } from 'react'
 import { STATUS_PERMINTAAN, AKSI } from '../lib/constants'
 import { playSpiderSound } from '../lib/sound'
 import { useLokasiSaya } from '../lib/useLokasiSaya'
 import { useLokasiPenumpang } from '../lib/useLokasiPenumpang'
+import { usePesanOjek } from '../lib/usePesanOjek'
 import PetaLokasiPenumpang from '../components/PetaLokasiPenumpang.jsx'
 
 export default function OjekHomeTab({ permintaan, onTerima, onTolak, onSelesai }) {
@@ -9,6 +11,14 @@ export default function OjekHomeTab({ permintaan, onTerima, onTolak, onSelesai }
   const sedangJalan = permintaan?.status === STATUS_PERMINTAAN.DITERIMA
   const { aktif: lokasiAktif, error: lokasiError, mulai: mulaiLokasi, berhenti: berhentiLokasi } = useLokasiSaya()
   const lokasiPenumpang = useLokasiPenumpang()
+  const { kirimPesan } = usePesanOjek()
+  const [teksPesan, setTeksPesan] = useState('')
+
+  function handleKirimPesan() {
+    if (!teksPesan.trim()) return
+    kirimPesan(teksPesan)
+    setTeksPesan('')
+  }
 
   function handleTerima() {
     playSpiderSound()
@@ -55,6 +65,16 @@ export default function OjekHomeTab({ permintaan, onTerima, onTolak, onSelesai }
             <div style={s.jalanRow}>
               <span style={s.dotHijau} />
               Sedang {permintaan.aksi === AKSI.JEMPUT ? 'menjemput' : 'mengantar'} Fajri · {permintaan.where}
+            </div>
+
+            <div style={s.pesanRow}>
+              <input
+                style={s.pesanInput}
+                value={teksPesan}
+                onChange={(e) => setTeksPesan(e.target.value)}
+                placeholder="Kirim pesan ke bubble Fajri..."
+              />
+              <button style={s.pesanBtn} onClick={handleKirimPesan}>Kirim</button>
             </div>
 
             <button
@@ -150,6 +170,24 @@ const s = {
   dotHijau: {
     width: 7, height: 7, borderRadius: '50%', background: 'var(--signal)',
     display: 'inline-block', marginRight: 8, boxShadow: '0 0 5px var(--signal)',
+  },
+  pesanRow: { display: 'flex', gap: 8 },
+  pesanInput: {
+    flex: 1,
+    background: 'rgba(255,255,255,0.06)',
+    border: '1px solid var(--blue-border)',
+    borderRadius: 10,
+    padding: '10px 12px',
+    fontSize: 14,
+    color: 'var(--text)',
+  },
+  pesanBtn: {
+    background: 'var(--glow-blue-mid)',
+    color: '#fff',
+    fontSize: 13.5,
+    fontWeight: 600,
+    padding: '10px 16px',
+    borderRadius: 10,
   },
   lokasiBtn: {
     background: 'rgba(255,255,255,0.06)',
