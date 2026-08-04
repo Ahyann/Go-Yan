@@ -39,6 +39,12 @@ export default function OjekView({
 }
 
 const s = {
-  appWrap: { display: 'flex', flexDirection: 'column', height: '100dvh' },
+  appWrap: {
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100dvh',
+    maxWidth: 480,
+    margin: '0 auto',
+  },
   stageScroll: { flex: 1, overflowY: 'auto' },
 }
