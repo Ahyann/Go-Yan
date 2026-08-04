@@ -44,7 +44,7 @@ function IkonLabaLaba() {
   )
 }
 
-export default function PetaStatus({ permintaan, tampilkanBadgeIdle = true }) {
+export default function PetaStatus({ permintaan, tampilkanOverlay = true }) {
   const lokasiOjek = useLokasiOjek()
   const adaLokasiLive = lokasiOjek && permintaan?.status === STATUS_PERMINTAAN.DITERIMA
 
@@ -78,29 +78,31 @@ export default function PetaStatus({ permintaan, tampilkanBadgeIdle = true }) {
 
       <div style={s.tint} />
 
-      <div style={s.overlay}>
-        {!permintaan && tampilkanBadgeIdle && <div style={s.badgeIdle}>Belum ada perjalanan aktif</div>}
+      {tampilkanOverlay && (
+        <div style={s.overlay}>
+          {!permintaan && <div style={s.badgeIdle}>Belum ada perjalanan aktif</div>}
 
-        {permintaan?.status === STATUS_PERMINTAAN.MENUNGGU && (
-          <div style={s.badgeMenunggu}>
-            <IkonLabaLaba />
-            <div style={s.menungguText}>
-              <span style={s.dotKuning} />Menunggu Ahyan menerima…
+          {permintaan?.status === STATUS_PERMINTAAN.MENUNGGU && (
+            <div style={s.badgeMenunggu}>
+              <IkonLabaLaba />
+              <div style={s.menungguText}>
+                <span style={s.dotKuning} />Menunggu Ahyan menerima…
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {permintaan?.status === STATUS_PERMINTAAN.DITOLAK && (
-          <div style={s.badgeTolak}>Ahyan belum bisa sekarang — coba GO lagi nanti</div>
-        )}
+          {permintaan?.status === STATUS_PERMINTAAN.DITOLAK && (
+            <div style={s.badgeTolak}>Ahyan belum bisa sekarang — coba GO lagi nanti</div>
+          )}
 
-        {permintaan?.status === STATUS_PERMINTAAN.DITERIMA && (
-          <div style={s.badgeLive}>
-            <span style={s.dotHijau} />
-            {adaLokasiLive ? 'OTWWW!!' : `Ahyan otw ${permintaan.aksi === 'jemput' ? 'menjemput' : 'mengantar'} kamu`}
-          </div>
-        )}
-      </div>
+          {permintaan?.status === STATUS_PERMINTAAN.DITERIMA && (
+            <div style={s.badgeLive}>
+              <span style={s.dotHijau} />
+              {adaLokasiLive ? 'OTWWW!!' : `Ahyan otw ${permintaan.aksi === 'jemput' ? 'menjemput' : 'mengantar'} kamu`}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   )
 }
