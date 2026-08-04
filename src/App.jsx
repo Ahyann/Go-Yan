@@ -1,7 +1,9 @@
+import { useState } from 'react'
 import { AuthProvider, useAuth } from './context/AuthContext.jsx'
 import { usePermintaanAktif } from './lib/usePermintaanAktif'
 import { useRiwayat } from './lib/useRiwayat'
 import { useJadwalMingguan } from './lib/useJadwalMingguan'
+import { mintaIzinDanSimpanToken } from './lib/notifikasi'
 import LoginPage from './pages/LoginPage.jsx'
 import OjekView from './pages/OjekView.jsx'
 import PenumpangView from './pages/PenumpangView.jsx'
@@ -20,6 +22,13 @@ function AppIsi() {
   const { permintaan, kirimGo, terima, tolak, selesai, batal } = usePermintaanAktif()
   const { riwayat, tambahRiwayat, tandaiLunas, hapusRiwayat } = useRiwayat()
   const { jadwal: jadwalMingguan, simpanJadwal } = useJadwalMingguan()
+  const [notifOjek, setNotifOjek] = useState('')
+
+  async function handleAktifkanNotifOjek() {
+    const hasil = await mintaIzinDanSimpanToken(user.uid, ROLE.OJEK)
+    if (hasil.berhasil) setNotifOjek('ok')
+    else alert(hasil.alasan)
+  }
 
   async function selesaikanRide() {
     if (!permintaan) return
@@ -68,6 +77,14 @@ function AppIsi() {
           />
           <button style={s.logoutFloat} onClick={logout} aria-label="Keluar">
             ⎋
+          </button>
+          <button
+            style={notifOjek === 'ok' ? s.notifFloatOk : s.notifFloat}
+            onClick={handleAktifkanNotifOjek}
+            aria-label="Aktifkan notifikasi"
+            disabled={notifOjek === 'ok'}
+          >
+            {notifOjek === 'ok' ? '🔔' : '🔕'}
           </button>
         </>
       ) : (
@@ -126,6 +143,32 @@ const s = {
     border: '1px solid var(--line)',
     color: 'var(--text-dim)',
     fontSize: 16,
+    zIndex: 1000,
+  },
+  notifFloat: {
+    position: 'fixed',
+    top: 'calc(var(--safe-top) + 12px)',
+    right: 60,
+    width: 36,
+    height: 36,
+    borderRadius: '50%',
+    background: 'var(--surface)',
+    border: '1px solid var(--line)',
+    color: 'var(--text-dim)',
+    fontSize: 15,
+    zIndex: 1000,
+  },
+  notifFloatOk: {
+    position: 'fixed',
+    top: 'calc(var(--safe-top) + 12px)',
+    right: 60,
+    width: 36,
+    height: 36,
+    borderRadius: '50%',
+    background: 'rgba(74,222,128,0.15)',
+    border: '1px solid var(--signal)',
+    color: 'var(--signal)',
+    fontSize: 15,
     zIndex: 1000,
   },
 }

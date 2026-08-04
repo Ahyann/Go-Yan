@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { doc, onSnapshot, setDoc, updateDoc, deleteDoc } from 'firebase/firestore'
 import { db } from './firebase'
 import { STATUS_PERMINTAAN } from './constants'
+import { kirimNotifikasi } from './notifikasi'
 
 const REF = doc(db, 'state', 'permintaanAktif')
 
@@ -23,6 +24,11 @@ export function usePermintaanAktif() {
       status: STATUS_PERMINTAAN.MENUNGGU,
       dibuatPada: Date.now(),
     })
+    kirimNotifikasi(
+      'ojek',
+      'Pesenan baru! 🕸️',
+      `Fajri mau ${aksi === 'jemput' ? 'dijemput' : 'diantar'} · ${where} · ${waktu}`
+    )
   }
 
   async function terima() {
@@ -38,8 +44,8 @@ export function usePermintaanAktif() {
   }
 
   async function batal() {
-      await deleteDoc(REF)
-    }
+    await deleteDoc(REF)
+  }
 
   return { permintaan, kirimGo, terima, tolak, selesai, batal }
 }

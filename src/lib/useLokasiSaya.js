@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { ref, set, remove } from 'firebase/database'
 import { rtdb } from './firebase'
+import { kirimNotifikasi } from './notifikasi'
 
 const LOKASI_REF = ref(rtdb, 'lokasi/ojek')
 
@@ -31,6 +32,7 @@ export function useLokasiSaya() {
       { enableHighAccuracy: true, maximumAge: 5000, timeout: 15000 }
     )
     setAktif(true)
+    kirimNotifikasi('penumpang', 'Ahyan otw! 🕸️', 'Live location udah nyala, cek lokasinya di peta.')
   }
 
   function berhenti() {
