@@ -91,16 +91,10 @@ export default function PetaLokasiPenumpang({
         </button>
       )}
 
-      {!lokasi && (
-        <div style={s.badgeKosong}>{teksKosong}</div>
-      )}
-
-      {lokasi && (
-        <div style={s.badge}>
-          <span style={s.dot} />
-          Lokasi Fajri live
-        </div>
-      )}
+      <div style={s.badge}>
+        <span style={lokasi ? s.dotHijau : s.dotMerah} />
+        {lokasi ? 'Lokasi Fajri live' : 'Fajri belum share lokasi'}
+      </div>
     </div>
   )
 }
@@ -121,7 +115,7 @@ const s = {
   lokasiIcon: {
     position: 'absolute',
     top: 88,
-    right: 12,
+    right: 16,
     width: 32,
     height: 32,
     borderRadius: 8,
@@ -136,7 +130,7 @@ const s = {
   lokasiIconAktif: {
     position: 'absolute',
     top: 88,
-    right: 12,
+    right: 16,
     width: 32,
     height: 32,
     borderRadius: 8,
@@ -146,20 +140,6 @@ const s = {
     alignItems: 'center',
     justifyContent: 'center',
     boxShadow: '0 0 10px #B8242F, 0 1px 5px rgba(0,0,0,0.4)',
-    zIndex: 1000,
-  },
-  badgeKosong: {
-    position: 'absolute',
-    left: 12,
-    right: 12,
-    bottom: 24,
-    background: 'rgba(11,14,26,0.9)',
-    color: 'var(--text-dim)',
-    fontSize: 13,
-    textAlign: 'center',
-    padding: '10px 14px',
-    borderRadius: 999,
-    border: '1px solid var(--line)',
     zIndex: 1000,
   },
   badge: {
@@ -177,8 +157,12 @@ const s = {
     gap: 6,
     zIndex: 1000,
   },
-  dot: {
+  dotHijau: {
     width: 6, height: 6, borderRadius: '50%',
-    background: 'var(--glow-blue)', boxShadow: '0 0 5px var(--glow-blue)',
+    background: 'var(--signal)', boxShadow: '0 0 5px var(--signal)',
+  },
+  dotMerah: {
+    width: 6, height: 6, borderRadius: '50%',
+    background: 'var(--web-red)', boxShadow: '0 0 5px var(--web-red)',
   },
 }
