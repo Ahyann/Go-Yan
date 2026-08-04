@@ -138,7 +138,7 @@ const s = {
   itemTarif: { fontFamily: 'var(--font-data)', fontSize: 13, color: 'var(--text)' },
   badgeLunas: {
     fontFamily: 'var(--font-data)', fontSize: 11.5,
-    color: 'var(--signal)', textShadow: '0 0 5px rgba(74,222,128,0.5)',
+    color: 'var(--glow-blue)', textShadow: '0 0 5px var(--glow-blue-mid)',
   },
   badgeBelum: {
     fontFamily: 'var(--font-data)', fontSize: 11.5,
