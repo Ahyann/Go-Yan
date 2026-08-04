@@ -11,10 +11,16 @@ const BATAS_PETA = [
   [6.5, 141.5],
 ]
 
-const ikonOjek = L.icon({
-  iconUrl: '/icons/spidericon.png',
-  iconSize: [100, 100],
-  iconAnchor: [50, 50],
+const ikonOjek = L.divIcon({
+  className: '',
+  html: `<div style="isolation: isolate;">
+    <img src="/icons/spidericon.png" style="
+      width:160px;height:160px;
+      filter: drop-shadow(0 0 6px #5ED0FF) drop-shadow(0 0 12px #2B9EE8);
+    " />
+  </div>`,
+  iconSize: [160, 160],
+  iconAnchor: [80, 80],
 })
 
 function GeserKePosisi({ lat, lng }) {
