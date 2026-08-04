@@ -121,7 +121,7 @@ const s = {
   lokasiIcon: {
     position: 'absolute',
     top: 88,
-    right: 10,
+    right: 14,
     width: 32,
     height: 32,
     borderRadius: 8,
@@ -136,7 +136,7 @@ const s = {
   lokasiIconAktif: {
     position: 'absolute',
     top: 88,
-    right: 10,
+    right: 14,
     width: 32,
     height: 32,
     borderRadius: 8,
