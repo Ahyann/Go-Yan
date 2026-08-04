@@ -92,6 +92,13 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true }) {
               position={[lokasiOjek.lat, lokasiOjek.lng]}
               icon={ikonOjek}
               eventHandlers={{
+                popupopen: () => {
+                  if (!pesan) {
+                    setTimeout(() => {
+                      markerRef.current?.closePopup()
+                    }, 2000)
+                  }
+                },
                 popupclose: () => {
                   if (pesan) hapusPesan()
                 },
