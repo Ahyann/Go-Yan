@@ -37,6 +37,15 @@ export default function GoPopup({ onClose, onSubmit }) {
 
         <label style={s.label}>
           Where
+          <div style={s.presetRow}>
+            <button
+              type="button"
+              style={where === 'Office' ? s.presetChipAktif : s.presetChip}
+              onClick={() => setWhere('Office')}
+            >
+              Office
+            </button>
+          </div>
           <input
             style={s.input}
             value={where}
@@ -45,8 +54,7 @@ export default function GoPopup({ onClose, onSubmit }) {
               window.scrollTo(0, 0)
               setTimeout(() => window.scrollTo(0, 0), 300)
             }}
-            placeholder="Contoh: Kantor"
-            autoFocus
+            placeholder="Contoh: Kampus, gerbang depan"
           />
         </label>
 
@@ -112,6 +120,26 @@ const s = {
     gap: 6,
     fontSize: 13,
     color: '#9FC3E8',
+  },
+  presetRow: { display: 'flex', gap: 8, marginTop: 2 },
+  presetChip: {
+    fontSize: 12.5,
+    fontWeight: 600,
+    padding: '6px 14px',
+    borderRadius: 999,
+    background: 'rgba(255,255,255,0.06)',
+    color: '#8FB4DC',
+    border: '1px solid var(--blue-border)',
+  },
+  presetChipAktif: {
+    fontSize: 12.5,
+    fontWeight: 600,
+    padding: '6px 14px',
+    borderRadius: 999,
+    background: 'rgba(94,208,255,0.18)',
+    color: 'var(--glow-blue)',
+    border: '1px solid var(--glow-blue-mid)',
+    textShadow: '0 0 4px var(--glow-blue-mid)',
   },
   input: {
     background: 'rgba(255,255,255,0.06)',
