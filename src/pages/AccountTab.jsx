@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext.jsx'
 import { ROLE } from '../lib/constants'
 import { mintaIzinDanSimpanToken } from '../lib/notifikasi'
@@ -7,6 +7,12 @@ export default function AccountTab() {
   const { user, logout } = useAuth()
   const [status, setStatus] = useState('')
   const [pesanError, setPesanError] = useState('')
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
+      setStatus('ok')
+    }
+  }, [])
 
   async function handleAktifkanNotif() {
     setStatus('loading')

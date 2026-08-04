@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { AuthProvider, useAuth } from './context/AuthContext.jsx'
 import { usePermintaanAktif } from './lib/usePermintaanAktif'
 import { useRiwayat } from './lib/useRiwayat'
@@ -23,6 +23,12 @@ function AppIsi() {
   const { riwayat, tambahRiwayat, tandaiLunas, hapusRiwayat } = useRiwayat()
   const { jadwal: jadwalMingguan, simpanJadwal } = useJadwalMingguan()
   const [notifOjek, setNotifOjek] = useState('')
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
+      setNotifOjek('ok')
+    }
+  }, [])
 
   async function handleAktifkanNotifOjek() {
     const hasil = await mintaIzinDanSimpanToken(user.uid, ROLE.OJEK)
