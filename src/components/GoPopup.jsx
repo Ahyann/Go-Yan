@@ -3,18 +3,26 @@ import { createPortal } from 'react-dom'
 import { AKSI } from '../lib/constants'
 import TimeWheelPicker from './TimeWheelPicker.jsx'
 
+const PRESET_LOKASI = ['Office']
+
 export default function GoPopup({ onClose, onSubmit }) {
   const jamSekarang = new Date().toTimeString().slice(0, 5)
 
   const [aksi, setAksi] = useState(AKSI.JEMPUT)
   const [where, setWhere] = useState('')
   const [waktu, setWaktu] = useState(jamSekarang)
+  const [showDropdown, setShowDropdown] = useState(false)
 
   const bisaKirim = where.trim().length > 0
 
   function handleKirim() {
     if (!bisaKirim) return
     onSubmit({ aksi, where: where.trim(), waktu })
+  }
+
+  function pilihPreset(nama) {
+    setWhere(nama)
+    setShowDropdown(false)
   }
 
   return createPortal(
@@ -37,25 +45,43 @@ export default function GoPopup({ onClose, onSubmit }) {
 
         <label style={s.label}>
           Where
-          <div style={s.presetRow}>
+          <div style={s.inputWrap}>
+            <input
+              style={s.input}
+              value={where}
+              onChange={(e) => setWhere(e.target.value)}
+              onBlur={() => {
+                window.scrollTo(0, 0)
+                setTimeout(() => window.scrollTo(0, 0), 300)
+              }}
+              placeholder="Contoh: Kampus, gerbang depan"
+            />
             <button
               type="button"
-              style={where === 'Office' ? s.presetChipAktif : s.presetChip}
-              onClick={() => setWhere('Office')}
+              style={s.dropdownBtn}
+              onClick={() => setShowDropdown((v) => !v)}
+              aria-label="Pilih dari lokasi tersimpan"
             >
-              Office
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M6 9l6 6 6-6" />
+              </svg>
             </button>
+
+            {showDropdown && (
+              <div style={s.dropdownList}>
+                {PRESET_LOKASI.map((nama) => (
+                  <button
+                    key={nama}
+                    type="button"
+                    style={s.dropdownItem}
+                    onClick={() => pilihPreset(nama)}
+                  >
+                    {nama}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
-          <input
-            style={s.input}
-            value={where}
-            onChange={(e) => setWhere(e.target.value)}
-            onBlur={() => {
-              window.scrollTo(0, 0)
-              setTimeout(() => window.scrollTo(0, 0), 300)
-            }}
-            placeholder="Contoh: Kampus, gerbang depan"
-          />
         </label>
 
         <div style={s.label}>
@@ -121,31 +147,47 @@ const s = {
     fontSize: 13,
     color: '#9FC3E8',
   },
-  presetRow: { display: 'flex', gap: 8, marginTop: 2 },
-  presetChip: {
-    fontSize: 12.5,
-    fontWeight: 600,
-    padding: '6px 14px',
-    borderRadius: 999,
-    background: 'rgba(255,255,255,0.06)',
+  inputWrap: { position: 'relative' },
+  dropdownBtn: {
+    position: 'absolute',
+    right: 6,
+    top: '50%',
+    transform: 'translateY(-50%)',
+    width: 32,
+    height: 32,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
     color: '#8FB4DC',
-    border: '1px solid var(--blue-border)',
+    borderRadius: 8,
   },
-  presetChipAktif: {
-    fontSize: 12.5,
-    fontWeight: 600,
-    padding: '6px 14px',
-    borderRadius: 999,
-    background: 'rgba(94,208,255,0.18)',
-    color: 'var(--glow-blue)',
-    border: '1px solid var(--glow-blue-mid)',
-    textShadow: '0 0 4px var(--glow-blue-mid)',
+  dropdownList: {
+    position: 'absolute',
+    top: 'calc(100% + 6px)',
+    left: 0,
+    right: 0,
+    background: 'var(--card-blue)',
+    border: '1px solid var(--blue-border)',
+    borderRadius: 10,
+    overflow: 'hidden',
+    zIndex: 10,
+  },
+  dropdownItem: {
+    display: 'block',
+    width: '100%',
+    textAlign: 'left',
+    padding: '11px 14px',
+    fontSize: 14,
+    color: 'var(--text)',
+    background: 'transparent',
   },
   input: {
+    width: '100%',
+    boxSizing: 'border-box',
     background: 'rgba(255,255,255,0.06)',
     border: '1px solid var(--blue-border)',
     borderRadius: 10,
-    padding: '12px 14px',
+    padding: '12px 40px 12px 14px',
     fontSize: 15,
     color: 'var(--text)',
   },
