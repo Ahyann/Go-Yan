@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import { MapContainer, TileLayer, Marker, Popup, ZoomControl, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
@@ -52,6 +53,16 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true }) {
   const lokasiOjek = useLokasiOjek()
   const { pesan, hapusPesan } = usePesanOjek()
   const adaLokasiLive = lokasiOjek && permintaan?.status === STATUS_PERMINTAAN.DITERIMA
+  const markerRef = useRef(null)
+
+  useEffect(() => {
+    if (pesan && markerRef.current) {
+      markerRef.current.openPopup()
+    }
+  }, [pesan])
+
+  const teksBubble = pesan?.teks || 'Otw dutzz!'
+  const ukuranFont = teksBubble.length > 16 ? 7 : 9
 
   return (
     <div style={s.wrap}>
@@ -77,20 +88,25 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true }) {
           <>
             <GeserKePosisi lat={lokasiOjek.lat} lng={lokasiOjek.lng} />
             <Marker
+              ref={markerRef}
               position={[lokasiOjek.lat, lokasiOjek.lng]}
               icon={ikonOjek}
               eventHandlers={{
-                popupopen: (e) => {
-                  setTimeout(() => e.target.closePopup(), 2000)
+                click: (e) => {
+                  if (e.target.isPopupOpen()) {
+                    e.target.closePopup()
+                  } else {
+                    e.target.openPopup()
+                  }
                 },
                 popupclose: () => {
                   if (pesan) hapusPesan()
                 },
               }}
             >
-              <Popup closeButton={false}>
+              <Popup closeButton={false} autoClose={false} closeOnClick={false}>
                 <div style={s.bubbleWrap}>
-                  <span style={s.bubbleText}>{pesan?.teks || 'Otw dutzz!'}</span>
+                  <span style={{ ...s.bubbleText, fontSize: ukuranFont }}>{teksBubble}</span>
                 </div>
               </Popup>
             </Marker>

@@ -73,6 +73,7 @@ export default function OjekHomeTab({ permintaan, onTerima, onTolak, onSelesai }
                 value={teksPesan}
                 onChange={(e) => setTeksPesan(e.target.value)}
                 placeholder="Kirim pesan ke bubble Fajri..."
+                maxLength={24}
               />
               <button style={s.pesanBtn} onClick={handleKirimPesan}>Kirim</button>
             </div>
