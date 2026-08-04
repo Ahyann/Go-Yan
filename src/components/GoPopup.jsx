@@ -54,7 +54,7 @@ export default function GoPopup({ onClose, onSubmit }) {
                 window.scrollTo(0, 0)
                 setTimeout(() => window.scrollTo(0, 0), 300)
               }}
-              placeholder="Contoh: Kampus, gerbang depan"
+              placeholder=""
             />
             <button
               type="button"

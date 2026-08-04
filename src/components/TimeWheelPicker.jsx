@@ -93,8 +93,8 @@ const s = {
     right: 0,
     top: PAD,
     height: ITEM_HEIGHT,
-    borderTop: '1px solid var(--line)',
-    borderBottom: '1px solid var(--line)',
+    borderTop: '1px solid rgba(255,255,255,0.6)',
+    borderBottom: '1px solid rgba(255,255,255,0.6)',
     pointerEvents: 'none',
   },
 }
