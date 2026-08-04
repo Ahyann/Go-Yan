@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { ref, onValue } from 'firebase/database'
+import { ref, onValue, remove } from 'firebase/database'
 import { rtdb } from './firebase'
 
 const LOKASI_REF = ref(rtdb, 'lokasi/penumpang')
@@ -15,4 +15,8 @@ export function useLokasiPenumpang() {
   }, [])
 
   return lokasi
+}
+
+export async function hapusLokasiPenumpangSekarang() {
+  await remove(LOKASI_REF)
 }
