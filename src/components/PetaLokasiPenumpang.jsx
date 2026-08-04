@@ -24,11 +24,11 @@ function GeserKePosisi({ lat, lng }) {
   return null
 }
 
-export default function PetaLokasiPenumpang({ lokasi, teksKosong = 'Fajri belum nyalain share lokasi' }) {
+export default function PetaLokasiPenumpang({ lokasi, teksKosong = 'Fajri belum nyalain share lokasi', tanpaBorder = false }) {
   const pusat = lokasi ? [lokasi.lat, lokasi.lng] : PUSAT_DEFAULT
 
   return (
-    <div style={s.wrap}>
+    <div style={tanpaBorder ? s.wrapPolos : s.wrap}>
       <MapContainer
         center={pusat}
         zoom={lokasi ? 16 : 13}
@@ -71,6 +71,11 @@ const s = {
     borderRadius: 12,
     overflow: 'hidden',
     border: '1px solid var(--blue-border)',
+  },
+  wrapPolos: {
+    position: 'relative',
+    height: '100%',
+    overflow: 'hidden',
   },
   map: { height: '100%', width: '100%' },
   badgeKosong: {

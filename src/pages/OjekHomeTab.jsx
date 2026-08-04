@@ -20,6 +20,10 @@ export default function OjekHomeTab({ permintaan, onTerima, onTolak, onSelesai }
     onSelesai()
   }
 
+  const teksKosongPeta = adaPermintaanMasuk || sedangJalan
+    ? 'Fajri belum nyalain share lokasi'
+    : 'Belum ada permintaan masuk'
+
   return (
     <main style={s.wrap}>
       <header style={s.header}>
@@ -27,61 +31,61 @@ export default function OjekHomeTab({ permintaan, onTerima, onTolak, onSelesai }
         <h1 style={s.title}>Halo, Ahyan</h1>
       </header>
 
-      {adaPermintaanMasuk && (
-        <section style={s.permintaanCard}>
-          <div style={s.permintaanLabel}>Permintaan baru dari Fajri</div>
-          <div style={s.permintaanAksi}>
-            {permintaan.aksi === AKSI.JEMPUT ? 'Jemput' : 'Antar'} · {permintaan.waktu}
+      <section style={s.mainCard}>
+        <div style={s.mapArea}>
+          <PetaLokasiPenumpang lokasi={lokasiPenumpang} teksKosong={teksKosongPeta} tanpaBorder />
+        </div>
+
+        {adaPermintaanMasuk && (
+          <div style={s.bawahCard}>
+            <div style={s.permintaanLabel}>Permintaan baru dari Fajri</div>
+            <div style={s.permintaanAksi}>
+              {permintaan.aksi === AKSI.JEMPUT ? 'Jemput' : 'Antar'} · {permintaan.waktu}
+            </div>
+            <div style={s.permintaanWhere}>{permintaan.where}</div>
+            <div style={s.tombolRow}>
+              <button style={s.tolakBtn} onClick={onTolak}>Tolak</button>
+              <button style={s.terimaBtn} onClick={handleTerima}>Terima</button>
+            </div>
           </div>
-          <div style={s.permintaanWhere}>{permintaan.where}</div>
-          <div style={s.tombolRow}>
-            <button style={s.tolakBtn} onClick={onTolak}>Tolak</button>
-            <button style={s.terimaBtn} onClick={handleTerima}>Terima</button>
+        )}
+
+        {sedangJalan && (
+          <div style={s.bawahCard}>
+            <div style={s.jalanRow}>
+              <span style={s.dotHijau} />
+              Sedang {permintaan.aksi === AKSI.JEMPUT ? 'menjemput' : 'mengantar'} Fajri · {permintaan.where}
+            </div>
+
+            <button
+              style={lokasiAktif ? s.lokasiBtnAktif : s.lokasiBtn}
+              onClick={lokasiAktif ? berhentiLokasi : mulaiLokasi}
+            >
+              {lokasiAktif ? '● Live location aktif — tekan buat matikan' : 'Nyalain live location'}
+            </button>
+            {lokasiError && <div style={s.lokasiError}>{lokasiError}</div>}
+
+            <button style={s.selesaiBtn} onClick={handleSelesai}>
+              Selesai
+            </button>
           </div>
-        </section>
-      )}
-
-      {sedangJalan && (
-        <section style={s.jalanCard}>
-          <div style={s.jalanRow}>
-            <span style={s.dotHijau} />
-            Sedang {permintaan.aksi === AKSI.JEMPUT ? 'menjemput' : 'mengantar'} Fajri · {permintaan.where}
-          </div>
-
-          <PetaLokasiPenumpang lokasi={lokasiPenumpang} />
-
-          <button
-            style={lokasiAktif ? s.lokasiBtnAktif : s.lokasiBtn}
-            onClick={lokasiAktif ? berhentiLokasi : mulaiLokasi}
-          >
-            {lokasiAktif ? '● Live location aktif — tekan buat matikan' : 'Nyalain live location'}
-          </button>
-          {lokasiError && <div style={s.lokasiError}>{lokasiError}</div>}
-
-          <button style={s.selesaiBtn} onClick={handleSelesai}>
-            Selesai
-          </button>
-        </section>
-      )}
-
-      {!adaPermintaanMasuk && !sedangJalan && (
-        <PetaLokasiPenumpang lokasi={lokasiPenumpang} teksKosong="Belum ada permintaan masuk" />
-      )}
+        )}
+      </section>
     </main>
   )
 }
 
 const s = {
   wrap: {
-    minHeight: '100%',
-    padding: 'calc(var(--safe-top) + 24px) 20px 110px',
+    height: '100%',
+    padding: 'calc(var(--safe-top) + 24px) 20px 20px',
     maxWidth: 480,
     margin: '0 auto',
     display: 'flex',
     flexDirection: 'column',
-    gap: 24,
+    gap: 20,
   },
-  header: {},
+  header: { flexShrink: 0 },
   eyebrow: { fontSize: 11, letterSpacing: '0.12em', color: 'var(--text-dim)', marginBottom: 4 },
   title: {
     fontFamily: 'var(--font-judul)',
@@ -91,20 +95,37 @@ const s = {
     lineHeight: 1.3,
   },
 
-  permintaanCard: {
-    background: `linear-gradient(160deg, var(--card-blue-grad-a), var(--card-blue-grad-b))`,
-    border: '1px solid var(--warn)',
+  mainCard: {
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    background: 'var(--card-blue)',
+    border: '1px solid var(--blue-border)',
     borderRadius: 12,
-    padding: 20,
-    textAlign: 'center',
+    overflow: 'hidden',
+    minHeight: 0,
   },
-  permintaanLabel: { fontSize: 13, color: '#9FC3E8', marginBottom: 6 },
+  mapArea: {
+    flex: 1,
+    position: 'relative',
+    minHeight: 200,
+  },
+  bawahCard: {
+    flexShrink: 0,
+    padding: 16,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 12,
+    borderTop: '1px solid var(--blue-border)',
+  },
+
+  permintaanLabel: { fontSize: 13, color: '#9FC3E8' },
   permintaanAksi: {
     fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 20,
     color: 'var(--warn)', textShadow: '0 0 6px rgba(251,191,36,0.5)',
   },
-  permintaanWhere: { fontSize: 14, color: '#8FB4DC', marginTop: 4, marginBottom: 16 },
-  tombolRow: { display: 'flex', gap: 10, textAlign: 'initial' },
+  permintaanWhere: { fontSize: 14, color: '#8FB4DC' },
+  tombolRow: { display: 'flex', gap: 10 },
   tolakBtn: {
     flex: 1,
     background: 'rgba(255,255,255,0.06)',
@@ -125,15 +146,6 @@ const s = {
     borderRadius: 999,
   },
 
-  jalanCard: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 14,
-    background: `linear-gradient(160deg, var(--card-blue-grad-a), var(--card-blue-grad-b))`,
-    border: '1px solid var(--signal)',
-    borderRadius: 12,
-    padding: '16px',
-  },
   jalanRow: { display: 'flex', alignItems: 'center', fontSize: 14.5, fontWeight: 600, color: 'var(--text)' },
   dotHijau: {
     width: 7, height: 7, borderRadius: '50%', background: 'var(--signal)',
