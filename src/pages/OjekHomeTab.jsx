@@ -3,6 +3,7 @@ import { playSpiderSound } from '../lib/sound'
 import { useLokasiSaya } from '../lib/useLokasiSaya'
 import { useLokasiPenumpang } from '../lib/useLokasiPenumpang'
 import PetaLokasiPenumpang from '../components/PetaLokasiPenumpang.jsx'
+import PetaStatus from '../components/PetaStatus.jsx'
 
 export default function OjekHomeTab({ permintaan, onTerima, onTolak, onSelesai }) {
   const adaPermintaanMasuk = permintaan?.status === STATUS_PERMINTAAN.MENUNGGU
@@ -26,6 +27,10 @@ export default function OjekHomeTab({ permintaan, onTerima, onTolak, onSelesai }
         <div style={s.eyebrow}>OJEK</div>
         <h1 style={s.title}>Halo, Ahyan</h1>
       </header>
+
+      <section style={s.petaCard}>
+        <PetaStatus permintaan={permintaan} />
+      </section>
 
       {adaPermintaanMasuk && (
         <section style={s.permintaanCard}>
@@ -107,7 +112,13 @@ const s = {
     letterSpacing: '1px',
     lineHeight: 1.3,
   },
-
+  petaCard: {
+    position: 'relative',
+    height: 340,
+    borderRadius: 12,
+    overflow: 'hidden',
+    border: '1px solid var(--blue-border)',
+  },
   permintaanCard: {
     background: `linear-gradient(160deg, var(--card-blue-grad-a), var(--card-blue-grad-b))`,
     border: '1px solid var(--warn)',
