@@ -102,13 +102,13 @@ const s = {
     background: 'var(--card-blue)',
     border: '1px solid var(--blue-border)',
     borderRadius: 12,
+    overflow: 'hidden',
     minHeight: 0,
   },
   mapArea: {
     flex: 1,
     position: 'relative',
     minHeight: 200,
-    padding: 12,
   },
   bawahCard: {
     flexShrink: 0,
