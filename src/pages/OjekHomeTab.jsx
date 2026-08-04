@@ -29,7 +29,7 @@ export default function OjekHomeTab({ permintaan, onTerima, onTolak, onSelesai }
       </header>
 
       <section style={s.petaCard}>
-        <PetaStatus permintaan={permintaan} />
+        <PetaStatus permintaan={permintaan} tampilkanBadgeIdle={false} />
       </section>
 
       {adaPermintaanMasuk && (

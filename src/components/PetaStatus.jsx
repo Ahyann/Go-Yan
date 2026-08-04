@@ -44,7 +44,7 @@ function IkonLabaLaba() {
   )
 }
 
-export default function PetaStatus({ permintaan }) {
+export default function PetaStatus({ permintaan, tampilkanBadgeIdle = true }) {
   const lokasiOjek = useLokasiOjek()
   const adaLokasiLive = lokasiOjek && permintaan?.status === STATUS_PERMINTAAN.DITERIMA
 
@@ -79,7 +79,7 @@ export default function PetaStatus({ permintaan }) {
       <div style={s.tint} />
 
       <div style={s.overlay}>
-        {!permintaan && <div style={s.badgeIdle}>Belum ada perjalanan aktif</div>}
+        {!permintaan && tampilkanBadgeIdle && <div style={s.badgeIdle}>Belum ada perjalanan aktif</div>}
 
         {permintaan?.status === STATUS_PERMINTAAN.MENUNGGU && (
           <div style={s.badgeMenunggu}>
