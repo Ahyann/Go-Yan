@@ -27,9 +27,17 @@ export default function OjekHomeTab({ permintaan, onTerima, onTolak, onSelesai }
         <h1 style={s.title}>Halo, Ahyan</h1>
       </header>
 
-      {!adaPermintaanMasuk && !sedangJalan && (
-        <section style={s.idleCard}>
-          <PetaLokasiPenumpang lokasi={lokasiPenumpang} teksKosong="Belum ada permintaan masuk" />
+      {adaPermintaanMasuk && (
+        <section style={s.permintaanCard}>
+          <div style={s.permintaanLabel}>Permintaan baru dari Fajri</div>
+          <div style={s.permintaanAksi}>
+            {permintaan.aksi === AKSI.JEMPUT ? 'Jemput' : 'Antar'} · {permintaan.waktu}
+          </div>
+          <div style={s.permintaanWhere}>{permintaan.where}</div>
+          <div style={s.tombolRow}>
+            <button style={s.tolakBtn} onClick={onTolak}>Tolak</button>
+            <button style={s.terimaBtn} onClick={handleTerima}>Terima</button>
+          </div>
         </section>
       )}
 
@@ -57,7 +65,7 @@ export default function OjekHomeTab({ permintaan, onTerima, onTolak, onSelesai }
       )}
 
       {!adaPermintaanMasuk && !sedangJalan && (
-        <section style={s.idleCard}>Belum ada permintaan masuk.</section>
+        <PetaLokasiPenumpang lokasi={lokasiPenumpang} teksKosong="Belum ada permintaan masuk" />
       )}
     </main>
   )
@@ -158,15 +166,5 @@ const s = {
     fontWeight: 700,
     padding: '13px',
     borderRadius: 999,
-  },
-
-  idleCard: {
-    background: 'var(--card-blue)',
-    border: '1px solid var(--blue-border)',
-    borderRadius: 12,
-    padding: 20,
-    color: '#8FB4DC',
-    fontSize: 14,
-    textAlign: 'center',
   },
 }
