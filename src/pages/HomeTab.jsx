@@ -93,6 +93,7 @@ const s = {
     justifyContent: 'center',
     boxShadow: '0 1px 5px rgba(0,0,0,0.4)',
     zIndex: 1000,
+    isolation: 'isolate',
   },
   shareIconAktif: {
     position: 'absolute',
@@ -108,6 +109,7 @@ const s = {
     justifyContent: 'center',
     boxShadow: '0 0 10px #B8242F, 0 1px 5px rgba(0,0,0,0.4)',
     zIndex: 1000,
+    isolation: 'isolate',
   },
   statusAktifFloat: {
     position: 'absolute',
