@@ -63,7 +63,7 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true }) {
       setTeksBubble(pesan.teks)
       markerRef.current.openPopup()
     }
-  }, [pesan])
+  }, [pesan, adaLokasiLive])
 
   const ukuranFont = teksBubble.length > 16 ? 7 : 9
 
