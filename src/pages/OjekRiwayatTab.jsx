@@ -133,7 +133,7 @@ const s = {
   tagihanLabel: { fontSize: 12.5, color: '#9FC3E8', marginBottom: 6 },
   angkaBelum: {
     fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 19,
-    color: 'var(--warn)', textShadow: '0 0 6px rgba(251,191,36,0.5)',
+    color: 'var(--web-red)', textShadow: '0 0 6px rgba(226,54,54,0.5)',
   },
   angkaSudah: {
     fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 19,
