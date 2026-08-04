@@ -77,6 +77,7 @@ export default function GoPopup({ onClose, onSubmit }) {
                     key={nama}
                     type="button"
                     style={s.dropdownItem}
+                    onMouseDown={(e) => e.preventDefault()}
                     onClick={() => pilihPreset(nama)}
                   >
                     {nama}
