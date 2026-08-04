@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { MapContainer, TileLayer, Marker, Popup, ZoomControl, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-import { STATUS_PERMINTAAN } from '../lib/constants'
+import { STATUS_PERMINTAAN, LOKASI_OFFICE } from '../lib/constants'
 import { useLokasiOjek } from '../lib/useLokasiOjek'
 import { useLokasiPenumpang } from '../lib/useLokasiPenumpang'
 import { usePesanOjek } from '../lib/usePesanOjek'
@@ -37,6 +37,18 @@ const ikonSaya = L.divIcon({
   "></div>`,
   iconSize: [18, 18],
   iconAnchor: [9, 9],
+})
+
+const ikonOffice = L.divIcon({
+  className: '',
+  html: `<div style="isolation: isolate;">
+    <img src="/icons/office.png" style="
+      width:30px;height:30px;
+      image-rendering: pixelated;
+    " />
+  </div>`,
+  iconSize: [30, 30],
+  iconAnchor: [15, 28],
 })
 
 function GeserKePosisi({ lat, lng }) {
@@ -136,6 +148,8 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true }) {
         {lokasiSaya && (
           <Marker position={[lokasiSaya.lat, lokasiSaya.lng]} icon={ikonSaya} />
         )}
+
+        <Marker position={LOKASI_OFFICE} icon={ikonOffice} />
       </MapContainer>
 
       {tampilkanOverlay && (
@@ -158,7 +172,7 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true }) {
           {permintaan?.status === STATUS_PERMINTAAN.DITERIMA && (
             <div style={s.badgeLive}>
               <span style={s.dotHijau} />
-              {adaLokasiLive ? 'OTWWW!!' : `Okay!`}
+              {adaLokasiLive ? 'OTWWW!!' : `Ahyan otw ${permintaan.aksi === 'jemput' ? 'menjemput' : 'mengantar'} kamu`}
             </div>
           )}
         </div>

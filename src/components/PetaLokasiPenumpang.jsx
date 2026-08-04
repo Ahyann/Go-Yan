@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { useLokasiOjek } from '../lib/useLokasiOjek'
+import { LOKASI_OFFICE } from '../lib/constants'
 
 const PUSAT_DEFAULT = [-6.2088, 106.8456]
 
@@ -28,6 +29,18 @@ const ikonSaya = L.divIcon({
   </div>`,
   iconSize: [24, 24],
   iconAnchor: [12, 12],
+})
+
+const ikonOffice = L.divIcon({
+  className: '',
+  html: `<div style="isolation: isolate;">
+    <img src="/icons/office.png" style="
+      width:30px;height:30px;
+      image-rendering: pixelated;
+    " />
+  </div>`,
+  iconSize: [30, 30],
+  iconAnchor: [15, 28],
 })
 
 function GeserKePosisi({ lat, lng }) {
@@ -76,6 +89,8 @@ export default function PetaLokasiPenumpang({
         {lokasiSaya && (
           <Marker position={[lokasiSaya.lat, lokasiSaya.lng]} icon={ikonSaya} />
         )}
+
+        <Marker position={LOKASI_OFFICE} icon={ikonOffice} />
       </MapContainer>
 
       {tampilkanTombolLokasi && (
@@ -115,7 +130,7 @@ const s = {
   lokasiIcon: {
     position: 'absolute',
     top: 88,
-    right: 12,
+    right: 10,
     width: 32,
     height: 32,
     borderRadius: 8,
@@ -130,7 +145,7 @@ const s = {
   lokasiIconAktif: {
     position: 'absolute',
     top: 88,
-    right: 12,
+    right: 10,
     width: 32,
     height: 32,
     borderRadius: 8,
