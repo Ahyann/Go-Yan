@@ -41,7 +41,7 @@ export default async function handler(req, res) {
     const messaging = getMessaging()
     const hasil = await messaging.sendEachForMulticast({
       tokens,
-      notification: { title, body },
+      data: { title, body },
       webpush: {
         fcmOptions: {
           link: 'https://go-yan.vercel.app',

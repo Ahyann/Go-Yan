@@ -14,9 +14,9 @@ firebase.initializeApp({
 const messaging = firebase.messaging()
 
 messaging.onBackgroundMessage((payload) => {
-  const judul = payload.notification?.title || 'Go-Yan'
+  const judul = payload.data?.title || 'Go-Yan'
   const opsi = {
-    body: payload.notification?.body || '',
+    body: payload.data?.body || '',
     icon: '/icons/spidericon.png',
     badge: '/icons/spidericon.png',
   }
