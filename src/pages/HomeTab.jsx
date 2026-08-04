@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { STATUS_PERMINTAAN } from '../lib/constants'
 import { useLokasiSayaPenumpang } from '../lib/useLokasiSayaPenumpang'
 import PetaStatus from '../components/PetaStatus.jsx'
@@ -5,6 +6,12 @@ import PetaStatus from '../components/PetaStatus.jsx'
 export default function HomeTab({ permintaan }) {
   const { aktif: lokasiAktif, error: lokasiError, mulai: mulaiLokasi, berhenti: berhentiLokasi } = useLokasiSayaPenumpang()
   const sedangJalan = permintaan?.status === STATUS_PERMINTAAN.DITERIMA
+
+  useEffect(() => {
+    if (!sedangJalan && lokasiAktif) {
+      berhentiLokasi()
+    }
+  }, [sedangJalan])
 
   return (
     <div style={s.wrap}>
@@ -14,15 +21,19 @@ export default function HomeTab({ permintaan }) {
       </div>
 
       {sedangJalan && (
-        <div style={s.shareFloat}>
-          <button
-            style={lokasiAktif ? s.shareBtnAktif : s.shareBtn}
-            onClick={lokasiAktif ? berhentiLokasi : mulaiLokasi}
-          >
-            {lokasiAktif ? '● Share lokasi aktif — tekan buat matikan' : 'Share lokasi ke Ahyan'}
-          </button>
-          {lokasiError && <div style={s.lokasiError}>{lokasiError}</div>}
-        </div>
+        <button
+          style={lokasiAktif ? s.shareIconAktif : s.shareIcon}
+          onClick={lokasiAktif ? berhentiLokasi : mulaiLokasi}
+          aria-label={lokasiAktif ? 'Matikan share lokasi' : 'Share lokasi ke Ahyan'}
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 2C8 2 5 5 5 9c0 5.5 7 13 7 13s7-7.5 7-13c0-4-3-7-7-7z" />
+            <circle cx="12" cy="9" r="2.5" />
+          </svg>
+        </button>
+      )}
+      {sedangJalan && lokasiError && (
+        <div style={s.lokasiErrorFloat}>{lokasiError}</div>
       )}
 
       <PetaStatus permintaan={permintaan} />
@@ -57,33 +68,47 @@ const s = {
     lineHeight: 1.3,
     textShadow: '0 1px 6px rgba(0,0,0,0.8)',
   },
-  shareFloat: {
+  shareIcon: {
     position: 'absolute',
-    top: 'calc(var(--safe-top) + 76px)',
-    left: 20,
-    right: 20,
+    top: 'calc(var(--safe-top) + 86px)',
+    right: 10,
+    width: 36,
+    height: 36,
+    borderRadius: 8,
+    background: '#fff',
+    color: '#333',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    boxShadow: '0 1px 5px rgba(0,0,0,0.4)',
     zIndex: 1000,
   },
-  shareBtn: {
-    width: '100%',
-    background: 'rgba(11,14,26,0.9)',
-    color: 'var(--text)',
-    fontSize: 13,
-    fontWeight: 600,
-    padding: '11px 14px',
-    borderRadius: 999,
-    border: '1px solid var(--blue-border)',
+  shareIconAktif: {
+    position: 'absolute',
+    top: 'calc(var(--safe-top) + 86px)',
+    right: 10,
+    width: 36,
+    height: 36,
+    borderRadius: 8,
+    background: 'var(--nav-red)',
+    color: '#fff',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    boxShadow: '0 0 10px var(--glow-blue), 0 1px 5px rgba(0,0,0,0.4)',
+    zIndex: 1000,
   },
-  shareBtnAktif: {
-    width: '100%',
-    background: 'rgba(94,208,255,0.15)',
-    color: 'var(--glow-blue)',
-    fontSize: 13,
-    fontWeight: 600,
-    padding: '11px 14px',
-    borderRadius: 999,
-    border: '1px solid var(--glow-blue-mid)',
-    textShadow: '0 0 4px var(--glow-blue-mid)',
+  lokasiErrorFloat: {
+    position: 'absolute',
+    top: 'calc(var(--safe-top) + 128px)',
+    right: 10,
+    maxWidth: 160,
+    background: 'rgba(11,14,26,0.95)',
+    color: 'var(--web-red)',
+    fontSize: 11,
+    padding: '6px 8px',
+    borderRadius: 8,
+    textAlign: 'center',
+    zIndex: 1000,
   },
-  lokasiError: { fontSize: 11.5, color: 'var(--web-red)', textAlign: 'center', marginTop: 6 },
 }
