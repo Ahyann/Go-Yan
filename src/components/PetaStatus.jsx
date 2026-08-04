@@ -4,6 +4,7 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { STATUS_PERMINTAAN } from '../lib/constants'
 import { useLokasiOjek } from '../lib/useLokasiOjek'
+import { useLokasiPenumpang } from '../lib/useLokasiPenumpang'
 import { usePesanOjek } from '../lib/usePesanOjek'
 
 const PUSAT_DEFAULT = [-6.2088, 106.8456]
@@ -25,6 +26,17 @@ const ikonOjek = L.divIcon({
   iconSize: [32, 32],
   iconAnchor: [16, 16],
   popupAnchor: [42, 0],
+})
+
+const ikonSaya = L.divIcon({
+  className: '',
+  html: `<div style="
+    width:18px;height:18px;border-radius:50%;
+    background:#2B6CE8;border:3px solid #fff;
+    box-shadow:0 2px 8px rgba(0,0,0,0.4);
+  "></div>`,
+  iconSize: [18, 18],
+  iconAnchor: [9, 9],
 })
 
 function GeserKePosisi({ lat, lng }) {
@@ -51,6 +63,7 @@ function IkonLabaLaba() {
 
 export default function PetaStatus({ permintaan, tampilkanOverlay = true }) {
   const lokasiOjek = useLokasiOjek()
+  const lokasiSaya = useLokasiPenumpang()
   const { pesan, hapusPesan } = usePesanOjek()
   const adaLokasiLive = lokasiOjek && permintaan?.status === STATUS_PERMINTAAN.DITERIMA
   const markerRef = useRef(null)
@@ -118,6 +131,10 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true }) {
               </Popup>
             </Marker>
           </>
+        )}
+
+        {lokasiSaya && (
+          <Marker position={[lokasiSaya.lat, lokasiSaya.lng]} icon={ikonSaya} />
         )}
       </MapContainer>
 

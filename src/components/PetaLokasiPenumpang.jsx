@@ -2,6 +2,7 @@ import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet'
 import { useEffect } from 'react'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+import { useLokasiOjek } from '../lib/useLokasiOjek'
 
 const PUSAT_DEFAULT = [-6.2088, 106.8456]
 
@@ -16,6 +17,19 @@ const ikonPenumpang = L.divIcon({
   iconAnchor: [9, 9],
 })
 
+const ikonSaya = L.divIcon({
+  className: '',
+  html: `<div style="isolation: isolate;">
+    <img src="/icons/spidericon.png" style="
+      width:24px;height:24px;
+      image-rendering: pixelated;
+      filter: drop-shadow(0 0 6px #5ED0FF) drop-shadow(0 0 10px #2B9EE8);
+    " />
+  </div>`,
+  iconSize: [24, 24],
+  iconAnchor: [12, 12],
+})
+
 function GeserKePosisi({ lat, lng }) {
   const map = useMap()
   useEffect(() => {
@@ -25,6 +39,7 @@ function GeserKePosisi({ lat, lng }) {
 }
 
 export default function PetaLokasiPenumpang({ lokasi, teksKosong = 'Fajri belum nyalain share lokasi', isiPenuh = false }) {
+  const lokasiSaya = useLokasiOjek()
   const pusat = lokasi ? [lokasi.lat, lokasi.lng] : PUSAT_DEFAULT
 
   return (
@@ -48,9 +63,11 @@ export default function PetaLokasiPenumpang({ lokasi, teksKosong = 'Fajri belum 
             <Marker position={[lokasi.lat, lokasi.lng]} icon={ikonPenumpang} />
           </>
         )}
-      </MapContainer>
 
-      <div style={s.tint} />
+        {lokasiSaya && (
+          <Marker position={[lokasiSaya.lat, lokasiSaya.lng]} icon={ikonSaya} />
+        )}
+      </MapContainer>
 
       {!lokasi && (
         <div style={s.badgeKosong}>{teksKosong}</div>
@@ -79,15 +96,6 @@ const s = {
     height: '100%',
   },
   map: { height: '100%', width: '100%' },
-  tint: {
-    position: 'absolute',
-    inset: 0,
-    pointerEvents: 'none',
-    background: 'var(--glow-blue-mid)',
-    opacity: 0.5,
-    mixBlendMode: 'color',
-    zIndex: 999,
-  },
   badgeKosong: {
     position: 'absolute',
     left: 12,
