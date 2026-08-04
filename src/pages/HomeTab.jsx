@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { STATUS_PERMINTAAN } from '../lib/constants'
 import { useLokasiSayaPenumpang } from '../lib/useLokasiSayaPenumpang'
 import PetaStatus from '../components/PetaStatus.jsx'
@@ -6,6 +6,7 @@ import PetaStatus from '../components/PetaStatus.jsx'
 export default function HomeTab({ permintaan }) {
   const { aktif: lokasiAktif, error: lokasiError, mulai: mulaiLokasi, berhenti: berhentiLokasi } = useLokasiSayaPenumpang()
   const sedangJalan = permintaan?.status === STATUS_PERMINTAAN.DITERIMA
+  const [showToast, setShowToast] = useState(false)
 
   useEffect(() => {
     if (!sedangJalan && lokasiAktif) {
@@ -13,6 +14,12 @@ export default function HomeTab({ permintaan }) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sedangJalan])
+
+  function handleMulai() {
+    mulaiLokasi()
+    setShowToast(true)
+    setTimeout(() => setShowToast(false), 2500)
+  }
 
   return (
     <div style={s.wrap}>
@@ -24,7 +31,7 @@ export default function HomeTab({ permintaan }) {
       {sedangJalan && (
         <button
           style={lokasiAktif ? s.shareIconAktif : s.shareIcon}
-          onClick={lokasiAktif ? berhentiLokasi : mulaiLokasi}
+          onClick={lokasiAktif ? berhentiLokasi : handleMulai}
           aria-label={lokasiAktif ? 'Matikan share lokasi' : 'Share lokasi ke Ahyan'}
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -33,7 +40,7 @@ export default function HomeTab({ permintaan }) {
           </svg>
         </button>
       )}
-      {sedangJalan && lokasiAktif && (
+      {sedangJalan && showToast && (
         <div style={s.statusAktifFloat}>Kamu menyalakan live location</div>
       )}
       {sedangJalan && lokasiError && (
@@ -94,12 +101,12 @@ const s = {
     width: 36,
     height: 36,
     borderRadius: 8,
-    background: 'var(--nav-red)',
+    background: '#B8242F',
     color: '#fff',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    boxShadow: '0 0 10px var(--nav-red), 0 1px 5px rgba(0,0,0,0.4)',
+    boxShadow: '0 0 10px #B8242F, 0 1px 5px rgba(0,0,0,0.4)',
     zIndex: 1000,
   },
   statusAktifFloat: {
