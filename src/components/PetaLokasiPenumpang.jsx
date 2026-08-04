@@ -1,5 +1,5 @@
 import { MapContainer, TileLayer, Marker, ZoomControl, useMap } from 'react-leaflet'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { useLokasiOjek } from '../lib/useLokasiOjek'
@@ -45,8 +45,12 @@ const ikonOffice = L.divIcon({
 
 function GeserKePosisi({ lat, lng }) {
   const map = useMap()
+  const sudahDicenter = useRef(false)
   useEffect(() => {
-    map.setView([lat, lng])
+    if (!sudahDicenter.current) {
+      map.setView([lat, lng])
+      sudahDicenter.current = true
+    }
   }, [lat, lng, map])
   return null
 }
@@ -61,10 +65,18 @@ export default function PetaLokasiPenumpang({
   const lokasiSaya = useLokasiOjek()
   const pusat = lokasi ? [lokasi.lat, lokasi.lng] : PUSAT_DEFAULT
   const tampilkanTombolLokasi = typeof onToggleLokasi === 'function'
+  const mapRef = useRef(null)
+
+  function handleRecenter() {
+    if (lokasi && mapRef.current) {
+      mapRef.current.setView([lokasi.lat, lokasi.lng], 16)
+    }
+  }
 
   return (
     <div className="peta-embed" style={isiPenuh ? s.wrapPolos : s.wrap}>
       <MapContainer
+        ref={mapRef}
         center={pusat}
         zoom={lokasi ? 16 : 13}
         style={s.map}
@@ -106,6 +118,19 @@ export default function PetaLokasiPenumpang({
         </button>
       )}
 
+      {lokasi && (
+        <button
+          style={tampilkanTombolLokasi ? s.recenterIconBawah : s.recenterIcon}
+          onClick={handleRecenter}
+          aria-label="Kembali ke lokasi Fajri"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="3" />
+            <path d="M12 2v3M12 19v3M2 12h3M19 12h3" />
+          </svg>
+        </button>
+      )}
+
       <div style={s.badge}>
         <span style={lokasi ? s.dotHijau : s.dotMerah} />
         {lokasi ? 'Lokasi Fajri live' : 'Fajri belum share lokasi'}
@@ -130,7 +155,7 @@ const s = {
   lokasiIcon: {
     position: 'absolute',
     top: 88,
-    right: 12,
+    right: 10,
     width: 32,
     height: 32,
     borderRadius: 8,
@@ -145,7 +170,7 @@ const s = {
   lokasiIconAktif: {
     position: 'absolute',
     top: 88,
-    right: 12,
+    right: 10,
     width: 32,
     height: 32,
     borderRadius: 8,
@@ -155,6 +180,36 @@ const s = {
     alignItems: 'center',
     justifyContent: 'center',
     boxShadow: '0 0 10px #B8242F, 0 1px 5px rgba(0,0,0,0.4)',
+    zIndex: 1000,
+  },
+  recenterIcon: {
+    position: 'absolute',
+    top: 88,
+    right: 10,
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    background: '#fff',
+    color: '#333',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    boxShadow: '0 1px 5px rgba(0,0,0,0.4)',
+    zIndex: 1000,
+  },
+  recenterIconBawah: {
+    position: 'absolute',
+    top: 130,
+    right: 10,
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    background: '#fff',
+    color: '#333',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    boxShadow: '0 1px 5px rgba(0,0,0,0.4)',
     zIndex: 1000,
   },
   badge: {

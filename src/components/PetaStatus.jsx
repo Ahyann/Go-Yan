@@ -53,7 +53,13 @@ const ikonOffice = L.divIcon({
 
 function GeserKePosisi({ lat, lng }) {
   const map = useMap()
-  map.setView([lat, lng])
+  const sudahDicenter = useRef(false)
+  useEffect(() => {
+    if (!sudahDicenter.current) {
+      map.setView([lat, lng])
+      sudahDicenter.current = true
+    }
+  }, [lat, lng, map])
   return null
 }
 
@@ -73,13 +79,15 @@ function IkonLabaLaba() {
   )
 }
 
-export default function PetaStatus({ permintaan, tampilkanOverlay = true }) {
+export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef: mapRefLuar }) {
   const lokasiOjek = useLokasiOjek()
   const lokasiSaya = useLokasiPenumpang()
   const { pesan, hapusPesan } = usePesanOjek()
   const adaLokasiLive = lokasiOjek && permintaan?.status === STATUS_PERMINTAAN.DITERIMA
   const markerRef = useRef(null)
   const pesanTampilRef = useRef(null)
+  const mapRefInternal = useRef(null)
+  const mapRef = mapRefLuar || mapRefInternal
   const [teksBubble, setTeksBubble] = useState('Otw dutzz!')
 
   useEffect(() => {
@@ -95,6 +103,7 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true }) {
   return (
     <div style={s.wrap}>
       <MapContainer
+        ref={mapRef}
         center={PUSAT_DEFAULT}
         zoom={15}
         minZoom={5}

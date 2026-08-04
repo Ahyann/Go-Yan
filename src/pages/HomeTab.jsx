@@ -1,13 +1,16 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { STATUS_PERMINTAAN } from '../lib/constants'
 import { useLokasiSayaPenumpang } from '../lib/useLokasiSayaPenumpang'
+import { useLokasiOjek } from '../lib/useLokasiOjek'
 import PetaStatus from '../components/PetaStatus.jsx'
 
 export default function HomeTab({ permintaan }) {
   const { aktif: lokasiAktif, error: lokasiError, mulai: mulaiLokasi, berhenti: berhentiLokasi } = useLokasiSayaPenumpang()
+  const lokasiOjek = useLokasiOjek()
   const sedangJalan = permintaan?.status === STATUS_PERMINTAAN.DITERIMA
   const [showToast, setShowToast] = useState(false)
+  const mapRef = useRef(null)
 
   useEffect(() => {
     if (!sedangJalan && lokasiAktif) {
@@ -28,6 +31,14 @@ export default function HomeTab({ permintaan }) {
     setShowToast(false)
   }
 
+  function handleRecenter() {
+    if (lokasiOjek && mapRef.current) {
+      mapRef.current.setView([lokasiOjek.lat, lokasiOjek.lng], 16)
+    }
+  }
+
+  const adaLokasiLive = lokasiOjek && sedangJalan
+
   return (
     <div style={s.wrap}>
       <div style={s.headerFloat}>
@@ -35,7 +46,7 @@ export default function HomeTab({ permintaan }) {
         <h1 style={s.title}>Halo, Fajri</h1>
       </div>
 
-      <PetaStatus permintaan={permintaan} />
+      <PetaStatus permintaan={permintaan} mapRef={mapRef} />
 
       {sedangJalan && createPortal(
         <>
@@ -49,6 +60,20 @@ export default function HomeTab({ permintaan }) {
               <circle cx="12" cy="9" r="2.5" />
             </svg>
           </button>
+
+          {adaLokasiLive && (
+            <button
+              style={s.recenterIcon}
+              onClick={handleRecenter}
+              aria-label="Kembali ke lokasi Ahyan"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="3" />
+                <path d="M12 2v3M12 19v3M2 12h3M19 12h3" />
+              </svg>
+            </button>
+          )}
+
           {showToast && (
             <div style={s.statusAktifFloat}>Kamu menyalakan live location</div>
           )}
@@ -119,9 +144,24 @@ const s = {
     boxShadow: '0 0 10px #B8242F, 0 1px 5px rgba(0,0,0,0.4)',
     zIndex: 99999,
   },
-  statusAktifFloat: {
+  recenterIcon: {
     position: 'fixed',
     top: 'calc(var(--safe-top) + 128px)',
+    right: 'calc(max(0px, (100vw - 480px) / 2) + 10px)',
+    width: 36,
+    height: 36,
+    borderRadius: 8,
+    background: '#ffffff',
+    color: '#333',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    boxShadow: '0 1px 5px rgba(0,0,0,0.4)',
+    zIndex: 99999,
+  },
+  statusAktifFloat: {
+    position: 'fixed',
+    top: 'calc(var(--safe-top) + 170px)',
     right: 'calc(max(0px, (100vw - 480px) / 2) + 10px)',
     maxWidth: 150,
     background: '#B8242F',
@@ -135,7 +175,7 @@ const s = {
   },
   lokasiErrorFloat: {
     position: 'fixed',
-    top: 'calc(var(--safe-top) + 128px)',
+    top: 'calc(var(--safe-top) + 170px)',
     right: 'calc(max(0px, (100vw - 480px) / 2) + 10px)',
     maxWidth: 160,
     background: '#0B0E1A',
