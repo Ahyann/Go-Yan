@@ -151,7 +151,7 @@ const s = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingBottom: 8,
+    paddingBottom: 14,
     paddingLeft: 6,
     paddingRight: 6,
   },
