@@ -3,6 +3,8 @@ import { useEffect } from 'react'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 
+const PUSAT_DEFAULT = [-6.2088, 106.8456]
+
 const ikonPenumpang = L.divIcon({
   className: '',
   html: `<div style="
@@ -23,35 +25,41 @@ function GeserKePosisi({ lat, lng }) {
 }
 
 export default function PetaLokasiPenumpang({ lokasi }) {
-  if (!lokasi) {
-    return (
-      <div style={s.kosong}>
-        Fajri belum nyalain share lokasi.
-      </div>
-    )
-  }
+  const pusat = lokasi ? [lokasi.lat, lokasi.lng] : PUSAT_DEFAULT
 
   return (
     <div style={s.wrap}>
       <MapContainer
-        center={[lokasi.lat, lokasi.lng]}
-        zoom={16}
+        center={pusat}
+        zoom={lokasi ? 16 : 13}
         style={s.map}
         zoomControl={false}
         attributionControl={false}
         dragging={true}
-        scrollWheelZoom={false}
+        scrollWheelZoom={true}
       >
         <TileLayer
           url={`https://api.maptiler.com/maps/streets-v4-dark/{z}/{x}/{y}.png?key=${import.meta.env.VITE_MAPTILER_KEY}`}
         />
-        <GeserKePosisi lat={lokasi.lat} lng={lokasi.lng} />
-        <Marker position={[lokasi.lat, lokasi.lng]} icon={ikonPenumpang} />
+
+        {lokasi && (
+          <>
+            <GeserKePosisi lat={lokasi.lat} lng={lokasi.lng} />
+            <Marker position={[lokasi.lat, lokasi.lng]} icon={ikonPenumpang} />
+          </>
+        )}
       </MapContainer>
-      <div style={s.badge}>
-        <span style={s.dot} />
-        Lokasi Fajri live
-      </div>
+
+      {!lokasi && (
+        <div style={s.badgeKosong}>Fajri belum nyalain share lokasi</div>
+      )}
+
+      {lokasi && (
+        <div style={s.badge}>
+          <span style={s.dot} />
+          Lokasi Fajri live
+        </div>
+      )}
     </div>
   )
 }
@@ -59,24 +67,25 @@ export default function PetaLokasiPenumpang({ lokasi }) {
 const s = {
   wrap: {
     position: 'relative',
-    height: 220,
+    height: 420,
     borderRadius: 12,
     overflow: 'hidden',
     border: '1px solid var(--blue-border)',
   },
   map: { height: '100%', width: '100%' },
-  kosong: {
-    height: 120,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    background: 'var(--card-blue)',
-    border: '1px solid var(--blue-border)',
-    borderRadius: 12,
+  badgeKosong: {
+    position: 'absolute',
+    left: 12,
+    right: 12,
+    bottom: 12,
+    background: 'rgba(11,14,26,0.9)',
     color: 'var(--text-dim)',
-    fontSize: 13.5,
+    fontSize: 13,
     textAlign: 'center',
-    padding: '0 20px',
+    padding: '10px 14px',
+    borderRadius: 999,
+    border: '1px solid var(--line)',
+    zIndex: 1000,
   },
   badge: {
     position: 'absolute',
