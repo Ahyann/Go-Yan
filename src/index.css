@@ -37,6 +37,7 @@
   --glow-blue-dark:  #1B6FB8;
   --font-judul: 'Bangers', cursive;
   --font-data:  'JetBrains Mono', monospace;
+  --font-pixel: 'Silkscreen', monospace;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -97,15 +98,15 @@ button {
 }
 
 .leaflet-popup-content-wrapper {
-  background: var(--card-blue);
-  border: 1px solid var(--blue-border);
-  border-radius: 12px;
-  color: var(--text);
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 0;
 }
-.leaflet-popup-tip {
-  background: var(--card-blue);
-  border: 1px solid var(--blue-border);
+.leaflet-popup-content {
+  margin: 0;
 }
-.leaflet-popup-close-button {
-  color: var(--text-dim) !important;
+.leaflet-popup-tip-container {
+  display: none;
 }

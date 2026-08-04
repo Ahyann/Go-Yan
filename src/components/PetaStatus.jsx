@@ -74,10 +74,10 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true }) {
           <>
             <GeserKePosisi lat={lokasiOjek.lat} lng={lokasiOjek.lng} />
             <Marker position={[lokasiOjek.lat, lokasiOjek.lng]} icon={ikonOjek}>
-              <Popup>
-                <span style={{ fontFamily: 'var(--font-judul)', fontSize: 15, letterSpacing: '0.5px' }}>
-                  Sabar ya, otw! 🕸️
-                </span>
+              <Popup closeButton={false}>
+                <div style={s.bubbleWrap}>
+                  <span style={s.bubbleText}>Otw dutzz!</span>
+                </div>
               </Popup>
             </Marker>
           </>
@@ -131,6 +131,25 @@ const s = {
     right: 16,
     bottom: 'calc(var(--safe-bottom) + 100px)',
     zIndex: 1000,
+  },
+  bubbleWrap: {
+    backgroundImage: 'url(/icons/bubbletext.png)',
+    backgroundSize: '100% 100%',
+    backgroundRepeat: 'no-repeat',
+    imageRendering: 'pixelated',
+    width: 170,
+    height: 85,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingBottom: 16,
+  },
+  bubbleText: {
+    fontFamily: 'var(--font-pixel)',
+    fontSize: 11,
+    color: '#0B0E1A',
+    textAlign: 'center',
+    lineHeight: 1.4,
   },
   badgeIdle: {
     background: 'rgba(11,14,26,0.9)', color: 'var(--text-dim)', fontSize: 13,
