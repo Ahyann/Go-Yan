@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { AKSI } from '../lib/constants'
 import TimeWheelPicker from './TimeWheelPicker.jsx'
@@ -12,6 +12,7 @@ export default function GoPopup({ onClose, onSubmit }) {
   const [where, setWhere] = useState('')
   const [waktu, setWaktu] = useState(jamSekarang)
   const [showDropdown, setShowDropdown] = useState(false)
+  const inputRef = useRef(null)
 
   const bisaKirim = where.trim().length > 0
 
@@ -23,6 +24,7 @@ export default function GoPopup({ onClose, onSubmit }) {
   function pilihPreset(nama) {
     setWhere(nama)
     setShowDropdown(false)
+    inputRef.current?.blur()
   }
 
   return createPortal(
@@ -47,6 +49,7 @@ export default function GoPopup({ onClose, onSubmit }) {
           Where
           <div style={s.inputWrap}>
             <input
+              ref={inputRef}
               style={s.input}
               value={where}
               onChange={(e) => setWhere(e.target.value)}
