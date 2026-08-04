@@ -24,7 +24,7 @@ function GeserKePosisi({ lat, lng }) {
   return null
 }
 
-export default function PetaLokasiPenumpang({ lokasi }) {
+export default function PetaLokasiPenumpang({ lokasi, teksKosong = 'Fajri belum nyalain share lokasi' }) {
   const pusat = lokasi ? [lokasi.lat, lokasi.lng] : PUSAT_DEFAULT
 
   return (
@@ -51,7 +51,7 @@ export default function PetaLokasiPenumpang({ lokasi }) {
       </MapContainer>
 
       {!lokasi && (
-        <div style={s.badgeKosong}>Fajri belum nyalain share lokasi</div>
+        <div style={s.badgeKosong}>{teksKosong}</div>
       )}
 
       {lokasi && (

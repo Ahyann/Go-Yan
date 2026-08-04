@@ -27,17 +27,9 @@ export default function OjekHomeTab({ permintaan, onTerima, onTolak, onSelesai }
         <h1 style={s.title}>Halo, Ahyan</h1>
       </header>
 
-      {adaPermintaanMasuk && (
-        <section style={s.permintaanCard}>
-          <div style={s.permintaanLabel}>Permintaan baru dari Fajri</div>
-          <div style={s.permintaanAksi}>
-            {permintaan.aksi === AKSI.JEMPUT ? 'Jemput' : 'Antar'} · {permintaan.waktu}
-          </div>
-          <div style={s.permintaanWhere}>{permintaan.where}</div>
-          <div style={s.tombolRow}>
-            <button style={s.tolakBtn} onClick={onTolak}>Tolak</button>
-            <button style={s.terimaBtn} onClick={handleTerima}>Terima</button>
-          </div>
+      {!adaPermintaanMasuk && !sedangJalan && (
+        <section style={s.idleCard}>
+          <PetaLokasiPenumpang lokasi={lokasiPenumpang} teksKosong="Belum ada permintaan masuk" />
         </section>
       )}
 
