@@ -54,16 +54,16 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true }) {
   const { pesan, hapusPesan } = usePesanOjek()
   const adaLokasiLive = lokasiOjek && permintaan?.status === STATUS_PERMINTAAN.DITERIMA
   const markerRef = useRef(null)
-  const [pesanTampil, setPesanTampil] = useState(null)
+  const pesanTampilRef = useRef(null)
 
   useEffect(() => {
     if (pesan && markerRef.current) {
-      setPesanTampil(pesan)
+      pesanTampilRef.current = pesan
       markerRef.current.openPopup()
     }
   }, [pesan])
 
-  const teksBubble = pesanTampil?.teks || 'Otw dutzz!'
+  const teksBubble = pesan?.teks || 'Otw dutzz!'
   const ukuranFont = teksBubble.length > 16 ? 7 : 9
 
   return (
@@ -95,16 +95,16 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true }) {
               icon={ikonOjek}
               eventHandlers={{
                 popupopen: () => {
-                  if (!pesanTampil) {
+                  if (!pesanTampilRef.current) {
                     setTimeout(() => {
                       markerRef.current?.closePopup()
                     }, 2000)
                   }
                 },
                 popupclose: () => {
-                  if (pesanTampil) {
+                  if (pesanTampilRef.current) {
                     hapusPesan()
-                    setPesanTampil(null)
+                    pesanTampilRef.current = null
                   }
                 },
               }}
