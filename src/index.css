@@ -93,6 +93,10 @@ button {
   margin-top: calc(var(--safe-top) + 6px) !important;
 }
 
+.peta-embed .leaflet-top.leaflet-right {
+  margin-top: 10px !important;
+}
+
 .leaflet-marker-pane {
   isolation: isolate;
 }

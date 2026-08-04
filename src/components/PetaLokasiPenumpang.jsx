@@ -50,7 +50,7 @@ export default function PetaLokasiPenumpang({
   const tampilkanTombolLokasi = typeof onToggleLokasi === 'function'
 
   return (
-    <div style={isiPenuh ? s.wrapPolos : s.wrap}>
+    <div className="peta-embed" style={isiPenuh ? s.wrapPolos : s.wrap}>
       <MapContainer
         center={pusat}
         zoom={lokasi ? 16 : 13}
