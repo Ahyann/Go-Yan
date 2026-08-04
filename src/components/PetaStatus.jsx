@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { MapContainer, TileLayer, Marker, Popup, ZoomControl, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
@@ -54,14 +54,16 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true }) {
   const { pesan, hapusPesan } = usePesanOjek()
   const adaLokasiLive = lokasiOjek && permintaan?.status === STATUS_PERMINTAAN.DITERIMA
   const markerRef = useRef(null)
+  const [pesanTampil, setPesanTampil] = useState(null)
 
   useEffect(() => {
     if (pesan && markerRef.current) {
+      setPesanTampil(pesan)
       markerRef.current.openPopup()
     }
   }, [pesan])
 
-  const teksBubble = pesan?.teks || 'Otw dutzz!'
+  const teksBubble = pesanTampil?.teks || 'Otw dutzz!'
   const ukuranFont = teksBubble.length > 16 ? 7 : 9
 
   return (
@@ -93,14 +95,17 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true }) {
               icon={ikonOjek}
               eventHandlers={{
                 popupopen: () => {
-                  if (!pesan) {
+                  if (!pesanTampil) {
                     setTimeout(() => {
                       markerRef.current?.closePopup()
                     }, 2000)
                   }
                 },
                 popupclose: () => {
-                  if (pesan) hapusPesan()
+                  if (pesanTampil) {
+                    hapusPesan()
+                    setPesanTampil(null)
+                  }
                 },
               }}
             >
