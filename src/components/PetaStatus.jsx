@@ -1,4 +1,4 @@
-import { MapContainer, TileLayer, Marker, ZoomControl, Pane, useMap } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, ZoomControl, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { STATUS_PERMINTAAN } from '../lib/constants'
@@ -69,10 +69,6 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true }) {
           url={`https://api.maptiler.com/maps/streets-v4-dark/{z}/{x}/{y}.png?key=${import.meta.env.VITE_MAPTILER_KEY}`}
         />
 
-        <Pane name="tint-pane" style={{ zIndex: 250 }}>
-          <div style={s.tint} />
-        </Pane>
-
         {adaLokasiLive && (
           <>
             <GeserKePosisi lat={lokasiOjek.lat} lng={lokasiOjek.lng} />
@@ -80,6 +76,8 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true }) {
           </>
         )}
       </MapContainer>
+
+      <div style={s.tint} />
 
       {tampilkanOverlay && (
         <div style={s.overlay}>
@@ -120,6 +118,7 @@ const s = {
     background: 'var(--glow-blue-mid)',
     opacity: 0.5,
     mixBlendMode: 'color',
+    zIndex: 1000,
   },
   overlay: {
     position: 'absolute',
