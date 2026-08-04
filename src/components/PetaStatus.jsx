@@ -55,15 +55,16 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true }) {
   const adaLokasiLive = lokasiOjek && permintaan?.status === STATUS_PERMINTAAN.DITERIMA
   const markerRef = useRef(null)
   const pesanTampilRef = useRef(null)
+  const [teksBubble, setTeksBubble] = useState('Otw dutzz!')
 
   useEffect(() => {
     if (pesan && markerRef.current) {
       pesanTampilRef.current = pesan
+      setTeksBubble(pesan.teks)
       markerRef.current.openPopup()
     }
   }, [pesan])
 
-  const teksBubble = pesan?.teks || 'Otw dutzz!'
   const ukuranFont = teksBubble.length > 16 ? 7 : 9
 
   return (
@@ -96,6 +97,7 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true }) {
               eventHandlers={{
                 popupopen: () => {
                   if (!pesanTampilRef.current) {
+                    setTeksBubble('Otw dutzz!')
                     setTimeout(() => {
                       markerRef.current?.closePopup()
                     }, 2000)
