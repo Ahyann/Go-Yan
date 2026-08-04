@@ -159,9 +159,9 @@ const s = {
   lunasBtn: {
     fontSize: 11,
     fontWeight: 600,
-    color: 'var(--glow-blue)',
+    color: 'var(--warn)',
     background: 'transparent',
-    border: '1px solid var(--glow-blue-mid)',
+    border: '1px solid var(--warn)',
     borderRadius: 999,
     padding: '4px 10px',
     lineHeight: 1.3,
