@@ -15,13 +15,13 @@ const ikonOjek = L.divIcon({
   className: '',
   html: `<div style="isolation: isolate;">
     <img src="/icons/spidericon.png" style="
-      width:40px;height:40px;
+      width:32px;height:32px;
       image-rendering: pixelated;
       filter: drop-shadow(0 0 6px #5ED0FF) drop-shadow(0 0 12px #2B9EE8);
     " />
   </div>`,
-  iconSize: [40, 40],
-  iconAnchor: [20, 20],
+  iconSize: [32, 32],
+  iconAnchor: [16, 16],
 })
 
 function GeserKePosisi({ lat, lng }) {
