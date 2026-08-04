@@ -45,10 +45,11 @@ export default function GoPopup({ onClose, onSubmit }) {
           </button>
         </div>
 
-        <label style={s.label}>
-          Where
+        <div style={s.label}>
+          <label htmlFor="where-input">Where</label>
           <div style={s.inputWrap}>
             <input
+              id="where-input"
               ref={inputRef}
               style={s.input}
               value={where}
@@ -86,7 +87,7 @@ export default function GoPopup({ onClose, onSubmit }) {
               </div>
             )}
           </div>
-        </label>
+        </div>
 
         <div style={s.label}>
           Time
