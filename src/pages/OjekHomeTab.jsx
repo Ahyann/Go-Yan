@@ -3,7 +3,6 @@ import { playSpiderSound } from '../lib/sound'
 import { useLokasiSaya } from '../lib/useLokasiSaya'
 import { useLokasiPenumpang } from '../lib/useLokasiPenumpang'
 import PetaLokasiPenumpang from '../components/PetaLokasiPenumpang.jsx'
-import PetaStatus from '../components/PetaStatus.jsx'
 
 export default function OjekHomeTab({ permintaan, onTerima, onTolak, onSelesai }) {
   const adaPermintaanMasuk = permintaan?.status === STATUS_PERMINTAAN.MENUNGGU
@@ -28,13 +27,8 @@ export default function OjekHomeTab({ permintaan, onTerima, onTolak, onSelesai }
         <h1 style={s.title}>Halo, Ahyan</h1>
       </header>
 
-      <section style={s.petaCard}>
-        <PetaStatus permintaan={permintaan} tampilkanOverlay={false} />
-      </section>
-
       {adaPermintaanMasuk && (
         <section style={s.permintaanCard}>
-          <IkonLabaLaba />
           <div style={s.permintaanLabel}>Permintaan baru dari Fajri</div>
           <div style={s.permintaanAksi}>
             {permintaan.aksi === AKSI.JEMPUT ? 'Jemput' : 'Antar'} · {permintaan.waktu}
@@ -77,22 +71,6 @@ export default function OjekHomeTab({ permintaan, onTerima, onTolak, onSelesai }
   )
 }
 
-function IkonLabaLaba() {
-  return (
-    <svg
-      className="spider-loading"
-      width="44" height="44" viewBox="0 0 24 24"
-      fill="none" stroke="var(--glow-blue)" strokeWidth="1.6" strokeLinecap="round"
-      style={{ display: 'block', margin: '0 auto 4px' }}
-    >
-      <circle cx="12" cy="10" r="3" />
-      <circle cx="12" cy="15.5" r="4" />
-      <path d="M9 8 L4 5 M9 9.5 L3 9.5 M9 11.5 L4 13.5 M9 13.5 L5 16.5" />
-      <path d="M15 8 L20 5 M15 9.5 L21 9.5 M15 11.5 L20 13.5 M15 13.5 L19 16.5" />
-    </svg>
-  )
-}
-
 const s = {
   wrap: {
     minHeight: '100%',
@@ -112,13 +90,7 @@ const s = {
     letterSpacing: '1px',
     lineHeight: 1.3,
   },
-  petaCard: {
-    position: 'relative',
-    height: 340,
-    borderRadius: 12,
-    overflow: 'hidden',
-    border: '1px solid var(--blue-border)',
-  },
+
   permintaanCard: {
     background: `linear-gradient(160deg, var(--card-blue-grad-a), var(--card-blue-grad-b))`,
     border: '1px solid var(--warn)',
