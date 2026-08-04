@@ -50,6 +50,8 @@ export default function PetaLokasiPenumpang({ lokasi, teksKosong = 'Fajri belum 
         )}
       </MapContainer>
 
+      <div style={s.tint} />
+
       {!lokasi && (
         <div style={s.badgeKosong}>{teksKosong}</div>
       )}
@@ -73,19 +75,14 @@ const s = {
     border: '1px solid var(--blue-border)',
   },
   map: { height: '100%', width: '100%' },
-  badgeKosong: {
+  tint: {
     position: 'absolute',
-    left: 12,
-    right: 12,
-    bottom: 12,
-    background: 'rgba(11,14,26,0.9)',
-    color: 'var(--text-dim)',
-    fontSize: 13,
-    textAlign: 'center',
-    padding: '10px 14px',
-    borderRadius: 999,
-    border: '1px solid var(--line)',
-    zIndex: 1000,
+    inset: 0,
+    pointerEvents: 'none',
+    background: 'var(--glow-blue-mid)',
+    opacity: 0.5,
+    mixBlendMode: 'color',
+    zIndex: 999,
   },
   badge: {
     position: 'absolute',
