@@ -16,7 +16,7 @@ export default function SwipeableItem({ children, onDelete }) {
 
   function handleMove(clientX) {
     if (mulaiX.current === null) return
-    const delta = clientX - mulaiX.current
+    const delta = mulaiX.current - clientX
     const nilaiBaru = Math.min(Math.max(gesekIni.current + delta, 0), LEBAR_DELETE)
     setGeser(nilaiBaru)
   }
