@@ -1,4 +1,11 @@
+/* ============================================
+   Design token — tema Spider Tracker
+   Semua warna diambil dari sini, jangan hardcode
+   hex di komponen. Ganti sekali, berubah semua.
+   ============================================ */
+
 :root {
+  /* Palet: gelap-teknis ala HUD, aksen merah-web + biru Spidey */
   --bg:          #0B0E1A;
   --surface:     #141A2E;
   --surface-2:   #1E2740;
@@ -15,9 +22,11 @@
   --radius:      14px;
   --pad:         16px;
 
+  /* Aman dari notch & home indicator iPhone */
   --safe-top:    env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 
+  /* --- Tema Spider glow (ditambah belakangan) --- */
   --nav-red:        #B8242F;
   --card-blue:       #123A60;
   --card-blue-grad-a:#1B4A78;
@@ -81,4 +90,22 @@ button {
 
 .leaflet-top.leaflet-right {
   margin-top: calc(var(--safe-top) + 6px) !important;
+}
+
+.leaflet-marker-pane {
+  isolation: isolate;
+}
+
+.leaflet-popup-content-wrapper {
+  background: var(--card-blue);
+  border: 1px solid var(--blue-border);
+  border-radius: 12px;
+  color: var(--text);
+}
+.leaflet-popup-tip {
+  background: var(--card-blue);
+  border: 1px solid var(--blue-border);
+}
+.leaflet-popup-close-button {
+  color: var(--text-dim) !important;
 }
