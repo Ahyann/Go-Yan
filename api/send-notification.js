@@ -1,11 +1,13 @@
 import { initializeApp, cert, getApps } from 'firebase-admin/app'
 import { getMessaging } from 'firebase-admin/messaging'
 import { getFirestore } from 'firebase-admin/firestore'
+import { getDatabase } from 'firebase-admin/database'
 
 if (!getApps().length) {
   const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY)
   initializeApp({
     credential: cert(serviceAccount),
+    databaseURL: 'https://go-yan-5a7ed-default-rtdb.asia-southeast1.firebasedatabase.app',
   })
 }
 
@@ -21,6 +23,14 @@ export default async function handler(req, res) {
   }
 
   try {
+    if (type === 'pesan') {
+      const rtdb = getDatabase()
+      const presenceSnap = await rtdb.ref(`presence/${targetRole}`).get()
+      if (presenceSnap.exists() && presenceSnap.val() === true) {
+        return res.status(200).json({ terkirim: 0, pesan: 'App tujuan lagi kebuka, notif di-skip' })
+      }
+    }
+
     const db = getFirestore()
 
     const snapshot = await db

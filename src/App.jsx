@@ -4,6 +4,7 @@ import { usePermintaanAktif } from './lib/usePermintaanAktif'
 import { useRiwayat } from './lib/useRiwayat'
 import { useJadwalMingguan } from './lib/useJadwalMingguan'
 import { mintaIzinDanSimpanToken, dengarkanNotifForeground } from './lib/notifikasi'
+import { usePresence } from './lib/usePresence'
 import LoginPage from './pages/LoginPage.jsx'
 import OjekView from './pages/OjekView.jsx'
 import PenumpangView from './pages/PenumpangView.jsx'
@@ -23,6 +24,7 @@ function AppIsi() {
   const { riwayat, tambahRiwayat, tandaiLunas, hapusRiwayat } = useRiwayat()
   const { jadwal: jadwalMingguan, simpanJadwal } = useJadwalMingguan()
   const [notifOjek, setNotifOjek] = useState('')
+  usePresence(role)
 
   useEffect(() => {
     if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
