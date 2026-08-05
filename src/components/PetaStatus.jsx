@@ -6,6 +6,7 @@ import { STATUS_PERMINTAAN, LOKASI_OFFICE } from '../lib/constants'
 import { useLokasiOjek } from '../lib/useLokasiOjek'
 import { useLokasiPenumpang } from '../lib/useLokasiPenumpang'
 import { usePesanOjek } from '../lib/usePesanOjek'
+import { usePesanPenumpang } from '../lib/usePesanPenumpang'
 
 const PUSAT_DEFAULT = [-6.2088, 106.8456]
 
@@ -30,13 +31,16 @@ const ikonOjek = L.divIcon({
 
 const ikonSaya = L.divIcon({
   className: '',
-  html: `<div style="
-    width:18px;height:18px;border-radius:50%;
-    background:#2B6CE8;border:3px solid #fff;
-    box-shadow:0 2px 8px rgba(0,0,0,0.4);
-  "></div>`,
-  iconSize: [18, 18],
-  iconAnchor: [9, 9],
+  html: `<div style="isolation: isolate;">
+    <img src="/icons/fajri.png" style="
+      width:18px;height:27px;
+      image-rendering: pixelated;
+      filter: drop-shadow(0 0 5px #E8EDF9) drop-shadow(0 0 8px #8B96B4);
+    " />
+  </div>`,
+  iconSize: [18, 27],
+  iconAnchor: [9, 27],
+  popupAnchor: [30, -4],
 })
 
 const ikonOffice = L.divIcon({
@@ -83,8 +87,10 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
   const lokasiOjek = useLokasiOjek()
   const lokasiSaya = useLokasiPenumpang()
   const { pesan, hapusPesan } = usePesanOjek()
+  const { pesan: pesanSaya } = usePesanPenumpang()
   const adaLokasiLive = lokasiOjek && permintaan?.status === STATUS_PERMINTAAN.DITERIMA
   const markerRef = useRef(null)
+  const markerSayaRef = useRef(null)
   const pesanTampilRef = useRef(null)
   const mapRefInternal = useRef(null)
   const mapRef = mapRefLuar || mapRefInternal
@@ -97,6 +103,15 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
       markerRef.current.openPopup()
     }
   }, [pesan, adaLokasiLive])
+
+  useEffect(() => {
+    if (!markerSayaRef.current) return
+    if (pesanSaya) {
+      markerSayaRef.current.openPopup()
+    } else {
+      markerSayaRef.current.closePopup()
+    }
+  }, [pesanSaya])
 
   const ukuranFont = teksBubble.length > 16 ? 7 : 9
 
@@ -128,6 +143,7 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
               ref={markerRef}
               position={[lokasiOjek.lat, lokasiOjek.lng]}
               icon={ikonOjek}
+              zIndexOffset={1000}
               eventHandlers={{
                 popupopen: () => {
                   if (!pesanTampilRef.current) {
@@ -155,7 +171,17 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
         )}
 
         {lokasiSaya && (
-          <Marker position={[lokasiSaya.lat, lokasiSaya.lng]} icon={ikonSaya} />
+          <Marker ref={markerSayaRef} position={[lokasiSaya.lat, lokasiSaya.lng]} icon={ikonSaya}>
+            {pesanSaya && (
+              <Popup closeButton={false} autoClose={false} closeOnClick={false}>
+                <div style={s.bubbleWrap}>
+                  <span style={{ ...s.bubbleText, fontSize: pesanSaya.teks.length > 16 ? 7 : 9 }}>
+                    {pesanSaya.teks}
+                  </span>
+                </div>
+              </Popup>
+            )}
+          </Marker>
         )}
 
         <Marker position={LOKASI_OFFICE} icon={ikonOffice} />
@@ -181,7 +207,7 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
           {permintaan?.status === STATUS_PERMINTAAN.DITERIMA && (
             <div style={s.badgeLive}>
               <span style={s.dotHijau} />
-              {adaLokasiLive ? 'OTWWW!!' : 'Okay!'}
+              {adaLokasiLive ? 'OTWWW!!' : 'Ahyan udah terima, tunggu ya! ✓'}
             </div>
           )}
         </div>
@@ -193,15 +219,6 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
 const s = {
   wrap: { position: 'absolute', inset: 0 },
   map: { height: '100%', width: '100%' },
-  tint: {
-    position: 'absolute',
-    inset: 0,
-    pointerEvents: 'none',
-    background: 'var(--glow-blue-mid)',
-    opacity: 0.5,
-    mixBlendMode: 'color',
-    zIndex: 1000,
-  },
   overlay: {
     position: 'absolute',
     left: 16,

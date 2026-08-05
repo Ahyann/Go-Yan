@@ -4,6 +4,7 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { useLokasiOjek } from '../lib/useLokasiOjek'
 import { usePesanPenumpang } from '../lib/usePesanPenumpang'
+import { usePesanOjek } from '../lib/usePesanOjek'
 import { LOKASI_OFFICE } from '../lib/constants'
 
 const PUSAT_DEFAULT = [-6.2088, 106.8456]
@@ -14,7 +15,7 @@ const ikonPenumpang = L.divIcon({
     <img src="/icons/fajri.png" style="
       width:21px;height:32px;
       image-rendering: pixelated;
-      filter: drop-shadow(0 0 6px #5ED0FF) drop-shadow(0 0 10px #2B9EE8);
+      filter: drop-shadow(0 0 6px #E8EDF9) drop-shadow(0 0 10px #8B96B4);
     " />
   </div>`,
   iconSize: [21, 32],
@@ -33,6 +34,7 @@ const ikonSaya = L.divIcon({
   </div>`,
   iconSize: [24, 24],
   iconAnchor: [12, 12],
+  popupAnchor: [30, -4],
 })
 
 const ikonOffice = L.divIcon({
@@ -68,10 +70,12 @@ export default function PetaLokasiPenumpang({
 }) {
   const lokasiSaya = useLokasiOjek()
   const { pesan, hapusPesan } = usePesanPenumpang()
+  const { pesan: pesanSaya } = usePesanOjek()
   const pusat = lokasi ? [lokasi.lat, lokasi.lng] : PUSAT_DEFAULT
   const tampilkanTombolLokasi = typeof onToggleLokasi === 'function'
   const mapRef = useRef(null)
   const markerRef = useRef(null)
+  const markerSayaRef = useRef(null)
   const pesanTampilRef = useRef(null)
   const [teksBubble, setTeksBubble] = useState('')
 
@@ -82,6 +86,15 @@ export default function PetaLokasiPenumpang({
       markerRef.current.openPopup()
     }
   }, [pesan, lokasi])
+
+  useEffect(() => {
+    if (!markerSayaRef.current) return
+    if (pesanSaya) {
+      markerSayaRef.current.openPopup()
+    } else {
+      markerSayaRef.current.closePopup()
+    }
+  }, [pesanSaya])
 
   const ukuranFont = teksBubble.length > 16 ? 7 : 9
 
@@ -144,7 +157,22 @@ export default function PetaLokasiPenumpang({
         )}
 
         {lokasiSaya && (
-          <Marker position={[lokasiSaya.lat, lokasiSaya.lng]} icon={ikonSaya} />
+          <Marker
+            ref={markerSayaRef}
+            position={[lokasiSaya.lat, lokasiSaya.lng]}
+            icon={ikonSaya}
+            zIndexOffset={1000}
+          >
+            {pesanSaya && (
+              <Popup closeButton={false} autoClose={false} closeOnClick={false}>
+                <div style={s.bubbleWrap}>
+                  <span style={{ ...s.bubbleText, fontSize: pesanSaya.teks.length > 16 ? 7 : 9 }}>
+                    {pesanSaya.teks}
+                  </span>
+                </div>
+              </Popup>
+            )}
+          </Marker>
         )}
 
         <Marker position={LOKASI_OFFICE} icon={ikonOffice} />
