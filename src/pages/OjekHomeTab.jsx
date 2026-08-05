@@ -18,7 +18,7 @@ export default function OjekHomeTab({
   const adaPermintaanMasuk = permintaan?.status === STATUS_PERMINTAAN.MENUNGGU
   const sedangJalan = permintaan?.status === STATUS_PERMINTAAN.DITERIMA
   const lokasiPenumpang = useLokasiPenumpang()
-  const { kirimPesan } = usePesanOjek()
+  const { kirimPesan, hapusPesan } = usePesanOjek()
   const [teksPesan, setTeksPesan] = useState('')
 
   function handleKirimPesan() {
@@ -35,6 +35,7 @@ export default function OjekHomeTab({
   function handleSelesai() {
     berhentiLokasi()
     hapusLokasiPenumpangSekarang()
+    hapusPesan()
     onSelesai()
   }
 
