@@ -19,6 +19,8 @@ export default function RiwayatTab({ riwayat }) {
   const belumBayar = riwayat.filter((r) => r.statusBayar === STATUS_BAYAR.BELUM)
   const totalBelumBayar = belumBayar.reduce((jumlah, r) => jumlah + r.tarif, 0)
 
+  const totalBulanIni = riwayatTerfilter.reduce((jumlah, r) => jumlah + r.tarif, 0)
+
   function handlePilihBulan(bulan, tahun) {
     setBulanAktif(bulan)
     setTahunAktif(tahun)
@@ -37,11 +39,19 @@ export default function RiwayatTab({ riwayat }) {
         </button>
       </div>
 
-      <section style={s.cardBiru}>
-        <div style={s.tagihanLabel}>Belum ditransfer</div>
-        <div style={s.angkaBelum}>{formatRupiah(totalBelumBayar)}</div>
-        <div style={s.tagihanSub}>{belumBayar.length} perjalanan</div>
-      </section>
+      <div style={s.ringkasanRow}>
+        <section style={s.cardBiru}>
+          <div style={s.tagihanLabel}>Belum ditransfer</div>
+          <div style={s.angkaBelum}>{formatRupiah(totalBelumBayar)}</div>
+          <div style={s.tagihanSub}>{belumBayar.length} perjalanan</div>
+        </section>
+
+        <section style={s.cardBiru}>
+          <div style={s.tagihanLabel}>Total spend {NAMA_BULAN[bulanAktif]}</div>
+          <div style={s.angkaTotal}>{formatRupiah(totalBulanIni)}</div>
+          <div style={s.tagihanSub}>{riwayatTerfilter.length} perjalanan</div>
+        </section>
+      </div>
 
       <section>
         <h2 style={s.sectionTitle}>Riwayat perjalanan</h2>
@@ -107,16 +117,22 @@ const s = {
     background: 'var(--card-blue)', border: '1px solid var(--blue-border)',
     borderRadius: 999, padding: '6px 12px',
   },
+  ringkasanRow: { display: 'flex', gap: 10 },
   cardBiru: {
+    flex: 1,
     background: `linear-gradient(160deg, var(--card-blue-grad-a), var(--card-blue-grad-b))`,
     border: '1px solid var(--blue-border)',
     borderRadius: 12,
-    padding: 20,
+    padding: 16,
   },
-  tagihanLabel: { fontSize: 13, color: '#9FC3E8', marginBottom: 6 },
+  tagihanLabel: { fontSize: 12.5, color: '#9FC3E8', marginBottom: 6 },
   angkaBelum: {
-    fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 26,
+    fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 19,
     color: '#FF4C4C', textShadow: '0 0 6px rgba(255,76,76,0.6)',
+  },
+  angkaTotal: {
+    fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 19,
+    color: 'var(--glow-blue)', textShadow: '0 0 6px var(--glow-blue-mid)',
   },
   tagihanSub: { fontSize: 12, color: '#8FB4DC', marginTop: 4 },
   sectionTitle: { fontSize: 14, color: 'var(--text-dim)', marginBottom: 10 },
