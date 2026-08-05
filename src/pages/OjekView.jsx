@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useLokasiSaya } from '../lib/useLokasiSaya'
 import OjekNav from '../components/OjekNav.jsx'
 import OjekHomeTab from './OjekHomeTab.jsx'
 import OjekJadwalTab from './OjekJadwalTab.jsx'
@@ -16,6 +17,13 @@ export default function OjekView({
 }) {
   const [tabAktif, setTabAktif] = useState('home')
 
+  const {
+    aktif: lokasiAktif,
+    error: lokasiError,
+    mulai: mulaiLokasi,
+    berhenti: berhentiLokasi,
+  } = useLokasiSaya()
+
   return (
     <div style={s.appWrap}>
       <div style={s.stageScroll}>
@@ -25,6 +33,10 @@ export default function OjekView({
             onTerima={onTerima}
             onTolak={onTolak}
             onSelesai={onSelesai}
+            lokasiAktif={lokasiAktif}
+            lokasiError={lokasiError}
+            mulaiLokasi={mulaiLokasi}
+            berhentiLokasi={berhentiLokasi}
           />
         )}
         {tabAktif === 'jadwal' && <OjekJadwalTab jadwalMingguan={jadwalMingguan} />}

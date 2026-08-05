@@ -1,15 +1,22 @@
 import { useState } from 'react'
 import { STATUS_PERMINTAAN, AKSI } from '../lib/constants'
 import { playSpiderSound } from '../lib/sound'
-import { useLokasiSaya } from '../lib/useLokasiSaya'
 import { useLokasiPenumpang, hapusLokasiPenumpangSekarang } from '../lib/useLokasiPenumpang'
 import { usePesanOjek } from '../lib/usePesanOjek'
 import PetaLokasiPenumpang from '../components/PetaLokasiPenumpang.jsx'
 
-export default function OjekHomeTab({ permintaan, onTerima, onTolak, onSelesai }) {
+export default function OjekHomeTab({
+  permintaan,
+  onTerima,
+  onTolak,
+  onSelesai,
+  lokasiAktif,
+  lokasiError,
+  mulaiLokasi,
+  berhentiLokasi,
+}) {
   const adaPermintaanMasuk = permintaan?.status === STATUS_PERMINTAAN.MENUNGGU
   const sedangJalan = permintaan?.status === STATUS_PERMINTAAN.DITERIMA
-  const { aktif: lokasiAktif, error: lokasiError, mulai: mulaiLokasi, berhenti: berhentiLokasi } = useLokasiSaya()
   const lokasiPenumpang = useLokasiPenumpang()
   const { kirimPesan } = usePesanOjek()
   const [teksPesan, setTeksPesan] = useState('')
@@ -190,6 +197,25 @@ const s = {
     fontWeight: 600,
     padding: '10px 16px',
     borderRadius: 10,
+  },
+  lokasiBtn: {
+    background: 'rgba(255,255,255,0.06)',
+    color: '#8FB4DC',
+    fontSize: 13.5,
+    fontWeight: 600,
+    padding: '12px',
+    borderRadius: 999,
+    border: '1px solid var(--blue-border)',
+  },
+  lokasiBtnAktif: {
+    background: 'rgba(94,208,255,0.12)',
+    color: 'var(--glow-blue)',
+    fontSize: 13.5,
+    fontWeight: 600,
+    padding: '12px',
+    borderRadius: 999,
+    border: '1px solid var(--glow-blue-mid)',
+    textShadow: '0 0 4px var(--glow-blue-mid)',
   },
   lokasiError: { fontSize: 12, color: 'var(--web-red)', textAlign: 'center' },
   selesaiBtn: {
