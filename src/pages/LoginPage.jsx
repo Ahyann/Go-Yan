@@ -1,19 +1,21 @@
 import { useState } from 'react'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import { auth } from '../lib/firebase'
-
-const PESAN_ERROR = {
-  'auth/invalid-email': 'Format email belum benar.',
-  'auth/invalid-credential': 'Email atau password salah.',
-  'auth/too-many-requests': 'Terlalu banyak percobaan gagal. Coba lagi sebentar.',
-  'auth/network-request-failed': 'Gak ada koneksi internet.',
-}
+import { useLanguage } from '../context/LanguageContext.jsx'
 
 export default function LoginPage() {
+  const { t } = useLanguage()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+
+  const PESAN_ERROR = {
+    'auth/invalid-email': t.errInvalidEmail,
+    'auth/invalid-credential': t.errInvalidCredential,
+    'auth/too-many-requests': t.errTooManyRequests,
+    'auth/network-request-failed': t.errNetworkFailed,
+  }
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -22,7 +24,7 @@ export default function LoginPage() {
     try {
       await signInWithEmailAndPassword(auth, email.trim(), password)
     } catch (err) {
-      setError(PESAN_ERROR[err.code] || 'Gagal masuk, coba lagi.')
+      setError(PESAN_ERROR[err.code] || t.errGeneric)
       setLoading(false)
     }
   }
@@ -31,12 +33,12 @@ export default function LoginPage() {
     <main style={s.wrap}>
       <div style={s.brand}>
         <div style={s.eyebrow}>GO-YAN</div>
-        <h1 style={s.title}>Masuk</h1>
+        <h1 style={s.title}>{t.loginTitle}</h1>
       </div>
 
       <form style={s.form} onSubmit={handleSubmit}>
         <label style={s.label}>
-          Email
+          {t.loginEmail}
           <input
             style={s.input}
             type="email"
@@ -48,7 +50,7 @@ export default function LoginPage() {
         </label>
 
         <label style={s.label}>
-          Password
+          {t.loginPassword}
           <input
             style={s.input}
             type="password"
@@ -62,7 +64,7 @@ export default function LoginPage() {
         {error && <div style={s.error}>{error}</div>}
 
         <button style={s.submit} type="submit" disabled={loading}>
-          {loading ? 'Memproses…' : 'Masuk'}
+          {loading ? t.loginMemproses : t.loginSubmit}
         </button>
       </form>
     </main>

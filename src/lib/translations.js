@@ -90,6 +90,27 @@ export const translations = {
     namaBulanPendek: ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'],
     ariaTahunSebelumnya: 'Tahun sebelumnya',
     ariaTahunBerikutnya: 'Tahun berikutnya',
+
+    // --- Login ---
+    loginTitle: 'Masuk',
+    loginEmail: 'Email',
+    loginPassword: 'Password',
+    loginMemproses: 'Memproses…',
+    loginSubmit: 'Masuk',
+    errInvalidEmail: 'Format email belum benar.',
+    errInvalidCredential: 'Email atau password salah.',
+    errTooManyRequests: 'Terlalu banyak percobaan gagal. Coba lagi sebentar.',
+    errNetworkFailed: 'Gak ada koneksi internet.',
+    errGeneric: 'Gagal masuk, coba lagi.',
+
+    // --- Nav ---
+    navHome: 'Home',
+    navJadwal: 'Jadwal',
+    navRiwayat: 'Riwayat',
+    navAkun: 'Akun',
+    ariaGoKirim: 'Kirim sinyal jemput atau antar',
+    ariaGoBatal: 'Batalkan permintaan',
+    ariaGoDisabled: 'Masih ada perjalanan aktif',
   },
   en: {
     // --- HomeTab (Penumpang) ---
@@ -182,5 +203,26 @@ export const translations = {
     namaBulanPendek: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
     ariaTahunSebelumnya: 'Previous year',
     ariaTahunBerikutnya: 'Next year',
+
+    // --- Login ---
+    loginTitle: 'Sign in',
+    loginEmail: 'Email',
+    loginPassword: 'Password',
+    loginMemproses: 'Signing in…',
+    loginSubmit: 'Sign in',
+    errInvalidEmail: 'Invalid email format.',
+    errInvalidCredential: 'Incorrect email or password.',
+    errTooManyRequests: 'Too many failed attempts. Try again shortly.',
+    errNetworkFailed: 'No internet connection.',
+    errGeneric: 'Sign in failed, please try again.',
+
+    // --- Nav ---
+    navHome: 'Home',
+    navJadwal: 'Schedule',
+    navRiwayat: 'History',
+    navAkun: 'Account',
+    ariaGoKirim: 'Send a pickup or drop-off signal',
+    ariaGoBatal: 'Cancel request',
+    ariaGoDisabled: 'A trip is currently active',
   },
 }

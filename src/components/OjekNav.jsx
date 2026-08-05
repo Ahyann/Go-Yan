@@ -1,18 +1,21 @@
+import { useLanguage } from '../context/LanguageContext.jsx'
+
 export default function OjekNav({ tabAktif, onTabChange }) {
+  const { t } = useLanguage()
   return (
     <nav style={s.nav}>
-      <IconBtn label="Home" aktif={tabAktif === 'home'} onClick={() => onTabChange('home')}>
+      <IconBtn label={t.navHome} aktif={tabAktif === 'home'} onClick={() => onTabChange('home')}>
         <path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10" />
       </IconBtn>
-      <IconBtn label="Jadwal" aktif={tabAktif === 'jadwal'} onClick={() => onTabChange('jadwal')}>
+      <IconBtn label={t.navJadwal} aktif={tabAktif === 'jadwal'} onClick={() => onTabChange('jadwal')}>
         <rect x="3" y="5" width="18" height="16" rx="2" />
         <path d="M3 10h18M8 3v4M16 3v4" />
       </IconBtn>
-      <IconBtn label="Riwayat" aktif={tabAktif === 'riwayat'} onClick={() => onTabChange('riwayat')}>
+      <IconBtn label={t.navRiwayat} aktif={tabAktif === 'riwayat'} onClick={() => onTabChange('riwayat')}>
         <circle cx="12" cy="12" r="9" />
         <path d="M12 7v5l3.5 2" />
       </IconBtn>
-      <IconBtn label="Akun" aktif={tabAktif === 'akun'} onClick={() => onTabChange('akun')}>
+      <IconBtn label={t.navAkun} aktif={tabAktif === 'akun'} onClick={() => onTabChange('akun')}>
         <circle cx="12" cy="8" r="3.5" />
         <path d="M5 20c1.5-4 5-5.5 7-5.5s5.5 1.5 7 5.5" />
       </IconBtn>
