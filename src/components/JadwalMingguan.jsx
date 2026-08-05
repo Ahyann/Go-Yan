@@ -42,29 +42,35 @@ export default function JadwalMingguan({ jadwal, onSimpan, bisaEdit }) {
 
   return (
     <div style={s.wrap}>
-      {HARI_KERJA.map(({ key, label }) => (
-        <div key={key} style={s.hariBlok}>
-          <div style={s.hariLabel}>{label}</div>
+      {HARI_KERJA.map(({ key, label }) => {
+        const adaJadwal = Boolean(draft[key]?.antar) || Boolean(draft[key]?.jemput)
+        if (!bisaEdit && !adaJadwal) return null
 
-          <AksiBaris
-            label="Antar"
-            aktif={Boolean(draft[key]?.antar)}
-            jam={draft[key]?.antar}
-            bisaEdit={bisaEdit}
-            onToggle={() => toggleAksi(key, 'antar')}
-            onBukaJam={() => setEditing({ hari: key, aksi: 'antar' })}
-          />
+        return (
+          <div key={key} style={s.hariBlok}>
+            <div style={s.hariLabel}>{label}</div>
 
-          <AksiBaris
-            label="Jemput"
-            aktif={Boolean(draft[key]?.jemput)}
-            jam={draft[key]?.jemput}
-            bisaEdit={bisaEdit}
-            onToggle={() => toggleAksi(key, 'jemput')}
-            onBukaJam={() => setEditing({ hari: key, aksi: 'jemput' })}
-          />
-        </div>
-      ))}
+            <div style={s.aksiGrid}>
+              <AksiChip
+                label="Antar"
+                aktif={Boolean(draft[key]?.antar)}
+                jam={draft[key]?.antar}
+                bisaEdit={bisaEdit}
+                onToggle={() => toggleAksi(key, 'antar')}
+                onBukaJam={() => setEditing({ hari: key, aksi: 'antar' })}
+              />
+              <AksiChip
+                label="Jemput"
+                aktif={Boolean(draft[key]?.jemput)}
+                jam={draft[key]?.jemput}
+                bisaEdit={bisaEdit}
+                onToggle={() => toggleAksi(key, 'jemput')}
+                onBukaJam={() => setEditing({ hari: key, aksi: 'jemput' })}
+              />
+            </div>
+          </div>
+        )
+      })}
 
       {bisaEdit && (
         <button style={s.simpanBtn} onClick={handleSimpan} disabled={menyimpan}>
@@ -93,11 +99,11 @@ export default function JadwalMingguan({ jadwal, onSimpan, bisaEdit }) {
   )
 }
 
-function AksiBaris({ label, aktif, jam, bisaEdit, onToggle, onBukaJam }) {
+function AksiChip({ label, aktif, jam, bisaEdit, onToggle, onBukaJam }) {
   if (!bisaEdit && !aktif) return null
 
   return (
-    <div style={s.aksiRow}>
+    <div style={s.aksiItem}>
       {bisaEdit ? (
         <button style={aktif ? s.chipAktif : s.chip} onClick={onToggle}>
           {label}
@@ -115,56 +121,80 @@ function AksiBaris({ label, aktif, jam, bisaEdit, onToggle, onBukaJam }) {
 }
 
 const s = {
-  wrap: { display: 'flex', flexDirection: 'column', gap: 12 },
+  wrap: { display: 'flex', flexDirection: 'column', gap: 10 },
   hariBlok: {
     background: 'var(--card-blue)',
     border: '1px solid var(--blue-border)',
     borderRadius: 10,
-    padding: '14px 16px',
+    padding: '12px 14px',
     display: 'flex',
-    flexDirection: 'column',
-    gap: 10,
-  },
-  hariLabel: { fontSize: 15, fontWeight: 700, color: 'var(--text)', marginBottom: 2 },
-  aksiRow: {
-    display: 'flex',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    paddingLeft: 4,
+    gap: 12,
+  },
+  hariLabel: {
+    fontSize: 14,
+    fontWeight: 700,
+    color: 'var(--text)',
+    width: 46,
+    flexShrink: 0,
+  },
+  aksiGrid: {
+    display: 'flex',
+    flex: 1,
+    gap: 16,
+  },
+  aksiItem: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 8,
+    flex: 1,
   },
   chip: {
-    fontSize: 13,
+    fontSize: 12.5,
     fontWeight: 600,
-    padding: '7px 14px',
+    padding: '7px 0',
+    width: 62,
+    textAlign: 'center',
     borderRadius: 999,
     background: 'rgba(255,255,255,0.06)',
     color: '#8FB4DC',
     border: '1px solid var(--blue-border)',
+    flexShrink: 0,
   },
   chipAktif: {
-    fontSize: 13,
+    fontSize: 12.5,
     fontWeight: 600,
-    padding: '7px 14px',
+    padding: '7px 0',
+    width: 62,
+    textAlign: 'center',
     borderRadius: 999,
     background: 'rgba(94,208,255,0.18)',
     color: 'var(--glow-blue)',
     border: '1px solid var(--glow-blue-mid)',
     textShadow: '0 0 4px var(--glow-blue-mid)',
+    flexShrink: 0,
   },
-  chipBaca: { fontSize: 13, fontWeight: 600, color: '#8FB4DC' },
+  chipBaca: {
+    fontSize: 12.5,
+    fontWeight: 600,
+    color: '#8FB4DC',
+    width: 46,
+    flexShrink: 0,
+  },
   jamBtn: {
     fontFamily: 'var(--font-data)',
-    fontSize: 13,
+    fontSize: 12.5,
     background: 'rgba(255,255,255,0.06)',
     border: '1px solid var(--blue-border)',
     borderRadius: 8,
-    padding: '7px 12px',
+    padding: '6px 8px',
     color: 'var(--text)',
-    minWidth: 80,
+    minWidth: 0,
+    flex: 1,
     textAlign: 'center',
   },
   jamBacaTeks: {
-    fontFamily: 'var(--font-data)', fontSize: 13,
+    fontFamily: 'var(--font-data)', fontSize: 12.5,
     color: 'var(--glow-blue)', textShadow: '0 0 4px var(--glow-blue-mid)',
   },
   simpanBtn: {
@@ -176,7 +206,6 @@ const s = {
     padding: '13px',
     borderRadius: 999,
   },
-
   overlay: {
     position: 'fixed',
     inset: 0,
