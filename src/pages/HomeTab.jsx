@@ -65,7 +65,7 @@ export default function HomeTab({ permintaan, lokasiAktif, lokasiError, mulaiLok
           )}
 
           {showToast && (
-            <div style={s.statusAktifFloat}>Kamu menyalakan live location</div>
+            <div style={s.statusAktifFloat}>Live location aktif</div>
           )}
           {lokasiError && (
             <div style={s.lokasiErrorFloat}>{lokasiError}</div>
@@ -151,16 +151,16 @@ const s = {
   },
   statusAktifFloat: {
     position: 'fixed',
-    top: 'calc(var(--safe-top) + 170px)',
-    right: 'calc(max(0px, (100vw - 480px) / 2) + 10px)',
-    maxWidth: 150,
+    top: 'calc(var(--safe-top) + 86px)',
+    right: 'calc(max(0px, (100vw - 480px) / 2) + 10px + 36px + 8px)',
+    maxWidth: 140,
     background: '#B8242F',
     color: '#fff',
     fontSize: 11,
     fontWeight: 600,
-    padding: '6px 10px',
+    padding: '8px 12px',
     borderRadius: 8,
-    textAlign: 'center',
+    textAlign: 'right',
     zIndex: 99999,
   },
   lokasiErrorFloat: {
