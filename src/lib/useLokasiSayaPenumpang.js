@@ -43,6 +43,8 @@ export function useLokasiSayaPenumpang() {
   }
 
   useEffect(() => {
+    remove(LOKASI_REF)
+
     return () => {
       if (watchIdRef.current !== null) {
         navigator.geolocation.clearWatch(watchIdRef.current)
