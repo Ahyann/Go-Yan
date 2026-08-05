@@ -1,18 +1,18 @@
+import { useLanguage } from '../context/LanguageContext.jsx'
 import JadwalMingguan from '../components/JadwalMingguan.jsx'
 
 export default function JadwalTab({ jadwalMingguan, simpanJadwal }) {
+  const { t } = useLanguage()
   return (
     <main style={s.wrap}>
       <header style={s.header}>
-        <div style={s.eyebrow}>JADWAL</div>
-        <h1 style={s.title}>Jadwal mingguan</h1>
+        <div style={s.eyebrow}>{t.jadwalEyebrow}</div>
+        <h1 style={s.title}>{t.jadwalTitlePenumpang}</h1>
       </header>
 
       <JadwalMingguan jadwal={jadwalMingguan} onSimpan={simpanJadwal} bisaEdit />
 
-      <p style={s.catatan}>
-        Jadwal ini otomatis kosong lagi tiap awal minggu (Senin) — atur ulang tiap minggu sesuai kebutuhan.
-      </p>
+      <p style={s.catatan}>{t.jadwalCatatanPenumpang}</p>
     </main>
   )
 }

@@ -1,18 +1,18 @@
+import { useLanguage } from '../context/LanguageContext.jsx'
 import JadwalMingguan from '../components/JadwalMingguan.jsx'
 
 export default function OjekJadwalTab({ jadwalMingguan }) {
+  const { t } = useLanguage()
   return (
     <main style={s.wrap}>
       <header style={s.header}>
-        <div style={s.eyebrow}>JADWAL</div>
-        <h1 style={s.title}>Jadwal mingguan Fajri</h1>
+        <div style={s.eyebrow}>{t.jadwalEyebrow}</div>
+        <h1 style={s.title}>{t.jadwalTitleOjek}</h1>
       </header>
 
       <JadwalMingguan jadwal={jadwalMingguan} bisaEdit={false} />
 
-      <p style={s.catatan}>
-        Jadwal ini otomatis kosong lagi tiap awal minggu (Senin), nunggu Fajri atur ulang.
-      </p>
+      <p style={s.catatan}>{t.jadwalCatatanOjek}</p>
     </main>
   )
 }

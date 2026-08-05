@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { STATUS_BAYAR, formatRupiah } from '../lib/constants'
+import { useLanguage } from '../context/LanguageContext.jsx'
 import MonthPickerPopup from '../components/MonthPickerPopup.jsx'
 
-const NAMA_BULAN = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember']
-
 export default function RiwayatTab({ riwayat }) {
+  const { t } = useLanguage()
   const [showBulan, setShowBulan] = useState(false)
 
   const sekarang = new Date()
@@ -31,46 +31,46 @@ export default function RiwayatTab({ riwayat }) {
     <main style={s.wrap}>
       <div style={s.sectionHead}>
         <div>
-          <div style={s.eyebrow}>RIWAYAT</div>
-          <h1 style={s.title}>Perjalanan & tagihan</h1>
+          <div style={s.eyebrow}>{t.riwayatEyebrow}</div>
+          <h1 style={s.title}>{t.riwayatTitlePenumpang}</h1>
         </div>
         <button style={s.bulanBtn} onClick={() => setShowBulan(true)}>
-          {NAMA_BULAN[bulanAktif]} {tahunAktif} ▾
+          {t.namaBulanPanjang[bulanAktif]} {tahunAktif} ▾
         </button>
       </div>
 
       <div style={s.ringkasanRow}>
         <section style={s.cardBiru}>
-          <div style={s.tagihanLabel}>Belum ditransfer</div>
+          <div style={s.tagihanLabel}>{t.belumDitransfer}</div>
           <div style={s.angkaBelum}>{formatRupiah(totalBelumBayar)}</div>
-          <div style={s.tagihanSub}>{belumBayar.length} perjalanan</div>
+          <div style={s.tagihanSub}>{belumBayar.length} {t.satuanPerjalanan}</div>
         </section>
 
         <section style={s.cardBiru}>
-          <div style={s.tagihanLabel}>Total spend {NAMA_BULAN[bulanAktif]}</div>
+          <div style={s.tagihanLabel}>{t.totalSpend} {t.namaBulanPanjang[bulanAktif]}</div>
           <div style={s.angkaTotal}>{formatRupiah(totalBulanIni)}</div>
-          <div style={s.tagihanSub}>{riwayatTerfilter.length} perjalanan</div>
+          <div style={s.tagihanSub}>{riwayatTerfilter.length} {t.satuanPerjalanan}</div>
         </section>
       </div>
 
       <section>
-        <h2 style={s.sectionTitle}>Riwayat perjalanan</h2>
+        <h2 style={s.sectionTitle}>{t.riwayatPerjalananTitle}</h2>
         <div style={s.list}>
           {riwayatTerfilter.length === 0 ? (
-            <div style={s.kosong}>Belum ada perjalanan bulan ini.</div>
+            <div style={s.kosong}>{t.belumAdaPerjalananBulanIni}</div>
           ) : (
             riwayatTerfilter.map((r) => (
               <div key={r.id} style={s.item}>
                 <div>
                   <div style={s.itemJam}>{r.jam} · {r.tanggal.split('-')[2]}</div>
                   <div style={s.itemDesc}>
-                    {r.aksi === 'jemput' ? 'Jemput' : 'Antar'} · {r.where}
+                    {r.aksi === 'jemput' ? t.jemput : t.antar} · {r.where}
                   </div>
                 </div>
                 <div style={s.itemKanan}>
                   <div style={s.itemTarif}>{formatRupiah(r.tarif)}</div>
                   <div style={r.statusBayar === STATUS_BAYAR.LUNAS ? s.badgeLunas : s.badgeBelum}>
-                    {r.statusBayar === STATUS_BAYAR.LUNAS ? 'Lunas' : 'Belum'}
+                    {r.statusBayar === STATUS_BAYAR.LUNAS ? t.lunas : t.belum}
                   </div>
                 </div>
               </div>

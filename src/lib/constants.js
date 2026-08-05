@@ -39,13 +39,10 @@ export const STATUS_PERMINTAAN = {
   DITOLAK: 'ditolak',
 }
 
-export const HARI_KERJA = [
-  { key: 'senin', label: 'Senin' },
-  { key: 'selasa', label: 'Selasa' },
-  { key: 'rabu', label: 'Rabu' },
-  { key: 'kamis', label: 'Kamis' },
-  { key: 'jumat', label: "Jum'at" },
-]
+// Cuma "key" doang di sini (dipakai buat nyimpen data ke Firestore) —
+// LABEL yang keliatan di layar (Senin/Monday, dst) diambil dari kamus
+// terjemahan (translations.js), biar bisa ganti bahasa.
+export const HARI_KERJA_KEYS = ['senin', 'selasa', 'rabu', 'kamis', 'jumat']
 
 export const formatRupiah = (angka) =>
   new Intl.NumberFormat('id-ID', {

@@ -1,21 +1,21 @@
 import { useState } from 'react'
-
-const NAMA_BULAN = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des']
+import { useLanguage } from '../context/LanguageContext.jsx'
 
 export default function MonthPickerPopup({ bulan, tahun, onClose, onSelect }) {
+  const { t } = useLanguage()
   const [tahunLihat, setTahunLihat] = useState(tahun)
 
   return (
     <div style={s.overlay} onClick={onClose}>
       <div style={s.sheet} onClick={(e) => e.stopPropagation()}>
         <div style={s.yearRow}>
-          <button style={s.arrow} onClick={() => setTahunLihat((t) => t - 1)} aria-label="Tahun sebelumnya">‹</button>
+          <button style={s.arrow} onClick={() => setTahunLihat((tahunLama) => tahunLama - 1)} aria-label={t.ariaTahunSebelumnya}>‹</button>
           <div style={s.yearLabel}>{tahunLihat}</div>
-          <button style={s.arrow} onClick={() => setTahunLihat((t) => t + 1)} aria-label="Tahun berikutnya">›</button>
+          <button style={s.arrow} onClick={() => setTahunLihat((tahunLama) => tahunLama + 1)} aria-label={t.ariaTahunBerikutnya}>›</button>
         </div>
 
         <div style={s.grid}>
-          {NAMA_BULAN.map((nama, i) => {
+          {t.namaBulanPendek.map((nama, i) => {
             const aktif = i === bulan && tahunLihat === tahun
             return (
               <button

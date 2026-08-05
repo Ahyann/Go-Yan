@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { STATUS_BAYAR, formatRupiah } from '../lib/constants'
+import { useLanguage } from '../context/LanguageContext.jsx'
 import MonthPickerPopup from '../components/MonthPickerPopup.jsx'
 import SwipeableItem from '../components/SwipeableItem.jsx'
 
-const NAMA_BULAN = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember']
-
 export default function OjekRiwayatTab({ riwayat, onTandaiLunas, onHapusRiwayat }) {
+  const { t } = useLanguage()
   const [showBulan, setShowBulan] = useState(false)
 
   const sekarang = new Date()
@@ -33,31 +33,31 @@ export default function OjekRiwayatTab({ riwayat, onTandaiLunas, onHapusRiwayat 
     <main style={s.wrap}>
       <div style={s.sectionHead}>
         <div>
-          <div style={s.eyebrow}>RIWAYAT</div>
-          <h1 style={s.title}>Tagihan sepupu</h1>
+          <div style={s.eyebrow}>{t.riwayatEyebrow}</div>
+          <h1 style={s.title}>{t.riwayatTitleOjek}</h1>
         </div>
         <button style={s.bulanBtn} onClick={() => setShowBulan(true)}>
-          {NAMA_BULAN[bulanAktif]} {tahunAktif} ▾
+          {t.namaBulanPanjang[bulanAktif]} {tahunAktif} ▾
         </button>
       </div>
 
       <div style={s.ringkasanRow}>
         <section style={s.cardBiru}>
-          <div style={s.tagihanLabel}>Belum ditransfer</div>
+          <div style={s.tagihanLabel}>{t.belumDitransfer}</div>
           <div style={s.angkaBelum}>{formatRupiah(totalBelumBayar)}</div>
-          <div style={s.tagihanSub}>{belumBayar.length} perjalanan</div>
+          <div style={s.tagihanSub}>{belumBayar.length} {t.satuanPerjalanan}</div>
         </section>
 
         <section style={s.cardBiru}>
-          <div style={s.tagihanLabel}>Sudah diterima</div>
+          <div style={s.tagihanLabel}>{t.sudahDiterima}</div>
           <div style={s.angkaSudah}>{formatRupiah(totalSudahDiterima)}</div>
-          <div style={s.tagihanSub}>{sudahBayar.length} perjalanan</div>
+          <div style={s.tagihanSub}>{sudahBayar.length} {t.satuanPerjalanan}</div>
         </section>
       </div>
 
       <div style={s.list}>
         {riwayatBulanIni.length === 0 ? (
-          <div style={s.kosong}>Belum ada riwayat bulan ini.</div>
+          <div style={s.kosong}>{t.belumAdaRiwayatBulanIni}</div>
         ) : (
           riwayatBulanIni.map((r) => (
             <SwipeableItem key={r.id} onDelete={() => onHapusRiwayat(r.id)}>
@@ -65,17 +65,17 @@ export default function OjekRiwayatTab({ riwayat, onTandaiLunas, onHapusRiwayat 
                 <div>
                   <div style={s.itemJam}>{r.jam} · {r.tanggal.split('-')[2]}</div>
                   <div style={s.itemDesc}>
-                    {r.aksi === 'jemput' ? 'Jemput' : 'Antar'} · {r.where}
+                    {r.aksi === 'jemput' ? t.jemput : t.antar} · {r.where}
                   </div>
                 </div>
                 <div style={s.itemKanan}>
                   <div style={s.itemTarif}>{formatRupiah(r.tarif)}</div>
                   {r.statusBayar === STATUS_BAYAR.BELUM ? (
                     <button style={s.lunasBtn} onClick={() => onTandaiLunas(r.id)}>
-                      Tandai Lunas
+                      {t.tandaiLunas}
                     </button>
                   ) : (
-                    <div style={s.lunasBadge}>Lunas</div>
+                    <div style={s.lunasBadge}>{t.lunas}</div>
                   )}
                 </div>
               </div>

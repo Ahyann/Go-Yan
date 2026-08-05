@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { HARI_KERJA } from '../lib/constants'
+import { HARI_KERJA_KEYS } from '../lib/constants'
+import { useLanguage } from '../context/LanguageContext.jsx'
 import TimeWheelPicker from './TimeWheelPicker.jsx'
 
 export default function JadwalMingguan({ jadwal, onSimpan, bisaEdit }) {
+  const { t } = useLanguage()
   const [draft, setDraft] = useState(jadwal)
   const [menyimpan, setMenyimpan] = useState(false)
   const [tersimpan, setTersimpan] = useState(false)
@@ -38,11 +40,13 @@ export default function JadwalMingguan({ jadwal, onSimpan, bisaEdit }) {
   }
 
   const nilaiEditing = editing ? (draft[editing.hari]?.[editing.aksi] || '07:00') : '07:00'
-  const labelHariEditing = editing ? HARI_KERJA.find((h) => h.key === editing.hari)?.label : ''
+  const indexHariEditing = editing ? HARI_KERJA_KEYS.indexOf(editing.hari) : -1
+  const labelHariEditing = indexHariEditing >= 0 ? t.hariLabel[indexHariEditing] : ''
 
   return (
     <div style={s.wrap}>
-      {HARI_KERJA.map(({ key, label }) => {
+      {HARI_KERJA_KEYS.map((key, i) => {
+        const label = t.hariLabel[i]
         const adaJadwal = Boolean(draft[key]?.antar) || Boolean(draft[key]?.jemput)
         if (!bisaEdit && !adaJadwal) return null
 
@@ -52,7 +56,7 @@ export default function JadwalMingguan({ jadwal, onSimpan, bisaEdit }) {
 
             <div style={s.aksiGrid}>
               <AksiChip
-                label="Antar"
+                label={t.antar}
                 aktif={Boolean(draft[key]?.antar)}
                 jam={draft[key]?.antar}
                 bisaEdit={bisaEdit}
@@ -60,7 +64,7 @@ export default function JadwalMingguan({ jadwal, onSimpan, bisaEdit }) {
                 onBukaJam={() => setEditing({ hari: key, aksi: 'antar' })}
               />
               <AksiChip
-                label="Jemput"
+                label={t.jemput}
                 aktif={Boolean(draft[key]?.jemput)}
                 jam={draft[key]?.jemput}
                 bisaEdit={bisaEdit}
@@ -74,7 +78,7 @@ export default function JadwalMingguan({ jadwal, onSimpan, bisaEdit }) {
 
       {bisaEdit && (
         <button style={s.simpanBtn} onClick={handleSimpan} disabled={menyimpan}>
-          {menyimpan ? 'Menyimpan…' : tersimpan ? 'Tersimpan ✓' : 'Simpan jadwal'}
+          {menyimpan ? t.menyimpan : tersimpan ? t.tersimpan : t.simpanJadwal}
         </button>
       )}
 
@@ -82,14 +86,14 @@ export default function JadwalMingguan({ jadwal, onSimpan, bisaEdit }) {
         <div style={s.overlay} onClick={() => setEditing(null)}>
           <div style={s.sheet} onClick={(e) => e.stopPropagation()}>
             <div style={s.sheetTitle}>
-              {labelHariEditing} · {editing.aksi === 'antar' ? 'Antar' : 'Jemput'}
+              {labelHariEditing} · {editing.aksi === 'antar' ? t.antar : t.jemput}
             </div>
             <TimeWheelPicker
               value={nilaiEditing}
               onChange={(jam) => ubahJam(editing.hari, editing.aksi, jam)}
             />
             <button style={s.selesaiBtn} onClick={() => setEditing(null)}>
-              Selesai
+              {t.selesai}
             </button>
           </div>
         </div>,
@@ -206,6 +210,7 @@ const s = {
     padding: '13px',
     borderRadius: 999,
   },
+
   overlay: {
     position: 'fixed',
     inset: 0,
