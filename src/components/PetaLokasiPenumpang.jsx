@@ -1,21 +1,25 @@
-import { MapContainer, TileLayer, Marker, ZoomControl, useMap } from 'react-leaflet'
-import { useEffect, useRef } from 'react'
+import { MapContainer, TileLayer, Marker, Popup, ZoomControl, useMap } from 'react-leaflet'
+import { useEffect, useRef, useState } from 'react'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { useLokasiOjek } from '../lib/useLokasiOjek'
+import { usePesanPenumpang } from '../lib/usePesanPenumpang'
 import { LOKASI_OFFICE } from '../lib/constants'
 
 const PUSAT_DEFAULT = [-6.2088, 106.8456]
 
 const ikonPenumpang = L.divIcon({
   className: '',
-  html: `<div style="
-    width:18px;height:18px;border-radius:50%;
-    background:#2B6CE8;border:3px solid #fff;
-    box-shadow:0 2px 8px rgba(0,0,0,0.4);
-  "></div>`,
-  iconSize: [18, 18],
-  iconAnchor: [9, 9],
+  html: `<div style="isolation: isolate;">
+    <img src="/icons/fajri.png" style="
+      width:21px;height:32px;
+      image-rendering: pixelated;
+      filter: drop-shadow(0 0 6px #5ED0FF) drop-shadow(0 0 10px #2B9EE8);
+    " />
+  </div>`,
+  iconSize: [21, 32],
+  iconAnchor: [10, 32],
+  popupAnchor: [42, -16],
 })
 
 const ikonSaya = L.divIcon({
@@ -63,9 +67,23 @@ export default function PetaLokasiPenumpang({
   onToggleLokasi,
 }) {
   const lokasiSaya = useLokasiOjek()
+  const { pesan, hapusPesan } = usePesanPenumpang()
   const pusat = lokasi ? [lokasi.lat, lokasi.lng] : PUSAT_DEFAULT
   const tampilkanTombolLokasi = typeof onToggleLokasi === 'function'
   const mapRef = useRef(null)
+  const markerRef = useRef(null)
+  const pesanTampilRef = useRef(null)
+  const [teksBubble, setTeksBubble] = useState('')
+
+  useEffect(() => {
+    if (pesan && markerRef.current) {
+      pesanTampilRef.current = pesan
+      setTeksBubble(pesan.teks)
+      markerRef.current.openPopup()
+    }
+  }, [pesan, lokasi])
+
+  const ukuranFont = teksBubble.length > 16 ? 7 : 9
 
   function handleRecenter() {
     if (lokasi && mapRef.current) {
@@ -94,7 +112,34 @@ export default function PetaLokasiPenumpang({
         {lokasi && (
           <>
             <GeserKePosisi lat={lokasi.lat} lng={lokasi.lng} />
-            <Marker position={[lokasi.lat, lokasi.lng]} icon={ikonPenumpang} />
+            <Marker
+              ref={markerRef}
+              position={[lokasi.lat, lokasi.lng]}
+              icon={ikonPenumpang}
+              eventHandlers={{
+                popupopen: () => {
+                  if (!pesanTampilRef.current) {
+                    setTimeout(() => {
+                      markerRef.current?.closePopup()
+                    }, 1500)
+                  }
+                },
+                popupclose: () => {
+                  if (pesanTampilRef.current) {
+                    hapusPesan()
+                    pesanTampilRef.current = null
+                  }
+                },
+              }}
+            >
+              {teksBubble && (
+                <Popup closeButton={false} autoClose={false} closeOnClick={false}>
+                  <div style={s.bubbleWrap}>
+                    <span style={{ ...s.bubbleText, fontSize: ukuranFont }}>{teksBubble}</span>
+                  </div>
+                </Popup>
+              )}
+            </Marker>
           </>
         )}
 
@@ -154,6 +199,27 @@ const s = {
     height: '100%',
   },
   map: { height: '100%', width: '100%' },
+  bubbleWrap: {
+    backgroundImage: 'url(/icons/bubbletext.png)',
+    backgroundSize: '100% 100%',
+    backgroundRepeat: 'no-repeat',
+    imageRendering: 'pixelated',
+    width: 102,
+    height: 51,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingBottom: 14,
+    paddingLeft: 6,
+    paddingRight: 6,
+  },
+  bubbleText: {
+    fontFamily: 'var(--font-pixel)',
+    fontSize: 9,
+    color: '#0B0E1A',
+    textAlign: 'center',
+    lineHeight: 1.2,
+  },
   lokasiIcon: {
     position: 'absolute',
     top: 88,

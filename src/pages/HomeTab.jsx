@@ -2,12 +2,16 @@ import { useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { STATUS_PERMINTAAN } from '../lib/constants'
 import { useLokasiOjek } from '../lib/useLokasiOjek'
+import { usePesanPenumpang } from '../lib/usePesanPenumpang'
 import PetaStatus from '../components/PetaStatus.jsx'
+import KirimPesanPopup from '../components/KirimPesanPopup.jsx'
 
 export default function HomeTab({ permintaan, lokasiAktif, lokasiError, mulaiLokasi, berhentiLokasi }) {
   const lokasiOjek = useLokasiOjek()
+  const { kirimPesan } = usePesanPenumpang()
   const sedangJalan = permintaan?.status === STATUS_PERMINTAAN.DITERIMA
   const [showToast, setShowToast] = useState(false)
+  const [showKirimPesan, setShowKirimPesan] = useState(false)
   const mapRef = useRef(null)
 
   function handleMulai() {
@@ -65,6 +69,17 @@ export default function HomeTab({ permintaan, lokasiAktif, lokasiError, mulaiLok
             </button>
           )}
 
+          <button
+            className="btn-map-control"
+            style={adaLokasiLive ? s.pesanIconBawah : s.pesanIcon}
+            onClick={() => setShowKirimPesan(true)}
+            aria-label="Kirim pesan ke Ahyan"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" />
+            </svg>
+          </button>
+
           {showToast && (
             <div style={s.statusAktifFloat}>Live location aktif</div>
           )}
@@ -73,6 +88,10 @@ export default function HomeTab({ permintaan, lokasiAktif, lokasiError, mulaiLok
           )}
         </>,
         document.body
+      )}
+
+      {showKirimPesan && (
+        <KirimPesanPopup onClose={() => setShowKirimPesan(false)} onKirim={kirimPesan} />
       )}
     </div>
   )
@@ -150,6 +169,36 @@ const s = {
     boxShadow: '0 1px 5px rgba(0,0,0,0.4)',
     zIndex: 99999,
   },
+  pesanIcon: {
+    position: 'fixed',
+    top: 'calc(var(--safe-top) + 128px)',
+    right: 'calc(max(0px, (100vw - 480px) / 2) + 10px)',
+    width: 36,
+    height: 36,
+    borderRadius: 8,
+    background: '#ffffff',
+    color: '#333',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    boxShadow: '0 1px 5px rgba(0,0,0,0.4)',
+    zIndex: 99999,
+  },
+  pesanIconBawah: {
+    position: 'fixed',
+    top: 'calc(var(--safe-top) + 170px)',
+    right: 'calc(max(0px, (100vw - 480px) / 2) + 10px)',
+    width: 36,
+    height: 36,
+    borderRadius: 8,
+    background: '#ffffff',
+    color: '#333',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    boxShadow: '0 1px 5px rgba(0,0,0,0.4)',
+    zIndex: 99999,
+  },
   statusAktifFloat: {
     position: 'fixed',
     top: 'calc(var(--safe-top) + 86px)',
@@ -166,7 +215,7 @@ const s = {
   },
   lokasiErrorFloat: {
     position: 'fixed',
-    top: 'calc(var(--safe-top) + 170px)',
+    top: 'calc(var(--safe-top) + 210px)',
     right: 'calc(max(0px, (100vw - 480px) / 2) + 10px)',
     maxWidth: 160,
     background: '#0B0E1A',
