@@ -53,6 +53,7 @@ export default function HomeTab({ permintaan, lokasiAktif, lokasiError, mulaiLok
 
           {adaLokasiLive && (
             <button
+              className="btn-map-control"
               style={s.recenterIcon}
               onClick={handleRecenter}
               aria-label="Kembali ke lokasi Ahyan"

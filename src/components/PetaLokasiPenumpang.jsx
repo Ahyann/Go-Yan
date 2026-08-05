@@ -107,6 +107,7 @@ export default function PetaLokasiPenumpang({
 
       {tampilkanTombolLokasi && (
         <button
+          className="btn-map-control"
           style={lokasiAktif ? s.lokasiIconAktif : s.lokasiIcon}
           onClick={onToggleLokasi}
           aria-label={lokasiAktif ? 'Matikan live location' : 'Nyalain live location'}
@@ -120,6 +121,7 @@ export default function PetaLokasiPenumpang({
 
       {lokasi && (
         <button
+          className="btn-map-control"
           style={tampilkanTombolLokasi ? s.recenterIconBawah : s.recenterIcon}
           onClick={handleRecenter}
           aria-label="Kembali ke lokasi Fajri"
