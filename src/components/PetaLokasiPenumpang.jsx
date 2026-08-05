@@ -129,6 +129,7 @@ export default function PetaLokasiPenumpang({
               ref={markerRef}
               position={[lokasi.lat, lokasi.lng]}
               icon={ikonPenumpang}
+              zIndexOffset={500}
               eventHandlers={{
                 popupopen: () => {
                   if (!pesanTampilRef.current) {

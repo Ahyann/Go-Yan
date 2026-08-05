@@ -171,7 +171,7 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
         )}
 
         {lokasiSaya && (
-          <Marker ref={markerSayaRef} position={[lokasiSaya.lat, lokasiSaya.lng]} icon={ikonSaya}>
+          <Marker ref={markerSayaRef} position={[lokasiSaya.lat, lokasiSaya.lng]} icon={ikonSaya} zIndexOffset={500}>
             {pesanSaya && (
               <Popup closeButton={false} autoClose={false} closeOnClick={false}>
                 <div style={s.bubbleWrap}>
