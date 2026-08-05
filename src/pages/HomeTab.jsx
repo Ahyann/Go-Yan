@@ -1,24 +1,14 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { STATUS_PERMINTAAN } from '../lib/constants'
-import { useLokasiSayaPenumpang } from '../lib/useLokasiSayaPenumpang'
 import { useLokasiOjek } from '../lib/useLokasiOjek'
 import PetaStatus from '../components/PetaStatus.jsx'
 
-export default function HomeTab({ permintaan }) {
-  const { aktif: lokasiAktif, error: lokasiError, mulai: mulaiLokasi, berhenti: berhentiLokasi } = useLokasiSayaPenumpang()
+export default function HomeTab({ permintaan, lokasiAktif, lokasiError, mulaiLokasi, berhentiLokasi }) {
   const lokasiOjek = useLokasiOjek()
   const sedangJalan = permintaan?.status === STATUS_PERMINTAAN.DITERIMA
   const [showToast, setShowToast] = useState(false)
   const mapRef = useRef(null)
-
-  useEffect(() => {
-    if (!sedangJalan && lokasiAktif) {
-      berhentiLokasi()
-      setShowToast(false)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sedangJalan])
 
   function handleMulai() {
     mulaiLokasi()
