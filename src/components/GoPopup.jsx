@@ -9,7 +9,7 @@ export default function GoPopup({ onClose, onSubmit }) {
   const jamSekarang = new Date().toTimeString().slice(0, 2) + ':00'
 
   const [aksi, setAksi] = useState(AKSI.JEMPUT)
-  const [where, setWhere] = useState('')
+  const [where, setWhere] = useState('Office')
   const [waktu, setWaktu] = useState(jamSekarang)
   const [showDropdown, setShowDropdown] = useState(false)
   const inputRef = useRef(null)
@@ -54,6 +54,9 @@ export default function GoPopup({ onClose, onSubmit }) {
               style={s.input}
               value={where}
               onChange={(e) => setWhere(e.target.value)}
+              onFocus={() => {
+                if (where === 'Office') setWhere('')
+              }}
               onBlur={() => {
                 window.scrollTo(0, 0)
                 setTimeout(() => window.scrollTo(0, 0), 300)
