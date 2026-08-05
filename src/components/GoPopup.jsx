@@ -6,7 +6,7 @@ import TimeWheelPicker from './TimeWheelPicker.jsx'
 const PRESET_LOKASI = ['Office']
 
 export default function GoPopup({ onClose, onSubmit }) {
-  const jamSekarang = new Date().toTimeString().slice(0, 5)
+  const jamSekarang = new Date().toTimeString().slice(0, 2) + ':00'
 
   const [aksi, setAksi] = useState(AKSI.JEMPUT)
   const [where, setWhere] = useState('')
