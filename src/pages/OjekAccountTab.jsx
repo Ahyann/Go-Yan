@@ -4,10 +4,10 @@ import { useLanguage } from '../context/LanguageContext.jsx'
 import { ROLE } from '../lib/constants'
 import { mintaIzinDanSimpanToken } from '../lib/notifikasi'
 
-export default function AccountTab() {
+export default function OjekAccountTab() {
   const { user, logout } = useAuth()
   const { lang, setLang, t } = useLanguage()
-  const [status, setStatus] = useState('') // '', 'loading', 'ok', 'gagal'
+  const [status, setStatus] = useState('')
   const [pesanError, setPesanError] = useState('')
 
   useEffect(() => {
@@ -19,7 +19,7 @@ export default function AccountTab() {
   async function handleAktifkanNotif() {
     setStatus('loading')
     setPesanError('')
-    const hasil = await mintaIzinDanSimpanToken(user.uid, ROLE.PENUMPANG)
+    const hasil = await mintaIzinDanSimpanToken(user.uid, ROLE.OJEK)
     if (hasil.berhasil) {
       setStatus('ok')
     } else {

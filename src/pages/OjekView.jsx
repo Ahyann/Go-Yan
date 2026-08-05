@@ -4,6 +4,7 @@ import OjekNav from '../components/OjekNav.jsx'
 import OjekHomeTab from './OjekHomeTab.jsx'
 import OjekJadwalTab from './OjekJadwalTab.jsx'
 import OjekRiwayatTab from './OjekRiwayatTab.jsx'
+import OjekAccountTab from './OjekAccountTab.jsx'
 
 export default function OjekView({
   permintaan,
@@ -17,6 +18,11 @@ export default function OjekView({
 }) {
   const [tabAktif, setTabAktif] = useState('home')
 
+  // Hook GPS ini di level OjekView (bukan di dalem OjekHomeTab) —
+  // biar statusnya TETEP JALAN walau Ahyan pindah-pindah tab
+  // (Jadwal/Riwayat). Sebelumnya nempel di OjekHomeTab, jadi begitu
+  // komponen itu dihancurin pas ganti tab, GPS-nya beneran berhenti
+  // ke-share, bukan cuma tampilannya doang yang salah.
   const {
     aktif: lokasiAktif,
     error: lokasiError,
@@ -43,6 +49,7 @@ export default function OjekView({
         {tabAktif === 'riwayat' && (
           <OjekRiwayatTab riwayat={riwayat} onTandaiLunas={onTandaiLunas} onHapusRiwayat={onHapusRiwayat} />
         )}
+        {tabAktif === 'akun' && <OjekAccountTab />}
       </div>
 
       <OjekNav tabAktif={tabAktif} onTabChange={setTabAktif} />

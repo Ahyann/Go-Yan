@@ -3,6 +3,7 @@ import { STATUS_PERMINTAAN, AKSI } from '../lib/constants'
 import { playSpiderSound } from '../lib/sound'
 import { useLokasiPenumpang, hapusLokasiPenumpangSekarang } from '../lib/useLokasiPenumpang'
 import { usePesanOjek } from '../lib/usePesanOjek'
+import { useLanguage } from '../context/LanguageContext.jsx'
 import PetaLokasiPenumpang from '../components/PetaLokasiPenumpang.jsx'
 
 export default function OjekHomeTab({
@@ -15,6 +16,7 @@ export default function OjekHomeTab({
   mulaiLokasi,
   berhentiLokasi,
 }) {
+  const { t } = useLanguage()
   const adaPermintaanMasuk = permintaan?.status === STATUS_PERMINTAAN.MENUNGGU
   const sedangJalan = permintaan?.status === STATUS_PERMINTAAN.DITERIMA
   const lokasiPenumpang = useLokasiPenumpang()
@@ -40,14 +42,14 @@ export default function OjekHomeTab({
   }
 
   const teksKosongPeta = adaPermintaanMasuk || sedangJalan
-    ? "Fajri hasn't shared her location"
-    : 'No requests yet'
+    ? t.fajriBelumShare
+    : t.belumAdaPermintaan
 
   return (
     <main style={s.wrap}>
       <header style={s.header}>
-        <div style={s.eyebrow}>DRIVER</div>
-        <h1 style={s.title}>Hi, Ahyan</h1>
+        <div style={s.eyebrow}>{t.ojekEyebrow}</div>
+        <h1 style={s.title}>{t.ojekHalo}</h1>
       </header>
 
       <section style={s.mainCard}>
@@ -63,14 +65,14 @@ export default function OjekHomeTab({
 
         {adaPermintaanMasuk && (
           <div style={s.bawahCard}>
-            <div style={s.permintaanLabel}>New request from Fajri</div>
+            <div style={s.permintaanLabel}>{t.permintaanBaru}</div>
             <div style={s.permintaanAksi}>
-              {permintaan.aksi === AKSI.JEMPUT ? 'Pickup' : 'Drop-off'} · {permintaan.waktu}
+              {permintaan.aksi === AKSI.JEMPUT ? t.jemput : t.antar} · {permintaan.waktu}
             </div>
             <div style={s.permintaanWhere}>{permintaan.where}</div>
             <div style={s.tombolRow}>
-              <button style={s.tolakBtn} onClick={onTolak}>Decline</button>
-              <button style={s.terimaBtn} onClick={handleTerima}>Accept</button>
+              <button style={s.tolakBtn} onClick={onTolak}>{t.tolak}</button>
+              <button style={s.terimaBtn} onClick={handleTerima}>{t.terima}</button>
             </div>
           </div>
         )}
@@ -79,7 +81,7 @@ export default function OjekHomeTab({
           <div style={s.bawahCard}>
             <div style={s.jalanRow}>
               <span style={s.dotHijau} />
-              {permintaan.aksi === AKSI.JEMPUT ? 'Picking up' : 'Dropping off'} Fajri · {permintaan.where}
+              {permintaan.aksi === AKSI.JEMPUT ? t.sedangMenjemput : t.sedangMengantar} Fajri · {permintaan.where}
             </div>
 
             <div style={s.pesanRow}>
@@ -87,16 +89,16 @@ export default function OjekHomeTab({
                 style={s.pesanInput}
                 value={teksPesan}
                 onChange={(e) => setTeksPesan(e.target.value)}
-                placeholder="Send a message to Fajri's bubble..."
+                placeholder={t.placeholderPesanBubble}
                 maxLength={24}
               />
-              <button style={s.pesanBtn} onClick={handleKirimPesan}>Send</button>
+              <button style={s.pesanBtn} onClick={handleKirimPesan}>{t.kirim}</button>
             </div>
 
             {lokasiError && <div style={s.lokasiError}>{lokasiError}</div>}
 
             <button style={s.selesaiBtn} onClick={handleSelesai}>
-              Finish
+              {t.selesai}
             </button>
           </div>
         )}
@@ -198,25 +200,6 @@ const s = {
     fontWeight: 600,
     padding: '10px 16px',
     borderRadius: 10,
-  },
-  lokasiBtn: {
-    background: 'rgba(255,255,255,0.06)',
-    color: '#8FB4DC',
-    fontSize: 13.5,
-    fontWeight: 600,
-    padding: '12px',
-    borderRadius: 999,
-    border: '1px solid var(--blue-border)',
-  },
-  lokasiBtnAktif: {
-    background: 'rgba(94,208,255,0.12)',
-    color: 'var(--glow-blue)',
-    fontSize: 13.5,
-    fontWeight: 600,
-    padding: '12px',
-    borderRadius: 999,
-    border: '1px solid var(--glow-blue-mid)',
-    textShadow: '0 0 4px var(--glow-blue-mid)',
   },
   lokasiError: { fontSize: 12, color: 'var(--web-red)', textAlign: 'center' },
   selesaiBtn: {

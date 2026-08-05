@@ -7,6 +7,7 @@ import { useLokasiOjek } from '../lib/useLokasiOjek'
 import { useLokasiPenumpang } from '../lib/useLokasiPenumpang'
 import { usePesanOjek } from '../lib/usePesanOjek'
 import { usePesanPenumpang } from '../lib/usePesanPenumpang'
+import { useLanguage } from '../context/LanguageContext.jsx'
 
 const PUSAT_DEFAULT = [-6.2088, 106.8456]
 
@@ -29,8 +30,6 @@ const ikonOjek = L.divIcon({
   popupAnchor: [42, 0],
 })
 
-// Icon Fajri (diri sendiri di sini) — pake gambar custom, glow abu-abu
-// keperakan senada outfit-nya, beda dari biru Ahyan.
 const ikonSaya = L.divIcon({
   className: '',
   html: `<div style="isolation: isolate;">
@@ -86,17 +85,18 @@ function IkonLabaLaba() {
 }
 
 export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef: mapRefLuar }) {
+  const { t } = useLanguage()
   const lokasiOjek = useLokasiOjek()
   const lokasiSaya = useLokasiPenumpang()
-  const { pesan, hapusPesan } = usePesanOjek() // pesan DARI Ojek
-  const { pesan: pesanSaya } = usePesanPenumpang() // pesan SAYA sendiri (Fajri)
+  const { pesan, hapusPesan } = usePesanOjek()
+  const { pesan: pesanSaya } = usePesanPenumpang()
   const adaLokasiLive = lokasiOjek && permintaan?.status === STATUS_PERMINTAAN.DITERIMA
   const markerRef = useRef(null)
   const markerSayaRef = useRef(null)
   const pesanTampilRef = useRef(null)
   const mapRefInternal = useRef(null)
   const mapRef = mapRefLuar || mapRefInternal
-  const [teksBubble, setTeksBubble] = useState('Omw!! 🕸️')
+  const [teksBubble, setTeksBubble] = useState(t.bubbleDefault)
 
   useEffect(() => {
     if (pesan && markerRef.current) {
@@ -106,8 +106,6 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
     }
   }, [pesan, adaLokasiLive])
 
-  // Bubble pesan SAYA SENDIRI (Fajri), nempel di icon sendiri — auto
-  // muncul pas kirim, auto ilang begitu pesannya kepake/dihapus.
   useEffect(() => {
     if (!markerSayaRef.current) return
     if (pesanSaya) {
@@ -151,7 +149,7 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
               eventHandlers={{
                 popupopen: () => {
                   if (!pesanTampilRef.current) {
-                    setTeksBubble('Omw!! 🕸️')
+                    setTeksBubble(t.bubbleDefault)
                     setTimeout(() => {
                       markerRef.current?.closePopup()
                     }, 2000)
@@ -193,25 +191,25 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
 
       {tampilkanOverlay && (
         <div style={s.overlay}>
-          {!permintaan && <div style={s.badgeIdle}>No active trip yet</div>}
+          {!permintaan && <div style={s.badgeIdle}>{t.belumAdaPerjalanan}</div>}
 
           {permintaan?.status === STATUS_PERMINTAAN.MENUNGGU && (
             <div style={s.badgeMenunggu}>
               <IkonLabaLaba />
               <div style={s.menungguText}>
-                <span style={s.dotKuning} />Waiting for Ahyan to accept…
+                <span style={s.dotKuning} />{t.menungguAhyanTerima}
               </div>
             </div>
           )}
 
           {permintaan?.status === STATUS_PERMINTAAN.DITOLAK && (
-            <div style={s.badgeTolak}>Ahyan can't right now — try GO again later</div>
+            <div style={s.badgeTolak}>{t.ahyanBelumBisa}</div>
           )}
 
           {permintaan?.status === STATUS_PERMINTAAN.DITERIMA && (
             <div style={s.badgeLive}>
               <span style={s.dotHijau} />
-              {adaLokasiLive ? 'OTWWW!!' : 'Ahyan accepted, hang tight! ✓'}
+              {adaLokasiLive ? t.otwText : t.ahyanUdahTerima}
             </div>
           )}
         </div>

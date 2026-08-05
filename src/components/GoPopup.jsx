@@ -1,13 +1,13 @@
 import { useState, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { AKSI } from '../lib/constants'
+import { useLanguage } from '../context/LanguageContext.jsx'
 import TimeWheelPicker from './TimeWheelPicker.jsx'
 
 const PRESET_LOKASI = ['Office']
 
 export default function GoPopup({ onClose, onSubmit }) {
-  // Menitnya dipaksa selalu "00" — jadi kalau sekarang jam 14:37,
-  // default-nya jadi "14:00", bukan jam persis sekarang.
+  const { t } = useLanguage()
   const jamSekarang = new Date().toTimeString().slice(0, 2) + ':00'
 
   const [aksi, setAksi] = useState(AKSI.JEMPUT)
@@ -26,10 +26,6 @@ export default function GoPopup({ onClose, onSubmit }) {
   function pilihPreset(nama) {
     setWhere(nama)
     setShowDropdown(false)
-    // Paksa lepasin fokus dari kolom teks — tanpa ini, di beberapa
-    // browser mobile fokus kadang "nyasar" balik ke input abis
-    // dropdown-nya nutup, jadi keyboard tetep kebuka walau user gak
-    // niat ngetik.
     inputRef.current?.blur()
   }
 
@@ -41,18 +37,18 @@ export default function GoPopup({ onClose, onSubmit }) {
             style={aksi === AKSI.JEMPUT ? s.toggleActive : s.toggle}
             onClick={() => setAksi(AKSI.JEMPUT)}
           >
-            Pickup
+            {t.jemput}
           </button>
           <button
             style={aksi === AKSI.ANTAR ? s.toggleActive : s.toggle}
             onClick={() => setAksi(AKSI.ANTAR)}
           >
-            Drop-off
+            {t.antar}
           </button>
         </div>
 
         <div style={s.label}>
-          <label htmlFor="where-input">Where</label>
+          <label htmlFor="where-input">{t.labelTujuan}</label>
           <div style={s.inputWrap}>
             <input
               id="where-input"
@@ -64,10 +60,6 @@ export default function GoPopup({ onClose, onSubmit }) {
                 if (where === 'Office') setWhere('')
               }}
               onBlur={() => {
-                // Fix bug iOS/PWA: layar kadang "kejebak" di ukuran
-                // yang salah abis keyboard nutup. Paksa scroll balik
-                // ke atas, 2 kali (langsung + abis animasi keyboard
-                // kelar ~300ms), biar layout ke-refresh bener.
                 window.scrollTo(0, 0)
                 setTimeout(() => window.scrollTo(0, 0), 300)
               }}
@@ -77,7 +69,7 @@ export default function GoPopup({ onClose, onSubmit }) {
               type="button"
               style={s.dropdownBtn}
               onClick={() => setShowDropdown((v) => !v)}
-              aria-label="Choose a saved location"
+              aria-label={t.ariaLokasiTersimpan}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M6 9l6 6 6-6" />
@@ -103,12 +95,12 @@ export default function GoPopup({ onClose, onSubmit }) {
         </div>
 
         <div style={s.label}>
-          Time
+          {t.labelWaktu}
           <TimeWheelPicker value={waktu} onChange={setWaktu} />
         </div>
 
         <button style={bisaKirim ? s.kirim : s.kirimDisabled} onClick={handleKirim}>
-          Send to Ahyan
+          {t.kirimKeAhyan}
         </button>
       </div>
     </div>,

@@ -3,10 +3,12 @@ import { createPortal } from 'react-dom'
 import { STATUS_PERMINTAAN } from '../lib/constants'
 import { useLokasiOjek } from '../lib/useLokasiOjek'
 import { usePesanPenumpang } from '../lib/usePesanPenumpang'
+import { useLanguage } from '../context/LanguageContext.jsx'
 import PetaStatus from '../components/PetaStatus.jsx'
 import KirimPesanPopup from '../components/KirimPesanPopup.jsx'
 
 export default function HomeTab({ permintaan, lokasiAktif, lokasiError, mulaiLokasi, berhentiLokasi }) {
+  const { t } = useLanguage()
   const lokasiOjek = useLokasiOjek()
   const { kirimPesan } = usePesanPenumpang()
   const sedangJalan = permintaan?.status === STATUS_PERMINTAAN.DITERIMA
@@ -36,8 +38,8 @@ export default function HomeTab({ permintaan, lokasiAktif, lokasiError, mulaiLok
   return (
     <div style={s.wrap}>
       <div style={s.headerFloat}>
-        <div style={s.eyebrow}>PASSENGER</div>
-        <h1 style={s.title}>Hi, Fajri</h1>
+        <div style={s.eyebrow}>{t.penumpangEyebrow}</div>
+        <h1 style={s.title}>{t.penumpangHalo}</h1>
       </div>
 
       <PetaStatus permintaan={permintaan} mapRef={mapRef} />
@@ -47,7 +49,7 @@ export default function HomeTab({ permintaan, lokasiAktif, lokasiError, mulaiLok
           <button
             style={lokasiAktif ? s.shareIconAktif : s.shareIcon}
             onClick={lokasiAktif ? handleBerhenti : handleMulai}
-            aria-label={lokasiAktif ? 'Turn off location sharing' : 'Share location with Ahyan'}
+            aria-label={lokasiAktif ? t.ariaMatikanShare : t.ariaNyalakanShare}
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 2C8 2 5 5 5 9c0 5.5 7 13 7 13s7-7.5 7-13c0-4-3-7-7-7z" />
@@ -60,7 +62,7 @@ export default function HomeTab({ permintaan, lokasiAktif, lokasiError, mulaiLok
               className="btn-map-control"
               style={s.recenterIcon}
               onClick={handleRecenter}
-              aria-label="Back to Ahyan's location"
+              aria-label={t.ariaKembaliLokasiAhyan}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="3" />
@@ -73,7 +75,7 @@ export default function HomeTab({ permintaan, lokasiAktif, lokasiError, mulaiLok
             className="btn-map-control"
             style={adaLokasiLive ? s.pesanIconBawah : s.pesanIcon}
             onClick={() => setShowKirimPesan(true)}
-            aria-label="Send message to Ahyan"
+            aria-label={t.ariaKirimPesanAhyan}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" />
@@ -81,7 +83,7 @@ export default function HomeTab({ permintaan, lokasiAktif, lokasiError, mulaiLok
           </button>
 
           {showToast && (
-            <div style={s.statusAktifFloat}>Live location active</div>
+            <div style={s.statusAktifFloat}>{t.liveLocationAktif}</div>
           )}
           {lokasiError && (
             <div style={s.lokasiErrorFloat}>{lokasiError}</div>
@@ -169,8 +171,6 @@ const s = {
     boxShadow: '0 1px 5px rgba(0,0,0,0.4)',
     zIndex: 99999,
   },
-  // Posisi tombol kirim pesan beda tergantung ada tombol recenter di
-  // atasnya apa enggak (recenter cuma muncul kalau lokasi Ojek live).
   pesanIcon: {
     position: 'fixed',
     top: 'calc(var(--safe-top) + 128px)',

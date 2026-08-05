@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { createPortal } from 'react-dom'
+import { useLanguage } from '../context/LanguageContext.jsx'
 
 export default function KirimPesanPopup({ onClose, onKirim }) {
+  const { t } = useLanguage()
   const [teks, setTeks] = useState('')
 
   function handleKirim() {
@@ -14,17 +16,17 @@ export default function KirimPesanPopup({ onClose, onKirim }) {
   return createPortal(
     <div style={s.overlay} onClick={onClose}>
       <div style={s.sheet} onClick={(e) => e.stopPropagation()}>
-        <div style={s.title}>Send message to Ahyan</div>
+        <div style={s.title}>{t.judulKirimPesan}</div>
         <input
           style={s.input}
           value={teks}
           onChange={(e) => setTeks(e.target.value)}
-          placeholder="Type a message..."
+          placeholder={t.placeholderKetik}
           maxLength={24}
           autoFocus
         />
         <button style={teks.trim() ? s.kirimBtn : s.kirimBtnDisabled} onClick={handleKirim}>
-          Send
+          {t.kirim}
         </button>
       </div>
     </div>,

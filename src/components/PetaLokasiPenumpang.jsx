@@ -5,12 +5,11 @@ import 'leaflet/dist/leaflet.css'
 import { useLokasiOjek } from '../lib/useLokasiOjek'
 import { usePesanPenumpang } from '../lib/usePesanPenumpang'
 import { usePesanOjek } from '../lib/usePesanOjek'
+import { useLanguage } from '../context/LanguageContext.jsx'
 import { LOKASI_OFFICE } from '../lib/constants'
 
 const PUSAT_DEFAULT = [-6.2088, 106.8456]
 
-// Glow abu-abu keperakan — senada warna outfit Fajri (rambut hitam,
-// hoodie abu-abu), beda dari biru yang udah dipake buat Ahyan/Spidey.
 const ikonPenumpang = L.divIcon({
   className: '',
   html: `<div style="isolation: isolate;">
@@ -65,14 +64,16 @@ function GeserKePosisi({ lat, lng }) {
 
 export default function PetaLokasiPenumpang({
   lokasi,
-  teksKosong = "Fajri hasn't shared her location",
+  teksKosong,
   isiPenuh = false,
   lokasiAktif,
   onToggleLokasi,
 }) {
+  const { t } = useLanguage()
+  const teksKosongFinal = teksKosong ?? t.fajriBelumShare
   const lokasiSaya = useLokasiOjek()
-  const { pesan, hapusPesan } = usePesanPenumpang() // pesan DARI Fajri
-  const { pesan: pesanSaya } = usePesanOjek() // pesan SAYA sendiri (Ojek)
+  const { pesan, hapusPesan } = usePesanPenumpang()
+  const { pesan: pesanSaya } = usePesanOjek()
   const pusat = lokasi ? [lokasi.lat, lokasi.lng] : PUSAT_DEFAULT
   const tampilkanTombolLokasi = typeof onToggleLokasi === 'function'
   const mapRef = useRef(null)
@@ -89,10 +90,6 @@ export default function PetaLokasiPenumpang({
     }
   }, [pesan, lokasi])
 
-  // Bubble pesan SAYA SENDIRI, ditampilin nempel di icon sendiri —
-  // auto muncul pas kirim, auto ilang begitu pesannya "kepake"
-  // (dihapus, baik oleh kita mati-in duluan atau Fajri yang nutup
-  // di sisi dia).
   useEffect(() => {
     if (!markerSayaRef.current) return
     if (pesanSaya) {
@@ -164,8 +161,6 @@ export default function PetaLokasiPenumpang({
         )}
 
         {lokasiSaya && (
-          // zIndexOffset gede — begitu numpuk sama marker Fajri, icon
-          // Spidey ini yang menang digambar di atas.
           <Marker
             ref={markerSayaRef}
             position={[lokasiSaya.lat, lokasiSaya.lng]}
@@ -192,7 +187,7 @@ export default function PetaLokasiPenumpang({
           className="btn-map-control"
           style={lokasiAktif ? s.lokasiIconAktif : s.lokasiIcon}
           onClick={onToggleLokasi}
-          aria-label={lokasiAktif ? 'Turn off live location' : 'Turn on live location'}
+          aria-label={lokasiAktif ? t.ariaMatikanLive : t.ariaNyalakanLive}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M12 2C8 2 5 5 5 9c0 5.5 7 13 7 13s7-7.5 7-13c0-4-3-7-7-7z" />
@@ -206,7 +201,7 @@ export default function PetaLokasiPenumpang({
           className="btn-map-control"
           style={tampilkanTombolLokasi ? s.recenterIconBawah : s.recenterIcon}
           onClick={handleRecenter}
-          aria-label="Back to Fajri's location"
+          aria-label={t.ariaKembaliLokasiFajri}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="12" r="3" />
@@ -217,7 +212,7 @@ export default function PetaLokasiPenumpang({
 
       <div style={s.badge}>
         <span style={lokasi ? s.dotHijau : s.dotMerah} />
-        {lokasi ? "Fajri's location is live" : "Fajri hasn't shared her location"}
+        {lokasi ? t.lokasiFajriLive : teksKosongFinal}
       </div>
     </div>
   )
