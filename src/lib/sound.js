@@ -1,3 +1,8 @@
+// Suara ini dibuat langsung oleh browser (Web Audio API), BUKAN file
+// audio yang diputar. Alasannya dua: (1) gak bisa makein rekaman asli
+// dari film Spider-Man karena itu berhak cipta, (2) sintesis kode kayak
+// gini nol kilobyte tambahan ke ukuran app — cocok sama prinsip "jangan
+// berat" dari awal.
 let audioCtx
 
 function getAudioCtx() {
@@ -26,12 +31,20 @@ export function playThwip() {
   osc.stop(ctx.currentTime + 0.2)
 }
 
+// --- Rekaman asli, diputar lewat Web Audio API (bukan elemen <audio>) ---
+//
+// Bedanya penting: <audio> harus "nyiapin diri" tiap kali disuruh main,
+// dan itu latensinya gak konsisten (kadang instan, kadang delay dikit).
+// Cara di bawah ini DECODE file mp3 SEKALI di awal jadi data audio mentah
+// yang nangkring di memori (AudioBuffer) — begitu tombol ditekan, kita
+// cuma bikin "pemutar" baru buat data yang udah siap itu, gak perlu baca
+// ulang file dari awal. Hasilnya jauh lebih instan & konsisten.
 let spiderBuffer = null
 
 async function muatSpiderBuffer() {
   try {
     const ctx = getAudioCtx()
-    const res = await fetch('/sounds/spider_sound.mp3')
+    const res = await fetch('/sounds/spider_sound.mp3', { cache: 'no-store' })
     const arrayBuffer = await res.arrayBuffer()
     spiderBuffer = await ctx.decodeAudioData(arrayBuffer)
   } catch (err) {
@@ -41,13 +54,21 @@ async function muatSpiderBuffer() {
 
 if (typeof window !== 'undefined') {
   muatSpiderBuffer()
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && audioCtx?.state === 'suspended') {
+      audioCtx.resume()
+    }
+  })
 }
 
-export function playSpiderSound() {
+export async function playSpiderSound() {
   if (!spiderBuffer) return
   const ctx = getAudioCtx()
 
-  if (ctx.state === 'suspended') ctx.resume()
+  if (ctx.state === 'suspended') {
+    await ctx.resume()
+  }
 
   const source = ctx.createBufferSource()
   source.buffer = spiderBuffer
