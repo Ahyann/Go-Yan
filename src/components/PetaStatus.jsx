@@ -181,7 +181,7 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
           {permintaan?.status === STATUS_PERMINTAAN.DITERIMA && (
             <div style={s.badgeLive}>
               <span style={s.dotHijau} />
-              {adaLokasiLive ? 'OTWWW!!' : `Ahyan otw ${permintaan.aksi === 'jemput' ? 'menjemput' : 'mengantar'} kamu`}
+              {adaLokasiLive ? 'OTWWW!!' : 'Okay!'}
             </div>
           )}
         </div>
