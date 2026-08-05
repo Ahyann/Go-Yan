@@ -6,6 +6,8 @@ import TimeWheelPicker from './TimeWheelPicker.jsx'
 const PRESET_LOKASI = ['Office']
 
 export default function GoPopup({ onClose, onSubmit }) {
+  // Menitnya dipaksa selalu "00" — jadi kalau sekarang jam 14:37,
+  // default-nya jadi "14:00", bukan jam persis sekarang.
   const jamSekarang = new Date().toTimeString().slice(0, 2) + ':00'
 
   const [aksi, setAksi] = useState(AKSI.JEMPUT)
@@ -24,6 +26,10 @@ export default function GoPopup({ onClose, onSubmit }) {
   function pilihPreset(nama) {
     setWhere(nama)
     setShowDropdown(false)
+    // Paksa lepasin fokus dari kolom teks — tanpa ini, di beberapa
+    // browser mobile fokus kadang "nyasar" balik ke input abis
+    // dropdown-nya nutup, jadi keyboard tetep kebuka walau user gak
+    // niat ngetik.
     inputRef.current?.blur()
   }
 
@@ -35,13 +41,13 @@ export default function GoPopup({ onClose, onSubmit }) {
             style={aksi === AKSI.JEMPUT ? s.toggleActive : s.toggle}
             onClick={() => setAksi(AKSI.JEMPUT)}
           >
-            Jemput
+            Pickup
           </button>
           <button
             style={aksi === AKSI.ANTAR ? s.toggleActive : s.toggle}
             onClick={() => setAksi(AKSI.ANTAR)}
           >
-            Antar
+            Drop-off
           </button>
         </div>
 
@@ -58,6 +64,10 @@ export default function GoPopup({ onClose, onSubmit }) {
                 if (where === 'Office') setWhere('')
               }}
               onBlur={() => {
+                // Fix bug iOS/PWA: layar kadang "kejebak" di ukuran
+                // yang salah abis keyboard nutup. Paksa scroll balik
+                // ke atas, 2 kali (langsung + abis animasi keyboard
+                // kelar ~300ms), biar layout ke-refresh bener.
                 window.scrollTo(0, 0)
                 setTimeout(() => window.scrollTo(0, 0), 300)
               }}
@@ -67,7 +77,7 @@ export default function GoPopup({ onClose, onSubmit }) {
               type="button"
               style={s.dropdownBtn}
               onClick={() => setShowDropdown((v) => !v)}
-              aria-label="Pilih dari lokasi tersimpan"
+              aria-label="Choose a saved location"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M6 9l6 6 6-6" />
@@ -98,7 +108,7 @@ export default function GoPopup({ onClose, onSubmit }) {
         </div>
 
         <button style={bisaKirim ? s.kirim : s.kirimDisabled} onClick={handleKirim}>
-          Kirim ke Ahyan
+          Send to Ahyan
         </button>
       </div>
     </div>,

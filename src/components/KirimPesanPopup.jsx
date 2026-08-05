@@ -14,17 +14,17 @@ export default function KirimPesanPopup({ onClose, onKirim }) {
   return createPortal(
     <div style={s.overlay} onClick={onClose}>
       <div style={s.sheet} onClick={(e) => e.stopPropagation()}>
-        <div style={s.title}>Kirim pesan ke Ahyan</div>
+        <div style={s.title}>Send message to Ahyan</div>
         <input
           style={s.input}
           value={teks}
           onChange={(e) => setTeks(e.target.value)}
-          placeholder="Ketik pesan..."
+          placeholder="Type a message..."
           maxLength={24}
           autoFocus
         />
         <button style={teks.trim() ? s.kirimBtn : s.kirimBtnDisabled} onClick={handleKirim}>
-          Kirim
+          Send
         </button>
       </div>
     </div>,

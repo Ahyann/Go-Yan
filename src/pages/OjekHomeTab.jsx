@@ -40,14 +40,14 @@ export default function OjekHomeTab({
   }
 
   const teksKosongPeta = adaPermintaanMasuk || sedangJalan
-    ? 'Fajri belum nyalain share lokasi'
-    : 'Belum ada permintaan masuk'
+    ? "Fajri hasn't shared her location"
+    : 'No requests yet'
 
   return (
     <main style={s.wrap}>
       <header style={s.header}>
-        <div style={s.eyebrow}>OJEK</div>
-        <h1 style={s.title}>Halo, Ahyan</h1>
+        <div style={s.eyebrow}>DRIVER</div>
+        <h1 style={s.title}>Hi, Ahyan</h1>
       </header>
 
       <section style={s.mainCard}>
@@ -63,14 +63,14 @@ export default function OjekHomeTab({
 
         {adaPermintaanMasuk && (
           <div style={s.bawahCard}>
-            <div style={s.permintaanLabel}>Permintaan baru dari Fajri</div>
+            <div style={s.permintaanLabel}>New request from Fajri</div>
             <div style={s.permintaanAksi}>
-              {permintaan.aksi === AKSI.JEMPUT ? 'Jemput' : 'Antar'} · {permintaan.waktu}
+              {permintaan.aksi === AKSI.JEMPUT ? 'Pickup' : 'Drop-off'} · {permintaan.waktu}
             </div>
             <div style={s.permintaanWhere}>{permintaan.where}</div>
             <div style={s.tombolRow}>
-              <button style={s.tolakBtn} onClick={onTolak}>Tolak</button>
-              <button style={s.terimaBtn} onClick={handleTerima}>Terima</button>
+              <button style={s.tolakBtn} onClick={onTolak}>Decline</button>
+              <button style={s.terimaBtn} onClick={handleTerima}>Accept</button>
             </div>
           </div>
         )}
@@ -79,7 +79,7 @@ export default function OjekHomeTab({
           <div style={s.bawahCard}>
             <div style={s.jalanRow}>
               <span style={s.dotHijau} />
-              Sedang {permintaan.aksi === AKSI.JEMPUT ? 'menjemput' : 'mengantar'} Fajri · {permintaan.where}
+              {permintaan.aksi === AKSI.JEMPUT ? 'Picking up' : 'Dropping off'} Fajri · {permintaan.where}
             </div>
 
             <div style={s.pesanRow}>
@@ -87,16 +87,16 @@ export default function OjekHomeTab({
                 style={s.pesanInput}
                 value={teksPesan}
                 onChange={(e) => setTeksPesan(e.target.value)}
-                placeholder="Kirim pesan ke bubble Fajri..."
+                placeholder="Send a message to Fajri's bubble..."
                 maxLength={24}
               />
-              <button style={s.pesanBtn} onClick={handleKirimPesan}>Kirim</button>
+              <button style={s.pesanBtn} onClick={handleKirimPesan}>Send</button>
             </div>
 
             {lokasiError && <div style={s.lokasiError}>{lokasiError}</div>}
 
             <button style={s.selesaiBtn} onClick={handleSelesai}>
-              Selesai
+              Finish
             </button>
           </div>
         )}
