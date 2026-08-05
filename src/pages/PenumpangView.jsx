@@ -87,6 +87,6 @@ export default function PenumpangView({
 }
 
 const s = {
-  stageMap: { height: '100dvh', overflow: 'hidden' },
-  stageScroll: { minHeight: '100dvh', overflowY: 'auto' },
+  stageMap: { height: 'var(--app-height, 100dvh)', overflow: 'hidden' },
+  stageScroll: { minHeight: 'var(--app-height, 100dvh)', overflowY: 'auto' },
 }

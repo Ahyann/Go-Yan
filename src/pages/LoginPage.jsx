@@ -71,7 +71,7 @@ export default function LoginPage() {
 
 const s = {
   wrap: {
-    minHeight: '100dvh',
+    minHeight: 'var(--app-height, 100dvh)',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',

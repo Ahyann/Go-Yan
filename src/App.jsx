@@ -115,7 +115,7 @@ function AppIsi() {
 
 const s = {
   loading: {
-    minHeight: '100dvh',
+    minHeight: 'var(--app-height, 100dvh)',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
