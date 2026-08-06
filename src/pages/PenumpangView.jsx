@@ -3,6 +3,7 @@ import { STATUS_PERMINTAAN } from '../lib/constants'
 import { playSpiderSound } from '../lib/sound'
 import { useLokasiSayaPenumpang } from '../lib/useLokasiSayaPenumpang'
 import GoPopup from '../components/GoPopup.jsx'
+import SelesaiPopup from '../components/SelesaiPopup.jsx'
 import BottomNav from '../components/BottomNav.jsx'
 import HomeTab from './HomeTab.jsx'
 import JadwalTab from './JadwalTab.jsx'
@@ -16,10 +17,17 @@ export default function PenumpangView({
   simpanJadwal,
   kirimGo,
   onBatal,
+  notifSelesaiData,
+  onDismissNotifSelesai,
 }) {
   const [tabAktif, setTabAktif] = useState('home')
   const [showGo, setShowGo] = useState(false)
 
+  // Hook GPS ini sekarang di level PenumpangView (bukan di dalem
+  // HomeTab) — biar statusnya TETEP JALAN walau user pindah-pindah
+  // tab (Jadwal/Riwayat/Akun). Sebelumnya ini nempel di HomeTab, jadi
+  // begitu HomeTab dihancurin pas ganti tab, GPS-nya beneran berhenti
+  // ke-share, bukan cuma tampilannya doang yang salah.
   const {
     aktif: lokasiAktif,
     error: lokasiError,
@@ -30,6 +38,7 @@ export default function PenumpangView({
   const statusSekarang = permintaanAktif?.status
   const sedangJalan = statusSekarang === STATUS_PERMINTAAN.DITERIMA
 
+  // Begitu ride udah gak aktif lagi, otomatis matiin share lokasi.
   useEffect(() => {
     if (!sedangJalan && lokasiAktif) {
       berhentiLokasi()
@@ -82,6 +91,13 @@ export default function PenumpangView({
       />
 
       {showGo && <GoPopup onClose={() => setShowGo(false)} onSubmit={handleKirimGo} />}
+
+      {/* Ditaro di sini (bukan di dalem HomeTab) — biar tetep keliatan
+          walau Fajri lagi di tab Jadwal/Riwayat/Akun, bukan cuma pas
+          lagi di Home doang. */}
+      {notifSelesaiData && (
+        <SelesaiPopup data={notifSelesaiData} onDismiss={onDismissNotifSelesai} />
+      )}
     </>
   )
 }

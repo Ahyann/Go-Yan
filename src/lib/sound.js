@@ -40,24 +40,43 @@ export function playThwip() {
 // cuma bikin "pemutar" baru buat data yang udah siap itu, gak perlu baca
 // ulang file dari awal. Hasilnya jauh lebih instan & konsisten.
 let spiderBuffer = null
+let notifSelesaiBuffer = null
 
-async function muatSpiderBuffer() {
+async function muatBuffer(url) {
   try {
     const ctx = getAudioCtx()
     // { cache: 'no-store' }: paksa browser SELALU ambil file terbaru
     // dari server, jangan pernah pakai salinan lama yang udah kesimpen
     // sebelumnya — penting soalnya kita udah beberapa kali ganti isi
     // file mp3 ini dengan nama yang sama persis.
-    const res = await fetch('/sounds/spider_sound.mp3', { cache: 'no-store' })
+    const res = await fetch(url, { cache: 'no-store' })
     const arrayBuffer = await res.arrayBuffer()
-    spiderBuffer = await ctx.decodeAudioData(arrayBuffer)
+    return await ctx.decodeAudioData(arrayBuffer)
   } catch (err) {
-    console.error('Gagal muat suara:', err)
+    console.error('Gagal muat suara:', url, err)
+    return null
   }
+}
+
+async function muatSpiderBuffer() {
+  spiderBuffer = await muatBuffer('/sounds/spider_sound.mp3')
+}
+
+async function muatNotifSelesaiBuffer() {
+  notifSelesaiBuffer = await muatBuffer('/sounds/notifselesai.mp3')
+}
+
+function putarBuffer(buffer) {
+  const ctx = getAudioCtx()
+  const source = ctx.createBufferSource()
+  source.buffer = buffer
+  source.connect(ctx.destination)
+  source.start(0)
 }
 
 if (typeof window !== 'undefined') {
   muatSpiderBuffer()
+  muatNotifSelesaiBuffer()
 
   // Lapis pengaman tambahan: begitu app balik aktif/keliatan lagi
   // (abis layar dikunci atau pindah app terus balik), langsung coba
@@ -92,8 +111,20 @@ export async function playSpiderSound() {
     await ctx.resume()
   }
 
-  const source = ctx.createBufferSource()
-  source.buffer = spiderBuffer
-  source.connect(ctx.destination)
-  source.start(0)
+  putarBuffer(spiderBuffer)
+}
+
+export async function playNotifSelesai() {
+  const ctx = getAudioCtx()
+
+  if (!notifSelesaiBuffer) {
+    await muatNotifSelesaiBuffer()
+  }
+  if (!notifSelesaiBuffer) return
+
+  if (ctx.state === 'suspended') {
+    await ctx.resume()
+  }
+
+  putarBuffer(notifSelesaiBuffer)
 }

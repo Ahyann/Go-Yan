@@ -6,6 +6,7 @@ import { useRiwayat } from './lib/useRiwayat'
 import { useJadwalMingguan } from './lib/useJadwalMingguan'
 import { dengarkanNotifForeground } from './lib/notifikasi'
 import { usePresence } from './lib/usePresence'
+import { usePesananSelesai } from './lib/usePesananSelesai'
 import LoginPage from './pages/LoginPage.jsx'
 import OjekView from './pages/OjekView.jsx'
 import PenumpangView from './pages/PenumpangView.jsx'
@@ -26,6 +27,7 @@ function AppIsi() {
   const { permintaan, kirimGo, terima, tolak, selesai, batal } = usePermintaanAktif()
   const { riwayat, tambahRiwayat, tandaiLunas, hapusRiwayat } = useRiwayat()
   const { jadwal: jadwalMingguan, simpanJadwal } = useJadwalMingguan()
+  const { data: notifSelesaiData, tandaiSelesai, hapusNotifSelesai } = usePesananSelesai()
   usePresence(role)
 
   useEffect(() => {
@@ -36,14 +38,16 @@ function AppIsi() {
 
   async function selesaikanRide() {
     if (!permintaan) return
+    const tanggal = new Date().toISOString().slice(0, 10)
     await tambahRiwayat({
-      tanggal: new Date().toISOString().slice(0, 10),
+      tanggal,
       jam: new Date().toTimeString().slice(0, 5),
       tarif: TARIF_PER_RIDE,
       statusBayar: STATUS_BAYAR.BELUM,
       aksi: permintaan.aksi,
       where: permintaan.where,
     })
+    await tandaiSelesai({ tanggal, tarif: TARIF_PER_RIDE })
     await selesai()
   }
 
@@ -86,6 +90,8 @@ function AppIsi() {
           simpanJadwal={simpanJadwal}
           kirimGo={kirimGo}
           onBatal={batal}
+          notifSelesaiData={notifSelesaiData}
+          onDismissNotifSelesai={hapusNotifSelesai}
         />
       )}
     </>

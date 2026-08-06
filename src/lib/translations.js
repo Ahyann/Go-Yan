@@ -111,6 +111,10 @@ export const translations = {
     ariaGoKirim: 'Kirim sinyal jemput atau antar',
     ariaGoBatal: 'Batalkan permintaan',
     ariaGoDisabled: 'Masih ada perjalanan aktif',
+
+    // --- Popup perjalanan selesai ---
+    selesaiJudul: 'Perjalanan Selesai!',
+    selesaiOke: 'Oke',
   },
   en: {
     // --- HomeTab (Penumpang) ---
@@ -144,7 +148,7 @@ export const translations = {
     ahyanBelumBisa: "Ahyan can't right now — try GO again later",
     ahyanUdahTerima: 'Ahyan accepted, hang tight! ✓',
     otwText: 'OTWWW!!',
-    bubbleDefault: 'Omw!! 🕸️',
+    bubbleDefault: 'Otw dutzz!',
 
     // --- PetaLokasiPenumpang (badge) ---
     lokasiFajriLive: "Fajri's location is live",
@@ -224,5 +228,9 @@ export const translations = {
     ariaGoKirim: 'Send a pickup or drop-off signal',
     ariaGoBatal: 'Cancel request',
     ariaGoDisabled: 'A trip is currently active',
+
+    // --- Popup perjalanan selesai ---
+    selesaiJudul: 'Trip Complete!',
+    selesaiOke: 'OK',
   },
 }
