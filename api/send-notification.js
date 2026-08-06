@@ -3,6 +3,8 @@ import { getMessaging } from 'firebase-admin/messaging'
 import { getFirestore } from 'firebase-admin/firestore'
 import { getDatabase } from 'firebase-admin/database'
 
+// Vercel manggil fungsi ini bisa berkali-kali (cold start), jadi kita
+// pastiin Firebase Admin cuma di-init SEKALI, gak diulang tiap request.
 if (!getApps().length) {
   const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY)
   initializeApp({
@@ -16,13 +18,17 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  const { targetRole, title, body, type = 'umum' } = req.body
+  const { targetRole, title, body, type = 'umum', tag = type } = req.body
 
   if (!targetRole || !title || !body) {
     return res.status(400).json({ error: 'targetRole, title, dan body wajib diisi' })
   }
 
   try {
+    // Khusus notif pesan bubble: cek dulu ke Realtime Database apa
+    // app tujuan lagi kebuka. Kalau iya, langsung stop di sini, gak
+    // usah kirim FCM sama sekali — lebih pasti daripada ngecek dari
+    // sisi HP penerima (yang gak selalu bisa diandelin di iOS).
     if (type === 'pesan') {
       const rtdb = getDatabase()
       const presenceSnap = await rtdb.ref(`presence/${targetRole}`).get()
@@ -51,7 +57,7 @@ export default async function handler(req, res) {
     const messaging = getMessaging()
     const hasil = await messaging.sendEachForMulticast({
       tokens,
-      data: { title, body, type },
+      data: { title, body, type, tag },
       webpush: {
         fcmOptions: {
           link: 'https://go-yan.vercel.app',
