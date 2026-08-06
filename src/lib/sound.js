@@ -26,6 +26,7 @@ export function playThwip() {
   osc.stop(ctx.currentTime + 0.2)
 }
 
+// --- Rekaman asli, diputar lewat Web Audio API (bukan elemen <audio>) ---
 let spiderBuffer = null
 let notifSelesaiBuffer = null
 
@@ -91,24 +92,14 @@ export async function playNotifSelesai() {
   if (!notifSelesaiBuffer) {
     await muatNotifSelesaiBuffer()
   }
-  if (!notifSelesaiBuffer) return
+  if (!notifSelesaiBuffer) return false
 
   if (ctx.state === 'suspended') {
     await ctx.resume()
   }
 
-  if (ctx.state === 'running') {
-    putarBuffer(notifSelesaiBuffer)
-    return
-  }
+  if (ctx.state !== 'running') return false
 
-  function tunggu() {
-    document.removeEventListener('click', tunggu)
-    document.removeEventListener('touchstart', tunggu)
-    ctx.resume().then(() => {
-      if (ctx.state === 'running') putarBuffer(notifSelesaiBuffer)
-    })
-  }
-  document.addEventListener('click', tunggu, { once: true })
-  document.addEventListener('touchstart', tunggu, { once: true })
+  putarBuffer(notifSelesaiBuffer)
+  return true
 }

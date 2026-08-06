@@ -4,8 +4,8 @@ import { formatRupiah } from '../lib/constants'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { playNotifSelesai } from '../lib/sound'
 
-const DURASI_ANIMASI = 300 // ms, harus sama kayak transition di CSS
-const DURASI_TAMPIL = 5000 // 5 detik sebelum auto-close
+const DURASI_ANIMASI = 300
+const DURASI_TAMPIL = 5000
 
 export default function SelesaiPopup({ data, onDismiss }) {
   const { t, lang } = useLanguage()
@@ -13,16 +13,11 @@ export default function SelesaiPopup({ data, onDismiss }) {
   const sudahPutarSuara = useRef(false)
 
   useEffect(() => {
-    // requestAnimationFrame: pastiin browser udah "render" versi
-    // awal (ketutup/di luar layar) dulu SEBELUM kita ganti ke versi
-    // kebuka — kalau langsung set true bareng mount, transition-nya
-    // gak kepicu (browser nganggep itu state awal, bukan perubahan).
     const id = requestAnimationFrame(() => setTampil(true))
 
-    if (!sudahPutarSuara.current) {
-      playNotifSelesai()
-      sudahPutarSuara.current = true
-    }
+    playNotifSelesai().then((berhasil) => {
+      sudahPutarSuara.current = berhasil
+    })
 
     const timer = setTimeout(() => {
       handleClose()
@@ -36,9 +31,13 @@ export default function SelesaiPopup({ data, onDismiss }) {
   }, [])
 
   function handleClose() {
-    setTampil(false) // trigger animasi keluar dulu
+    if (!sudahPutarSuara.current) {
+      playNotifSelesai()
+      sudahPutarSuara.current = true
+    }
+    setTampil(false)
     setTimeout(() => {
-      onDismiss() // baru abis animasi kelar, beneran hapus datanya
+      onDismiss()
     }, DURASI_ANIMASI)
   }
 
