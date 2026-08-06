@@ -11,10 +11,16 @@ export default function RiwayatTab({ riwayat }) {
   const [bulanAktif, setBulanAktif] = useState(sekarang.getMonth())
   const [tahunAktif, setTahunAktif] = useState(sekarang.getFullYear())
 
-  const riwayatTerfilter = riwayat.filter((r) => {
-    const [tahun, bulan] = r.tanggal.split('-').map(Number)
-    return bulan - 1 === bulanAktif && tahun === tahunAktif
-  })
+  const riwayatTerfilter = riwayat
+    .filter((r) => {
+      const [tahun, bulan] = r.tanggal.split('-').map(Number)
+      return bulan - 1 === bulanAktif && tahun === tahunAktif
+    })
+    .sort((a, b) => {
+      if (a.tanggal !== b.tanggal) return b.tanggal.localeCompare(a.tanggal)
+      if (a.aksi !== b.aksi) return a.aksi === 'antar' ? -1 : 1
+      return 0
+    })
 
   const belumBayar = riwayat.filter((r) => r.statusBayar === STATUS_BAYAR.BELUM)
   const totalBelumBayar = belumBayar.reduce((jumlah, r) => jumlah + r.tarif, 0)
