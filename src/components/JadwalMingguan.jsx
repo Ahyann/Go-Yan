@@ -133,19 +133,19 @@ const s = {
     padding: '12px 14px',
     display: 'flex',
     alignItems: 'center',
-    gap: 12,
+    gap: 8,
   },
   hariLabel: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: 700,
     color: 'var(--text)',
-    width: 46,
+    width: 78,
     flexShrink: 0,
   },
   aksiGrid: {
     display: 'flex',
     flex: 1,
-    gap: 16,
+    gap: 10,
   },
   aksiItem: {
     display: 'flex',
