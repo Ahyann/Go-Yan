@@ -116,8 +116,9 @@ const s = {
     zIndex: 1000,
   },
   eyebrow: {
-    fontSize: 11, letterSpacing: '0.12em', color: 'var(--text-dim)', marginBottom: 4,
-    textShadow: '0 1px 4px rgba(0,0,0,0.8)',
+    fontSize: 11, letterSpacing: '0.12em', color: 'var(--glow-blue)', marginBottom: 4,
+    textShadow: '0 0 6px var(--glow-blue-mid), 0 1px 4px rgba(0,0,0,0.8)',
+    fontWeight: 700,
   },
   title: {
     fontFamily: 'var(--font-judul)',
@@ -128,7 +129,9 @@ const s = {
     textShadow: '0 1px 6px rgba(0,0,0,0.8)',
   },
   tagline: {
-    fontSize: 13,
+    fontFamily: 'var(--font-judul)',
+    fontSize: 15,
+    letterSpacing: '0.5px',
     color: 'var(--text-dim)',
     marginTop: 2,
     textShadow: '0 1px 4px rgba(0,0,0,0.8)',
