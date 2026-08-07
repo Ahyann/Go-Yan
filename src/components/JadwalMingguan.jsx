@@ -152,6 +152,7 @@ const s = {
     alignItems: 'center',
     gap: 8,
     flex: 1,
+    minWidth: 0,
   },
   chip: {
     fontSize: 12.5,
