@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { ROLE } from '../lib/constants'
-import { mintaIzinDanSimpanToken } from '../lib/notifikasi'
+import { mintaIzinDanSimpanToken, matikanNotifikasi } from '../lib/notifikasi'
 
 export default function AccountTab() {
   const { user, logout } = useAuth()
@@ -28,6 +28,20 @@ export default function AccountTab() {
     }
   }
 
+  async function handleMatikanNotif() {
+    setStatus('loading')
+    await matikanNotifikasi(user.uid)
+    setStatus('')
+  }
+
+  function handleToggleNotif() {
+    if (status === 'ok') {
+      handleMatikanNotif()
+    } else {
+      handleAktifkanNotif()
+    }
+  }
+
   return (
     <main style={s.wrap}>
       <header style={s.header}>
@@ -45,8 +59,8 @@ export default function AccountTab() {
         <div style={s.notifDesc}>{t.notifikasiDesc}</div>
         <button
           style={status === 'ok' ? s.notifBtnOk : s.notifBtn}
-          onClick={handleAktifkanNotif}
-          disabled={status === 'loading' || status === 'ok'}
+          onClick={handleToggleNotif}
+          disabled={status === 'loading'}
         >
           {status === 'ok' ? t.notifikasiAktif : status === 'loading' ? t.memproses : t.aktifkanNotifikasi}
         </button>

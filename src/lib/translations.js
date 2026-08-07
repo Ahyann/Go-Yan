@@ -3,7 +3,7 @@ export const translations = {
     // --- HomeTab (Penumpang) ---
     penumpangEyebrow: 'GO-YAN',
     penumpangHalo: 'Halo, Fajri',
-    penumpangTagline: 'Ready for a ride?',
+    penumpangTagline: 'Siap berangkat?',
     ariaMatikanShare: 'Matikan share lokasi',
     ariaNyalakanShare: 'Share lokasi ke Ahyan',
     ariaKembaliLokasiAhyan: 'Kembali ke lokasi Ahyan',
@@ -29,9 +29,9 @@ export const translations = {
     // --- PetaStatus (badge status) ---
     belumAdaPerjalanan: 'Belum ada perjalanan aktif',
     menungguAhyanTerima: 'Menunggu Ahyan menerima…',
-    ahyanBelumBisa: 'Ahyan belum bisa sekarang',
-    ahyanUdahTerima: 'Okay!',
-    otwText: 'On my way!',
+    ahyanBelumBisa: 'Ahyan belum bisa sekarang — coba GO lagi nanti',
+    ahyanUdahTerima: 'Ahyan udah terima, tunggu ya! ✓',
+    otwText: 'OTWWW!!',
     bubbleDefault: 'Otw dutzz!',
 
     // --- PetaLokasiPenumpang (badge) ---
@@ -57,7 +57,8 @@ export const translations = {
     notifikasiLabel: 'Notifikasi',
     notifikasiDesc: 'Dapetin notif pas ada pembaruan, walau app-nya lagi ditutup.',
     aktifkanNotifikasi: 'Aktifkan Notifikasi',
-    notifikasiAktif: '✓ Notifikasi aktif',
+    notifikasiAktif: '✓ Notifikasi aktif — tekan buat matikan',
+    matikanNotif: 'Matikan Notifikasi',
     memproses: 'Memproses…',
     bahasaLabel: 'Bahasa / Language',
     keluar: 'Keluar',
@@ -116,6 +117,7 @@ export const translations = {
     // --- Popup perjalanan selesai ---
     selesaiJudul: 'Perjalanan Selesai!',
     selesaiOke: 'Oke',
+    pesanPerluLive: 'Nyalain live location dulu buat bisa kirim pesan',
   },
   en: {
     // --- HomeTab (Penumpang) ---
@@ -147,9 +149,9 @@ export const translations = {
     // --- PetaStatus (badge status) ---
     belumAdaPerjalanan: 'No active trip yet',
     menungguAhyanTerima: 'Waiting for Ahyan to accept…',
-    ahyanBelumBisa: "Ahyan can't right now",
-    ahyanUdahTerima: 'Okay!',
-    otwText: 'On my way!',
+    ahyanBelumBisa: "Ahyan can't right now — try GO again later",
+    ahyanUdahTerima: 'Ahyan accepted, hang tight! ✓',
+    otwText: 'OTWWW!!',
     bubbleDefault: 'Otw dutzz!',
 
     // --- PetaLokasiPenumpang (badge) ---
@@ -175,7 +177,8 @@ export const translations = {
     notifikasiLabel: 'Notifications',
     notifikasiDesc: "Get notified about updates, even when the app is closed.",
     aktifkanNotifikasi: 'Enable Notifications',
-    notifikasiAktif: '✓ Notifications on',
+    notifikasiAktif: '✓ Notifications on — tap to turn off',
+    matikanNotif: 'Turn Off Notifications',
     memproses: 'Processing…',
     bahasaLabel: 'Bahasa / Language',
     keluar: 'Log out',
@@ -234,5 +237,6 @@ export const translations = {
     // --- Popup perjalanan selesai ---
     selesaiJudul: 'Trip Complete!',
     selesaiOke: 'OK',
+    pesanPerluLive: 'Turn on live location first to send a message',
   },
 }

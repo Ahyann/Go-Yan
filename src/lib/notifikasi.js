@@ -1,4 +1,4 @@
-import { doc, setDoc } from 'firebase/firestore'
+import { doc, setDoc, deleteDoc } from 'firebase/firestore'
 import { getToken, onMessage } from 'firebase/messaging'
 import { db, getMessagingInstance } from './firebase'
 
@@ -56,6 +56,20 @@ export function dengarkanNotifForeground(callback) {
     if (!messaging) return
     onMessage(messaging, callback)
   })
+}
+
+// Matiin notifikasi — hapus "alamat pengiriman" (token) yang kesimpen
+// di Firestore, jadi backend gak nemu tujuan buat ngirim lagi ke
+// device ini. Catatan: ini gak nyabut izin di level browser (itu
+// emang gak bisa dilakuin app, cuma user sendiri lewat Settings) —
+// tapi efeknya sama, notif beneran berhenti dikirim.
+export async function matikanNotifikasi(uid) {
+  try {
+    await deleteDoc(doc(db, 'pushTokens', uid))
+    return { berhasil: true }
+  } catch (err) {
+    return { berhasil: false, alasan: err.message }
+  }
 }
 
 // Panggil ini buat beneran ngirim push notification. targetRole
