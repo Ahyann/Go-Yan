@@ -116,8 +116,12 @@ function AksiChip({ label, aktif, jam, bisaEdit, onToggle, onBukaJam }) {
         <span style={s.chipBaca}>{label}</span>
       )}
 
-      {aktif && bisaEdit && (
-        <button style={s.jamBtn} onClick={onBukaJam}>{jam}</button>
+      {bisaEdit && (
+        <div style={s.jamSlot}>
+          {aktif && (
+            <button style={s.jamBtn} onClick={onBukaJam}>{jam}</button>
+          )}
+        </div>
       )}
       {aktif && !bisaEdit && <span style={s.jamBacaTeks}>{jam}</span>}
     </div>
@@ -186,6 +190,10 @@ const s = {
     width: 46,
     flexShrink: 0,
   },
+  jamSlot: {
+    flex: 1,
+    minWidth: 0,
+  },
   jamBtn: {
     fontFamily: 'var(--font-data)',
     fontSize: 12.5,
@@ -194,8 +202,8 @@ const s = {
     borderRadius: 8,
     padding: '6px 8px',
     color: 'var(--text)',
-    minWidth: 0,
-    flex: 1,
+    width: '100%',
+    boxSizing: 'border-box',
     textAlign: 'center',
   },
   jamBacaTeks: {
