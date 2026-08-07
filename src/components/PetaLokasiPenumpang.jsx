@@ -81,6 +81,8 @@ export default function PetaLokasiPenumpang({
   const markerSayaRef = useRef(null)
   const pesanTampilRef = useRef(null)
   const [teksBubble, setTeksBubble] = useState('')
+  const [teksBubbleSaya, setTeksBubbleSaya] = useState('')
+  const pesanSayaTampilRef = useRef(null)
 
   useEffect(() => {
     if (pesan && markerRef.current) {
@@ -93,6 +95,8 @@ export default function PetaLokasiPenumpang({
   useEffect(() => {
     if (!markerSayaRef.current) return
     if (pesanSaya) {
+      pesanSayaTampilRef.current = pesanSaya
+      setTeksBubbleSaya(pesanSaya.teks)
       markerSayaRef.current.openPopup()
     } else {
       markerSayaRef.current.closePopup()
@@ -169,12 +173,23 @@ export default function PetaLokasiPenumpang({
             position={[lokasiSaya.lat, lokasiSaya.lng]}
             icon={ikonSaya}
             zIndexOffset={1000}
+            eventHandlers={{
+              popupclose: () => {
+                if (pesanSayaTampilRef.current) {
+                  hapusPesanSaya()
+                  pesanSayaTampilRef.current = null
+                }
+              },
+            }}
           >
-            {pesanSaya && (
+            {teksBubbleSaya && (
               <Popup closeButton={false} autoClose={false} closeOnClick={false}>
-                <div style={s.bubbleWrap} onClick={hapusPesanSaya}>
-                  <span style={{ ...s.bubbleText, fontSize: pesanSaya.teks.length > 16 ? 7 : 9 }}>
-                    {pesanSaya.teks}
+                <div
+                  style={s.bubbleWrap}
+                  onClick={() => markerSayaRef.current?.closePopup()}
+                >
+                  <span style={{ ...s.bubbleText, fontSize: teksBubbleSaya.length > 16 ? 7 : 9 }}>
+                    {teksBubbleSaya}
                   </span>
                 </div>
               </Popup>

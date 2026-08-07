@@ -97,6 +97,8 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
   const mapRefInternal = useRef(null)
   const mapRef = mapRefLuar || mapRefInternal
   const [teksBubble, setTeksBubble] = useState(t.bubbleDefault)
+  const [teksBubbleSaya, setTeksBubbleSaya] = useState('')
+  const pesanSayaTampilRef = useRef(null)
 
   useEffect(() => {
     if (pesan && markerRef.current) {
@@ -109,6 +111,8 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
   useEffect(() => {
     if (!markerSayaRef.current) return
     if (pesanSaya) {
+      pesanSayaTampilRef.current = pesanSaya
+      setTeksBubbleSaya(pesanSaya.teks)
       markerSayaRef.current.openPopup()
     } else {
       markerSayaRef.current.closePopup()
@@ -176,12 +180,28 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
         )}
 
         {lokasiSaya && (
-          <Marker ref={markerSayaRef} position={[lokasiSaya.lat, lokasiSaya.lng]} icon={ikonSaya} zIndexOffset={500}>
-            {pesanSaya && (
+          <Marker
+            ref={markerSayaRef}
+            position={[lokasiSaya.lat, lokasiSaya.lng]}
+            icon={ikonSaya}
+            zIndexOffset={500}
+            eventHandlers={{
+              popupclose: () => {
+                if (pesanSayaTampilRef.current) {
+                  hapusPesanSaya()
+                  pesanSayaTampilRef.current = null
+                }
+              },
+            }}
+          >
+            {teksBubbleSaya && (
               <Popup closeButton={false} autoClose={false} closeOnClick={false}>
-                <div style={s.bubbleWrap} onClick={hapusPesanSaya}>
-                  <span style={{ ...s.bubbleText, fontSize: pesanSaya.teks.length > 16 ? 7 : 9 }}>
-                    {pesanSaya.teks}
+                <div
+                  style={s.bubbleWrap}
+                  onClick={() => markerSayaRef.current?.closePopup()}
+                >
+                  <span style={{ ...s.bubbleText, fontSize: teksBubbleSaya.length > 16 ? 7 : 9 }}>
+                    {teksBubbleSaya}
                   </span>
                 </div>
               </Popup>
