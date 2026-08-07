@@ -89,7 +89,7 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
   const lokasiOjek = useLokasiOjek()
   const lokasiSaya = useLokasiPenumpang()
   const { pesan, hapusPesan } = usePesanOjek()
-  const { pesan: pesanSaya } = usePesanPenumpang()
+  const { pesan: pesanSaya, hapusPesan: hapusPesanSaya } = usePesanPenumpang()
   const adaLokasiLive = lokasiOjek && permintaan?.status === STATUS_PERMINTAAN.DITERIMA
   const markerRef = useRef(null)
   const markerSayaRef = useRef(null)
@@ -164,7 +164,10 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
               }}
             >
               <Popup closeButton={false} autoClose={false} closeOnClick={false}>
-                <div style={s.bubbleWrap}>
+                <div
+                  style={s.bubbleWrap}
+                  onClick={() => markerRef.current?.closePopup()}
+                >
                   <span style={{ ...s.bubbleText, fontSize: ukuranFont }}>{teksBubble}</span>
                 </div>
               </Popup>
@@ -176,7 +179,7 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
           <Marker ref={markerSayaRef} position={[lokasiSaya.lat, lokasiSaya.lng]} icon={ikonSaya} zIndexOffset={500}>
             {pesanSaya && (
               <Popup closeButton={false} autoClose={false} closeOnClick={false}>
-                <div style={s.bubbleWrap}>
+                <div style={s.bubbleWrap} onClick={hapusPesanSaya}>
                   <span style={{ ...s.bubbleText, fontSize: pesanSaya.teks.length > 16 ? 7 : 9 }}>
                     {pesanSaya.teks}
                   </span>

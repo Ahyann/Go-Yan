@@ -73,7 +73,7 @@ export default function PetaLokasiPenumpang({
   const teksKosongFinal = teksKosong ?? t.fajriBelumShare
   const lokasiSaya = useLokasiOjek()
   const { pesan, hapusPesan } = usePesanPenumpang()
-  const { pesan: pesanSaya } = usePesanOjek()
+  const { pesan: pesanSaya, hapusPesan: hapusPesanSaya } = usePesanOjek()
   const pusat = lokasi ? [lokasi.lat, lokasi.lng] : PUSAT_DEFAULT
   const tampilkanTombolLokasi = typeof onToggleLokasi === 'function'
   const mapRef = useRef(null)
@@ -151,7 +151,10 @@ export default function PetaLokasiPenumpang({
             >
               {teksBubble && (
                 <Popup closeButton={false} autoClose={false} closeOnClick={false}>
-                  <div style={s.bubbleWrap}>
+                  <div
+                    style={s.bubbleWrap}
+                    onClick={() => markerRef.current?.closePopup()}
+                  >
                     <span style={{ ...s.bubbleText, fontSize: ukuranFont }}>{teksBubble}</span>
                   </div>
                 </Popup>
@@ -169,7 +172,7 @@ export default function PetaLokasiPenumpang({
           >
             {pesanSaya && (
               <Popup closeButton={false} autoClose={false} closeOnClick={false}>
-                <div style={s.bubbleWrap}>
+                <div style={s.bubbleWrap} onClick={hapusPesanSaya}>
                   <span style={{ ...s.bubbleText, fontSize: pesanSaya.teks.length > 16 ? 7 : 9 }}>
                     {pesanSaya.teks}
                   </span>
