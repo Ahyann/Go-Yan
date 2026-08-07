@@ -2,19 +2,20 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { ROLE } from '../lib/constants'
-import { mintaIzinDanSimpanToken, matikanNotifikasi } from '../lib/notifikasi'
+import { mintaIzinDanSimpanToken, matikanNotifikasi, cekStatusNotifikasi } from '../lib/notifikasi'
 
 export default function AccountTab() {
   const { user, logout } = useAuth()
   const { lang, setLang, t } = useLanguage()
-  const [status, setStatus] = useState('') // '', 'loading', 'ok', 'gagal'
+  const [status, setStatus] = useState('')
   const [pesanError, setPesanError] = useState('')
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
-      setStatus('ok')
-    }
-  }, [])
+    if (!user) return
+    cekStatusNotifikasi(user.uid).then((aktif) => {
+      if (aktif) setStatus('ok')
+    })
+  }, [user])
 
   async function handleAktifkanNotif() {
     setStatus('loading')
@@ -30,8 +31,14 @@ export default function AccountTab() {
 
   async function handleMatikanNotif() {
     setStatus('loading')
-    await matikanNotifikasi(user.uid)
-    setStatus('')
+    setPesanError('')
+    const hasil = await matikanNotifikasi(user.uid)
+    if (hasil.berhasil) {
+      setStatus('')
+    } else {
+      setStatus('ok')
+      setPesanError(hasil.alasan)
+    }
   }
 
   function handleToggleNotif() {

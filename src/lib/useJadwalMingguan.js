@@ -12,12 +12,19 @@ const KOSONG = {
   jumat: { antar: '', jemput: '' },
 }
 
+function formatTanggalLokal(d) {
+  const tahun = d.getFullYear()
+  const bulan = String(d.getMonth() + 1).padStart(2, '0')
+  const tanggal = String(d.getDate()).padStart(2, '0')
+  return `${tahun}-${bulan}-${tanggal}`
+}
+
 function kodeMingguIni() {
   const d = new Date()
   const hari = d.getDay()
   const mundur = hari === 0 ? 6 : hari - 1
   d.setDate(d.getDate() - mundur)
-  return d.toISOString().slice(0, 10)
+  return formatTanggalLokal(d)
 }
 
 export function useJadwalMingguan() {

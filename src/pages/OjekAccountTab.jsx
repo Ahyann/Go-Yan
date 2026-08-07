@@ -31,8 +31,14 @@ export default function OjekAccountTab() {
 
   async function handleMatikanNotif() {
     setStatus('loading')
-    await matikanNotifikasi(user.uid)
-    setStatus('')
+    setPesanError('')
+    const hasil = await matikanNotifikasi(user.uid)
+    if (hasil.berhasil) {
+      setStatus('')
+    } else {
+      setStatus('ok')
+      setPesanError(hasil.alasan)
+    }
   }
 
   function handleToggleNotif() {
