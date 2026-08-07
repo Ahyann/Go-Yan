@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { ROLE } from '../lib/constants'
-import { mintaIzinDanSimpanToken, matikanNotifikasi } from '../lib/notifikasi'
+import { mintaIzinDanSimpanToken, matikanNotifikasi, cekStatusNotifikasi } from '../lib/notifikasi'
 
 export default function OjekAccountTab() {
   const { user, logout } = useAuth()
@@ -11,10 +11,11 @@ export default function OjekAccountTab() {
   const [pesanError, setPesanError] = useState('')
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
-      setStatus('ok')
-    }
-  }, [])
+    if (!user) return
+    cekStatusNotifikasi(user.uid).then((aktif) => {
+      if (aktif) setStatus('ok')
+    })
+  }, [user])
 
   async function handleAktifkanNotif() {
     setStatus('loading')
