@@ -3,8 +3,6 @@ import { getMessaging } from 'firebase-admin/messaging'
 import { getFirestore } from 'firebase-admin/firestore'
 import { getDatabase } from 'firebase-admin/database'
 
-// Vercel manggil fungsi ini bisa berkali-kali (cold start), jadi kita
-// pastiin Firebase Admin cuma di-init SEKALI, gak diulang tiap request.
 if (!getApps().length) {
   const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY)
   initializeApp({
@@ -25,10 +23,6 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Khusus notif pesan bubble: cek dulu ke Realtime Database apa
-    // app tujuan lagi kebuka. Kalau iya, langsung stop di sini, gak
-    // usah kirim FCM sama sekali — lebih pasti daripada ngecek dari
-    // sisi HP penerima (yang gak selalu bisa diandelin di iOS).
     if (type === 'pesan') {
       const rtdb = getDatabase()
       const presenceSnap = await rtdb.ref(`presence/${targetRole}`).get()

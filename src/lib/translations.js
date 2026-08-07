@@ -29,9 +29,9 @@ export const translations = {
     // --- PetaStatus (badge status) ---
     belumAdaPerjalanan: 'Belum ada perjalanan aktif',
     menungguAhyanTerima: 'Menunggu Ahyan menerima…',
-    ahyanBelumBisa: 'Ahyan belum bisa sekarang — coba GO lagi nanti',
-    ahyanUdahTerima: 'Ahyan udah terima, tunggu ya! ✓',
-    otwText: 'OTWWW!!',
+    ahyanBelumBisa: 'Ahyan belum bisa sekarang!',
+    ahyanUdahTerima: 'Okay',
+    otwText: 'On My Way!',
     bubbleDefault: 'Otw dutzz!',
 
     // --- PetaLokasiPenumpang (badge) ---
@@ -57,7 +57,7 @@ export const translations = {
     notifikasiLabel: 'Notifikasi',
     notifikasiDesc: 'Dapetin notif pas ada pembaruan, walau app-nya lagi ditutup.',
     aktifkanNotifikasi: 'Aktifkan Notifikasi',
-    notifikasiAktif: '✓ Notifikasi aktif — tekan buat matikan',
+    notifikasiAktif: 'Notifikasi aktif',
     matikanNotif: 'Matikan Notifikasi',
     memproses: 'Memproses…',
     bahasaLabel: 'Bahasa / Language',
@@ -149,9 +149,9 @@ export const translations = {
     // --- PetaStatus (badge status) ---
     belumAdaPerjalanan: 'No active trip yet',
     menungguAhyanTerima: 'Waiting for Ahyan to accept…',
-    ahyanBelumBisa: "Ahyan can't right now — try GO again later",
-    ahyanUdahTerima: 'Ahyan accepted, hang tight! ✓',
-    otwText: 'OTWWW!!',
+    ahyanBelumBisa: "Ahyan can't right now!",
+    ahyanUdahTerima: 'Okay!',
+    otwText: 'On My Way!',
     bubbleDefault: 'Otw dutzz!',
 
     // --- PetaLokasiPenumpang (badge) ---
