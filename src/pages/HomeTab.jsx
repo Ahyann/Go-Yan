@@ -132,9 +132,9 @@ const s = {
     fontFamily: 'var(--font-judul)',
     fontSize: 15,
     letterSpacing: '0.5px',
-    color: 'var(--text-dim)',
+    color: 'var(--text)',
     marginTop: 2,
-    textShadow: '0 1px 4px rgba(0,0,0,0.8)',
+    textShadow: '0 1px 6px rgba(0,0,0,0.8)',
   },
   shareIcon: {
     position: 'fixed',
