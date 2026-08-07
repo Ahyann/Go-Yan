@@ -40,6 +40,7 @@ export default function HomeTab({ permintaan, lokasiAktif, lokasiError, mulaiLok
       <div style={s.headerFloat}>
         <div style={s.eyebrow}>{t.penumpangEyebrow}</div>
         <h1 style={s.title}>{t.penumpangHalo}</h1>
+        <p style={s.tagline}>{t.penumpangTagline}</p>
       </div>
 
       <PetaStatus permintaan={permintaan} mapRef={mapRef} />
@@ -125,6 +126,12 @@ const s = {
     letterSpacing: '1px',
     lineHeight: 1.3,
     textShadow: '0 1px 6px rgba(0,0,0,0.8)',
+  },
+  tagline: {
+    fontSize: 13,
+    color: 'var(--text-dim)',
+    marginTop: 2,
+    textShadow: '0 1px 4px rgba(0,0,0,0.8)',
   },
   shareIcon: {
     position: 'fixed',

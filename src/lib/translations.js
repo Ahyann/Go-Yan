@@ -1,8 +1,9 @@
 export const translations = {
   id: {
     // --- HomeTab (Penumpang) ---
-    penumpangEyebrow: 'PENUMPANG',
+    penumpangEyebrow: 'GO-YAN',
     penumpangHalo: 'Halo, Fajri',
+    penumpangTagline: 'Ready for a ride?',
     ariaMatikanShare: 'Matikan share lokasi',
     ariaNyalakanShare: 'Share lokasi ke Ahyan',
     ariaKembaliLokasiAhyan: 'Kembali ke lokasi Ahyan',
@@ -118,8 +119,9 @@ export const translations = {
   },
   en: {
     // --- HomeTab (Penumpang) ---
-    penumpangEyebrow: 'PASSENGER',
+    penumpangEyebrow: 'GO-YAN',
     penumpangHalo: 'Hi, Fajri',
+    penumpangTagline: 'Ready for a ride?',
     ariaMatikanShare: 'Turn off location sharing',
     ariaNyalakanShare: 'Share location with Ahyan',
     ariaKembaliLokasiAhyan: "Back to Ahyan's location",
