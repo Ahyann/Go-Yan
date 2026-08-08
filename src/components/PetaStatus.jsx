@@ -34,14 +34,14 @@ const ikonSaya = L.divIcon({
   className: '',
   html: `<div style="isolation: isolate;">
     <img src="/icons/fajri.png" style="
-      width:16px;height:24px;
+      width:19px;height:29px;
       image-rendering: pixelated;
       filter: drop-shadow(0 0 5px #E8EDF9) drop-shadow(0 0 8px #8B96B4);
     " />
   </div>`,
-  iconSize: [16, 24],
-  iconAnchor: [8, 24],
-  popupAnchor: [26, -4],
+  iconSize: [19, 29],
+  iconAnchor: [10, 29],
+  popupAnchor: [44, -13],
 })
 
 const ikonOffice = L.divIcon({
