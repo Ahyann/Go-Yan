@@ -34,26 +34,26 @@ const ikonSaya = L.divIcon({
   className: '',
   html: `<div style="isolation: isolate;">
     <img src="/icons/fajri.png" style="
-      width:18px;height:27px;
+      width:16px;height:24px;
       image-rendering: pixelated;
       filter: drop-shadow(0 0 5px #E8EDF9) drop-shadow(0 0 8px #8B96B4);
     " />
   </div>`,
-  iconSize: [18, 27],
-  iconAnchor: [9, 27],
-  popupAnchor: [30, -4],
+  iconSize: [16, 24],
+  iconAnchor: [8, 24],
+  popupAnchor: [26, -4],
 })
 
 const ikonOffice = L.divIcon({
   className: '',
   html: `<div style="isolation: isolate;">
     <img src="/icons/office.png" style="
-      width:44px;height:44px;
+      width:39px;height:36px;
       image-rendering: pixelated;
     " />
   </div>`,
-  iconSize: [44, 44],
-  iconAnchor: [22, 40],
+  iconSize: [39, 36],
+  iconAnchor: [19, 33],
 })
 
 function GeserKePosisi({ lat, lng }) {

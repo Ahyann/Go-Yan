@@ -14,14 +14,14 @@ const ikonPenumpang = L.divIcon({
   className: '',
   html: `<div style="isolation: isolate;">
     <img src="/icons/fajri.png" style="
-      width:21px;height:32px;
+      width:18px;height:28px;
       image-rendering: pixelated;
       filter: drop-shadow(0 0 6px #E8EDF9) drop-shadow(0 0 10px #8B96B4);
     " />
   </div>`,
-  iconSize: [21, 32],
-  iconAnchor: [10, 32],
-  popupAnchor: [42, -16],
+  iconSize: [18, 28],
+  iconAnchor: [9, 28],
+  popupAnchor: [42, -12],
 })
 
 const ikonSaya = L.divIcon({
@@ -42,12 +42,12 @@ const ikonOffice = L.divIcon({
   className: '',
   html: `<div style="isolation: isolate;">
     <img src="/icons/office.png" style="
-      width:44px;height:44px;
+      width:39px;height:36px;
       image-rendering: pixelated;
     " />
   </div>`,
-  iconSize: [44, 44],
-  iconAnchor: [22, 40],
+  iconSize: [39, 36],
+  iconAnchor: [19, 33],
 })
 
 function GeserKePosisi({ lat, lng }) {
