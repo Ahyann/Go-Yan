@@ -42,12 +42,12 @@ const ikonOffice = L.divIcon({
   className: '',
   html: `<div style="isolation: isolate;">
     <img src="/icons/office.png" style="
-      width:39px;height:36px;
+      width:27px;height:40px;
       image-rendering: pixelated;
     " />
   </div>`,
-  iconSize: [39, 36],
-  iconAnchor: [19, 33],
+  iconSize: [27, 40],
+  iconAnchor: [13, 38],
 })
 
 function GeserKePosisi({ lat, lng }) {
