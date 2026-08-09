@@ -3,8 +3,9 @@ import { signInWithEmailAndPassword } from 'firebase/auth'
 import { auth } from '../lib/firebase'
 import { useLanguage } from '../context/LanguageContext.jsx'
 
-function usernameKeEmail(username) {
-  const bersih = username.trim().toLowerCase().replace(/\s+/g, '')
+function usernameKeEmail(input) {
+  const bersih = input.trim().toLowerCase().replace(/\s+/g, '')
+  if (bersih.includes('@')) return bersih
   return `${bersih}@gmail.com`
 }
 
