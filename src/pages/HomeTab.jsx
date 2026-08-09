@@ -28,7 +28,7 @@ export default function HomeTab({ permintaan, lokasiAktif, lokasiError, mulaiLok
   }
 
   function handleRecenter() {
-    if (lokasiOjek && mapRef.current) {
+    if (lokasiOjek?.lat != null && lokasiOjek?.lng != null && mapRef.current) {
       mapRef.current.setView([lokasiOjek.lat, lokasiOjek.lng], 16)
     }
   }

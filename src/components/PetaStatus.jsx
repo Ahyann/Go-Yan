@@ -104,6 +104,7 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
   // aktif doang, tanpa koordinat), biar gak nyoba render marker dari
   // koordinat kosong (itu yang bikin peta crash).
   const posisiValid = lokasiOjek?.lat != null && lokasiOjek?.lng != null
+  const posisiSayaValid = lokasiSaya?.lat != null && lokasiSaya?.lng != null
   const adaPosisiOjek = posisiValid && permintaan?.status === STATUS_PERMINTAAN.DITERIMA
   const lagiLive = adaPosisiOjek && lokasiOjek?.aktif
   const markerRef = useRef(null)
@@ -195,7 +196,7 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
           </>
         )}
 
-        {lokasiSaya && (
+        {posisiSayaValid && (
           <Marker
             ref={markerSayaRef}
             position={[lokasiSaya.lat, lokasiSaya.lng]}

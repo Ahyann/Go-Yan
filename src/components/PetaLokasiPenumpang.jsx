@@ -81,9 +81,10 @@ export default function PetaLokasiPenumpang({
   // ada, bukan cuma object kosong dengan field aktif doang.
   const posisiValid = lokasi?.lat != null && lokasi?.lng != null
   const lokasiSaya = useLokasiOjek()
+  const posisiSayaValid = lokasiSaya?.lat != null && lokasiSaya?.lng != null
   const { pesan, hapusPesan } = usePesanPenumpang()
   const { pesan: pesanSaya, hapusPesan: hapusPesanSaya } = usePesanOjek()
-  const pusat = lokasi ? [lokasi.lat, lokasi.lng] : PUSAT_DEFAULT
+  const pusat = posisiValid ? [lokasi.lat, lokasi.lng] : PUSAT_DEFAULT
   const tampilkanTombolLokasi = typeof onToggleLokasi === 'function'
   const mapRef = useRef(null)
   const markerRef = useRef(null)
@@ -120,7 +121,7 @@ export default function PetaLokasiPenumpang({
   const ukuranFont = teksBubble.length > 16 ? 7 : 9
 
   function handleRecenter() {
-    if (lokasi && mapRef.current) {
+    if (posisiValid && mapRef.current) {
       mapRef.current.setView([lokasi.lat, lokasi.lng], 16)
     }
   }
@@ -181,7 +182,7 @@ export default function PetaLokasiPenumpang({
           </>
         )}
 
-        {lokasiSaya && (
+        {posisiSayaValid && (
           <Marker
             ref={markerSayaRef}
             position={[lokasiSaya.lat, lokasiSaya.lng]}
