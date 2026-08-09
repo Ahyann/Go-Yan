@@ -38,11 +38,9 @@ const ikonSaya = L.divIcon({
   </div>`,
   iconSize: [24, 24],
   iconAnchor: [12, 12],
-  popupAnchor: [42, 10],
+  popupAnchor: [42, 4],
 })
 
-// Proporsi asli gambar office ternyata gedung TINGGI (rasio ~0.667,
-// bukan hampir kotak) — file lama yang salah, ini yang bener.
 const ikonOffice = L.divIcon({
   className: '',
   html: `<div style="isolation: isolate;">
