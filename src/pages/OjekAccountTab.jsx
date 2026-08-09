@@ -150,6 +150,7 @@ const s = {
     height: '100%',
     objectFit: 'cover',
     imageRendering: 'pixelated',
+    transform: 'scale(0.9)',
   },
   label: { fontSize: 12.5, color: '#9FC3E8', marginBottom: 6 },
   email: { fontSize: 15, color: 'var(--text)', fontWeight: 600 },
