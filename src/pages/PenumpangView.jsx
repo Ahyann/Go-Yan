@@ -24,6 +24,7 @@ export default function PenumpangView({
   const [tabAktif, setTabAktif] = useState('home')
   const [showGo, setShowGo] = useState(false)
   const [adaChatBaru, setAdaChatBaru] = useState(false)
+  const [idRiwayatBaru, setIdRiwayatBaru] = useState(null)
   const tabAktifRef = useRef('home')
 
   useEffect(() => {
@@ -44,10 +45,6 @@ export default function PenumpangView({
   const pesanTerakhirRef = useRef(undefined)
 
   useEffect(() => {
-    // undefined = belum pernah ke-cek sama sekali (baru pertama kali
-    // hook ini jalan) — jangan bunyi/nyalain badge buat pesan LAMA
-    // yang udah ada dari sebelumnya, cuma buat pesan yang BENERAN
-    // baru dateng SELAMA Fajri lagi di app.
     if (pesanTerakhirRef.current === undefined) {
       pesanTerakhirRef.current = pesanMasuk?.dibuatPada ?? null
       return
@@ -61,9 +58,34 @@ export default function PenumpangView({
     }
   }, [pesanMasuk])
 
+  // riwayat[0] SELALU yang paling baru ditambahin (di-orderBy
+  // dibuatPada desc dari Firestore) — jadi tinggal bandingin ID-nya
+  // doang buat tau ada entri baru apa enggak.
+  const [adaRiwayatBaru, setAdaRiwayatBaru] = useState(false)
+  const riwayatTerakhirRef = useRef(undefined)
+
+  useEffect(() => {
+    const idTerbaru = riwayat[0]?.id
+    if (riwayatTerakhirRef.current === undefined) {
+      riwayatTerakhirRef.current = idTerbaru ?? null
+      return
+    }
+
+    if (idTerbaru && idTerbaru !== riwayatTerakhirRef.current) {
+      riwayatTerakhirRef.current = idTerbaru
+      setIdRiwayatBaru(idTerbaru)
+      if (tabAktifRef.current !== 'riwayat') setAdaRiwayatBaru(true)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [riwayat])
+
   function handleTabChange(tab) {
     setTabAktif(tab)
     if (tab === 'home') setAdaChatBaru(false)
+    if (tab === 'riwayat') {
+      setAdaRiwayatBaru(false)
+      setIdRiwayatBaru(null)
+    }
   }
 
   const statusSekarang = permintaanAktif?.status
@@ -109,7 +131,9 @@ export default function PenumpangView({
         {tabAktif === 'jadwal' && (
           <JadwalTab jadwalMingguan={jadwalMingguan} simpanJadwal={simpanJadwal} />
         )}
-        {tabAktif === 'riwayat' && <RiwayatTab riwayat={riwayat} />}
+        {tabAktif === 'riwayat' && (
+          <RiwayatTab riwayat={riwayat} idBaru={idRiwayatBaru} />
+        )}
         {tabAktif === 'akun' && <AccountTab />}
       </div>
 
@@ -119,6 +143,7 @@ export default function PenumpangView({
         onGoClick={handleGoButtonClick}
         modeGo={modeGo}
         adaChatBaru={adaChatBaru}
+        adaRiwayatBaru={adaRiwayatBaru}
       />
 
       {showGo && <GoPopup onClose={() => setShowGo(false)} onSubmit={handleKirimGo} />}

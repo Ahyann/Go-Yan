@@ -20,6 +20,7 @@ export default function OjekView({
 }) {
   const [tabAktif, setTabAktif] = useState('home')
   const [adaChatBaru, setAdaChatBaru] = useState(false)
+  const [idRiwayatBaru, setIdRiwayatBaru] = useState(null)
   const tabAktifRef = useRef('home')
 
   useEffect(() => {
@@ -52,9 +53,33 @@ export default function OjekView({
     }
   }, [pesanMasuk])
 
+  // riwayat[0] SELALU yang paling baru ditambahin (di-orderBy
+  // dibuatPada desc dari Firestore) — tinggal bandingin ID-nya.
+  const [adaRiwayatBaru, setAdaRiwayatBaru] = useState(false)
+  const riwayatTerakhirRef = useRef(undefined)
+
+  useEffect(() => {
+    const idTerbaru = riwayat[0]?.id
+    if (riwayatTerakhirRef.current === undefined) {
+      riwayatTerakhirRef.current = idTerbaru ?? null
+      return
+    }
+
+    if (idTerbaru && idTerbaru !== riwayatTerakhirRef.current) {
+      riwayatTerakhirRef.current = idTerbaru
+      setIdRiwayatBaru(idTerbaru)
+      if (tabAktifRef.current !== 'riwayat') setAdaRiwayatBaru(true)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [riwayat])
+
   function handleTabChange(tab) {
     setTabAktif(tab)
     if (tab === 'home') setAdaChatBaru(false)
+    if (tab === 'riwayat') {
+      setAdaRiwayatBaru(false)
+      setIdRiwayatBaru(null)
+    }
   }
 
   return (
@@ -74,12 +99,22 @@ export default function OjekView({
         )}
         {tabAktif === 'jadwal' && <OjekJadwalTab jadwalMingguan={jadwalMingguan} />}
         {tabAktif === 'riwayat' && (
-          <OjekRiwayatTab riwayat={riwayat} onTandaiLunas={onTandaiLunas} onHapusRiwayat={onHapusRiwayat} />
+          <OjekRiwayatTab
+            riwayat={riwayat}
+            onTandaiLunas={onTandaiLunas}
+            onHapusRiwayat={onHapusRiwayat}
+            idBaru={idRiwayatBaru}
+          />
         )}
         {tabAktif === 'akun' && <OjekAccountTab />}
       </div>
 
-      <OjekNav tabAktif={tabAktif} onTabChange={handleTabChange} adaChatBaru={adaChatBaru} />
+      <OjekNav
+        tabAktif={tabAktif}
+        onTabChange={handleTabChange}
+        adaChatBaru={adaChatBaru}
+        adaRiwayatBaru={adaRiwayatBaru}
+      />
     </div>
   )
 }

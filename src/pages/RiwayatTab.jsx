@@ -3,7 +3,7 @@ import { STATUS_BAYAR, formatRupiah } from '../lib/constants'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import MonthPickerPopup from '../components/MonthPickerPopup.jsx'
 
-export default function RiwayatTab({ riwayat }) {
+export default function RiwayatTab({ riwayat, idBaru }) {
   const { t } = useLanguage()
   const [showBulan, setShowBulan] = useState(false)
 
@@ -16,6 +16,8 @@ export default function RiwayatTab({ riwayat }) {
       const [tahun, bulan] = r.tanggal.split('-').map(Number)
       return bulan - 1 === bulanAktif && tahun === tahunAktif
     })
+    // Urutan: tanggal TERBARU di atas (makin lama makin ke bawah).
+    // Kalau tanggalnya sama, Antar duluan baru Jemput.
     .sort((a, b) => {
       if (a.tanggal !== b.tanggal) return b.tanggal.localeCompare(a.tanggal)
       if (a.aksi !== b.aksi) return a.aksi === 'antar' ? -1 : 1
@@ -68,7 +70,10 @@ export default function RiwayatTab({ riwayat }) {
             riwayatTerfilter.map((r) => (
               <div key={r.id} style={s.item}>
                 <div>
-                  <div style={s.itemJam}>{r.jam} · {r.tanggal.split('-')[2]}</div>
+                  <div style={s.itemJam}>
+                    {r.jam} · {r.tanggal.split('-')[2]}
+                    {r.id === idBaru && <span style={s.tagBaru}>{t.labelBaru}</span>}
+                  </div>
                   <div style={s.itemDesc}>
                     {r.aksi === 'jemput' ? t.jemput : t.antar} · {r.where}
                   </div>
@@ -154,7 +159,16 @@ const s = {
     padding: '12px 14px',
     gap: 12,
   },
-  itemJam: { fontFamily: 'var(--font-data)', fontSize: 13, color: 'var(--text)' },
+  itemJam: { fontFamily: 'var(--font-data)', fontSize: 13, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: 6 },
+  tagBaru: {
+    fontFamily: 'var(--font-pixel)',
+    fontSize: 8,
+    color: '#08130d',
+    background: 'var(--signal)',
+    padding: '2px 6px',
+    borderRadius: 999,
+    letterSpacing: '0.05em',
+  },
   itemDesc: { fontSize: 11.5, color: '#8FB4DC', marginTop: 2 },
   itemKanan: { display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 },
   itemTarif: { fontFamily: 'var(--font-data)', fontSize: 13, color: 'var(--text)' },
