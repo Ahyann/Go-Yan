@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { forwardRef, useEffect, useImperativeHandle, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { HARI_KERJA_KEYS } from '../lib/constants'
 import { useLanguage } from '../context/LanguageContext.jsx'
@@ -12,16 +12,24 @@ function buatJadwalKosong() {
   return kosong
 }
 
-export default function JadwalMingguan({ jadwal, onSimpan, bisaEdit }) {
+const JadwalMingguan = forwardRef(function JadwalMingguan({ jadwal, onSimpan, bisaEdit }, ref) {
   const { t } = useLanguage()
   const [draft, setDraft] = useState(jadwal)
   const [menyimpan, setMenyimpan] = useState(false)
   const [tersimpan, setTersimpan] = useState(false)
   const [editing, setEditing] = useState(null)
+  const [tempJam, setTempJam] = useState('07:00')
 
   useEffect(() => {
     setDraft(jadwal)
   }, [jadwal])
+
+  // Biar tombol Reset bisa ditaro di LUAR komponen ini (sejajar sama
+  // judul halaman), tapi tetep bisa "manggil" reset ke draft di dalem
+  // sini — pake ref, bukan tombol internal lagi.
+  useImperativeHandle(ref, () => ({
+    reset: () => setDraft(buatJadwalKosong()),
+  }))
 
   if (!draft) return null
 
@@ -38,18 +46,26 @@ export default function JadwalMingguan({ jadwal, onSimpan, bisaEdit }) {
     }))
   }
 
-  function ubahJam(hari, aksi, jam) {
-    setDraft((d) => ({
-      ...d,
-      [hari]: {
-        ...d[hari],
-        [aksi]: { ...d[hari]?.[aksi], jam },
-      },
-    }))
+  function bukaEditJam(hari, aksi) {
+    setTempJam(draft[hari]?.[aksi]?.jam || '07:00')
+    setEditing({ hari, aksi })
   }
 
-  function handleReset() {
-    setDraft(buatJadwalKosong())
+  function handleSelesaiJam() {
+    setDraft((d) => ({
+      ...d,
+      [editing.hari]: {
+        ...d[editing.hari],
+        [editing.aksi]: { ...d[editing.hari]?.[editing.aksi], jam: tempJam },
+      },
+    }))
+    setEditing(null)
+  }
+
+  function handleCancelJam() {
+    // Batal — draft yang beneran gak diubah sama sekali, cuma nutup
+    // popup-nya doang.
+    setEditing(null)
   }
 
   async function handleSimpan() {
@@ -60,18 +76,11 @@ export default function JadwalMingguan({ jadwal, onSimpan, bisaEdit }) {
     setTimeout(() => setTersimpan(false), 2000)
   }
 
-  const nilaiEditing = editing ? (draft[editing.hari]?.[editing.aksi]?.jam || '07:00') : '07:00'
   const indexHariEditing = editing ? HARI_KERJA_KEYS.indexOf(editing.hari) : -1
   const labelHariEditing = indexHariEditing >= 0 ? t.hariLabel[indexHariEditing] : ''
 
   return (
     <div style={s.wrap}>
-      {bisaEdit && (
-        <button style={s.resetBtn} onClick={handleReset}>
-          {t.resetJadwal}
-        </button>
-      )}
-
       {HARI_KERJA_KEYS.map((key, i) => {
         const label = t.hariLabel[i]
         const adaJadwal = Boolean(draft[key]?.antar?.aktif) || Boolean(draft[key]?.jemput?.aktif)
@@ -88,7 +97,7 @@ export default function JadwalMingguan({ jadwal, onSimpan, bisaEdit }) {
                 jam={draft[key]?.antar?.jam}
                 bisaEdit={bisaEdit}
                 onToggle={() => toggleAksi(key, 'antar')}
-                onBukaJam={() => setEditing({ hari: key, aksi: 'antar' })}
+                onBukaJam={() => bukaEditJam(key, 'antar')}
                 placeholderJam={t.jamOpsional}
               />
               <AksiChip
@@ -97,7 +106,7 @@ export default function JadwalMingguan({ jadwal, onSimpan, bisaEdit }) {
                 jam={draft[key]?.jemput?.jam}
                 bisaEdit={bisaEdit}
                 onToggle={() => toggleAksi(key, 'jemput')}
-                onBukaJam={() => setEditing({ hari: key, aksi: 'jemput' })}
+                onBukaJam={() => bukaEditJam(key, 'jemput')}
                 placeholderJam={t.jamOpsional}
               />
             </div>
@@ -112,25 +121,25 @@ export default function JadwalMingguan({ jadwal, onSimpan, bisaEdit }) {
       )}
 
       {editing && createPortal(
-        <div style={s.overlay} onClick={() => setEditing(null)}>
+        <div style={s.overlay} onClick={handleCancelJam}>
           <div style={s.sheet} onClick={(e) => e.stopPropagation()}>
             <div style={s.sheetTitle}>
               {labelHariEditing} · {editing.aksi === 'antar' ? t.antar : t.jemput}
             </div>
-            <TimeWheelPicker
-              value={nilaiEditing}
-              onChange={(jam) => ubahJam(editing.hari, editing.aksi, jam)}
-            />
-            <button style={s.selesaiBtn} onClick={() => setEditing(null)}>
-              {t.selesai}
-            </button>
+            <TimeWheelPicker value={tempJam} onChange={setTempJam} />
+            <div style={s.tombolRow}>
+              <button style={s.cancelBtn} onClick={handleCancelJam}>{t.batal}</button>
+              <button style={s.selesaiBtn} onClick={handleSelesaiJam}>{t.selesai}</button>
+            </div>
           </div>
         </div>,
         document.body
       )}
     </div>
   )
-}
+})
+
+export default JadwalMingguan
 
 function AksiChip({ label, aktif, jam, bisaEdit, onToggle, onBukaJam, placeholderJam }) {
   if (!bisaEdit && !aktif) return null
@@ -163,16 +172,6 @@ function AksiChip({ label, aktif, jam, bisaEdit, onToggle, onBukaJam, placeholde
 
 const s = {
   wrap: { display: 'flex', flexDirection: 'column', gap: 10 },
-  resetBtn: {
-    alignSelf: 'flex-end',
-    fontSize: 12.5,
-    fontWeight: 600,
-    color: '#8FB4DC',
-    padding: '6px 12px',
-    borderRadius: 999,
-    border: '1px solid var(--blue-border)',
-    background: 'rgba(255,255,255,0.06)',
-  },
   hariBlok: {
     background: 'var(--card-blue)',
     border: '1px solid var(--blue-border)',
@@ -246,7 +245,7 @@ const s = {
   },
   jamBtnKosong: {
     fontFamily: 'var(--font-data)',
-    fontSize: 11,
+    fontSize: 12.5,
     background: 'rgba(255,255,255,0.06)',
     border: '1px dashed var(--blue-border)',
     borderRadius: 8,
@@ -292,7 +291,19 @@ const s = {
     gap: 14,
   },
   sheetTitle: { fontSize: 14, fontWeight: 700, color: 'var(--text)', textAlign: 'center' },
+  tombolRow: { display: 'flex', gap: 10 },
+  cancelBtn: {
+    flex: 1,
+    background: 'rgba(255,255,255,0.06)',
+    color: '#8FB4DC',
+    fontSize: 15,
+    fontWeight: 600,
+    padding: '13px',
+    borderRadius: 999,
+    border: '1px solid var(--blue-border)',
+  },
   selesaiBtn: {
+    flex: 1,
     background: 'var(--nav-red)',
     color: '#fff',
     fontSize: 15,
