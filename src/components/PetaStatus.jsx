@@ -27,9 +27,12 @@ const ikonOjek = L.divIcon({
   </div>`,
   iconSize: [32, 32],
   iconAnchor: [16, 16],
-  popupAnchor: [42, 4],
+  popupAnchor: [42, 3],
 })
 
+// Icon Fajri (diri sendiri di sini) — ukuran lebih kecil (posisi
+// "self", bukan yang lagi di-track), tapi tetep senada proporsinya
+// (60:92) sama versi yang lebih gede.
 const ikonSaya = L.divIcon({
   className: '',
   html: `<div style="isolation: isolate;">
@@ -44,6 +47,8 @@ const ikonSaya = L.divIcon({
   popupAnchor: [44, -13],
 })
 
+// Proporsi asli gambar office ternyata gedung TINGGI (rasio ~0.667,
+// bukan hampir kotak) — file lama yang salah, ini yang bener.
 const ikonOffice = L.divIcon({
   className: '',
   html: `<div style="isolation: isolate;">
@@ -110,6 +115,7 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
   const [teksBubble, setTeksBubble] = useState(t.bubbleDefault)
   const [teksBubbleSaya, setTeksBubbleSaya] = useState('')
   const pesanSayaTampilRef = useRef(null)
+  const [markerSayaSiap, setMarkerSayaSiap] = useState(false)
 
   useEffect(() => {
     if (pesan && markerRef.current) {
@@ -128,7 +134,7 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
     } else {
       markerSayaRef.current.closePopup()
     }
-  }, [pesanSaya])
+  }, [pesanSaya, markerSayaSiap])
 
   const ukuranFont = teksBubble.length > 16 ? 7 : 9
 
@@ -192,7 +198,10 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
 
         {posisiSayaValid && (
           <Marker
-            ref={markerSayaRef}
+            ref={(instance) => {
+              markerSayaRef.current = instance
+              if (instance && !markerSayaSiap) setMarkerSayaSiap(true)
+            }}
             position={[lokasiSaya.lat, lokasiSaya.lng]}
             icon={ikonSaya}
             zIndexOffset={500}

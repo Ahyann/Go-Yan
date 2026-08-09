@@ -10,9 +10,6 @@ import { LOKASI_OFFICE } from '../lib/constants'
 
 const PUSAT_DEFAULT = [-6.2088, 106.8456]
 
-// Ukuran Fajri disamain "bobot visual"-nya sama Ojek (spiderman) di
-// peta yang sama — proporsi asli gambarnya 60:92 (lebih tinggi dari
-// lebar), jadi lebar dihitung ngikutin tinggi biar gak gepeng.
 const ikonPenumpang = L.divIcon({
   className: '',
   html: `<div style="isolation: isolate;">
@@ -24,7 +21,7 @@ const ikonPenumpang = L.divIcon({
   </div>`,
   iconSize: [21, 32],
   iconAnchor: [11, 32],
-  popupAnchor: [49, -14],
+  popupAnchor: [42, -8],
 })
 
 const ikonSaya = L.divIcon({
@@ -38,9 +35,11 @@ const ikonSaya = L.divIcon({
   </div>`,
   iconSize: [24, 24],
   iconAnchor: [12, 12],
-  popupAnchor: [42, 14],
+  popupAnchor: [42, 8],
 })
 
+// Proporsi asli gambar office ternyata gedung TINGGI (rasio ~0.667,
+// bukan hampir kotak) — file lama yang salah, ini yang bener.
 const ikonOffice = L.divIcon({
   className: '',
   html: `<div style="isolation: isolate;">
@@ -92,6 +91,7 @@ export default function PetaLokasiPenumpang({
   const [teksBubble, setTeksBubble] = useState('')
   const [teksBubbleSaya, setTeksBubbleSaya] = useState('')
   const pesanSayaTampilRef = useRef(null)
+  const [markerSayaSiap, setMarkerSayaSiap] = useState(false)
 
   useEffect(() => {
     if (pesan && markerRef.current) {
@@ -108,13 +108,13 @@ export default function PetaLokasiPenumpang({
       setTeksBubbleSaya(pesanSaya.teks)
       markerSayaRef.current.openPopup()
     } else {
-      // Data-nya udah kehapus (mungkin dari sisi Ahyan) — tutup pake
-      // closePopup() (Leaflet main animasi fade-nya), BUKAN langsung
-      // ilangin dari layar. teksBubbleSaya sengaja gak dikosongin di
-      // sini, biar teksnya masih "nempel" pas lagi fade out.
       markerSayaRef.current.closePopup()
     }
-  }, [pesanSaya])
+    // markerSayaSiap sengaja ikut jadi dependency — biar begitu
+    // marker-nya BARU SIAP (misal pas pesan pertama kali dateng
+    // duluan sebelum marker sempet ke-render), efek ini otomatis
+    // dicoba ULANG, bukan diem aja gara-gara kepocong duluan.
+  }, [pesanSaya, markerSayaSiap])
 
   const ukuranFont = teksBubble.length > 16 ? 7 : 9
 
@@ -182,7 +182,10 @@ export default function PetaLokasiPenumpang({
 
         {posisiSayaValid && (
           <Marker
-            ref={markerSayaRef}
+            ref={(instance) => {
+              markerSayaRef.current = instance
+              if (instance && !markerSayaSiap) setMarkerSayaSiap(true)
+            }}
             position={[lokasiSaya.lat, lokasiSaya.lng]}
             icon={ikonSaya}
             zIndexOffset={1000}
