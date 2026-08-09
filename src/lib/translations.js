@@ -99,10 +99,11 @@ export const translations = {
 
     // --- Login ---
     loginTitle: 'Masuk',
+    loginUsername: 'Username',
     loginEmail: 'Email',
     loginPassword: 'Password',
-    loginMemproses: 'Memproses…',
-    loginSubmit: 'Masuk',
+    tampilkanPw: 'Tampilkan password',
+    sembunyikanPw: 'Sembunyikan password',
     errInvalidEmail: 'Format email belum benar.',
     errInvalidCredential: 'Email atau password salah.',
     errTooManyRequests: 'Terlalu banyak percobaan gagal. Coba lagi sebentar.',
@@ -224,10 +225,11 @@ export const translations = {
 
     // --- Login ---
     loginTitle: 'Sign in',
+    loginUsername: 'Username',
     loginEmail: 'Email',
     loginPassword: 'Password',
-    loginMemproses: 'Signing in…',
-    loginSubmit: 'Sign in',
+    tampilkanPw: 'Show password',
+    sembunyikanPw: 'Hide password',
     errInvalidEmail: 'Invalid email format.',
     errInvalidCredential: 'Incorrect email or password.',
     errTooManyRequests: 'Too many failed attempts. Try again shortly.',

@@ -1,6 +1,6 @@
 import { ROLE } from './constants'
 
 export const ROLE_BY_UID = {
-  eHCzWlBeNtf97Ht4pcSEH72qHdA3: ROLE.OJEK, // ahyan@gmail.com (akun baru)
-  EsGIzSV9HLXx1rd0Bh6H3J7C3Hr2: ROLE.PENUMPANG, // fajri@gmail.com (tester)
+  eHCzWlBeNtf97Ht4pcSEH72qHdA3: ROLE.OJEK, // ahyannubaid1003@gmail.com 
+  D5cuoOgLFPPwAZx8DN934HFRITf2: ROLE.PENUMPANG, // wotkins@gmail.com
 }
