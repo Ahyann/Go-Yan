@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { ref, set, update, get } from 'firebase/database'
+import { ref, set, remove } from 'firebase/database'
 import { rtdb } from './firebase'
 
 const LOKASI_REF = ref(rtdb, 'lokasi/penumpang')
@@ -22,7 +22,6 @@ export function useLokasiSayaPenumpang() {
           lat: pos.coords.latitude,
           lng: pos.coords.longitude,
           updatedAt: Date.now(),
-          aktif: true,
         })
       },
       (err) => {
@@ -40,19 +39,11 @@ export function useLokasiSayaPenumpang() {
       watchIdRef.current = null
     }
     setAktif(false)
-    // Posisi TERAKHIR sengaja gak dihapus (icon-nya tetep keliatan)
-    // — cuma ditandain "udah gak live lagi".
-    update(LOKASI_REF, { aktif: false }).catch(() => {})
+    remove(LOKASI_REF)
   }
 
   useEffect(() => {
-    get(LOKASI_REF)
-      .then((snap) => {
-        if (snap.exists()) {
-          update(LOKASI_REF, { aktif: false }).catch(() => {})
-        }
-      })
-      .catch(() => {})
+    remove(LOKASI_REF)
 
     return () => {
       if (watchIdRef.current !== null) {

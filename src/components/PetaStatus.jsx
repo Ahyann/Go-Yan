@@ -27,7 +27,7 @@ const ikonOjek = L.divIcon({
   </div>`,
   iconSize: [32, 32],
   iconAnchor: [16, 16],
-  popupAnchor: [42, 0],
+  popupAnchor: [42, 8],
 })
 
 // Icon Fajri (diri sendiri di sini) — ukuran lebih kecil (posisi
@@ -106,7 +106,6 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
   const posisiValid = lokasiOjek?.lat != null && lokasiOjek?.lng != null
   const posisiSayaValid = lokasiSaya?.lat != null && lokasiSaya?.lng != null
   const adaPosisiOjek = posisiValid && permintaan?.status === STATUS_PERMINTAAN.DITERIMA
-  const lagiLive = adaPosisiOjek && lokasiOjek?.aktif
   const markerRef = useRef(null)
   const markerSayaRef = useRef(null)
   const markerOfficeRef = useRef(null)
@@ -267,7 +266,7 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
           {permintaan?.status === STATUS_PERMINTAAN.DITERIMA && (
             <div style={s.badgeLive}>
               <span style={s.dotHijau} />
-              {lagiLive ? t.otwText : t.ahyanUdahTerima}
+              {adaPosisiOjek ? t.otwText : t.ahyanUdahTerima}
             </div>
           )}
         </div>
