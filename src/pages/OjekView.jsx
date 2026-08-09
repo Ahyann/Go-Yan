@@ -21,6 +21,7 @@ export default function OjekView({
   const [tabAktif, setTabAktif] = useState('home')
   const [adaChatBaru, setAdaChatBaru] = useState(false)
   const [idRiwayatBaru, setIdRiwayatBaru] = useState(null)
+  const [adaRiwayatBaru, setAdaRiwayatBaru] = useState(false)
   const tabAktifRef = useRef('home')
 
   useEffect(() => {
@@ -34,8 +35,6 @@ export default function OjekView({
     berhenti: berhentiLokasi,
   } = useLokasiSaya()
 
-  // Pesan dari Fajri — dipantau di level ini biar ketahuan ada pesan
-  // baru walau Ahyan lagi di tab lain (Jadwal/Riwayat/Akun).
   const { pesan: pesanMasuk } = usePesanPenumpang()
   const pesanTerakhirRef = useRef(undefined)
 
@@ -53,24 +52,23 @@ export default function OjekView({
     }
   }, [pesanMasuk])
 
-  // riwayat[0] SELALU yang paling baru ditambahin (di-orderBy
-  // dibuatPada desc dari Firestore) — tinggal bandingin ID-nya.
-  const [adaRiwayatBaru, setAdaRiwayatBaru] = useState(false)
-  const riwayatTerakhirRef = useRef(undefined)
+  const idsPernahDilihatRef = useRef(null)
 
   useEffect(() => {
-    const idTerbaru = riwayat[0]?.id
-    if (riwayatTerakhirRef.current === undefined) {
-      riwayatTerakhirRef.current = idTerbaru ?? null
+    const idSekarang = new Set(riwayat.map((r) => r.id))
+
+    if (idsPernahDilihatRef.current === null) {
+      idsPernahDilihatRef.current = idSekarang
       return
     }
 
-    if (idTerbaru && idTerbaru !== riwayatTerakhirRef.current) {
-      riwayatTerakhirRef.current = idTerbaru
-      setIdRiwayatBaru(idTerbaru)
+    const itemBenerBaru = riwayat.find((r) => !idsPernahDilihatRef.current.has(r.id))
+    idsPernahDilihatRef.current = idSekarang
+
+    if (itemBenerBaru) {
+      setIdRiwayatBaru(itemBenerBaru.id)
       if (tabAktifRef.current !== 'riwayat') setAdaRiwayatBaru(true)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [riwayat])
 
   function handleTabChange(tab) {

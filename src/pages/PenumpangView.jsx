@@ -25,6 +25,7 @@ export default function PenumpangView({
   const [showGo, setShowGo] = useState(false)
   const [adaChatBaru, setAdaChatBaru] = useState(false)
   const [idRiwayatBaru, setIdRiwayatBaru] = useState(null)
+  const [adaRiwayatBaru, setAdaRiwayatBaru] = useState(false)
   const tabAktifRef = useRef('home')
 
   useEffect(() => {
@@ -38,9 +39,6 @@ export default function PenumpangView({
     berhenti: berhentiLokasi,
   } = useLokasiSayaPenumpang()
 
-  // Pesan dari Ahyan — dipantau di level ini (bukan di dalem HomeTab)
-  // biar KETAHUAN ada pesan baru walau Fajri lagi di tab lain, bukan
-  // cuma pas lagi liat peta doang.
   const { pesan: pesanMasuk } = usePesanOjek()
   const pesanTerakhirRef = useRef(undefined)
 
@@ -58,25 +56,26 @@ export default function PenumpangView({
     }
   }, [pesanMasuk])
 
-  // riwayat[0] SELALU yang paling baru ditambahin (di-orderBy
-  // dibuatPada desc dari Firestore) — jadi tinggal bandingin ID-nya
-  // doang buat tau ada entri baru apa enggak.
-  const [adaRiwayatBaru, setAdaRiwayatBaru] = useState(false)
-  const riwayatTerakhirRef = useRef(undefined)
+  // Nge-track SEMUA ID yang udah pernah keliatan (bukan cuma yang
+  // paling atas doang) — biar gak ketipu kalau ada riwayat lama yang
+  // dihapus terus item lain "naik" ke atas (itu bukan beneran baru).
+  const idsPernahDilihatRef = useRef(null)
 
   useEffect(() => {
-    const idTerbaru = riwayat[0]?.id
-    if (riwayatTerakhirRef.current === undefined) {
-      riwayatTerakhirRef.current = idTerbaru ?? null
+    const idSekarang = new Set(riwayat.map((r) => r.id))
+
+    if (idsPernahDilihatRef.current === null) {
+      idsPernahDilihatRef.current = idSekarang
       return
     }
 
-    if (idTerbaru && idTerbaru !== riwayatTerakhirRef.current) {
-      riwayatTerakhirRef.current = idTerbaru
-      setIdRiwayatBaru(idTerbaru)
+    const itemBenerBaru = riwayat.find((r) => !idsPernahDilihatRef.current.has(r.id))
+    idsPernahDilihatRef.current = idSekarang
+
+    if (itemBenerBaru) {
+      setIdRiwayatBaru(itemBenerBaru.id)
       if (tabAktifRef.current !== 'riwayat') setAdaRiwayatBaru(true)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [riwayat])
 
   function handleTabChange(tab) {
