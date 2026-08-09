@@ -38,7 +38,7 @@ const ikonSaya = L.divIcon({
   </div>`,
   iconSize: [24, 24],
   iconAnchor: [12, 12],
-  popupAnchor: [42, 4],
+  popupAnchor: [42, 14],
 })
 
 const ikonOffice = L.divIcon({
