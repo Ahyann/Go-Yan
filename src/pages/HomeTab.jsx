@@ -33,7 +33,7 @@ export default function HomeTab({ permintaan, lokasiAktif, lokasiError, mulaiLok
     }
   }
 
-  const adaLokasiLive = lokasiOjek && sedangJalan
+  const adaLokasiLive = lokasiOjek?.lat != null && lokasiOjek?.lng != null && sedangJalan
 
   return (
     <div style={s.wrap}>

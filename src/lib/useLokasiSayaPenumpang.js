@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { ref, set, update } from 'firebase/database'
+import { ref, set, update, get } from 'firebase/database'
 import { rtdb } from './firebase'
 
 const LOKASI_REF = ref(rtdb, 'lokasi/penumpang')
@@ -46,9 +46,13 @@ export function useLokasiSayaPenumpang() {
   }
 
   useEffect(() => {
-    // Sama kayak sisi Ojek — tandain "gak live" ke server begitu app
-    // baru dimuat, TAPI posisi terakhirnya sengaja gak ikut kehapus.
-    update(LOKASI_REF, { aktif: false }).catch(() => {})
+    get(LOKASI_REF)
+      .then((snap) => {
+        if (snap.exists()) {
+          update(LOKASI_REF, { aktif: false }).catch(() => {})
+        }
+      })
+      .catch(() => {})
 
     return () => {
       if (watchIdRef.current !== null) {

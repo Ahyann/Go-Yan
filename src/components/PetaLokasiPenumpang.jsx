@@ -77,6 +77,9 @@ export default function PetaLokasiPenumpang({
 }) {
   const { t } = useLanguage()
   const teksKosongFinal = teksKosong ?? t.fajriBelumShare
+  // Guard ekstra: cuma dianggap "ada posisi" kalau lat/lng-nya BENERAN
+  // ada, bukan cuma object kosong dengan field aktif doang.
+  const posisiValid = lokasi?.lat != null && lokasi?.lng != null
   const lokasiSaya = useLokasiOjek()
   const { pesan, hapusPesan } = usePesanPenumpang()
   const { pesan: pesanSaya, hapusPesan: hapusPesanSaya } = usePesanOjek()
@@ -140,7 +143,7 @@ export default function PetaLokasiPenumpang({
           url={`https://api.maptiler.com/maps/streets-v4-dark/{z}/{x}/{y}.png?key=${import.meta.env.VITE_MAPTILER_KEY}`}
         />
 
-        {lokasi && (
+        {posisiValid && (
           <>
             <GeserKePosisi lat={lokasi.lat} lng={lokasi.lng} />
             <Marker
@@ -243,7 +246,7 @@ export default function PetaLokasiPenumpang({
         </button>
       )}
 
-      {lokasi && (
+      {posisiValid && (
         <button
           className="btn-map-control"
           style={tampilkanTombolLokasi ? s.recenterIconBawah : s.recenterIcon}
@@ -258,8 +261,8 @@ export default function PetaLokasiPenumpang({
       )}
 
       <div style={s.badge}>
-        <span style={lokasi?.aktif ? s.dotHijau : s.dotMerah} />
-        {lokasi ? (lokasi.aktif ? t.lokasiFajriLive : t.lokasiTerakhirFajri) : teksKosongFinal}
+        <span style={posisiValid && lokasi?.aktif ? s.dotHijau : s.dotMerah} />
+        {posisiValid ? (lokasi.aktif ? t.lokasiFajriLive : t.lokasiTerakhirFajri) : teksKosongFinal}
       </div>
     </div>
   )

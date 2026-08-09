@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { ref, set, update } from 'firebase/database'
+import { ref, set, update, get } from 'firebase/database'
 import { rtdb } from './firebase'
 import { kirimNotifikasi } from './notifikasi'
 
@@ -48,14 +48,18 @@ export function useLokasiSaya() {
   }
 
   useEffect(() => {
-    // Begitu app dibuka/di-reload ulang, status TOMBOL lokal balik ke
-    // "mati" otomatis (dari useState di atas). Di sini kita cuma
-    // nandain ke SERVER kalau live-nya emang beneran udah berhenti
-    // (biar orang lain gak keliru liat status "live" padahal GPS-nya
-    // udah gak jalan) — TAPI posisi terakhir & chat yang nempel di
-    // situ SENGAJA gak ikut kehapus, biar icon-nya tetep keliatan di
-    // lokasi terakhir dia.
-    update(LOKASI_REF, { aktif: false }).catch(() => {})
+    // PENTING: cek dulu apa datanya UDAH ADA sebelum nulis "aktif:
+    // false" — kalau langsung update() tanpa ngecek dan datanya belum
+    // pernah ada sama sekali, itu bakal BIKIN data baru yang cuma
+    // punya field aktif doang (tanpa lat/lng) — data "hantu" ini yang
+    // bikin peta crash pas nyoba render marker dari koordinat kosong.
+    get(LOKASI_REF)
+      .then((snap) => {
+        if (snap.exists()) {
+          update(LOKASI_REF, { aktif: false }).catch(() => {})
+        }
+      })
+      .catch(() => {})
 
     return () => {
       if (watchIdRef.current !== null) {
