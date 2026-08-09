@@ -96,7 +96,11 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
   const lokasiSaya = useLokasiPenumpang()
   const { pesan, hapusPesan } = usePesanOjek()
   const { pesan: pesanSaya, hapusPesan: hapusPesanSaya } = usePesanPenumpang()
-  const adaLokasiLive = lokasiOjek && permintaan?.status === STATUS_PERMINTAAN.DITERIMA
+  // adaPosisiOjek: ada data posisi Ahyan yang bisa ditampilin di peta
+  // (walau dia lagi gak live — misal abis nutup app, posisi terakhir
+  // tetep keliatan). lagiLive: khusus buat teks/badge "OTWWW!!" doang.
+  const adaPosisiOjek = Boolean(lokasiOjek) && permintaan?.status === STATUS_PERMINTAAN.DITERIMA
+  const lagiLive = adaPosisiOjek && lokasiOjek?.aktif
   const markerRef = useRef(null)
   const markerSayaRef = useRef(null)
   const markerOfficeRef = useRef(null)
@@ -113,7 +117,7 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
       setTeksBubble(pesan.teks)
       markerRef.current.openPopup()
     }
-  }, [pesan, adaLokasiLive])
+  }, [pesan, adaPosisiOjek])
 
   useEffect(() => {
     if (!markerSayaRef.current) return
@@ -149,7 +153,7 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
           url={`https://api.maptiler.com/maps/streets-v4-dark/{z}/{x}/{y}.png?key=${import.meta.env.VITE_MAPTILER_KEY}`}
         />
 
-        {adaLokasiLive && (
+        {adaPosisiOjek && (
           <>
             <GeserKePosisi lat={lokasiOjek.lat} lng={lokasiOjek.lng} />
             <Marker
@@ -257,7 +261,7 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
           {permintaan?.status === STATUS_PERMINTAAN.DITERIMA && (
             <div style={s.badgeLive}>
               <span style={s.dotHijau} />
-              {adaLokasiLive ? t.otwText : t.ahyanUdahTerima}
+              {lagiLive ? t.otwText : t.ahyanUdahTerima}
             </div>
           )}
         </div>

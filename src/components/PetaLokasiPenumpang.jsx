@@ -258,8 +258,8 @@ export default function PetaLokasiPenumpang({
       )}
 
       <div style={s.badge}>
-        <span style={lokasi ? s.dotHijau : s.dotMerah} />
-        {lokasi ? t.lokasiFajriLive : teksKosongFinal}
+        <span style={lokasi?.aktif ? s.dotHijau : s.dotMerah} />
+        {lokasi ? (lokasi.aktif ? t.lokasiFajriLive : t.lokasiTerakhirFajri) : teksKosongFinal}
       </div>
     </div>
   )

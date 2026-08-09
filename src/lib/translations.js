@@ -36,6 +36,7 @@ export const translations = {
 
     // --- PetaLokasiPenumpang (badge) ---
     lokasiFajriLive: 'Lokasi Fajri live',
+    lokasiTerakhirFajri: 'Posisi terakhir Fajri',
     ariaMatikanLive: 'Matikan live location',
     ariaNyalakanLive: 'Nyalain live location',
     ariaKembaliLokasiFajri: 'Kembali ke lokasi Fajri',
@@ -157,6 +158,7 @@ export const translations = {
 
     // --- PetaLokasiPenumpang (badge) ---
     lokasiFajriLive: "Fajri's location is live",
+    lokasiTerakhirFajri: "Fajri's last known location",
     ariaMatikanLive: 'Turn off live location',
     ariaNyalakanLive: 'Turn on live location',
     ariaKembaliLokasiFajri: "Back to Fajri's location",

@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
-import { ref, set, remove } from 'firebase/database'
+import { ref, set, update } from 'firebase/database'
 import { rtdb } from './firebase'
 import { kirimNotifikasi } from './notifikasi'
 
-// Satu node tetap — cuma ada 1 ojek, jadi gak perlu banyak path.
 const LOKASI_REF = ref(rtdb, 'lokasi/ojek')
 
 export function useLokasiSaya() {
@@ -18,15 +17,13 @@ export function useLokasiSaya() {
     }
     setError('')
 
-    // watchPosition beda sama getCurrentPosition — dia bukan ambil
-    // sekali doang, tapi TERUS manggil callback ini tiap posisi
-    // berubah, selama belum di-clearWatch.
     watchIdRef.current = navigator.geolocation.watchPosition(
       (pos) => {
         set(LOKASI_REF, {
           lat: pos.coords.latitude,
           lng: pos.coords.longitude,
           updatedAt: Date.now(),
+          aktif: true,
         })
       },
       (err) => {
@@ -45,19 +42,21 @@ export function useLokasiSaya() {
       watchIdRef.current = null
     }
     setAktif(false)
-    remove(LOKASI_REF) // bersihin data lama biar gak nyangkut nunjuk posisi terakhir selamanya
+    // Posisi TERAKHIR sengaja gak dihapus (icon & chat yang nempel di
+    // situ tetep keliatan) — cuma ditandain "udah gak live lagi".
+    update(LOKASI_REF, { aktif: false }).catch(() => {})
   }
 
   useEffect(() => {
-    // Kalau app di-reload/dibuka ulang (misal abis "dimatiin"/di-suspend
-    // lama sama iOS pas ditinggal), status lokal (aktif) balik ke awal,
-    // tapi data lokasi lama di server BELUM tentu ikut kehapus — bikin
-    // Fajri masih liat status "live" padahal GPS-nya udah gak jalan.
-    // Bersihin proaktif begitu komponen ini baru mulai, biar konsisten.
-    remove(LOKASI_REF)
+    // Begitu app dibuka/di-reload ulang, status TOMBOL lokal balik ke
+    // "mati" otomatis (dari useState di atas). Di sini kita cuma
+    // nandain ke SERVER kalau live-nya emang beneran udah berhenti
+    // (biar orang lain gak keliru liat status "live" padahal GPS-nya
+    // udah gak jalan) — TAPI posisi terakhir & chat yang nempel di
+    // situ SENGAJA gak ikut kehapus, biar icon-nya tetep keliatan di
+    // lokasi terakhir dia.
+    update(LOKASI_REF, { aktif: false }).catch(() => {})
 
-    // Jaga-jaga: kalau halaman ditutup/pindah selagi masih aktif,
-    // matiin watch-nya juga, jangan biarin jalan di belakang selamanya.
     return () => {
       if (watchIdRef.current !== null) {
         navigator.geolocation.clearWatch(watchIdRef.current)
