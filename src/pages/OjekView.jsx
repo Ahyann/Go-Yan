@@ -8,9 +8,30 @@ import OjekJadwalTab from './OjekJadwalTab.jsx'
 import OjekRiwayatTab from './OjekRiwayatTab.jsx'
 import OjekAccountTab from './OjekAccountTab.jsx'
 
+const KEY_RIWAYAT_DILIHAT = 'go-yan-riwayat-dilihat-ojek'
+
+function ambilIdDilihat() {
+  try {
+    const raw = localStorage.getItem(KEY_RIWAYAT_DILIHAT)
+    if (raw === null) return null
+    return new Set(JSON.parse(raw))
+  } catch {
+    return null
+  }
+}
+
+function simpanIdDilihat(idsSet) {
+  try {
+    localStorage.setItem(KEY_RIWAYAT_DILIHAT, JSON.stringify([...idsSet]))
+  } catch {
+    // gapapa
+  }
+}
+
 export default function OjekView({
   permintaan,
   riwayat,
+  riwayatSiap,
   jadwalMingguan,
   onTerima,
   onTolak,
@@ -55,21 +76,29 @@ export default function OjekView({
   const idsPernahDilihatRef = useRef(null)
 
   useEffect(() => {
+    if (!riwayatSiap) return
+
     const idSekarang = new Set(riwayat.map((r) => r.id))
 
     if (idsPernahDilihatRef.current === null) {
-      idsPernahDilihatRef.current = idSekarang
-      return
+      const dariStorage = ambilIdDilihat()
+      if (dariStorage === null) {
+        idsPernahDilihatRef.current = idSekarang
+        simpanIdDilihat(idSekarang)
+        return
+      }
+      idsPernahDilihatRef.current = dariStorage
     }
 
     const itemBenerBaru = riwayat.find((r) => !idsPernahDilihatRef.current.has(r.id))
     idsPernahDilihatRef.current = idSekarang
+    simpanIdDilihat(idSekarang)
 
     if (itemBenerBaru) {
       setIdRiwayatBaru(itemBenerBaru.id)
       if (tabAktifRef.current !== 'riwayat') setAdaRiwayatBaru(true)
     }
-  }, [riwayat])
+  }, [riwayat, riwayatSiap])
 
   function handleTabChange(tab) {
     setTabAktif(tab)
@@ -77,6 +106,9 @@ export default function OjekView({
     if (tab === 'riwayat') {
       setAdaRiwayatBaru(false)
       setIdRiwayatBaru(null)
+      const idSekarang = new Set(riwayat.map((r) => r.id))
+      idsPernahDilihatRef.current = idSekarang
+      simpanIdDilihat(idSekarang)
     }
   }
 

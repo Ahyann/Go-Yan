@@ -7,12 +7,13 @@ const REF = collection(db, 'riwayat')
 
 export function useRiwayat() {
   const [riwayat, setRiwayat] = useState([])
+  const [siap, setSiap] = useState(false)
 
   useEffect(() => {
-    // orderBy 'dibuatPada' desc: yang paling baru muncul duluan di list.
     const q = query(REF, orderBy('dibuatPada', 'desc'))
     const berhentiDengar = onSnapshot(q, (snap) => {
       setRiwayat(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
+      setSiap(true)
     })
     return berhentiDengar
   }, [])
@@ -29,5 +30,5 @@ export function useRiwayat() {
     await deleteDoc(doc(db, 'riwayat', id))
   }
 
-  return { riwayat, tambahRiwayat, tandaiLunas, hapusRiwayat }
+  return { riwayat, siap, tambahRiwayat, tandaiLunas, hapusRiwayat }
 }

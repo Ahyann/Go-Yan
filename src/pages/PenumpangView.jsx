@@ -11,9 +11,30 @@ import JadwalTab from './JadwalTab.jsx'
 import RiwayatTab from './RiwayatTab.jsx'
 import AccountTab from './AccountTab.jsx'
 
+const KEY_RIWAYAT_DILIHAT = 'go-yan-riwayat-dilihat-penumpang'
+
+function ambilIdDilihat() {
+  try {
+    const raw = localStorage.getItem(KEY_RIWAYAT_DILIHAT)
+    if (raw === null) return null
+    return new Set(JSON.parse(raw))
+  } catch {
+    return null
+  }
+}
+
+function simpanIdDilihat(idsSet) {
+  try {
+    localStorage.setItem(KEY_RIWAYAT_DILIHAT, JSON.stringify([...idsSet]))
+  } catch {
+    // gapapa
+  }
+}
+
 export default function PenumpangView({
   permintaanAktif,
   riwayat,
+  riwayatSiap,
   jadwalMingguan,
   simpanJadwal,
   kirimGo,
@@ -56,27 +77,32 @@ export default function PenumpangView({
     }
   }, [pesanMasuk])
 
-  // Nge-track SEMUA ID yang udah pernah keliatan (bukan cuma yang
-  // paling atas doang) — biar gak ketipu kalau ada riwayat lama yang
-  // dihapus terus item lain "naik" ke atas (itu bukan beneran baru).
   const idsPernahDilihatRef = useRef(null)
 
   useEffect(() => {
+    if (!riwayatSiap) return
+
     const idSekarang = new Set(riwayat.map((r) => r.id))
 
     if (idsPernahDilihatRef.current === null) {
-      idsPernahDilihatRef.current = idSekarang
-      return
+      const dariStorage = ambilIdDilihat()
+      if (dariStorage === null) {
+        idsPernahDilihatRef.current = idSekarang
+        simpanIdDilihat(idSekarang)
+        return
+      }
+      idsPernahDilihatRef.current = dariStorage
     }
 
     const itemBenerBaru = riwayat.find((r) => !idsPernahDilihatRef.current.has(r.id))
     idsPernahDilihatRef.current = idSekarang
+    simpanIdDilihat(idSekarang)
 
     if (itemBenerBaru) {
       setIdRiwayatBaru(itemBenerBaru.id)
       if (tabAktifRef.current !== 'riwayat') setAdaRiwayatBaru(true)
     }
-  }, [riwayat])
+  }, [riwayat, riwayatSiap])
 
   function handleTabChange(tab) {
     setTabAktif(tab)
@@ -84,6 +110,9 @@ export default function PenumpangView({
     if (tab === 'riwayat') {
       setAdaRiwayatBaru(false)
       setIdRiwayatBaru(null)
+      const idSekarang = new Set(riwayat.map((r) => r.id))
+      idsPernahDilihatRef.current = idSekarang
+      simpanIdDilihat(idSekarang)
     }
   }
 

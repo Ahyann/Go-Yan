@@ -25,7 +25,7 @@ export default function App() {
 function AppIsi() {
   const { user, role, logout } = useAuth()
   const { permintaan, kirimGo, terima, tolak, selesai, batal } = usePermintaanAktif()
-  const { riwayat, tambahRiwayat, tandaiLunas, hapusRiwayat } = useRiwayat()
+  const { riwayat, siap: riwayatSiap, tambahRiwayat, tandaiLunas, hapusRiwayat } = useRiwayat()
   const { jadwal: jadwalMingguan, simpanJadwal } = useJadwalMingguan()
   const { data: notifSelesaiData, tandaiSelesai, hapusNotifSelesai } = usePesananSelesai()
   usePresence(role)
@@ -81,6 +81,7 @@ function AppIsi() {
         <OjekView
           permintaan={permintaan}
           riwayat={riwayat}
+          riwayatSiap={riwayatSiap}
           jadwalMingguan={jadwalMingguan}
           onTerima={terima}
           onTolak={tolak}
@@ -92,6 +93,7 @@ function AppIsi() {
         <PenumpangView
           permintaanAktif={permintaan}
           riwayat={riwayat}
+          riwayatSiap={riwayatSiap}
           jadwalMingguan={jadwalMingguan}
           simpanJadwal={simpanJadwal}
           kirimGo={kirimGo}
