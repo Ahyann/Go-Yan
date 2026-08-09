@@ -59,7 +59,7 @@ const ikonOffice = L.divIcon({
   </div>`,
   iconSize: [27, 40],
   iconAnchor: [13, 38],
-  popupAnchor: [40, -30],
+  popupAnchor: [40, -15],
 })
 
 function GeserKePosisi({ lat, lng }) {

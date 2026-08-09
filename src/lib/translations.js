@@ -118,7 +118,7 @@ export const translations = {
     selesaiJudul: 'Perjalanan Selesai!',
     selesaiOke: 'Oke',
     pesanPerluLive: 'Nyalain live location dulu buat bisa kirim pesan',
-    yourOffice: 'Kantor Kamu',
+    yourOffice: 'Your Office',
   },
   en: {
     // --- HomeTab (Penumpang) ---
