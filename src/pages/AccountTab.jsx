@@ -151,11 +151,9 @@ const s = {
     width: '100%',
     height: '100%',
     objectFit: 'cover',
-    // "Zoom" ke bagian atas gambar (mukanya) — soalnya gambar Fajri
-    // aslinya badan lengkap (potret tinggi), object-position ini yang
-    // nge-geser area yang keliatan ke bagian kepala, bukan tengah body.
-    objectPosition: '50% 15%',
-    transform: 'scale(1.8)',
+    objectPosition: '50% 10%',
+    transform: 'scale(1.3)',
+    imageRendering: 'pixelated',
   },
   label: { fontSize: 12.5, color: '#9FC3E8', marginBottom: 6 },
   email: { fontSize: 15, color: 'var(--text)', fontWeight: 600 },

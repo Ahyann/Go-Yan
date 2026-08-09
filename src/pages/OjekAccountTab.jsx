@@ -149,7 +149,7 @@ const s = {
     width: '100%',
     height: '100%',
     objectFit: 'cover',
-    transform: 'scale(1.1)',
+    imageRendering: 'pixelated',
   },
   label: { fontSize: 12.5, color: '#9FC3E8', marginBottom: 6 },
   email: { fontSize: 15, color: 'var(--text)', fontWeight: 600 },
