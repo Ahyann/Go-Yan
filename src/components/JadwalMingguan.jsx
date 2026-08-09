@@ -4,6 +4,14 @@ import { HARI_KERJA_KEYS } from '../lib/constants'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import TimeWheelPicker from './TimeWheelPicker.jsx'
 
+function buatJadwalKosong() {
+  const kosong = {}
+  HARI_KERJA_KEYS.forEach((key) => {
+    kosong[key] = { antar: { aktif: false, jam: '' }, jemput: { aktif: false, jam: '' } }
+  })
+  return kosong
+}
+
 export default function JadwalMingguan({ jadwal, onSimpan, bisaEdit }) {
   const { t } = useLanguage()
   const [draft, setDraft] = useState(jadwal)
@@ -22,13 +30,26 @@ export default function JadwalMingguan({ jadwal, onSimpan, bisaEdit }) {
       ...d,
       [hari]: {
         ...d[hari],
-        [aksi]: d[hari]?.[aksi] ? '' : (aksi === 'antar' ? '07:00' : '15:30'),
+        [aksi]: {
+          aktif: !d[hari]?.[aksi]?.aktif,
+          jam: d[hari]?.[aksi]?.jam || '',
+        },
       },
     }))
   }
 
   function ubahJam(hari, aksi, jam) {
-    setDraft((d) => ({ ...d, [hari]: { ...d[hari], [aksi]: jam } }))
+    setDraft((d) => ({
+      ...d,
+      [hari]: {
+        ...d[hari],
+        [aksi]: { ...d[hari]?.[aksi], jam },
+      },
+    }))
+  }
+
+  function handleReset() {
+    setDraft(buatJadwalKosong())
   }
 
   async function handleSimpan() {
@@ -39,15 +60,21 @@ export default function JadwalMingguan({ jadwal, onSimpan, bisaEdit }) {
     setTimeout(() => setTersimpan(false), 2000)
   }
 
-  const nilaiEditing = editing ? (draft[editing.hari]?.[editing.aksi] || '07:00') : '07:00'
+  const nilaiEditing = editing ? (draft[editing.hari]?.[editing.aksi]?.jam || '07:00') : '07:00'
   const indexHariEditing = editing ? HARI_KERJA_KEYS.indexOf(editing.hari) : -1
   const labelHariEditing = indexHariEditing >= 0 ? t.hariLabel[indexHariEditing] : ''
 
   return (
     <div style={s.wrap}>
+      {bisaEdit && (
+        <button style={s.resetBtn} onClick={handleReset}>
+          {t.resetJadwal}
+        </button>
+      )}
+
       {HARI_KERJA_KEYS.map((key, i) => {
         const label = t.hariLabel[i]
-        const adaJadwal = Boolean(draft[key]?.antar) || Boolean(draft[key]?.jemput)
+        const adaJadwal = Boolean(draft[key]?.antar?.aktif) || Boolean(draft[key]?.jemput?.aktif)
         if (!bisaEdit && !adaJadwal) return null
 
         return (
@@ -57,19 +84,21 @@ export default function JadwalMingguan({ jadwal, onSimpan, bisaEdit }) {
             <div style={s.aksiGrid}>
               <AksiChip
                 label={t.antar}
-                aktif={Boolean(draft[key]?.antar)}
-                jam={draft[key]?.antar}
+                aktif={Boolean(draft[key]?.antar?.aktif)}
+                jam={draft[key]?.antar?.jam}
                 bisaEdit={bisaEdit}
                 onToggle={() => toggleAksi(key, 'antar')}
                 onBukaJam={() => setEditing({ hari: key, aksi: 'antar' })}
+                placeholderJam={t.jamOpsional}
               />
               <AksiChip
                 label={t.jemput}
-                aktif={Boolean(draft[key]?.jemput)}
-                jam={draft[key]?.jemput}
+                aktif={Boolean(draft[key]?.jemput?.aktif)}
+                jam={draft[key]?.jemput?.jam}
                 bisaEdit={bisaEdit}
                 onToggle={() => toggleAksi(key, 'jemput')}
                 onBukaJam={() => setEditing({ hari: key, aksi: 'jemput' })}
+                placeholderJam={t.jamOpsional}
               />
             </div>
           </div>
@@ -103,7 +132,7 @@ export default function JadwalMingguan({ jadwal, onSimpan, bisaEdit }) {
   )
 }
 
-function AksiChip({ label, aktif, jam, bisaEdit, onToggle, onBukaJam }) {
+function AksiChip({ label, aktif, jam, bisaEdit, onToggle, onBukaJam, placeholderJam }) {
   if (!bisaEdit && !aktif) return null
 
   return (
@@ -119,17 +148,31 @@ function AksiChip({ label, aktif, jam, bisaEdit, onToggle, onBukaJam }) {
       {bisaEdit && (
         <div style={s.jamSlot}>
           {aktif && (
-            <button style={s.jamBtn} onClick={onBukaJam}>{jam}</button>
+            <button style={jam ? s.jamBtn : s.jamBtnKosong} onClick={onBukaJam}>
+              {jam || placeholderJam}
+            </button>
           )}
         </div>
       )}
-      {aktif && !bisaEdit && <span style={s.jamBacaTeks}>{jam}</span>}
+      {aktif && !bisaEdit && (
+        <span style={s.jamBacaTeks}>{jam || placeholderJam}</span>
+      )}
     </div>
   )
 }
 
 const s = {
   wrap: { display: 'flex', flexDirection: 'column', gap: 10 },
+  resetBtn: {
+    alignSelf: 'flex-end',
+    fontSize: 12.5,
+    fontWeight: 600,
+    color: '#8FB4DC',
+    padding: '6px 12px',
+    borderRadius: 999,
+    border: '1px solid var(--blue-border)',
+    background: 'rgba(255,255,255,0.06)',
+  },
   hariBlok: {
     background: 'var(--card-blue)',
     border: '1px solid var(--blue-border)',
@@ -197,6 +240,18 @@ const s = {
     borderRadius: 8,
     padding: '6px 4px',
     color: 'var(--text)',
+    width: '100%',
+    boxSizing: 'border-box',
+    textAlign: 'center',
+  },
+  jamBtnKosong: {
+    fontFamily: 'var(--font-data)',
+    fontSize: 11,
+    background: 'rgba(255,255,255,0.06)',
+    border: '1px dashed var(--blue-border)',
+    borderRadius: 8,
+    padding: '6px 4px',
+    color: 'var(--text-dim)',
     width: '100%',
     boxSizing: 'border-box',
     textAlign: 'center',

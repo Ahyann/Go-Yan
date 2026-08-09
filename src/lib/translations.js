@@ -74,6 +74,8 @@ export const translations = {
     menyimpan: 'Menyimpan…',
     tersimpan: 'Tersimpan ✓',
     simpanJadwal: 'Simpan jadwal',
+    resetJadwal: 'Reset',
+    jamOpsional: 'Atur jam',
 
     // --- Riwayat ---
     riwayatEyebrow: 'RIWAYAT',
@@ -196,6 +198,8 @@ export const translations = {
     menyimpan: 'Saving…',
     tersimpan: 'Saved ✓',
     simpanJadwal: 'Save schedule',
+    resetJadwal: 'Reset',
+    jamOpsional: 'Set time',
 
     // --- Riwayat ---
     riwayatEyebrow: 'HISTORY',
