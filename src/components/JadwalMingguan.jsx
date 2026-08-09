@@ -24,9 +24,6 @@ const JadwalMingguan = forwardRef(function JadwalMingguan({ jadwal, onSimpan, bi
     setDraft(jadwal)
   }, [jadwal])
 
-  // Biar tombol Reset bisa ditaro di LUAR komponen ini (sejajar sama
-  // judul halaman), tapi tetep bisa "manggil" reset ke draft di dalem
-  // sini — pake ref, bukan tombol internal lagi.
   useImperativeHandle(ref, () => ({
     reset: () => setDraft(buatJadwalKosong()),
   }))
@@ -63,8 +60,6 @@ const JadwalMingguan = forwardRef(function JadwalMingguan({ jadwal, onSimpan, bi
   }
 
   function handleCancelJam() {
-    // Batal — draft yang beneran gak diubah sama sekali, cuma nutup
-    // popup-nya doang.
     setEditing(null)
   }
 
@@ -142,8 +137,6 @@ const JadwalMingguan = forwardRef(function JadwalMingguan({ jadwal, onSimpan, bi
 export default JadwalMingguan
 
 function AksiChip({ label, aktif, jam, bisaEdit, onToggle, onBukaJam, placeholderJam }) {
-  if (!bisaEdit && !aktif) return null
-
   return (
     <div style={s.aksiItem}>
       {bisaEdit ? (
@@ -151,21 +144,19 @@ function AksiChip({ label, aktif, jam, bisaEdit, onToggle, onBukaJam, placeholde
           {label}
         </button>
       ) : (
-        <span style={s.chipBaca}>{label}</span>
+        <span style={aktif ? s.chipBacaAktif : s.chipBacaRedup}>{label}</span>
       )}
 
-      {bisaEdit && (
-        <div style={s.jamSlot}>
-          {aktif && (
-            <button style={jam ? s.jamBtn : s.jamBtnKosong} onClick={onBukaJam}>
-              {jam || placeholderJam}
-            </button>
-          )}
-        </div>
-      )}
-      {aktif && !bisaEdit && (
-        <span style={s.jamBacaTeks}>{jam || placeholderJam}</span>
-      )}
+      <div style={s.jamSlot}>
+        {aktif && bisaEdit && (
+          <button style={jam ? s.jamBtn : s.jamBtnKosong} onClick={onBukaJam}>
+            {jam || placeholderJam}
+          </button>
+        )}
+        {aktif && !bisaEdit && (
+          <span style={s.jamBacaTeks}>{jam || placeholderJam}</span>
+        )}
+      </div>
     </div>
   )
 }
@@ -223,10 +214,17 @@ const s = {
     border: '1px solid var(--glow-blue-mid)',
     textShadow: '0 0 4px var(--glow-blue-mid)',
   },
-  chipBaca: {
+  chipBacaAktif: {
     fontSize: 12.5,
     fontWeight: 600,
-    color: '#8FB4DC',
+    color: 'var(--glow-blue)',
+    textShadow: '0 0 4px var(--glow-blue-mid)',
+  },
+  chipBacaRedup: {
+    fontSize: 12.5,
+    fontWeight: 600,
+    color: 'var(--text-dim)',
+    opacity: 0.5,
   },
   jamSlot: {
     minWidth: 0,
