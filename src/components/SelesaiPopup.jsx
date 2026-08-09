@@ -20,7 +20,7 @@ export default function SelesaiPopup({ data, onDismiss }) {
     })
 
     const timer = setTimeout(() => {
-      handleClose()
+      handleTutupOtomatis()
     }, DURASI_TAMPIL)
 
     return () => {
@@ -30,7 +30,14 @@ export default function SelesaiPopup({ data, onDismiss }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  function handleClose() {
+  function handleTutupOtomatis() {
+    setTampil(false)
+    setTimeout(() => {
+      onDismiss()
+    }, DURASI_ANIMASI)
+  }
+
+  function handleOkeDitekan() {
     if (!sudahPutarSuara.current) {
       playNotifSelesai()
       sudahPutarSuara.current = true
@@ -60,7 +67,7 @@ export default function SelesaiPopup({ data, onDismiss }) {
           <div style={s.tanggal}>{tanggalFormatted}</div>
           <div style={s.tarif}>{formatRupiah(data.tarif)}</div>
         </div>
-        <button style={s.okeBtn} onClick={handleClose}>{t.selesaiOke}</button>
+        <button style={s.okeBtn} onClick={handleOkeDitekan}>{t.selesaiOke}</button>
       </div>
     </div>,
     document.body
