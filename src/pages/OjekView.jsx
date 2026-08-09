@@ -1,5 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useLokasiSaya } from '../lib/useLokasiSaya'
+import { usePesanPenumpang } from '../lib/usePesanPenumpang'
+import { playChatSound } from '../lib/sound'
 import OjekNav from '../components/OjekNav.jsx'
 import OjekHomeTab from './OjekHomeTab.jsx'
 import OjekJadwalTab from './OjekJadwalTab.jsx'
@@ -17,18 +19,43 @@ export default function OjekView({
   onHapusRiwayat,
 }) {
   const [tabAktif, setTabAktif] = useState('home')
+  const [adaChatBaru, setAdaChatBaru] = useState(false)
+  const tabAktifRef = useRef('home')
 
-  // Hook GPS ini di level OjekView (bukan di dalem OjekHomeTab) —
-  // biar statusnya TETEP JALAN walau Ahyan pindah-pindah tab
-  // (Jadwal/Riwayat). Sebelumnya nempel di OjekHomeTab, jadi begitu
-  // komponen itu dihancurin pas ganti tab, GPS-nya beneran berhenti
-  // ke-share, bukan cuma tampilannya doang yang salah.
+  useEffect(() => {
+    tabAktifRef.current = tabAktif
+  }, [tabAktif])
+
   const {
     aktif: lokasiAktif,
     error: lokasiError,
     mulai: mulaiLokasi,
     berhenti: berhentiLokasi,
   } = useLokasiSaya()
+
+  // Pesan dari Fajri — dipantau di level ini biar ketahuan ada pesan
+  // baru walau Ahyan lagi di tab lain (Jadwal/Riwayat/Akun).
+  const { pesan: pesanMasuk } = usePesanPenumpang()
+  const pesanTerakhirRef = useRef(undefined)
+
+  useEffect(() => {
+    if (pesanTerakhirRef.current === undefined) {
+      pesanTerakhirRef.current = pesanMasuk?.dibuatPada ?? null
+      return
+    }
+
+    const pesanBaru = pesanMasuk && pesanMasuk.dibuatPada !== pesanTerakhirRef.current
+    if (pesanBaru) {
+      pesanTerakhirRef.current = pesanMasuk.dibuatPada
+      playChatSound()
+      if (tabAktifRef.current !== 'home') setAdaChatBaru(true)
+    }
+  }, [pesanMasuk])
+
+  function handleTabChange(tab) {
+    setTabAktif(tab)
+    if (tab === 'home') setAdaChatBaru(false)
+  }
 
   return (
     <div style={s.appWrap}>
@@ -52,7 +79,7 @@ export default function OjekView({
         {tabAktif === 'akun' && <OjekAccountTab />}
       </div>
 
-      <OjekNav tabAktif={tabAktif} onTabChange={setTabAktif} />
+      <OjekNav tabAktif={tabAktif} onTabChange={handleTabChange} adaChatBaru={adaChatBaru} />
     </div>
   )
 }

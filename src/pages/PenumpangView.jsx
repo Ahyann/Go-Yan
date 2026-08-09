@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { STATUS_PERMINTAAN } from '../lib/constants'
-import { playSpiderSound } from '../lib/sound'
+import { playSpiderSound, playChatSound } from '../lib/sound'
 import { useLokasiSayaPenumpang } from '../lib/useLokasiSayaPenumpang'
+import { usePesanOjek } from '../lib/usePesanOjek'
 import GoPopup from '../components/GoPopup.jsx'
 import SelesaiPopup from '../components/SelesaiPopup.jsx'
 import BottomNav from '../components/BottomNav.jsx'
@@ -22,12 +23,13 @@ export default function PenumpangView({
 }) {
   const [tabAktif, setTabAktif] = useState('home')
   const [showGo, setShowGo] = useState(false)
+  const [adaChatBaru, setAdaChatBaru] = useState(false)
+  const tabAktifRef = useRef('home')
 
-  // Hook GPS ini sekarang di level PenumpangView (bukan di dalem
-  // HomeTab) — biar statusnya TETEP JALAN walau user pindah-pindah
-  // tab (Jadwal/Riwayat/Akun). Sebelumnya ini nempel di HomeTab, jadi
-  // begitu HomeTab dihancurin pas ganti tab, GPS-nya beneran berhenti
-  // ke-share, bukan cuma tampilannya doang yang salah.
+  useEffect(() => {
+    tabAktifRef.current = tabAktif
+  }, [tabAktif])
+
   const {
     aktif: lokasiAktif,
     error: lokasiError,
@@ -35,10 +37,38 @@ export default function PenumpangView({
     berhenti: berhentiLokasi,
   } = useLokasiSayaPenumpang()
 
+  // Pesan dari Ahyan — dipantau di level ini (bukan di dalem HomeTab)
+  // biar KETAHUAN ada pesan baru walau Fajri lagi di tab lain, bukan
+  // cuma pas lagi liat peta doang.
+  const { pesan: pesanMasuk } = usePesanOjek()
+  const pesanTerakhirRef = useRef(undefined)
+
+  useEffect(() => {
+    // undefined = belum pernah ke-cek sama sekali (baru pertama kali
+    // hook ini jalan) — jangan bunyi/nyalain badge buat pesan LAMA
+    // yang udah ada dari sebelumnya, cuma buat pesan yang BENERAN
+    // baru dateng SELAMA Fajri lagi di app.
+    if (pesanTerakhirRef.current === undefined) {
+      pesanTerakhirRef.current = pesanMasuk?.dibuatPada ?? null
+      return
+    }
+
+    const pesanBaru = pesanMasuk && pesanMasuk.dibuatPada !== pesanTerakhirRef.current
+    if (pesanBaru) {
+      pesanTerakhirRef.current = pesanMasuk.dibuatPada
+      playChatSound()
+      if (tabAktifRef.current !== 'home') setAdaChatBaru(true)
+    }
+  }, [pesanMasuk])
+
+  function handleTabChange(tab) {
+    setTabAktif(tab)
+    if (tab === 'home') setAdaChatBaru(false)
+  }
+
   const statusSekarang = permintaanAktif?.status
   const sedangJalan = statusSekarang === STATUS_PERMINTAAN.DITERIMA
 
-  // Begitu ride udah gak aktif lagi, otomatis matiin share lokasi.
   useEffect(() => {
     if (!sedangJalan && lokasiAktif) {
       berhentiLokasi()
@@ -85,16 +115,14 @@ export default function PenumpangView({
 
       <BottomNav
         tabAktif={tabAktif}
-        onTabChange={setTabAktif}
+        onTabChange={handleTabChange}
         onGoClick={handleGoButtonClick}
         modeGo={modeGo}
+        adaChatBaru={adaChatBaru}
       />
 
       {showGo && <GoPopup onClose={() => setShowGo(false)} onSubmit={handleKirimGo} />}
 
-      {/* Ditaro di sini (bukan di dalem HomeTab) — biar tetep keliatan
-          walau Fajri lagi di tab Jadwal/Riwayat/Akun, bukan cuma pas
-          lagi di Home doang. */}
       {notifSelesaiData && (
         <SelesaiPopup data={notifSelesaiData} onDismiss={onDismissNotifSelesai} />
       )}

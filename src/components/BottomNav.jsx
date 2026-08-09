@@ -1,10 +1,10 @@
 import { useLanguage } from '../context/LanguageContext.jsx'
 
-export default function BottomNav({ tabAktif, onTabChange, onGoClick, modeGo = 'go' }) {
+export default function BottomNav({ tabAktif, onTabChange, onGoClick, modeGo = 'go', adaChatBaru = false }) {
   const { t } = useLanguage()
   return (
     <nav style={s.nav}>
-      <IconBtn label={t.navHome} aktif={tabAktif === 'home'} onClick={() => onTabChange('home')}>
+      <IconBtn label={t.navHome} aktif={tabAktif === 'home'} onClick={() => onTabChange('home')} badge={adaChatBaru}>
         <path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10" />
       </IconBtn>
 
@@ -45,12 +45,15 @@ export default function BottomNav({ tabAktif, onTabChange, onGoClick, modeGo = '
   )
 }
 
-function IconBtn({ label, aktif, onClick, children }) {
+function IconBtn({ label, aktif, onClick, children, badge = false }) {
   return (
     <button style={aktif ? s.iconBtnAktif : s.iconBtn} onClick={onClick} aria-label={label}>
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        {children}
-      </svg>
+      <div style={s.iconWrap}>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          {children}
+        </svg>
+        {badge && <span style={s.badgeDot} />}
+      </div>
     </button>
   )
 }
@@ -87,6 +90,25 @@ const s = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  iconWrap: {
+    position: 'relative',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  // Titik merah kecil di pojok kanan atas icon — nunjukkin ada chat
+  // baru yang belum dibuka, ilang begitu tab Home dibuka.
+  badgeDot: {
+    position: 'absolute',
+    top: -2,
+    right: -2,
+    width: 9,
+    height: 9,
+    borderRadius: '50%',
+    background: '#FF3B30',
+    border: '1.5px solid var(--nav-red)',
+    boxShadow: '0 0 4px rgba(255,59,48,0.8)',
   },
   goBtn: {
     width: 58,

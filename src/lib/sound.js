@@ -1,3 +1,8 @@
+// Suara ini dibuat langsung oleh browser (Web Audio API), BUKAN file
+// audio yang diputar. Alasannya dua: (1) gak bisa makein rekaman asli
+// dari film Spider-Man karena itu berhak cipta, (2) sintesis kode kayak
+// gini nol kilobyte tambahan ke ukuran app — cocok sama prinsip "jangan
+// berat" dari awal.
 let audioCtx
 
 function getAudioCtx() {
@@ -27,12 +32,24 @@ export function playThwip() {
 }
 
 // --- Rekaman asli, diputar lewat Web Audio API (bukan elemen <audio>) ---
+//
+// Bedanya penting: <audio> harus "nyiapin diri" tiap kali disuruh main,
+// dan itu latensinya gak konsisten (kadang instan, kadang delay dikit).
+// Cara di bawah ini DECODE file mp3 SEKALI di awal jadi data audio mentah
+// yang nangkring di memori (AudioBuffer) — begitu tombol ditekan, kita
+// cuma bikin "pemutar" baru buat data yang udah siap itu, gak perlu baca
+// ulang file dari awal. Hasilnya jauh lebih instan & konsisten.
 let spiderBuffer = null
 let notifSelesaiBuffer = null
+let chatBuffer = null
 
 async function muatBuffer(url) {
   try {
     const ctx = getAudioCtx()
+    // { cache: 'no-store' }: paksa browser SELALU ambil file terbaru
+    // dari server, jangan pernah pakai salinan lama yang udah kesimpen
+    // sebelumnya — penting soalnya kita udah beberapa kali ganti isi
+    // file mp3 ini dengan nama yang sama persis.
     const res = await fetch(url, { cache: 'no-store' })
     const arrayBuffer = await res.arrayBuffer()
     return await ctx.decodeAudioData(arrayBuffer)
@@ -50,6 +67,10 @@ async function muatNotifSelesaiBuffer() {
   notifSelesaiBuffer = await muatBuffer('/sounds/notifselesai.mp3')
 }
 
+async function muatChatBuffer() {
+  chatBuffer = await muatBuffer('/sounds/chat.mp3')
+}
+
 function putarBuffer(buffer) {
   const ctx = getAudioCtx()
   const source = ctx.createBufferSource()
@@ -61,7 +82,12 @@ function putarBuffer(buffer) {
 if (typeof window !== 'undefined') {
   muatSpiderBuffer()
   muatNotifSelesaiBuffer()
+  muatChatBuffer()
 
+  // Lapis pengaman tambahan: begitu app balik aktif/keliatan lagi
+  // (abis layar dikunci atau pindah app terus balik), langsung coba
+  // "bangunin" AudioContext-nya duluan — jangan nunggu sampe tombol
+  // beneran dipencet.
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible' && audioCtx?.state === 'suspended') {
       audioCtx.resume()
@@ -101,5 +127,27 @@ export async function playNotifSelesai() {
   if (ctx.state !== 'running') return false
 
   putarBuffer(notifSelesaiBuffer)
+  return true
+}
+
+// Dipanggil pas ada pesan chat masuk SEMENTARA user lagi kebuka app-nya
+// (foreground). Kalau gak berhasil bunyi (misal belum ada sentuhan user
+// sama sekali), gapapa — diem aja, gak dipaksa, biar gak nyangkut &
+// nabrak suara lain nanti (sama kayak pelajaran dari notifSelesai).
+export async function playChatSound() {
+  const ctx = getAudioCtx()
+
+  if (!chatBuffer) {
+    await muatChatBuffer()
+  }
+  if (!chatBuffer) return false
+
+  if (ctx.state === 'suspended') {
+    await ctx.resume()
+  }
+
+  if (ctx.state !== 'running') return false
+
+  putarBuffer(chatBuffer)
   return true
 }
