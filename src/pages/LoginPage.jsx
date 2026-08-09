@@ -5,7 +5,7 @@ import { useLanguage } from '../context/LanguageContext.jsx'
 
 function usernameKeEmail(username) {
   const bersih = username.trim().toLowerCase().replace(/\s+/g, '')
-  return `${bersih}@goyan.app`
+  return `${bersih}@gmail.com`
 }
 
 export default function LoginPage() {
