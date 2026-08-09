@@ -10,6 +10,9 @@ import { LOKASI_OFFICE } from '../lib/constants'
 
 const PUSAT_DEFAULT = [-6.2088, 106.8456]
 
+// Ukuran Fajri disamain "bobot visual"-nya sama Ojek (spiderman) di
+// peta yang sama — proporsi asli gambarnya 60:92 (lebih tinggi dari
+// lebar), jadi lebar dihitung ngikutin tinggi biar gak gepeng.
 const ikonPenumpang = L.divIcon({
   className: '',
   html: `<div style="isolation: isolate;">
@@ -38,6 +41,8 @@ const ikonSaya = L.divIcon({
   popupAnchor: [34, 0],
 })
 
+// Proporsi asli gambar office ternyata gedung TINGGI (rasio ~0.667,
+// bukan hampir kotak) — file lama yang salah, ini yang bener.
 const ikonOffice = L.divIcon({
   className: '',
   html: `<div style="isolation: isolate;">
@@ -79,6 +84,7 @@ export default function PetaLokasiPenumpang({
   const mapRef = useRef(null)
   const markerRef = useRef(null)
   const markerSayaRef = useRef(null)
+  const markerOfficeRef = useRef(null)
   const pesanTampilRef = useRef(null)
   const [teksBubble, setTeksBubble] = useState('')
   const [teksBubbleSaya, setTeksBubbleSaya] = useState('')
@@ -99,6 +105,10 @@ export default function PetaLokasiPenumpang({
       setTeksBubbleSaya(pesanSaya.teks)
       markerSayaRef.current.openPopup()
     } else {
+      // Data-nya udah kehapus (mungkin dari sisi Ahyan) — tutup pake
+      // closePopup() (Leaflet main animasi fade-nya), BUKAN langsung
+      // ilangin dari layar. teksBubbleSaya sengaja gak dikosongin di
+      // sini, biar teksnya masih "nempel" pas lagi fade out.
       markerSayaRef.current.closePopup()
     }
   }, [pesanSaya])
@@ -197,7 +207,25 @@ export default function PetaLokasiPenumpang({
           </Marker>
         )}
 
-        <Marker position={LOKASI_OFFICE} icon={ikonOffice} />
+        <Marker
+          ref={markerOfficeRef}
+          position={LOKASI_OFFICE}
+          icon={ikonOffice}
+          zIndexOffset={-100}
+          eventHandlers={{
+            popupopen: () => {
+              setTimeout(() => {
+                markerOfficeRef.current?.closePopup()
+              }, 2500)
+            },
+          }}
+        >
+          <Popup closeButton={false} autoClose={false} closeOnClick={false}>
+            <div style={s.bubbleWrap}>
+              <span style={s.bubbleText}>{t.yourOffice}</span>
+            </div>
+          </Popup>
+        </Marker>
       </MapContainer>
 
       {tampilkanTombolLokasi && (

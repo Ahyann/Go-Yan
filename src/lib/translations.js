@@ -118,6 +118,7 @@ export const translations = {
     selesaiJudul: 'Perjalanan Selesai!',
     selesaiOke: 'Oke',
     pesanPerluLive: 'Nyalain live location dulu buat bisa kirim pesan',
+    yourOffice: 'Kantor Kamu',
   },
   en: {
     // --- HomeTab (Penumpang) ---
@@ -238,5 +239,6 @@ export const translations = {
     selesaiJudul: 'Trip Complete!',
     selesaiOke: 'OK',
     pesanPerluLive: 'Turn on live location first to send a message',
+    yourOffice: 'Your Office',
   },
 }
