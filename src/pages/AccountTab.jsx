@@ -150,9 +150,9 @@ const s = {
   avatarImg: {
     width: '100%',
     height: '100%',
-    objectFit: 'cover',
-    objectPosition: '100% 50%',
-    transform: 'scale(0.7)',
+    objectFit: 'contain',
+    objectPosition: '50% 20%',
+    transform: 'scale(1.1) translateY(10px)',
     imageRendering: 'pixelated',
   },
   label: { fontSize: 12.5, color: '#9FC3E8', marginBottom: 6 },
