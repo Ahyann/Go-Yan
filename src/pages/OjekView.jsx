@@ -8,24 +8,22 @@ import OjekJadwalTab from './OjekJadwalTab.jsx'
 import OjekRiwayatTab from './OjekRiwayatTab.jsx'
 import OjekAccountTab from './OjekAccountTab.jsx'
 
-const KEY_RIWAYAT_DILIHAT = 'go-yan-riwayat-dilihat-ojek'
+const KEY_TERAKHIR_DILIHAT = 'go-yan-riwayat-terakhir-dilihat-ojek'
 
-function ambilIdDilihat() {
+function ambilTerakhirDilihat() {
   try {
-    const raw = localStorage.getItem(KEY_RIWAYAT_DILIHAT)
+    const raw = localStorage.getItem(KEY_TERAKHIR_DILIHAT)
     if (raw === null) return null
-    return new Set(JSON.parse(raw))
+    return Number(raw)
   } catch {
     return null
   }
 }
 
-function simpanIdDilihat(idsSet) {
+function simpanTerakhirDilihat(waktu) {
   try {
-    localStorage.setItem(KEY_RIWAYAT_DILIHAT, JSON.stringify([...idsSet]))
-  } catch {
-    // gapapa
-  }
+    localStorage.setItem(KEY_TERAKHIR_DILIHAT, String(waktu))
+  } catch {}
 }
 
 export default function OjekView({
@@ -64,7 +62,6 @@ export default function OjekView({
       pesanTerakhirRef.current = pesanMasuk?.dibuatPada ?? null
       return
     }
-
     const pesanBaru = pesanMasuk && pesanMasuk.dibuatPada !== pesanTerakhirRef.current
     if (pesanBaru) {
       pesanTerakhirRef.current = pesanMasuk.dibuatPada
@@ -73,29 +70,25 @@ export default function OjekView({
     }
   }, [pesanMasuk])
 
-  const idsPernahDilihatRef = useRef(null)
+  const terakhirDilihatRef = useRef(undefined)
 
   useEffect(() => {
     if (!riwayatSiap) return
 
-    const idSekarang = new Set(riwayat.map((r) => r.id))
-
-    if (idsPernahDilihatRef.current === null) {
-      const dariStorage = ambilIdDilihat()
-      if (dariStorage === null) {
-        idsPernahDilihatRef.current = idSekarang
-        simpanIdDilihat(idSekarang)
+    if (terakhirDilihatRef.current === undefined) {
+      const tersimpan = ambilTerakhirDilihat()
+      if (tersimpan === null) {
+        const maxWaktu = riwayat.reduce((max, r) => Math.max(max, r.dibuatPada || 0), 0)
+        terakhirDilihatRef.current = maxWaktu
+        simpanTerakhirDilihat(maxWaktu)
         return
       }
-      idsPernahDilihatRef.current = dariStorage
+      terakhirDilihatRef.current = tersimpan
     }
 
-    const itemBenerBaru = riwayat.find((r) => !idsPernahDilihatRef.current.has(r.id))
-    idsPernahDilihatRef.current = idSekarang
-    simpanIdDilihat(idSekarang)
-
-    if (itemBenerBaru) {
-      setIdRiwayatBaru(itemBenerBaru.id)
+    const itemBaru = riwayat.find((r) => (r.dibuatPada || 0) > terakhirDilihatRef.current)
+    if (itemBaru) {
+      setIdRiwayatBaru(itemBaru.id)
       if (tabAktifRef.current !== 'riwayat') setAdaRiwayatBaru(true)
     }
   }, [riwayat, riwayatSiap])
@@ -106,9 +99,9 @@ export default function OjekView({
     if (tab === 'riwayat') {
       setAdaRiwayatBaru(false)
       setIdRiwayatBaru(null)
-      const idSekarang = new Set(riwayat.map((r) => r.id))
-      idsPernahDilihatRef.current = idSekarang
-      simpanIdDilihat(idSekarang)
+      const maxWaktu = riwayat.reduce((max, r) => Math.max(max, r.dibuatPada || 0), Date.now())
+      terakhirDilihatRef.current = maxWaktu
+      simpanTerakhirDilihat(maxWaktu)
     }
   }
 
