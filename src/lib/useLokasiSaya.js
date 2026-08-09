@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { ref, set, update, get } from 'firebase/database'
+import { ref, set, remove } from 'firebase/database'
 import { rtdb } from './firebase'
 import { kirimNotifikasi } from './notifikasi'
 
@@ -23,7 +23,6 @@ export function useLokasiSaya() {
           lat: pos.coords.latitude,
           lng: pos.coords.longitude,
           updatedAt: Date.now(),
-          aktif: true,
         })
       },
       (err) => {
@@ -42,24 +41,11 @@ export function useLokasiSaya() {
       watchIdRef.current = null
     }
     setAktif(false)
-    // Posisi TERAKHIR sengaja gak dihapus (icon & chat yang nempel di
-    // situ tetep keliatan) — cuma ditandain "udah gak live lagi".
-    update(LOKASI_REF, { aktif: false }).catch(() => {})
+    remove(LOKASI_REF)
   }
 
   useEffect(() => {
-    // PENTING: cek dulu apa datanya UDAH ADA sebelum nulis "aktif:
-    // false" — kalau langsung update() tanpa ngecek dan datanya belum
-    // pernah ada sama sekali, itu bakal BIKIN data baru yang cuma
-    // punya field aktif doang (tanpa lat/lng) — data "hantu" ini yang
-    // bikin peta crash pas nyoba render marker dari koordinat kosong.
-    get(LOKASI_REF)
-      .then((snap) => {
-        if (snap.exists()) {
-          update(LOKASI_REF, { aktif: false }).catch(() => {})
-        }
-      })
-      .catch(() => {})
+    remove(LOKASI_REF)
 
     return () => {
       if (watchIdRef.current !== null) {
