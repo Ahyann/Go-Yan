@@ -152,7 +152,7 @@ const s = {
     height: '100%',
     objectFit: 'cover',
     objectPosition: '50% 10%',
-    transform: 'scale(1.0)',
+    transform: 'scale(0.9)',
     imageRendering: 'pixelated',
   },
   label: { fontSize: 12.5, color: '#9FC3E8', marginBottom: 6 },
