@@ -57,8 +57,15 @@ export default function OjekAccountTab() {
       </header>
 
       <section style={s.card}>
-        <div style={s.label}>{t.masukSebagai}</div>
-        <div style={s.email}>{user?.email}</div>
+        <div style={s.profilRow}>
+          <div style={s.avatarWrap}>
+            <img src="/icons/spidericon.png" style={s.avatarImg} alt="" />
+          </div>
+          <div>
+            <div style={s.label}>{t.masukSebagai}</div>
+            <div style={s.email}>{user?.email}</div>
+          </div>
+        </div>
       </section>
 
       <section style={s.card}>
@@ -122,6 +129,27 @@ const s = {
     border: '1px solid var(--blue-border)',
     borderRadius: 12,
     padding: 18,
+  },
+  profilRow: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 14,
+  },
+  avatarWrap: {
+    flexShrink: 0,
+    width: 52,
+    height: 52,
+    borderRadius: '50%',
+    overflow: 'hidden',
+    background: 'rgba(94,208,255,0.12)',
+    border: '2px solid var(--glow-blue-mid)',
+    boxShadow: '0 0 8px rgba(94,208,255,0.4)',
+  },
+  avatarImg: {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+    transform: 'scale(1.1)',
   },
   label: { fontSize: 12.5, color: '#9FC3E8', marginBottom: 6 },
   email: { fontSize: 15, color: 'var(--text)', fontWeight: 600 },

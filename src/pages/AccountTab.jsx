@@ -7,7 +7,7 @@ import { mintaIzinDanSimpanToken, matikanNotifikasi, cekStatusNotifikasi } from 
 export default function AccountTab() {
   const { user, logout } = useAuth()
   const { lang, setLang, t } = useLanguage()
-  const [status, setStatus] = useState('')
+  const [status, setStatus] = useState('') // '', 'loading', 'ok', 'gagal'
   const [pesanError, setPesanError] = useState('')
 
   useEffect(() => {
@@ -36,6 +36,8 @@ export default function AccountTab() {
     if (hasil.berhasil) {
       setStatus('')
     } else {
+      // Gagal beneran hapus di server — JANGAN tampilin "mati" kalau
+      // kenyataannya masih nyala di server, biar gak nipu diri sendiri.
       setStatus('ok')
       setPesanError(hasil.alasan)
     }
@@ -57,8 +59,15 @@ export default function AccountTab() {
       </header>
 
       <section style={s.card}>
-        <div style={s.label}>{t.masukSebagai}</div>
-        <div style={s.email}>{user?.email}</div>
+        <div style={s.profilRow}>
+          <div style={s.avatarWrap}>
+            <img src="/icons/fajri.png" style={s.avatarImg} alt="" />
+          </div>
+          <div>
+            <div style={s.label}>{t.masukSebagai}</div>
+            <div style={s.email}>{user?.email}</div>
+          </div>
+        </div>
       </section>
 
       <section style={s.card}>
@@ -122,6 +131,31 @@ const s = {
     border: '1px solid var(--blue-border)',
     borderRadius: 12,
     padding: 18,
+  },
+  profilRow: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 14,
+  },
+  avatarWrap: {
+    flexShrink: 0,
+    width: 52,
+    height: 52,
+    borderRadius: '50%',
+    overflow: 'hidden',
+    background: 'rgba(94,208,255,0.12)',
+    border: '2px solid var(--glow-blue-mid)',
+    boxShadow: '0 0 8px rgba(94,208,255,0.4)',
+  },
+  avatarImg: {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+    // "Zoom" ke bagian atas gambar (mukanya) — soalnya gambar Fajri
+    // aslinya badan lengkap (potret tinggi), object-position ini yang
+    // nge-geser area yang keliatan ke bagian kepala, bukan tengah body.
+    objectPosition: '50% 15%',
+    transform: 'scale(1.8)',
   },
   label: { fontSize: 12.5, color: '#9FC3E8', marginBottom: 6 },
   email: { fontSize: 15, color: 'var(--text)', fontWeight: 600 },
