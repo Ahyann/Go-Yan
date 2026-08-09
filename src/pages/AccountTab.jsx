@@ -151,6 +151,7 @@ const s = {
     width: '100%',
     height: '100%',
     objectFit: 'cover',
+    objectPosition: '100% 50%',
     transform: 'scale(0.7)',
     imageRendering: 'pixelated',
   },
