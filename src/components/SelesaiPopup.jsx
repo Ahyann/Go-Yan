@@ -5,7 +5,6 @@ import { useLanguage } from '../context/LanguageContext.jsx'
 import { playNotifSelesai } from '../lib/sound'
 
 const DURASI_ANIMASI = 300
-const DURASI_TAMPIL = 5000
 
 export default function SelesaiPopup({ data, onDismiss }) {
   const { t, lang } = useLanguage()
@@ -19,23 +18,16 @@ export default function SelesaiPopup({ data, onDismiss }) {
       sudahPutarSuara.current = berhasil
     })
 
-    const timer = setTimeout(() => {
-      handleTutupOtomatis()
-    }, DURASI_TAMPIL)
-
+    // Sengaja GAK ADA auto-timeout lagi — popup ini cuma bisa
+    // ketutup lewat tombol Oke yang beneran ditekan user. Ini
+    // ngejamin 100% gak akan ada lagi suara "nyangkut" buat dipaksa
+    // mainin nanti, soalnya satu-satunya jalan nutup SELALU lewat
+    // sentuhan user asli.
     return () => {
       cancelAnimationFrame(id)
-      clearTimeout(timer)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-
-  function handleTutupOtomatis() {
-    setTampil(false)
-    setTimeout(() => {
-      onDismiss()
-    }, DURASI_ANIMASI)
-  }
 
   function handleOkeDitekan() {
     if (!sudahPutarSuara.current) {
