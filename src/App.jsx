@@ -4,7 +4,7 @@ import { LanguageProvider } from './context/LanguageContext.jsx'
 import { usePermintaanAktif } from './lib/usePermintaanAktif'
 import { useRiwayat } from './lib/useRiwayat'
 import { useJadwalMingguan } from './lib/useJadwalMingguan'
-import { dengarkanNotifForeground } from './lib/notifikasi'
+import { dengarkanNotifForeground, kirimNotifikasi } from './lib/notifikasi'
 import { usePresence } from './lib/usePresence'
 import { usePesananSelesai } from './lib/usePesananSelesai'
 import LoginPage from './pages/LoginPage.jsx'
@@ -48,6 +48,12 @@ function AppIsi() {
       where: permintaan.where,
     })
     await tandaiSelesai({ tanggal, tarif: TARIF_PER_RIDE })
+    kirimNotifikasi(
+      'penumpang',
+      'Perjalanan Selesai! 🎉',
+      `${permintaan.aksi === 'jemput' ? 'Jemput' : 'Antar'} · ${permintaan.where}`,
+      'selesai'
+    )
     await selesai()
   }
 
