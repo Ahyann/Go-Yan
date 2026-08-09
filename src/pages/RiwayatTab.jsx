@@ -16,8 +16,6 @@ export default function RiwayatTab({ riwayat, idBaru }) {
       const [tahun, bulan] = r.tanggal.split('-').map(Number)
       return bulan - 1 === bulanAktif && tahun === tahunAktif
     })
-    // Urutan: tanggal TERBARU di atas (makin lama makin ke bawah).
-    // Kalau tanggalnya sama, Antar duluan baru Jemput.
     .sort((a, b) => {
       if (a.tanggal !== b.tanggal) return b.tanggal.localeCompare(a.tanggal)
       if (a.aksi !== b.aksi) return a.aksi === 'antar' ? -1 : 1
