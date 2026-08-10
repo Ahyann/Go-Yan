@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { STATUS_BAYAR, formatRupiah } from '../lib/constants'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import MonthPickerPopup from '../components/MonthPickerPopup.jsx'
@@ -23,8 +23,6 @@ export default function OjekRiwayatTab({ riwayat, onTandaiLunas, onHapusRiwayat 
       return 0
     })
 
-  const [modeSudahDiterima, setModeSudahDiterima] = useState('total')
-
   const belumBayar = riwayat.filter((r) => r.statusBayar === STATUS_BAYAR.BELUM)
   const totalBelumBayar = belumBayar.reduce((jumlah, r) => jumlah + r.tarif, 0)
 
@@ -33,9 +31,6 @@ export default function OjekRiwayatTab({ riwayat, onTandaiLunas, onHapusRiwayat 
 
   const sudahBayarBulanIni = riwayatBulanIni.filter((r) => r.statusBayar === STATUS_BAYAR.LUNAS)
   const totalSudahDiterimaBulanIni = sudahBayarBulanIni.reduce((jumlah, r) => jumlah + r.tarif, 0)
-
-  const angkaSudahDitampilkan = modeSudahDiterima === 'bulanan' ? totalSudahDiterimaBulanIni : totalSudahDiterima
-  const jumlahSudahDitampilkan = modeSudahDiterima === 'bulanan' ? sudahBayarBulanIni.length : sudahBayar.length
 
   function handlePilihBulan(bulan, tahun) {
     setBulanAktif(bulan)
@@ -62,17 +57,14 @@ export default function OjekRiwayatTab({ riwayat, onTandaiLunas, onHapusRiwayat 
           <div style={s.tagihanSub}>{belumBayar.length} {t.satuanPerjalanan}</div>
         </section>
 
-        <section style={{ ...s.cardBiru, position: 'relative' }}>
-          <button
-            style={s.toggleModeBtn}
-            onClick={() => setModeSudahDiterima((m) => (m === 'total' ? 'bulanan' : 'total'))}
-          >
-            {modeSudahDiterima === 'total' ? t.lihatPerBulan : t.lihatTotal}
-          </button>
-          <div style={s.tagihanLabel}>{t.sudahDiterima}</div>
-          <div style={s.angkaSudah}>{formatRupiah(angkaSudahDitampilkan)}</div>
-          <div style={s.tagihanSub}>{jumlahSudahDitampilkan} {t.satuanPerjalanan}</div>
-        </section>
+        <SudahDiterimaCarousel
+          totalSemua={totalSudahDiterima}
+          jumlahSemua={sudahBayar.length}
+          totalBulanIni={totalSudahDiterimaBulanIni}
+          jumlahBulanIni={sudahBayarBulanIni.length}
+          labelBulan={t.namaBulanPendek[bulanAktif]}
+          t={t}
+        />
       </div>
 
       <div style={s.list}>
@@ -116,6 +108,44 @@ export default function OjekRiwayatTab({ riwayat, onTandaiLunas, onHapusRiwayat 
   )
 }
 
+function SudahDiterimaCarousel({ totalSemua, jumlahSemua, totalBulanIni, jumlahBulanIni, labelBulan, t }) {
+  const scrollRef = useRef(null)
+  const [halaman, setHalaman] = useState(0)
+
+  function handleScroll() {
+    const el = scrollRef.current
+    if (!el) return
+    const posisi = Math.round(el.scrollLeft / el.clientWidth)
+    setHalaman(posisi)
+  }
+
+  return (
+    <div style={s.cardBiruScroll}>
+      <div
+        ref={scrollRef}
+        className="no-scrollbar"
+        style={s.scrollInner}
+        onScroll={handleScroll}
+      >
+        <div style={s.scrollPage}>
+          <div style={s.tagihanLabel}>{t.sudahDiterima}</div>
+          <div style={s.angkaSudah}>{formatRupiah(totalSemua)}</div>
+          <div style={s.tagihanSub}>{jumlahSemua} {t.satuanPerjalanan}</div>
+        </div>
+        <div style={s.scrollPage}>
+          <div style={s.tagihanLabel}>{t.sudahDiterima} {labelBulan}</div>
+          <div style={s.angkaSudah}>{formatRupiah(totalBulanIni)}</div>
+          <div style={s.tagihanSub}>{jumlahBulanIni} {t.satuanPerjalanan}</div>
+        </div>
+      </div>
+      <div style={s.dotsRow}>
+        <span style={halaman === 0 ? s.dotAktif : s.dot} />
+        <span style={halaman === 1 ? s.dotAktif : s.dot} />
+      </div>
+    </div>
+  )
+}
+
 const s = {
   wrap: {
     minHeight: '100%',
@@ -151,18 +181,44 @@ const s = {
     padding: 16,
   },
   tagihanLabel: { fontSize: 12.5, color: '#9FC3E8', marginBottom: 6 },
-  toggleModeBtn: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    fontSize: 9,
-    fontWeight: 600,
-    color: 'var(--glow-blue)',
-    background: 'rgba(94,208,255,0.15)',
-    border: '1px solid var(--glow-blue-mid)',
-    borderRadius: 999,
-    padding: '3px 7px',
-    lineHeight: 1.2,
+  cardBiruScroll: {
+    flex: 1,
+    background: `linear-gradient(160deg, var(--card-blue-grad-a), var(--card-blue-grad-b))`,
+    border: '1px solid var(--blue-border)',
+    borderRadius: 12,
+    overflow: 'hidden',
+  },
+  scrollInner: {
+    display: 'flex',
+    overflowX: 'auto',
+    scrollSnapType: 'x mandatory',
+    WebkitOverflowScrolling: 'touch',
+  },
+  scrollPage: {
+    minWidth: '100%',
+    flexShrink: 0,
+    scrollSnapAlign: 'start',
+    padding: 16,
+    boxSizing: 'border-box',
+  },
+  dotsRow: {
+    display: 'flex',
+    justifyContent: 'center',
+    gap: 5,
+    paddingBottom: 10,
+  },
+  dot: {
+    width: 5,
+    height: 5,
+    borderRadius: '50%',
+    background: 'rgba(255,255,255,0.25)',
+  },
+  dotAktif: {
+    width: 5,
+    height: 5,
+    borderRadius: '50%',
+    background: 'var(--glow-blue)',
+    boxShadow: '0 0 4px var(--glow-blue-mid)',
   },
   angkaBelum: {
     fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 19,
