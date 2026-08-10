@@ -120,7 +120,11 @@ const s = {
     gap: 20,
   },
   header: { flexShrink: 0 },
-  eyebrow: { fontSize: 11, letterSpacing: '0.12em', color: 'var(--text-dim)', marginBottom: 4 },
+  eyebrow: {
+    fontSize: 11, letterSpacing: '0.12em', color: 'var(--glow-blue)', marginBottom: 4,
+    textShadow: '0 0 6px var(--glow-blue-mid)',
+    fontWeight: 700,
+  },
   title: {
     fontFamily: 'var(--font-judul)',
     fontSize: 26,
