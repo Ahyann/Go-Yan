@@ -86,6 +86,7 @@ export default function PetaLokasiPenumpang({
   const pesanTampilRef = useRef(null)
   const [teksBubble, setTeksBubble] = useState('')
   const [teksBubbleSaya, setTeksBubbleSaya] = useState('')
+  const [pesanSayaTrigger, setPesanSayaTrigger] = useState(null)
   const pesanSayaTampilRef = useRef(null)
   const [markerSayaSiap, setMarkerSayaSiap] = useState(false)
 
@@ -101,16 +102,20 @@ export default function PetaLokasiPenumpang({
     if (pesanSaya) {
       pesanSayaTampilRef.current = pesanSaya
       setTeksBubbleSaya(pesanSaya.teks)
+      setPesanSayaTrigger(pesanSaya.dibuatPada)
     } else {
       markerSayaRef.current?.closePopup()
     }
   }, [pesanSaya])
 
   useEffect(() => {
-    if (teksBubbleSaya && markerSayaRef.current) {
-      markerSayaRef.current.openPopup()
+    if (pesanSayaTrigger && markerSayaRef.current) {
+      const id = setTimeout(() => {
+        markerSayaRef.current?.openPopup()
+      }, 0)
+      return () => clearTimeout(id)
     }
-  }, [teksBubbleSaya, markerSayaSiap])
+  }, [pesanSayaTrigger, markerSayaSiap])
 
   const ukuranFont = teksBubble.length > 16 ? 7 : 9
 
