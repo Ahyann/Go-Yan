@@ -61,14 +61,15 @@ function AppIsi() {
     return (
       <div style={s.loading}>
         <div style={s.loadingEyebrow}>GO-YAN</div>
-        <svg className="app-loading-ring" width="40" height="40" viewBox="0 0 40 40" fill="none">
-          <circle cx="20" cy="20" r="16" stroke="rgba(94,208,255,0.15)" strokeWidth="4" />
-          <circle
-            cx="20" cy="20" r="16"
-            stroke="var(--glow-blue)" strokeWidth="4" strokeLinecap="round"
-            strokeDasharray="100" strokeDashoffset="72"
-          />
-        </svg>
+        <div style={s.eqRow}>
+          {[0, 1, 2, 3, 4, 5, 6].map((i) => (
+            <span
+              key={i}
+              className="eq-bar"
+              style={{ ...s.eqBar, animationDelay: `${(i % 4) * 0.12}s` }}
+            />
+          ))}
+        </div>
       </div>
     )
   }
@@ -137,6 +138,19 @@ const s = {
     letterSpacing: '1px',
     color: 'var(--glow-blue)',
     textShadow: '0 0 8px var(--glow-blue-mid)',
+  },
+  eqRow: {
+    display: 'flex',
+    alignItems: 'flex-end',
+    gap: 5,
+    height: 26,
+  },
+  eqBar: {
+    width: 6,
+    height: 26,
+    borderRadius: 3,
+    background: 'var(--glow-blue)',
+    boxShadow: '0 0 6px var(--glow-blue-mid)',
   },
   uidDebug: {
     fontSize: 12,

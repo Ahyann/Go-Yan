@@ -139,3 +139,12 @@ button {
 .app-loading-ring {
   animation: app-loading-spin 0.9s linear infinite;
 }
+
+@keyframes eq-bar {
+  0%, 100% { transform: scaleY(0.35); }
+  50% { transform: scaleY(1); }
+}
+.eq-bar {
+  transform-origin: bottom;
+  animation: eq-bar 0.55s ease-in-out infinite;
+}
