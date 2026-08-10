@@ -148,3 +148,12 @@ button {
   transform-origin: bottom;
   animation: eq-bar 0.55s ease-in-out infinite;
 }
+
+@keyframes spider-swing {
+  0%, 100% { transform: rotate(-10deg); }
+  50% { transform: rotate(10deg); }
+}
+.spider-swing {
+  transform-origin: top center;
+  animation: spider-swing 1.3s ease-in-out infinite;
+}

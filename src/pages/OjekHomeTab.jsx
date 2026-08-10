@@ -69,14 +69,17 @@ export default function OjekHomeTab({
 
         {adaPermintaanMasuk && (
           <div style={s.bawahCard}>
-            <div style={s.misiBaruLabel}>
-              <svg className="spider-loading" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--glow-blue)" strokeWidth="1.8" strokeLinecap="round" style={{ flexShrink: 0 }}>
-                <circle cx="12" cy="10" r="2.6" />
-                <circle cx="12" cy="15" r="3.4" />
-                <path d="M9.5 8 L5 5.5 M9.5 9.2 L4 9.2 M9.5 10.8 L5 12.8 M9.5 12.5 L5.5 15" />
-                <path d="M14.5 8 L19 5.5 M14.5 9.2 L20 9.2 M14.5 10.8 L19 12.8 M14.5 12.5 L18.5 15" />
-              </svg>
-              {t.misiBaru}
+            <div style={s.misiBaruRow}>
+              <div style={s.spiderDangle}>
+                <div style={s.webThread} />
+                <svg className="spider-swing" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--glow-blue)" strokeWidth="1.7" strokeLinecap="round" style={{ filter: 'drop-shadow(0 0 4px var(--glow-blue-mid))' }}>
+                  <circle cx="12" cy="9.5" r="2.6" />
+                  <circle cx="12" cy="15" r="3.6" />
+                  <path d="M9 7.5 L4.5 5 M9 8.8 L3.5 8.8 M9 10.5 L4.5 12.5 M9 12.5 L5 15.5" />
+                  <path d="M15 7.5 L19.5 5 M15 8.8 L20.5 8.8 M15 10.5 L19.5 12.5 M15 12.5 L19 15.5" />
+                </svg>
+              </div>
+              <div style={s.misiBaruLabel}>{t.misiBaru}</div>
             </div>
             <div style={s.permintaanAksi}>
               {permintaan.aksi === AKSI.JEMPUT ? t.jemput : t.antar} · {permintaan.waktu}
@@ -175,15 +178,32 @@ const s = {
   },
 
   permintaanLabel: { fontSize: 13, color: '#9FC3E8' },
+  misiBaruRow: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 10,
+  },
+  spiderDangle: {
+    position: 'relative',
+    width: 30,
+    height: 30,
+    flexShrink: 0,
+  },
+  webThread: {
+    position: 'absolute',
+    top: -14,
+    left: '50%',
+    transform: 'translateX(-50%)',
+    width: 1,
+    height: 14,
+    background: 'linear-gradient(to bottom, transparent, var(--glow-blue-mid))',
+  },
   misiBaruLabel: {
     fontFamily: 'var(--font-judul)',
     fontSize: 15,
     letterSpacing: '1px',
     color: 'var(--glow-blue)',
     textShadow: '0 0 8px var(--glow-blue-mid)',
-    display: 'flex',
-    alignItems: 'center',
-    gap: 8,
   },
   permintaanAksi: {
     fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 20,
