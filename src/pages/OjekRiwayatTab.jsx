@@ -23,7 +23,7 @@ export default function OjekRiwayatTab({ riwayat, onTandaiLunas, onHapusRiwayat 
       return 0
     })
 
-  const [modeSudahDiterima, setModeSudahDiterima] = useState('total') // 'total' | 'bulanan'
+  const [modeSudahDiterima, setModeSudahDiterima] = useState('total')
 
   const belumBayar = riwayat.filter((r) => r.statusBayar === STATUS_BAYAR.BELUM)
   const totalBelumBayar = belumBayar.reduce((jumlah, r) => jumlah + r.tarif, 0)
@@ -62,20 +62,14 @@ export default function OjekRiwayatTab({ riwayat, onTandaiLunas, onHapusRiwayat 
           <div style={s.tagihanSub}>{belumBayar.length} {t.satuanPerjalanan}</div>
         </section>
 
-        <section style={s.cardBiru}>
-          <div style={s.tagihanLabelRow}>
-            <div style={s.tagihanLabel}>
-              {modeSudahDiterima === 'bulanan'
-                ? `${t.sudahDiterima} ${t.namaBulanPendek[bulanAktif]}`
-                : t.sudahDiterima}
-            </div>
-            <button
-              style={s.toggleModeBtn}
-              onClick={() => setModeSudahDiterima((m) => (m === 'total' ? 'bulanan' : 'total'))}
-            >
-              {modeSudahDiterima === 'total' ? t.lihatPerBulan : t.lihatTotal}
-            </button>
-          </div>
+        <section style={{ ...s.cardBiru, position: 'relative' }}>
+          <button
+            style={s.toggleModeBtn}
+            onClick={() => setModeSudahDiterima((m) => (m === 'total' ? 'bulanan' : 'total'))}
+          >
+            {modeSudahDiterima === 'total' ? t.lihatPerBulan : t.lihatTotal}
+          </button>
+          <div style={s.tagihanLabel}>{t.sudahDiterima}</div>
           <div style={s.angkaSudah}>{formatRupiah(angkaSudahDitampilkan)}</div>
           <div style={s.tagihanSub}>{jumlahSudahDitampilkan} {t.satuanPerjalanan}</div>
         </section>
@@ -157,21 +151,18 @@ const s = {
     padding: 16,
   },
   tagihanLabel: { fontSize: 12.5, color: '#9FC3E8', marginBottom: 6 },
-  tagihanLabelRow: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 6,
-  },
   toggleModeBtn: {
-    fontSize: 10,
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    fontSize: 9,
     fontWeight: 600,
     color: 'var(--glow-blue)',
-    background: 'rgba(94,208,255,0.12)',
+    background: 'rgba(94,208,255,0.15)',
     border: '1px solid var(--glow-blue-mid)',
     borderRadius: 999,
-    padding: '3px 8px',
-    flexShrink: 0,
+    padding: '3px 7px',
+    lineHeight: 1.2,
   },
   angkaBelum: {
     fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 19,
