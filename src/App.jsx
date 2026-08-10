@@ -12,6 +12,14 @@ import OjekView from './pages/OjekView.jsx'
 import PenumpangView from './pages/PenumpangView.jsx'
 import { ROLE, TARIF_PER_RIDE, STATUS_BAYAR } from './lib/constants'
 
+function tanggalLokalHariIni() {
+  const d = new Date()
+  const tahun = d.getFullYear()
+  const bulan = String(d.getMonth() + 1).padStart(2, '0')
+  const tanggal = String(d.getDate()).padStart(2, '0')
+  return `${tahun}-${bulan}-${tanggal}`
+}
+
 export default function App() {
   return (
     <AuthProvider>
@@ -38,7 +46,7 @@ function AppIsi() {
 
   async function selesaikanRide() {
     if (!permintaan) return
-    const tanggal = new Date().toISOString().slice(0, 10)
+    const tanggal = tanggalLokalHariIni()
     await tambahRiwayat({
       tanggal,
       jam: new Date().toTimeString().slice(0, 5),
