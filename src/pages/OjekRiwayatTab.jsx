@@ -23,11 +23,19 @@ export default function OjekRiwayatTab({ riwayat, onTandaiLunas, onHapusRiwayat 
       return 0
     })
 
+  const [modeSudahDiterima, setModeSudahDiterima] = useState('total') // 'total' | 'bulanan'
+
   const belumBayar = riwayat.filter((r) => r.statusBayar === STATUS_BAYAR.BELUM)
   const totalBelumBayar = belumBayar.reduce((jumlah, r) => jumlah + r.tarif, 0)
 
   const sudahBayar = riwayat.filter((r) => r.statusBayar === STATUS_BAYAR.LUNAS)
   const totalSudahDiterima = sudahBayar.reduce((jumlah, r) => jumlah + r.tarif, 0)
+
+  const sudahBayarBulanIni = riwayatBulanIni.filter((r) => r.statusBayar === STATUS_BAYAR.LUNAS)
+  const totalSudahDiterimaBulanIni = sudahBayarBulanIni.reduce((jumlah, r) => jumlah + r.tarif, 0)
+
+  const angkaSudahDitampilkan = modeSudahDiterima === 'bulanan' ? totalSudahDiterimaBulanIni : totalSudahDiterima
+  const jumlahSudahDitampilkan = modeSudahDiterima === 'bulanan' ? sudahBayarBulanIni.length : sudahBayar.length
 
   function handlePilihBulan(bulan, tahun) {
     setBulanAktif(bulan)
@@ -55,9 +63,21 @@ export default function OjekRiwayatTab({ riwayat, onTandaiLunas, onHapusRiwayat 
         </section>
 
         <section style={s.cardBiru}>
-          <div style={s.tagihanLabel}>{t.sudahDiterima}</div>
-          <div style={s.angkaSudah}>{formatRupiah(totalSudahDiterima)}</div>
-          <div style={s.tagihanSub}>{sudahBayar.length} {t.satuanPerjalanan}</div>
+          <div style={s.tagihanLabelRow}>
+            <div style={s.tagihanLabel}>
+              {modeSudahDiterima === 'bulanan'
+                ? `${t.sudahDiterima} ${t.namaBulanPendek[bulanAktif]}`
+                : t.sudahDiterima}
+            </div>
+            <button
+              style={s.toggleModeBtn}
+              onClick={() => setModeSudahDiterima((m) => (m === 'total' ? 'bulanan' : 'total'))}
+            >
+              {modeSudahDiterima === 'total' ? t.lihatPerBulan : t.lihatTotal}
+            </button>
+          </div>
+          <div style={s.angkaSudah}>{formatRupiah(angkaSudahDitampilkan)}</div>
+          <div style={s.tagihanSub}>{jumlahSudahDitampilkan} {t.satuanPerjalanan}</div>
         </section>
       </div>
 
@@ -137,6 +157,22 @@ const s = {
     padding: 16,
   },
   tagihanLabel: { fontSize: 12.5, color: '#9FC3E8', marginBottom: 6 },
+  tagihanLabelRow: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 6,
+  },
+  toggleModeBtn: {
+    fontSize: 10,
+    fontWeight: 600,
+    color: 'var(--glow-blue)',
+    background: 'rgba(94,208,255,0.12)',
+    border: '1px solid var(--glow-blue-mid)',
+    borderRadius: 999,
+    padding: '3px 8px',
+    flexShrink: 0,
+  },
   angkaBelum: {
     fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 19,
     color: 'var(--web-red)', textShadow: '0 0 6px rgba(226,54,54,0.5)',
