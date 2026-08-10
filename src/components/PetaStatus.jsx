@@ -30,9 +30,6 @@ const ikonOjek = L.divIcon({
   popupAnchor: [42, 3],
 })
 
-// Icon Fajri (diri sendiri di sini) — ukuran lebih kecil (posisi
-// "self", bukan yang lagi di-track), tapi tetep senada proporsinya
-// (60:92) sama versi yang lebih gede.
 const ikonSaya = L.divIcon({
   className: '',
   html: `<div style="isolation: isolate;">
@@ -47,8 +44,6 @@ const ikonSaya = L.divIcon({
   popupAnchor: [44, -13],
 })
 
-// Proporsi asli gambar office ternyata gedung TINGGI (rasio ~0.667,
-// bukan hampir kotak) — file lama yang salah, ini yang bener.
 const ikonOffice = L.divIcon({
   className: '',
   html: `<div style="isolation: isolate;">
@@ -96,13 +91,6 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
   const lokasiSaya = useLokasiPenumpang()
   const { pesan, hapusPesan } = usePesanOjek()
   const { pesan: pesanSaya, hapusPesan: hapusPesanSaya } = usePesanPenumpang()
-  // adaPosisiOjek: ada data posisi Ahyan yang bisa ditampilin di peta
-  // (walau dia lagi gak live — misal abis nutup app, posisi terakhir
-  // tetep keliatan). lagiLive: khusus buat teks/badge "OTWWW!!" doang.
-  // Guard ekstra: cuma dianggap "ada posisi" kalau lat/lng-nya BENERAN
-  // ada — jaga-jaga kalau ada data lama yang kadung rusak (cuma field
-  // aktif doang, tanpa koordinat), biar gak nyoba render marker dari
-  // koordinat kosong (itu yang bikin peta crash).
   const posisiValid = lokasiOjek?.lat != null && lokasiOjek?.lng != null
   const posisiSayaValid = lokasiSaya?.lat != null && lokasiSaya?.lng != null
   const adaPosisiOjek = posisiValid && permintaan?.status === STATUS_PERMINTAAN.DITERIMA
@@ -126,15 +114,19 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
   }, [pesan, adaPosisiOjek])
 
   useEffect(() => {
-    if (!markerSayaRef.current) return
     if (pesanSaya) {
       pesanSayaTampilRef.current = pesanSaya
       setTeksBubbleSaya(pesanSaya.teks)
-      markerSayaRef.current.openPopup()
     } else {
-      markerSayaRef.current.closePopup()
+      markerSayaRef.current?.closePopup()
     }
-  }, [pesanSaya, markerSayaSiap])
+  }, [pesanSaya])
+
+  useEffect(() => {
+    if (teksBubbleSaya && markerSayaRef.current) {
+      markerSayaRef.current.openPopup()
+    }
+  }, [teksBubbleSaya, markerSayaSiap])
 
   const ukuranFont = teksBubble.length > 16 ? 7 : 9
 

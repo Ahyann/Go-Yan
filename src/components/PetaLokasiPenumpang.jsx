@@ -21,7 +21,7 @@ const ikonPenumpang = L.divIcon({
   </div>`,
   iconSize: [21, 32],
   iconAnchor: [11, 32],
-  popupAnchor: [42, -2],
+  popupAnchor: [49, -14],
 })
 
 const ikonSaya = L.divIcon({
@@ -35,11 +35,9 @@ const ikonSaya = L.divIcon({
   </div>`,
   iconSize: [24, 24],
   iconAnchor: [12, 12],
-  popupAnchor: [42, 8],
+  popupAnchor: [42, -8],
 })
 
-// Proporsi asli gambar office ternyata gedung TINGGI (rasio ~0.667,
-// bukan hampir kotak) — file lama yang salah, ini yang bener.
 const ikonOffice = L.divIcon({
   className: '',
   html: `<div style="isolation: isolate;">
@@ -74,8 +72,6 @@ export default function PetaLokasiPenumpang({
 }) {
   const { t } = useLanguage()
   const teksKosongFinal = teksKosong ?? t.fajriBelumShare
-  // Guard ekstra: cuma dianggap "ada posisi" kalau lat/lng-nya BENERAN
-  // ada, bukan cuma object kosong dengan field aktif doang.
   const posisiValid = lokasi?.lat != null && lokasi?.lng != null
   const lokasiSaya = useLokasiOjek()
   const posisiSayaValid = lokasiSaya?.lat != null && lokasiSaya?.lng != null
@@ -102,19 +98,19 @@ export default function PetaLokasiPenumpang({
   }, [pesan, lokasi])
 
   useEffect(() => {
-    if (!markerSayaRef.current) return
     if (pesanSaya) {
       pesanSayaTampilRef.current = pesanSaya
       setTeksBubbleSaya(pesanSaya.teks)
-      markerSayaRef.current.openPopup()
     } else {
-      markerSayaRef.current.closePopup()
+      markerSayaRef.current?.closePopup()
     }
-    // markerSayaSiap sengaja ikut jadi dependency — biar begitu
-    // marker-nya BARU SIAP (misal pas pesan pertama kali dateng
-    // duluan sebelum marker sempet ke-render), efek ini otomatis
-    // dicoba ULANG, bukan diem aja gara-gara kepocong duluan.
-  }, [pesanSaya, markerSayaSiap])
+  }, [pesanSaya])
+
+  useEffect(() => {
+    if (teksBubbleSaya && markerSayaRef.current) {
+      markerSayaRef.current.openPopup()
+    }
+  }, [teksBubbleSaya, markerSayaSiap])
 
   const ukuranFont = teksBubble.length > 16 ? 7 : 9
 
