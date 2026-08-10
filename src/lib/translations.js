@@ -11,7 +11,7 @@ export const translations = {
     liveLocationAktif: 'Live location aktif',
 
     // --- OjekHomeTab ---
-    ojekEyebrow: 'OJEK',
+    ojekEyebrow: 'GO-YAN',
     ojekHalo: 'Halo, Ahyan',
     permintaanBaru: 'Permintaan baru dari Fajri',
     jemput: 'Jemput',
@@ -142,7 +142,7 @@ export const translations = {
     liveLocationAktif: 'Live location active',
 
     // --- OjekHomeTab ---
-    ojekEyebrow: 'DRIVER',
+    ojekEyebrow: 'GO-YAN',
     ojekHalo: 'Hi, Ahyan',
     permintaanBaru: 'New request from Fajri',
     jemput: 'Pickup',
