@@ -69,14 +69,14 @@ export default function OjekHomeTab({
 
         {adaPermintaanMasuk && (
           <div style={s.bawahCard}>
-            <div style={s.permintaanLabel}>{t.permintaanBaru}</div>
+            <div style={s.misiBaruLabel}>⚡ {t.misiBaru}</div>
             <div style={s.permintaanAksi}>
               {permintaan.aksi === AKSI.JEMPUT ? t.jemput : t.antar} · {permintaan.waktu}
             </div>
             <div style={s.permintaanWhere}>{permintaan.where}</div>
             <div style={s.tombolRow}>
-              <button style={s.tolakBtn} onClick={onTolak}>{t.tolak}</button>
-              <button style={s.terimaBtn} onClick={handleTerima}>{t.terima}</button>
+              <button style={s.tolakBtn} onClick={onTolak}>{t.batalMisi}</button>
+              <button style={s.terimaBtn} onClick={handleTerima}>{t.mulaiMisi}</button>
             </div>
           </div>
         )}
@@ -167,6 +167,13 @@ const s = {
   },
 
   permintaanLabel: { fontSize: 13, color: '#9FC3E8' },
+  misiBaruLabel: {
+    fontFamily: 'var(--font-judul)',
+    fontSize: 15,
+    letterSpacing: '1px',
+    color: '#FFD84D',
+    textShadow: '0 0 8px rgba(255,216,77,0.7)',
+  },
   permintaanAksi: {
     fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 20,
     color: 'var(--warn)', textShadow: '0 0 6px rgba(251,191,36,0.5)',

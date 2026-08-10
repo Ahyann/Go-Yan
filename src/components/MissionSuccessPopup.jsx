@@ -36,15 +36,6 @@ export default function MissionSuccessPopup({ onDismiss }) {
         style={{ ...s.card, ...(tampil ? s.cardTampil : s.cardSembunyi) }}
         onClick={(e) => e.stopPropagation()}
       >
-        <svg style={s.webCorner} width="80" height="80" viewBox="0 0 80 80" fill="none">
-          <path
-            d="M0 0 L80 34 M0 0 L58 68 M0 0 L24 80 M0 0 L0 80"
-            stroke="rgba(94,208,255,0.3)" strokeWidth="1.4"
-          />
-          <path d="M9 5 Q22 22 9 40" stroke="rgba(94,208,255,0.3)" strokeWidth="1.4" fill="none" />
-          <path d="M20 3 Q40 28 17 58" stroke="rgba(94,208,255,0.2)" strokeWidth="1.4" fill="none" />
-        </svg>
-
         <div style={s.checkWrap}>
           <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--signal)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="12" r="10" />
@@ -91,12 +82,6 @@ const s = {
   cardTampil: {
     transform: 'translateY(0) scale(1)',
     opacity: 1,
-  },
-  webCorner: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    pointerEvents: 'none',
   },
   checkWrap: {
     width: 58,
