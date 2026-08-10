@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { STATUS_BAYAR, formatRupiah } from '../lib/constants'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import MonthPickerPopup from '../components/MonthPickerPopup.jsx'
@@ -26,6 +26,7 @@ export default function RiwayatTab({ riwayat }) {
   const totalBelumBayar = belumBayar.reduce((jumlah, r) => jumlah + r.tarif, 0)
 
   const totalBulanIni = riwayatTerfilter.reduce((jumlah, r) => jumlah + r.tarif, 0)
+  const totalSemua = riwayat.reduce((jumlah, r) => jumlah + r.tarif, 0)
 
   function handlePilihBulan(bulan, tahun) {
     setBulanAktif(bulan)
@@ -46,17 +47,26 @@ export default function RiwayatTab({ riwayat }) {
       </div>
 
       <div style={s.ringkasanRow}>
-        <section style={s.cardBiru}>
-          <div style={s.tagihanLabel}>{t.belumDitransfer}</div>
-          <div style={s.angkaBelum}>{formatRupiah(totalBelumBayar)}</div>
-          <div style={s.tagihanSub}>{belumBayar.length} {t.satuanPerjalanan}</div>
+        <section style={s.cardBiruScroll}>
+          <div style={s.scrollPage}>
+            <div style={s.tagihanLabel}>{t.belumDitransfer}</div>
+            <div style={s.angkaBelum}>{formatRupiah(totalBelumBayar)}</div>
+            <div style={s.tagihanSub}>{belumBayar.length} {t.satuanPerjalanan}</div>
+          </div>
+          <div style={{ ...s.dotsRow, visibility: 'hidden' }}>
+            <span style={s.dot} />
+            <span style={s.dot} />
+          </div>
         </section>
 
-        <section style={s.cardBiru}>
-          <div style={s.tagihanLabel}>{t.totalSpend} {t.namaBulanPanjang[bulanAktif]}</div>
-          <div style={s.angkaTotal}>{formatRupiah(totalBulanIni)}</div>
-          <div style={s.tagihanSub}>{riwayatTerfilter.length} {t.satuanPerjalanan}</div>
-        </section>
+        <TotalSpendCarousel
+          totalSemua={totalSemua}
+          jumlahSemua={riwayat.length}
+          totalBulanIni={totalBulanIni}
+          jumlahBulanIni={riwayatTerfilter.length}
+          labelBulan={t.namaBulanPendek[bulanAktif]}
+          t={t}
+        />
       </div>
 
       <section>
@@ -97,6 +107,44 @@ export default function RiwayatTab({ riwayat }) {
   )
 }
 
+function TotalSpendCarousel({ totalSemua, jumlahSemua, totalBulanIni, jumlahBulanIni, labelBulan, t }) {
+  const scrollRef = useRef(null)
+  const [halaman, setHalaman] = useState(0)
+
+  function handleScroll() {
+    const el = scrollRef.current
+    if (!el) return
+    const posisi = Math.round(el.scrollLeft / el.clientWidth)
+    setHalaman(posisi)
+  }
+
+  return (
+    <div style={s.cardBiruScroll}>
+      <div
+        ref={scrollRef}
+        className="no-scrollbar"
+        style={s.scrollInner}
+        onScroll={handleScroll}
+      >
+        <div style={s.scrollPage}>
+          <div style={s.tagihanLabel}>{t.totalSpend}</div>
+          <div style={s.angkaTotal}>{formatRupiah(totalSemua)}</div>
+          <div style={s.tagihanSub}>{jumlahSemua} {t.satuanPerjalanan}</div>
+        </div>
+        <div style={s.scrollPage}>
+          <div style={s.tagihanLabel}>{t.totalSpend} {labelBulan}</div>
+          <div style={s.angkaTotal}>{formatRupiah(totalBulanIni)}</div>
+          <div style={s.tagihanSub}>{jumlahBulanIni} {t.satuanPerjalanan}</div>
+        </div>
+      </div>
+      <div style={s.dotsRow}>
+        <span style={halaman === 0 ? s.dotAktif : s.dot} />
+        <span style={halaman === 1 ? s.dotAktif : s.dot} />
+      </div>
+    </div>
+  )
+}
+
 const s = {
   wrap: {
     minHeight: '100%',
@@ -124,12 +172,44 @@ const s = {
     borderRadius: 999, padding: '6px 12px',
   },
   ringkasanRow: { display: 'flex', gap: 10 },
-  cardBiru: {
+  cardBiruScroll: {
     flex: 1,
     background: `linear-gradient(160deg, var(--card-blue-grad-a), var(--card-blue-grad-b))`,
     border: '1px solid var(--blue-border)',
     borderRadius: 12,
+    overflow: 'hidden',
+  },
+  scrollInner: {
+    display: 'flex',
+    overflowX: 'auto',
+    scrollSnapType: 'x mandatory',
+    WebkitOverflowScrolling: 'touch',
+  },
+  scrollPage: {
+    minWidth: '100%',
+    flexShrink: 0,
+    scrollSnapAlign: 'start',
     padding: 16,
+    boxSizing: 'border-box',
+  },
+  dotsRow: {
+    display: 'flex',
+    justifyContent: 'center',
+    gap: 5,
+    paddingBottom: 10,
+  },
+  dot: {
+    width: 5,
+    height: 5,
+    borderRadius: '50%',
+    background: 'rgba(255,255,255,0.25)',
+  },
+  dotAktif: {
+    width: 5,
+    height: 5,
+    borderRadius: '50%',
+    background: 'var(--glow-blue)',
+    boxShadow: '0 0 4px var(--glow-blue-mid)',
   },
   tagihanLabel: { fontSize: 12.5, color: '#9FC3E8', marginBottom: 6 },
   angkaBelum: {
