@@ -58,7 +58,19 @@ function AppIsi() {
   }
 
   if (user === undefined) {
-    return <div style={s.loading}>Memuat…</div>
+    return (
+      <div style={s.loading}>
+        <div style={s.loadingEyebrow}>GO-YAN</div>
+        <svg className="app-loading-ring" width="40" height="40" viewBox="0 0 40 40" fill="none">
+          <circle cx="20" cy="20" r="16" stroke="rgba(94,208,255,0.15)" strokeWidth="4" />
+          <circle
+            cx="20" cy="20" r="16"
+            stroke="var(--glow-blue)" strokeWidth="4" strokeLinecap="round"
+            strokeDasharray="100" strokeDashoffset="72"
+          />
+        </svg>
+      </div>
+    )
   }
 
   if (!user) {
@@ -118,6 +130,13 @@ const s = {
     fontSize: 14,
     padding: 24,
     textAlign: 'center',
+  },
+  loadingEyebrow: {
+    fontFamily: 'var(--font-judul)',
+    fontSize: 20,
+    letterSpacing: '1px',
+    color: 'var(--glow-blue)',
+    textShadow: '0 0 8px var(--glow-blue-mid)',
   },
   uidDebug: {
     fontSize: 12,

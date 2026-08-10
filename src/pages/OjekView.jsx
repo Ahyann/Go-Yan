@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useLokasiSaya } from '../lib/useLokasiSaya'
 import { usePesanPenumpang } from '../lib/usePesanPenumpang'
 import { playChatSound } from '../lib/sound'
+import { useReminderKeberangkatan } from '../lib/useReminderKeberangkatan'
 import OjekNav from '../components/OjekNav.jsx'
 import OjekHomeTab from './OjekHomeTab.jsx'
 import OjekJadwalTab from './OjekJadwalTab.jsx'
@@ -52,6 +53,8 @@ export default function OjekView({
     mulai: mulaiLokasi,
     berhenti: berhentiLokasi,
   } = useLokasiSaya()
+
+  useReminderKeberangkatan(permintaan)
 
   const { pesan: pesanMasuk } = usePesanPenumpang()
   const pesanTerakhirRef = useRef(undefined)
