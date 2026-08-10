@@ -228,7 +228,7 @@ export default function PetaLokasiPenumpang({
         >
           <Popup closeButton={false} autoClose={false} closeOnClick={false}>
             <div style={s.bubbleWrap}>
-              <span style={s.bubbleText}>{t.yourOffice}</span>
+              <span style={s.bubbleText}>{t.fajriOffice}</span>
             </div>
           </Popup>
         </Marker>

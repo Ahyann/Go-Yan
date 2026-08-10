@@ -129,6 +129,7 @@ export const translations = {
     selesaiOke: 'Oke',
     pesanPerluLive: 'Nyalain live location dulu buat bisa kirim pesan',
     yourOffice: 'Your Office',
+    fajriOffice: "Fajri's Office",
   },
   en: {
     // --- HomeTab (Penumpang) ---
@@ -260,5 +261,6 @@ export const translations = {
     selesaiOke: 'OK',
     pesanPerluLive: 'Turn on live location first to send a message',
     yourOffice: 'Your Office',
+    fajriOffice: "Fajri's Office",
   },
 }
