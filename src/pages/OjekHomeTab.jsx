@@ -182,7 +182,6 @@ const s = {
     display: 'flex',
     alignItems: 'center',
     gap: 10,
-    marginTop: 14,
   },
   spiderDangle: {
     position: 'relative',
@@ -192,11 +191,11 @@ const s = {
   },
   webThread: {
     position: 'absolute',
-    top: -26,
+    top: -18,
     left: '50%',
     transform: 'translateX(-50%)',
     width: 1,
-    height: 26,
+    height: 18,
     background: 'linear-gradient(to bottom, transparent, var(--glow-blue-mid))',
   },
   misiBaruLabel: {
