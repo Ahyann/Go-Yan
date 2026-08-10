@@ -195,7 +195,7 @@ const s = {
     left: '50%',
     transform: 'translateX(-50%)',
     width: 1,
-    height: 18,
+    height: 27,
     background: 'linear-gradient(to bottom, transparent, var(--glow-blue-mid))',
   },
   misiBaruLabel: {
