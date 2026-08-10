@@ -25,8 +25,11 @@ export default function RiwayatTab({ riwayat }) {
   const belumBayar = riwayat.filter((r) => r.statusBayar === STATUS_BAYAR.BELUM)
   const totalBelumBayar = belumBayar.reduce((jumlah, r) => jumlah + r.tarif, 0)
 
-  const totalBulanIni = riwayatTerfilter.reduce((jumlah, r) => jumlah + r.tarif, 0)
-  const totalSemua = riwayat.reduce((jumlah, r) => jumlah + r.tarif, 0)
+  const riwayatLunasBulanIni = riwayatTerfilter.filter((r) => r.statusBayar === STATUS_BAYAR.LUNAS)
+  const totalBulanIni = riwayatLunasBulanIni.reduce((jumlah, r) => jumlah + r.tarif, 0)
+
+  const riwayatLunasSemua = riwayat.filter((r) => r.statusBayar === STATUS_BAYAR.LUNAS)
+  const totalSemua = riwayatLunasSemua.reduce((jumlah, r) => jumlah + r.tarif, 0)
 
   function handlePilihBulan(bulan, tahun) {
     setBulanAktif(bulan)
@@ -61,9 +64,9 @@ export default function RiwayatTab({ riwayat }) {
 
         <TotalSpendCarousel
           totalSemua={totalSemua}
-          jumlahSemua={riwayat.length}
+          jumlahSemua={riwayatLunasSemua.length}
           totalBulanIni={totalBulanIni}
-          jumlahBulanIni={riwayatTerfilter.length}
+          jumlahBulanIni={riwayatLunasBulanIni.length}
           labelBulan={t.namaBulanPendek[bulanAktif]}
           t={t}
         />
