@@ -51,10 +51,16 @@ export default function OjekRiwayatTab({ riwayat, onTandaiLunas, onHapusRiwayat 
       </div>
 
       <div style={s.ringkasanRow}>
-        <section style={s.cardBiru}>
-          <div style={s.tagihanLabel}>{t.belumDitransfer}</div>
-          <div style={s.angkaBelum}>{formatRupiah(totalBelumBayar)}</div>
-          <div style={s.tagihanSub}>{belumBayar.length} {t.satuanPerjalanan}</div>
+        <section style={s.cardBiruScroll}>
+          <div style={s.scrollPage}>
+            <div style={s.tagihanLabel}>{t.belumDitransfer}</div>
+            <div style={s.angkaBelum}>{formatRupiah(totalBelumBayar)}</div>
+            <div style={s.tagihanSub}>{belumBayar.length} {t.satuanPerjalanan}</div>
+          </div>
+          <div style={{ ...s.dotsRow, visibility: 'hidden' }}>
+            <span style={s.dot} />
+            <span style={s.dot} />
+          </div>
         </section>
 
         <SudahDiterimaCarousel
