@@ -43,7 +43,6 @@ export default function PenumpangView({
   const [tabAktif, setTabAktif] = useState('home')
   const [showGo, setShowGo] = useState(false)
   const [adaChatBaru, setAdaChatBaru] = useState(false)
-  const [idRiwayatBaru, setIdRiwayatBaru] = useState(null)
   const [adaRiwayatBaru, setAdaRiwayatBaru] = useState(false)
   const tabAktifRef = useRef('home')
 
@@ -90,10 +89,9 @@ export default function PenumpangView({
       terakhirDilihatRef.current = tersimpan
     }
 
-    const itemBaru = riwayat.find((r) => (r.dibuatPada || 0) > terakhirDilihatRef.current)
-    if (itemBaru) {
-      setIdRiwayatBaru(itemBaru.id)
-      if (tabAktifRef.current !== 'riwayat') setAdaRiwayatBaru(true)
+    const adaYangBaru = riwayat.some((r) => (r.dibuatPada || 0) > terakhirDilihatRef.current)
+    if (adaYangBaru && tabAktifRef.current !== 'riwayat') {
+      setAdaRiwayatBaru(true)
     }
   }, [riwayat, riwayatSiap])
 
@@ -102,7 +100,6 @@ export default function PenumpangView({
     if (tab === 'home') setAdaChatBaru(false)
     if (tab === 'riwayat') {
       setAdaRiwayatBaru(false)
-      setIdRiwayatBaru(null)
       const maxWaktu = riwayat.reduce((max, r) => Math.max(max, r.dibuatPada || 0), Date.now())
       terakhirDilihatRef.current = maxWaktu
       simpanTerakhirDilihat(maxWaktu)
@@ -152,9 +149,7 @@ export default function PenumpangView({
         {tabAktif === 'jadwal' && (
           <JadwalTab jadwalMingguan={jadwalMingguan} simpanJadwal={simpanJadwal} />
         )}
-        {tabAktif === 'riwayat' && (
-          <RiwayatTab riwayat={riwayat} idBaru={idRiwayatBaru} />
-        )}
+        {tabAktif === 'riwayat' && <RiwayatTab riwayat={riwayat} />}
         {tabAktif === 'akun' && <AccountTab />}
       </div>
 

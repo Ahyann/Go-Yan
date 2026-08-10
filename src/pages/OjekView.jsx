@@ -39,7 +39,6 @@ export default function OjekView({
 }) {
   const [tabAktif, setTabAktif] = useState('home')
   const [adaChatBaru, setAdaChatBaru] = useState(false)
-  const [idRiwayatBaru, setIdRiwayatBaru] = useState(null)
   const [adaRiwayatBaru, setAdaRiwayatBaru] = useState(false)
   const tabAktifRef = useRef('home')
 
@@ -86,10 +85,9 @@ export default function OjekView({
       terakhirDilihatRef.current = tersimpan
     }
 
-    const itemBaru = riwayat.find((r) => (r.dibuatPada || 0) > terakhirDilihatRef.current)
-    if (itemBaru) {
-      setIdRiwayatBaru(itemBaru.id)
-      if (tabAktifRef.current !== 'riwayat') setAdaRiwayatBaru(true)
+    const adaYangBaru = riwayat.some((r) => (r.dibuatPada || 0) > terakhirDilihatRef.current)
+    if (adaYangBaru && tabAktifRef.current !== 'riwayat') {
+      setAdaRiwayatBaru(true)
     }
   }, [riwayat, riwayatSiap])
 
@@ -98,7 +96,6 @@ export default function OjekView({
     if (tab === 'home') setAdaChatBaru(false)
     if (tab === 'riwayat') {
       setAdaRiwayatBaru(false)
-      setIdRiwayatBaru(null)
       const maxWaktu = riwayat.reduce((max, r) => Math.max(max, r.dibuatPada || 0), Date.now())
       terakhirDilihatRef.current = maxWaktu
       simpanTerakhirDilihat(maxWaktu)
@@ -126,7 +123,6 @@ export default function OjekView({
             riwayat={riwayat}
             onTandaiLunas={onTandaiLunas}
             onHapusRiwayat={onHapusRiwayat}
-            idBaru={idRiwayatBaru}
           />
         )}
         {tabAktif === 'akun' && <OjekAccountTab />}
