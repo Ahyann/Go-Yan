@@ -127,14 +127,14 @@ function TotalSpendCarousel({ totalSemua, jumlahSemua, totalBulanIni, jumlahBula
         onScroll={handleScroll}
       >
         <div style={s.scrollPage}>
-          <div style={s.tagihanLabel}>{t.totalSpend}</div>
-          <div style={s.angkaTotal}>{formatRupiah(totalSemua)}</div>
-          <div style={s.tagihanSub}>{jumlahSemua} {t.satuanPerjalanan}</div>
-        </div>
-        <div style={s.scrollPage}>
           <div style={s.tagihanLabel}>{t.totalSpend} {labelBulan}</div>
           <div style={s.angkaTotal}>{formatRupiah(totalBulanIni)}</div>
           <div style={s.tagihanSub}>{jumlahBulanIni} {t.satuanPerjalanan}</div>
+        </div>
+        <div style={s.scrollPage}>
+          <div style={s.tagihanLabel}>{t.totalSpend}</div>
+          <div style={s.angkaTotal}>{formatRupiah(totalSemua)}</div>
+          <div style={s.tagihanSub}>{jumlahSemua} {t.satuanPerjalanan}</div>
         </div>
       </div>
       <div style={s.dotsRow}>
