@@ -35,6 +35,7 @@ let spiderBuffer = null
 let notifSelesaiBuffer = null
 let chatBuffer = null
 let reminderBuffer = null
+let missionSuccessBuffer = null
 
 async function muatBuffer(url) {
   try {
@@ -64,6 +65,10 @@ async function muatReminderBuffer() {
   reminderBuffer = await muatBuffer('/sounds/reminder.mp3')
 }
 
+async function muatMissionSuccessBuffer() {
+  missionSuccessBuffer = await muatBuffer('/sounds/missionsuccess.mp3')
+}
+
 function putarBuffer(buffer) {
   const ctx = getAudioCtx()
   const source = ctx.createBufferSource()
@@ -77,6 +82,7 @@ if (typeof window !== 'undefined') {
   muatNotifSelesaiBuffer()
   muatChatBuffer()
   muatReminderBuffer()
+  muatMissionSuccessBuffer()
 
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible' && audioCtx?.state === 'suspended') {
@@ -153,5 +159,23 @@ export async function playReminderSound() {
   if (ctx.state !== 'running') return false
 
   putarBuffer(reminderBuffer)
+  return true
+}
+
+export async function playMissionSuccess() {
+  const ctx = getAudioCtx()
+
+  if (!missionSuccessBuffer) {
+    await muatMissionSuccessBuffer()
+  }
+  if (!missionSuccessBuffer) return false
+
+  if (ctx.state === 'suspended') {
+    await ctx.resume()
+  }
+
+  if (ctx.state !== 'running') return false
+
+  putarBuffer(missionSuccessBuffer)
   return true
 }

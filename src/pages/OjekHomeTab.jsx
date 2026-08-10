@@ -5,6 +5,7 @@ import { useLokasiPenumpang, hapusLokasiPenumpangSekarang } from '../lib/useLoka
 import { usePesanOjek } from '../lib/usePesanOjek'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import PetaLokasiPenumpang from '../components/PetaLokasiPenumpang.jsx'
+import MissionSuccessPopup from '../components/MissionSuccessPopup.jsx'
 
 export default function OjekHomeTab({
   permintaan,
@@ -22,6 +23,7 @@ export default function OjekHomeTab({
   const lokasiPenumpang = useLokasiPenumpang()
   const { kirimPesan, hapusPesan } = usePesanOjek()
   const [teksPesan, setTeksPesan] = useState('')
+  const [showMissionSuccess, setShowMissionSuccess] = useState(false)
 
   function handleKirimPesan() {
     if (!teksPesan.trim()) return
@@ -38,6 +40,7 @@ export default function OjekHomeTab({
     berhentiLokasi()
     hapusLokasiPenumpangSekarang()
     hapusPesan()
+    setShowMissionSuccess(true)
     onSelesai()
   }
 
@@ -46,6 +49,7 @@ export default function OjekHomeTab({
     : t.belumAdaPermintaan
 
   return (
+    <>
     <main style={s.wrap}>
       <header style={s.header}>
         <div style={s.eyebrow}>{t.ojekEyebrow}</div>
@@ -106,6 +110,11 @@ export default function OjekHomeTab({
         )}
       </section>
     </main>
+
+    {showMissionSuccess && (
+      <MissionSuccessPopup onDismiss={() => setShowMissionSuccess(false)} />
+    )}
+    </>
   )
 }
 
