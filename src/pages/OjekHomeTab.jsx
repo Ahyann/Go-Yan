@@ -81,7 +81,7 @@ export default function OjekHomeTab({
           <div style={s.bawahCard}>
             <div style={s.jalanRow}>
               <span style={s.dotHijau} />
-              {permintaan.aksi === AKSI.JEMPUT ? t.sedangMenjemput : t.sedangMengantar} Fajri · {permintaan.where}
+              {permintaan.aksi === AKSI.JEMPUT ? t.sedangMenjemput : t.sedangMengantar} Fajri · {permintaan.where} · {permintaan.waktu}
             </div>
 
             <div style={{ ...s.pesanRow, opacity: lokasiAktif ? 1 : 0.5 }}>
