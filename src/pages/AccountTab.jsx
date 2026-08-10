@@ -65,7 +65,7 @@ export default function AccountTab() {
           </div>
           <div>
             <div style={s.label}>{t.masukSebagai}</div>
-            <div style={s.email}>{user?.email}</div>
+            <div style={s.email}>Wotkins</div>
           </div>
         </div>
       </section>

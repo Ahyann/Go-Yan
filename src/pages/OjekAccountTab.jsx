@@ -63,7 +63,7 @@ export default function OjekAccountTab() {
           </div>
           <div>
             <div style={s.label}>{t.masukSebagai}</div>
-            <div style={s.email}>{user?.email}</div>
+            <div style={s.email}>Ahyan</div>
           </div>
         </div>
       </section>
