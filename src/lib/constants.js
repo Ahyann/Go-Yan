@@ -2,7 +2,7 @@ export const TARIF_PER_RIDE = 32000
 
 // Koordinat lokasi kantor (World Trade Center Jakarta, Jl. Jenderal
 // Sudirman) — dipakai buat marker "Office" tetap di peta.
-export const LOKASI_OFFICE = [-6.2151535, 106.8203787]
+export const LOKASI_OFFICE = [-6.2146935, 106.8208587]
 
 export const ROLE = {
   OJEK: 'ojek',
