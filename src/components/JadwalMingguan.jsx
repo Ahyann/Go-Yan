@@ -203,7 +203,11 @@ function AksiChip({ label, aktif, jam, selesai, bisaEdit, onToggle, onBukaJam, p
 
       <div style={s.jamSlot}>
         {aktif && bisaEdit && (
-          {aktif && !bisaEdit && (
+          <button style={jam ? s.jamBtn : s.jamBtnKosong} onClick={onBukaJam}>
+            {jam || placeholderJam}
+          </button>
+        )}
+        {aktif && !bisaEdit && (
           <span style={s.jamBacaTeks}>{jam || placeholderJam}</span>
         )}
       </div>
