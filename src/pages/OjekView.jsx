@@ -32,6 +32,7 @@ export default function OjekView({
   riwayat,
   riwayatSiap,
   jadwalMingguan,
+  onTandaiSelesaiJadwal,
   onTerima,
   onTolak,
   onSelesai,
@@ -120,7 +121,9 @@ export default function OjekView({
             berhentiLokasi={berhentiLokasi}
           />
         )}
-        {tabAktif === 'jadwal' && <OjekJadwalTab jadwalMingguan={jadwalMingguan} />}
+        {tabAktif === 'jadwal' && (
+          <OjekJadwalTab jadwalMingguan={jadwalMingguan} onTandaiSelesai={onTandaiSelesaiJadwal} />
+        )}
         {tabAktif === 'riwayat' && (
           <OjekRiwayatTab
             riwayat={riwayat}

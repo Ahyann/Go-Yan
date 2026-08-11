@@ -1,7 +1,7 @@
 import { useLanguage } from '../context/LanguageContext.jsx'
 import JadwalMingguan from '../components/JadwalMingguan.jsx'
 
-export default function OjekJadwalTab({ jadwalMingguan }) {
+export default function OjekJadwalTab({ jadwalMingguan, onTandaiSelesai }) {
   const { t } = useLanguage()
   return (
     <main style={s.wrap}>
@@ -10,7 +10,12 @@ export default function OjekJadwalTab({ jadwalMingguan }) {
         <h1 style={s.title}>{t.jadwalTitleOjek}</h1>
       </header>
 
-      <JadwalMingguan jadwal={jadwalMingguan} bisaEdit={false} />
+      <JadwalMingguan
+        jadwal={jadwalMingguan}
+        bisaEdit={false}
+        bisaTandaiSelesai
+        onTandaiSelesai={onTandaiSelesai}
+      />
 
       <p style={s.catatan}>{t.jadwalCatatanOjek}</p>
     </main>

@@ -3,16 +3,20 @@ import { createPortal } from 'react-dom'
 import { HARI_KERJA_KEYS } from '../lib/constants'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import TimeWheelPicker from './TimeWheelPicker.jsx'
+import SwipeableCheck from './SwipeableCheck.jsx'
 
 function buatJadwalKosong() {
   const kosong = {}
   HARI_KERJA_KEYS.forEach((key) => {
-    kosong[key] = { antar: { aktif: false, jam: '' }, jemput: { aktif: false, jam: '' } }
+    kosong[key] = { antar: { aktif: false, jam: '', selesai: false }, jemput: { aktif: false, jam: '', selesai: false } }
   })
   return kosong
 }
 
-const JadwalMingguan = forwardRef(function JadwalMingguan({ jadwal, onSimpan, bisaEdit }, ref) {
+const JadwalMingguan = forwardRef(function JadwalMingguan(
+  { jadwal, onSimpan, bisaEdit, bisaTandaiSelesai = false, onTandaiSelesai },
+  ref
+) {
   const { t } = useLanguage()
   const [draft, setDraft] = useState(jadwal)
   const [menyimpan, setMenyimpan] = useState(false)
@@ -38,6 +42,7 @@ const JadwalMingguan = forwardRef(function JadwalMingguan({ jadwal, onSimpan, bi
         [aksi]: {
           aktif: !d[hari]?.[aksi]?.aktif,
           jam: d[hari]?.[aksi]?.jam || '',
+          selesai: d[hari]?.[aksi]?.selesai || false,
         },
       },
     }))
@@ -71,6 +76,14 @@ const JadwalMingguan = forwardRef(function JadwalMingguan({ jadwal, onSimpan, bi
     setTimeout(() => setTersimpan(false), 2000)
   }
 
+  // Nulis LANGSUNG ke server (gak nunggu tombol Simpan) — ini kenapa
+  // fitur ini kepisah dari alur draft/Simpan yang dipake buat
+  // antar/jemput/jam. Ditaro di sini (bukan cuma di useJadwalMingguan)
+  // biar bisa dipanggil dari onClick di bawah.
+  function handleToggleSelesai(hari, aksi, nilaiBaru) {
+    onTandaiSelesai?.(hari, aksi, nilaiBaru)
+  }
+
   const indexHariEditing = editing ? HARI_KERJA_KEYS.indexOf(editing.hari) : -1
   const labelHariEditing = indexHariEditing >= 0 ? t.hariLabel[indexHariEditing] : ''
 
@@ -86,22 +99,32 @@ const JadwalMingguan = forwardRef(function JadwalMingguan({ jadwal, onSimpan, bi
             <div style={s.hariLabel}>{label}</div>
 
             <div style={s.aksiGrid}>
-              <AksiChip
+              <AksiSlot
+                hari={key}
+                aksiNama="antar"
                 label={t.antar}
                 aktif={Boolean(draft[key]?.antar?.aktif)}
                 jam={draft[key]?.antar?.jam}
+                selesai={Boolean(draft[key]?.antar?.selesai)}
                 bisaEdit={bisaEdit}
+                bisaTandaiSelesai={bisaTandaiSelesai}
                 onToggle={() => toggleAksi(key, 'antar')}
                 onBukaJam={() => bukaEditJam(key, 'antar')}
+                onToggleSelesai={(v) => handleToggleSelesai(key, 'antar', v)}
                 placeholderJam={t.jamOpsional}
               />
-              <AksiChip
+              <AksiSlot
+                hari={key}
+                aksiNama="jemput"
                 label={t.jemput}
                 aktif={Boolean(draft[key]?.jemput?.aktif)}
                 jam={draft[key]?.jemput?.jam}
+                selesai={Boolean(draft[key]?.jemput?.selesai)}
                 bisaEdit={bisaEdit}
+                bisaTandaiSelesai={bisaTandaiSelesai}
                 onToggle={() => toggleAksi(key, 'jemput')}
                 onBukaJam={() => bukaEditJam(key, 'jemput')}
+                onToggleSelesai={(v) => handleToggleSelesai(key, 'jemput', v)}
                 placeholderJam={t.jamOpsional}
               />
             </div>
@@ -136,9 +159,27 @@ const JadwalMingguan = forwardRef(function JadwalMingguan({ jadwal, onSimpan, bi
 
 export default JadwalMingguan
 
-function AksiChip({ label, aktif, jam, bisaEdit, onToggle, onBukaJam, placeholderJam }) {
+// AksiSlot: bungkus AksiChip. Kalau bisaTandaiSelesai true (cuma di
+// sisi Ahyan), dibungkus SwipeableCheck biar bisa digeser buat
+// nandain "udah selesai" — border biru terang muncul di KEDUA sisi
+// (Ahyan & Fajri) begitu ditandain, tapi cuma Ahyan yang bisa geser.
+function AksiSlot({ aktif, selesai, bisaEdit, bisaTandaiSelesai, onToggleSelesai, ...props }) {
+  const chip = <AksiChip aktif={aktif} bisaEdit={bisaEdit} selesai={selesai} {...props} />
+
+  if (bisaTandaiSelesai && aktif) {
+    return (
+      <SwipeableCheck selesai={selesai} onToggle={onToggleSelesai}>
+        {chip}
+      </SwipeableCheck>
+    )
+  }
+
+  return chip
+}
+
+function AksiChip({ label, aktif, jam, selesai, bisaEdit, onToggle, onBukaJam, placeholderJam }) {
   return (
-    <div style={s.aksiItem}>
+    <div style={{ ...s.aksiItem, ...(selesai && aktif ? s.aksiItemSelesai : {}) }}>
       {bisaEdit ? (
         <button style={aktif ? s.chipAktif : s.chip} onClick={onToggle}>
           {label}
@@ -188,6 +229,18 @@ const s = {
     gridTemplateColumns: '62px 1fr',
     alignItems: 'center',
     gap: 8,
+    borderRadius: 8,
+    border: '1px solid transparent',
+    padding: 2,
+    boxSizing: 'border-box',
+  },
+  // Border biru terang — ini indikator "udah selesai", muncul di
+  // KEDUA sisi (Ahyan & Fajri), cuma Ahyan yang bisa nyalain lewat
+  // swipe. Sengaja bikin border doang (bukan ceklis nempel), biar gak
+  // sesak di ruang yang udah kecil.
+  aksiItemSelesai: {
+    border: '1px solid var(--glow-blue)',
+    boxShadow: '0 0 6px rgba(94,208,255,0.5)',
   },
   chip: {
     fontSize: 12.5,
