@@ -222,6 +222,7 @@ const s = {
   hariLabel: {
     fontSize: 13,
     fontWeight: 700,
+    lineHeight: 1.3,
     color: 'var(--text)',
   },
   badgeKolom: {
@@ -278,14 +279,22 @@ const s = {
     textShadow: '0 0 4px var(--glow-blue-mid)',
   },
   chipBacaAktif: {
+    display: 'block',
+    width: '100%',
+    boxSizing: 'border-box',
     fontSize: 12.5,
     fontWeight: 600,
+    lineHeight: 1.3,
     color: 'var(--glow-blue)',
     textShadow: '0 0 4px var(--glow-blue-mid)',
   },
   chipBacaRedup: {
+    display: 'block',
+    width: '100%',
+    boxSizing: 'border-box',
     fontSize: 12.5,
     fontWeight: 600,
+    lineHeight: 1.3,
     color: 'var(--text-dim)',
     opacity: 0.5,
   },
@@ -317,7 +326,9 @@ const s = {
     textAlign: 'center',
   },
   jamBacaTeks: {
+    display: 'block',
     fontFamily: 'var(--font-data)', fontSize: 12.5,
+    lineHeight: 1.3,
     color: 'var(--glow-blue)', textShadow: '0 0 4px var(--glow-blue-mid)',
   },
   simpanBtn: {
