@@ -37,10 +37,20 @@ export default function SwipeableCheck({ children, selesai, onToggle }) {
 
   return (
     <div style={s.wrap}>
-      <button style={s.checkBtn} onClick={handleCheckClick} aria-label="Tandai selesai">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M20 6L9 17l-5-5" />
-        </svg>
+      <button
+        style={selesai ? s.checkBtnBatal : s.checkBtn}
+        onClick={handleCheckClick}
+        aria-label={selesai ? 'Batalkan tanda selesai' : 'Tandai selesai'}
+      >
+        {selesai ? (
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M18 6L6 18M6 6l12 12" />
+          </svg>
+        ) : (
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M20 6L9 17l-5-5" />
+          </svg>
+        )}
       </button>
 
       <div
@@ -80,6 +90,17 @@ const s = {
     bottom: 0,
     width: LEBAR_CHECK,
     background: 'var(--glow-blue-mid)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  checkBtnBatal: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    bottom: 0,
+    width: LEBAR_CHECK,
+    background: 'var(--web-red)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
