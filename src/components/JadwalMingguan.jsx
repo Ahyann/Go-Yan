@@ -76,16 +76,55 @@ const JadwalMingguan = forwardRef(function JadwalMingguan(
     setTimeout(() => setTersimpan(false), 2000)
   }
 
-  // Nulis LANGSUNG ke server (gak nunggu tombol Simpan) — ini kenapa
-  // fitur ini kepisah dari alur draft/Simpan yang dipake buat
-  // antar/jemput/jam. Ditaro di sini (bukan cuma di useJadwalMingguan)
-  // biar bisa dipanggil dari onClick di bawah.
   function handleToggleSelesai(hari, aksi, nilaiBaru) {
     onTandaiSelesai?.(hari, aksi, nilaiBaru)
   }
 
   const indexHariEditing = editing ? HARI_KERJA_KEYS.indexOf(editing.hari) : -1
   const labelHariEditing = indexHariEditing >= 0 ? t.hariLabel[indexHariEditing] : ''
+
+  if (bisaTandaiSelesai) {
+    const daftarItem = []
+    HARI_KERJA_KEYS.forEach((key, i) => {
+      ;['antar', 'jemput'].forEach((aksi) => {
+        const data = draft[key]?.[aksi]
+        if (data?.aktif) {
+          daftarItem.push({ hari: key, label: t.hariLabel[i], aksi, jam: data.jam, selesai: Boolean(data.selesai) })
+        }
+      })
+    })
+
+    return (
+      <div style={s.wrap}>
+        {daftarItem.length === 0 ? (
+          <div style={s.kosongList}>{t.belumAdaRiwayatBulanIni}</div>
+        ) : (
+          daftarItem.map((item) => (
+            <SwipeableCheck
+              key={`${item.hari}-${item.aksi}`}
+              selesai={item.selesai}
+              onToggle={(v) => handleToggleSelesai(item.hari, item.aksi, v)}
+            >
+              <div style={{ ...s.itemCard, ...(item.selesai ? s.itemCardSelesai : {}) }}>
+                <div>
+                  <div style={s.itemHari}>{item.label}</div>
+                  <div style={s.itemAksi}>
+                    {item.aksi === 'antar' ? t.antar : t.jemput}
+                    {item.jam ? ` · ${item.jam}` : ''}
+                  </div>
+                </div>
+                {item.selesai && (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--glow-blue)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20 6L9 17l-5-5" />
+                  </svg>
+                )}
+              </div>
+            </SwipeableCheck>
+          ))
+        )}
+      </div>
+    )
+  }
 
   return (
     <div style={s.wrap}>
@@ -99,32 +138,24 @@ const JadwalMingguan = forwardRef(function JadwalMingguan(
             <div style={s.hariLabel}>{label}</div>
 
             <div style={s.aksiGrid}>
-              <AksiSlot
-                hari={key}
-                aksiNama="antar"
+              <AksiChip
                 label={t.antar}
                 aktif={Boolean(draft[key]?.antar?.aktif)}
                 jam={draft[key]?.antar?.jam}
                 selesai={Boolean(draft[key]?.antar?.selesai)}
                 bisaEdit={bisaEdit}
-                bisaTandaiSelesai={bisaTandaiSelesai}
                 onToggle={() => toggleAksi(key, 'antar')}
                 onBukaJam={() => bukaEditJam(key, 'antar')}
-                onToggleSelesai={(v) => handleToggleSelesai(key, 'antar', v)}
                 placeholderJam={t.jamOpsional}
               />
-              <AksiSlot
-                hari={key}
-                aksiNama="jemput"
+              <AksiChip
                 label={t.jemput}
                 aktif={Boolean(draft[key]?.jemput?.aktif)}
                 jam={draft[key]?.jemput?.jam}
                 selesai={Boolean(draft[key]?.jemput?.selesai)}
                 bisaEdit={bisaEdit}
-                bisaTandaiSelesai={bisaTandaiSelesai}
                 onToggle={() => toggleAksi(key, 'jemput')}
                 onBukaJam={() => bukaEditJam(key, 'jemput')}
-                onToggleSelesai={(v) => handleToggleSelesai(key, 'jemput', v)}
                 placeholderJam={t.jamOpsional}
               />
             </div>
@@ -159,24 +190,6 @@ const JadwalMingguan = forwardRef(function JadwalMingguan(
 
 export default JadwalMingguan
 
-// AksiSlot: bungkus AksiChip. Kalau bisaTandaiSelesai true (cuma di
-// sisi Ahyan), dibungkus SwipeableCheck biar bisa digeser buat
-// nandain "udah selesai" — border biru terang muncul di KEDUA sisi
-// (Ahyan & Fajri) begitu ditandain, tapi cuma Ahyan yang bisa geser.
-function AksiSlot({ aktif, selesai, bisaEdit, bisaTandaiSelesai, onToggleSelesai, ...props }) {
-  const chip = <AksiChip aktif={aktif} bisaEdit={bisaEdit} selesai={selesai} {...props} />
-
-  if (bisaTandaiSelesai && aktif) {
-    return (
-      <SwipeableCheck selesai={selesai} onToggle={onToggleSelesai}>
-        {chip}
-      </SwipeableCheck>
-    )
-  }
-
-  return chip
-}
-
 function AksiChip({ label, aktif, jam, selesai, bisaEdit, onToggle, onBukaJam, placeholderJam }) {
   return (
     <div style={{ ...s.aksiItem, ...(selesai && aktif ? s.aksiItemSelesai : {}) }}>
@@ -190,11 +203,7 @@ function AksiChip({ label, aktif, jam, selesai, bisaEdit, onToggle, onBukaJam, p
 
       <div style={s.jamSlot}>
         {aktif && bisaEdit && (
-          <button style={jam ? s.jamBtn : s.jamBtnKosong} onClick={onBukaJam}>
-            {jam || placeholderJam}
-          </button>
-        )}
-        {aktif && !bisaEdit && (
+          {aktif && !bisaEdit && (
           <span style={s.jamBacaTeks}>{jam || placeholderJam}</span>
         )}
       </div>
@@ -204,6 +213,34 @@ function AksiChip({ label, aktif, jam, selesai, bisaEdit, onToggle, onBukaJam, p
 
 const s = {
   wrap: { display: 'flex', flexDirection: 'column', gap: 10 },
+
+  kosongList: {
+    fontSize: 13.5, color: 'var(--text-dim)', textAlign: 'center', padding: '20px 0',
+  },
+  itemCard: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    background: 'var(--card-blue)',
+    border: '1px solid var(--blue-border)',
+    borderRadius: 10,
+    padding: '14px 16px',
+  },
+  itemCardSelesai: {
+    border: '1px solid var(--glow-blue)',
+    boxShadow: '0 0 6px rgba(94,208,255,0.5)',
+  },
+  itemHari: {
+    fontSize: 14,
+    fontWeight: 700,
+    color: 'var(--text)',
+  },
+  itemAksi: {
+    fontSize: 12.5,
+    color: '#8FB4DC',
+    marginTop: 3,
+  },
+
   hariBlok: {
     background: 'var(--card-blue)',
     border: '1px solid var(--blue-border)',
@@ -234,10 +271,6 @@ const s = {
     padding: 2,
     boxSizing: 'border-box',
   },
-  // Border biru terang — ini indikator "udah selesai", muncul di
-  // KEDUA sisi (Ahyan & Fajri), cuma Ahyan yang bisa nyalain lewat
-  // swipe. Sengaja bikin border doang (bukan ceklis nempel), biar gak
-  // sesak di ruang yang udah kecil.
   aksiItemSelesai: {
     border: '1px solid var(--glow-blue)',
     boxShadow: '0 0 6px rgba(94,208,255,0.5)',
