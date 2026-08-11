@@ -81,7 +81,7 @@ const s = {
   wrap: {
     position: 'relative',
     overflow: 'hidden',
-    borderRadius: 8,
+    borderRadius: 10,
   },
   checkBtn: {
     position: 'absolute',

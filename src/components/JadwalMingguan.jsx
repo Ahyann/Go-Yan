@@ -93,14 +93,16 @@ const JadwalMingguan = forwardRef(function JadwalMingguan(
 
         const isiHari = (
           <div style={{ ...s.hariBlok, ...(selesai && bisaTandaiSelesai ? s.hariBlokSelesai : {}) }}>
-            {selesai && bisaTandaiSelesai && (
-              <div style={s.badgeSelesai}>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#08130d" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M20 6L9 17l-5-5" />
-                </svg>
-              </div>
-            )}
-            <div style={s.hariLabel}>{label}</div>
+            <div style={s.hariLabelRow}>
+              <span>{label}</span>
+              {selesai && bisaTandaiSelesai && (
+                <span style={s.badgeSelesai}>
+                  <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#08130d" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20 6L9 17l-5-5" />
+                  </svg>
+                </span>
+              )}
+            </div>
 
             <div style={s.aksiGrid}>
               <AksiChip
@@ -207,23 +209,24 @@ const s = {
     boxShadow: '0 0 10px rgba(94,208,255,0.55)',
     background: 'linear-gradient(160deg, rgba(94,208,255,0.10), var(--card-blue))',
   },
-  badgeSelesai: {
-    position: 'absolute',
-    top: 6,
-    right: 6,
-    width: 20,
-    height: 20,
-    borderRadius: '50%',
-    background: 'var(--glow-blue)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    boxShadow: '0 0 8px rgba(94,208,255,0.8), 0 2px 4px rgba(0,0,0,0.4)',
-  },
-  hariLabel: {
+  hariLabelRow: {
     fontSize: 13,
     fontWeight: 700,
     color: 'var(--text)',
+    display: 'flex',
+    alignItems: 'center',
+    gap: 5,
+  },
+  badgeSelesai: {
+    width: 15,
+    height: 15,
+    borderRadius: '50%',
+    background: 'var(--glow-blue)',
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    boxShadow: '0 0 5px rgba(94,208,255,0.7)',
+    flexShrink: 0,
   },
   aksiGrid: {
     display: 'grid',
