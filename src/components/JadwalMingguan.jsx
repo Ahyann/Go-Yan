@@ -92,17 +92,14 @@ const JadwalMingguan = forwardRef(function JadwalMingguan(
         const selesai = Boolean(draft[key]?.selesai)
 
         const isiHari = (
-          <div style={{ ...s.hariBlok, ...(selesai && bisaTandaiSelesai ? s.hariBlokSelesai : {}) }}>
-            <div style={s.hariLabelRow}>
-              <span>{label}</span>
-              {selesai && bisaTandaiSelesai && (
-                <span style={s.badgeSelesai}>
-                  <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#08130d" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M20 6L9 17l-5-5" />
-                  </svg>
-                </span>
-              )}
-            </div>
+          <div
+            style={{
+              ...s.hariBlok,
+              gridTemplateColumns: bisaTandaiSelesai ? '78px 1fr 20px' : '78px 1fr',
+              ...(selesai && bisaTandaiSelesai ? s.hariBlokSelesai : {}),
+            }}
+          >
+            <div style={s.hariLabel}>{label}</div>
 
             <div style={s.aksiGrid}>
               <AksiChip
@@ -124,6 +121,18 @@ const JadwalMingguan = forwardRef(function JadwalMingguan(
                 placeholderJam={t.jamOpsional}
               />
             </div>
+
+            {bisaTandaiSelesai && (
+              <div style={s.badgeKolom}>
+                {selesai && (
+                  <span style={s.badgeSelesai}>
+                    <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#08130d" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M20 6L9 17l-5-5" />
+                    </svg>
+                  </span>
+                )}
+              </div>
+            )}
           </div>
         )
 
@@ -199,7 +208,6 @@ const s = {
     borderRadius: 10,
     padding: '12px 14px',
     display: 'grid',
-    gridTemplateColumns: '78px 1fr',
     alignItems: 'center',
     gap: 8,
     transition: 'border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease',
@@ -209,13 +217,16 @@ const s = {
     boxShadow: '0 0 10px rgba(94,208,255,0.55)',
     background: 'linear-gradient(160deg, rgba(94,208,255,0.10), var(--card-blue))',
   },
-  hariLabelRow: {
+  hariLabel: {
     fontSize: 13,
     fontWeight: 700,
     color: 'var(--text)',
+  },
+  badgeKolom: {
+    width: 20,
     display: 'flex',
     alignItems: 'center',
-    gap: 5,
+    justifyContent: 'center',
   },
   badgeSelesai: {
     width: 15,

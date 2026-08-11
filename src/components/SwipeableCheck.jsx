@@ -93,6 +93,8 @@ const s = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    borderTopRightRadius: 10,
+    borderBottomRightRadius: 10,
   },
   checkBtnBatal: {
     position: 'absolute',
@@ -104,6 +106,8 @@ const s = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    borderTopRightRadius: 10,
+    borderBottomRightRadius: 10,
   },
   geser: {
     position: 'relative',
