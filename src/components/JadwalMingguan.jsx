@@ -95,7 +95,7 @@ const JadwalMingguan = forwardRef(function JadwalMingguan(
           <div
             style={{
               ...s.hariBlok,
-              gridTemplateColumns: bisaTandaiSelesai ? '78px 1fr 20px' : '78px 1fr',
+              gridTemplateColumns: bisaTandaiSelesai ? '70px 1fr 16px' : '78px 1fr',
               ...(selesai && bisaTandaiSelesai ? s.hariBlokSelesai : {}),
             }}
           >
@@ -126,7 +126,7 @@ const JadwalMingguan = forwardRef(function JadwalMingguan(
               <div style={s.badgeKolom}>
                 {selesai && (
                   <span style={s.badgeSelesai}>
-                    <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#08130d" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                    <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#08130d" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M20 6L9 17l-5-5" />
                     </svg>
                   </span>
@@ -217,7 +217,7 @@ const s = {
   hariBlokSelesai: {
     border: '1px solid var(--glow-blue)',
     boxShadow: '0 0 10px rgba(94,208,255,0.55)',
-    background: 'linear-gradient(160deg, rgba(94,208,255,0.10), var(--card-blue))',
+    background: 'var(--card-blue)',
   },
   hariLabel: {
     fontSize: 13,
@@ -225,14 +225,14 @@ const s = {
     color: 'var(--text)',
   },
   badgeKolom: {
-    width: 20,
+    width: 16,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
   },
   badgeSelesai: {
-    width: 15,
-    height: 15,
+    width: 14,
+    height: 14,
     borderRadius: '50%',
     background: 'var(--glow-blue)',
     display: 'inline-flex',
