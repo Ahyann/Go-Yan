@@ -14,14 +14,14 @@ const ikonPenumpang = L.divIcon({
   className: '',
   html: `<div style="isolation: isolate;">
     <img src="/icons/fajri.png" style="
-      width:21px;height:32px;
+      width:16px;height:24px;
       image-rendering: pixelated;
       filter: drop-shadow(0 0 6px #E8EDF9) drop-shadow(0 0 10px #8B96B4);
     " />
   </div>`,
-  iconSize: [21, 32],
-  iconAnchor: [11, 32],
-  popupAnchor: [49, -14],
+  iconSize: [16, 24],
+  iconAnchor: [8, 24],
+  popupAnchor: [37, -10],
 })
 
 const ikonSaya = L.divIcon({
