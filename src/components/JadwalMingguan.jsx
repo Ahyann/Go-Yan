@@ -93,6 +93,13 @@ const JadwalMingguan = forwardRef(function JadwalMingguan(
 
         const isiHari = (
           <div style={{ ...s.hariBlok, ...(selesai && bisaTandaiSelesai ? s.hariBlokSelesai : {}) }}>
+            {selesai && bisaTandaiSelesai && (
+              <div style={s.badgeSelesai}>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#08130d" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 6L9 17l-5-5" />
+                </svg>
+              </div>
+            )}
             <div style={s.hariLabel}>{label}</div>
 
             <div style={s.aksiGrid}>
@@ -184,6 +191,7 @@ function AksiChip({ label, aktif, jam, bisaEdit, onToggle, onBukaJam, placeholde
 const s = {
   wrap: { display: 'flex', flexDirection: 'column', gap: 10 },
   hariBlok: {
+    position: 'relative',
     background: 'var(--card-blue)',
     border: '1px solid var(--blue-border)',
     borderRadius: 10,
@@ -192,10 +200,26 @@ const s = {
     gridTemplateColumns: '78px 1fr',
     alignItems: 'center',
     gap: 8,
+    transition: 'border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease',
   },
   hariBlokSelesai: {
     border: '1px solid var(--glow-blue)',
-    boxShadow: '0 0 6px rgba(94,208,255,0.5)',
+    boxShadow: '0 0 10px rgba(94,208,255,0.55)',
+    background: 'linear-gradient(160deg, rgba(94,208,255,0.10), var(--card-blue))',
+  },
+  badgeSelesai: {
+    position: 'absolute',
+    top: -8,
+    right: -8,
+    width: 22,
+    height: 22,
+    borderRadius: '50%',
+    background: 'var(--glow-blue)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    boxShadow: '0 0 8px rgba(94,208,255,0.8), 0 2px 4px rgba(0,0,0,0.4)',
+    border: '2px solid var(--bg)',
   },
   hariLabel: {
     fontSize: 13,
