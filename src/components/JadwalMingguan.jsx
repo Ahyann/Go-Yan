@@ -203,6 +203,8 @@ const s = {
   wrap: { display: 'flex', flexDirection: 'column', gap: 10 },
   hariBlok: {
     position: 'relative',
+    width: '100%',
+    boxSizing: 'border-box',
     background: 'var(--card-blue)',
     border: '1px solid var(--blue-border)',
     borderRadius: 10,

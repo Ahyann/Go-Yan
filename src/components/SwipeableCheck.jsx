@@ -82,6 +82,7 @@ const s = {
     position: 'relative',
     overflow: 'hidden',
     borderRadius: 10,
+    width: '100%',
   },
   checkBtn: {
     position: 'absolute',
@@ -112,5 +113,6 @@ const s = {
   geser: {
     position: 'relative',
     touchAction: 'pan-y',
+    width: '100%',
   },
 }
