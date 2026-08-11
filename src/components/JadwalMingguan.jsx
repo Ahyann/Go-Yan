@@ -92,16 +92,14 @@ const JadwalMingguan = forwardRef(function JadwalMingguan(
 
         const isiHari = (
           <div style={{ ...s.hariBlok, ...(selesai && bisaTandaiSelesai ? s.hariBlokSelesai : {}) }}>
-            <div style={s.hariLabelRow}>
-              <span style={s.hariLabel}>{label}</span>
-              {selesai && bisaTandaiSelesai && (
-                <span style={s.badgeSelesai}>
-                  <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#08130d" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M20 6L9 17l-5-5" />
-                  </svg>
-                </span>
-              )}
-            </div>
+            {selesai && bisaTandaiSelesai && (
+              <span style={s.badgeSelesai}>
+                <svg width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="#08130d" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 6L9 17l-5-5" />
+                </svg>
+              </span>
+            )}
+            <div style={s.hariLabel}>{label}</div>
 
             <div style={s.aksiGrid}>
               <AksiChip
@@ -198,11 +196,11 @@ const s = {
     background: 'var(--card-blue)',
     border: '1px solid var(--blue-border)',
     borderRadius: 10,
-    padding: '10px 12px',
+    padding: '12px 14px',
     display: 'grid',
-    gridTemplateColumns: '58px 1fr',
+    gridTemplateColumns: '78px 1fr',
     alignItems: 'center',
-    gap: 6,
+    gap: 8,
     transition: 'border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease',
   },
   hariBlokSelesai: {
@@ -210,44 +208,41 @@ const s = {
     boxShadow: '0 0 10px rgba(94,208,255,0.55)',
     background: 'var(--card-blue)',
   },
-  hariLabelRow: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 3,
-  },
   hariLabel: {
-    fontSize: 10,
+    fontSize: 13,
     fontWeight: 700,
-    lineHeight: 1.2,
+    lineHeight: 1.3,
     color: 'var(--text)',
-    wordBreak: 'break-word',
   },
   badgeSelesai: {
-    width: 11,
-    height: 11,
+    position: 'absolute',
+    top: 5,
+    right: 5,
+    width: 10,
+    height: 10,
     borderRadius: '50%',
     background: 'var(--glow-blue)',
-    display: 'inline-flex',
+    display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     boxShadow: '0 0 5px rgba(94,208,255,0.7)',
-    flexShrink: 0,
+    zIndex: 1,
   },
   aksiGrid: {
     display: 'grid',
     gridTemplateColumns: '1fr 1fr',
-    gap: 6,
+    gap: 10,
   },
   aksiItem: {
     display: 'grid',
-    gridTemplateColumns: '48px 1fr',
+    gridTemplateColumns: '62px 1fr',
     alignItems: 'center',
-    gap: 4,
+    gap: 8,
   },
   chip: {
-    fontSize: 10,
+    fontSize: 12.5,
     fontWeight: 600,
-    padding: '5px 0',
+    padding: '7px 0',
     width: '100%',
     boxSizing: 'border-box',
     textAlign: 'center',
@@ -257,9 +252,9 @@ const s = {
     border: '1px solid var(--blue-border)',
   },
   chipAktif: {
-    fontSize: 10,
+    fontSize: 12.5,
     fontWeight: 600,
-    padding: '5px 0',
+    padding: '7px 0',
     width: '100%',
     boxSizing: 'border-box',
     textAlign: 'center',
@@ -273,34 +268,32 @@ const s = {
     display: 'block',
     width: '100%',
     boxSizing: 'border-box',
-    fontSize: 9.5,
+    fontSize: 12.5,
     fontWeight: 600,
-    lineHeight: 1.2,
+    lineHeight: 1.3,
     color: 'var(--glow-blue)',
     textShadow: '0 0 4px var(--glow-blue-mid)',
-    wordBreak: 'break-word',
   },
   chipBacaRedup: {
     display: 'block',
     width: '100%',
     boxSizing: 'border-box',
-    fontSize: 9.5,
+    fontSize: 12.5,
     fontWeight: 600,
-    lineHeight: 1.2,
+    lineHeight: 1.3,
     color: 'var(--text-dim)',
     opacity: 0.5,
-    wordBreak: 'break-word',
   },
   jamSlot: {
     minWidth: 0,
   },
   jamBtn: {
     fontFamily: 'var(--font-data)',
-    fontSize: 10,
+    fontSize: 12.5,
     background: 'rgba(255,255,255,0.06)',
     border: '1px solid var(--blue-border)',
     borderRadius: 8,
-    padding: '5px 2px',
+    padding: '6px 4px',
     color: 'var(--text)',
     width: '100%',
     boxSizing: 'border-box',
@@ -308,11 +301,11 @@ const s = {
   },
   jamBtnKosong: {
     fontFamily: 'var(--font-data)',
-    fontSize: 10,
+    fontSize: 12.5,
     background: 'rgba(255,255,255,0.06)',
     border: '1px dashed var(--blue-border)',
     borderRadius: 8,
-    padding: '5px 2px',
+    padding: '6px 4px',
     color: 'var(--text-dim)',
     width: '100%',
     boxSizing: 'border-box',
@@ -320,8 +313,8 @@ const s = {
   },
   jamBacaTeks: {
     display: 'block',
-    fontFamily: 'var(--font-data)', fontSize: 10,
-    lineHeight: 1.2,
+    fontFamily: 'var(--font-data)', fontSize: 12.5,
+    lineHeight: 1.3,
     color: 'var(--glow-blue)', textShadow: '0 0 4px var(--glow-blue-mid)',
   },
   simpanBtn: {
