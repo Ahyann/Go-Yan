@@ -8,7 +8,7 @@ import SwipeableCheck from './SwipeableCheck.jsx'
 function buatJadwalKosong() {
   const kosong = {}
   HARI_KERJA_KEYS.forEach((key) => {
-    kosong[key] = { antar: { aktif: false, jam: '', selesai: false }, jemput: { aktif: false, jam: '', selesai: false } }
+    kosong[key] = { antar: { aktif: false, jam: '' }, jemput: { aktif: false, jam: '' }, selesai: false }
   })
   return kosong
 }
@@ -42,7 +42,6 @@ const JadwalMingguan = forwardRef(function JadwalMingguan(
         [aksi]: {
           aktif: !d[hari]?.[aksi]?.aktif,
           jam: d[hari]?.[aksi]?.jam || '',
-          selesai: d[hari]?.[aksi]?.selesai || false,
         },
       },
     }))
@@ -76,8 +75,8 @@ const JadwalMingguan = forwardRef(function JadwalMingguan(
     setTimeout(() => setTersimpan(false), 2000)
   }
 
-  function handleToggleSelesai(hari, aksi, nilaiBaru) {
-    onTandaiSelesai?.(hari, aksi, nilaiBaru)
+  function handleToggleSelesai(hari, nilaiBaru) {
+    onTandaiSelesai?.(hari, nilaiBaru)
   }
 
   const indexHariEditing = editing ? HARI_KERJA_KEYS.indexOf(editing.hari) : -1
@@ -90,42 +89,44 @@ const JadwalMingguan = forwardRef(function JadwalMingguan(
         const adaJadwal = Boolean(draft[key]?.antar?.aktif) || Boolean(draft[key]?.jemput?.aktif)
         if (!bisaEdit && !adaJadwal) return null
 
-        return (
-          <div key={key} style={s.hariBlok}>
+        const selesai = Boolean(draft[key]?.selesai)
+
+        const isiHari = (
+          <div style={{ ...s.hariBlok, ...(selesai && bisaTandaiSelesai ? s.hariBlokSelesai : {}) }}>
             <div style={s.hariLabel}>{label}</div>
 
             <div style={s.aksiGrid}>
-              <AksiSlot
-                hari={key}
-                aksiNama="antar"
+              <AksiChip
                 label={t.antar}
                 aktif={Boolean(draft[key]?.antar?.aktif)}
                 jam={draft[key]?.antar?.jam}
-                selesai={Boolean(draft[key]?.antar?.selesai)}
                 bisaEdit={bisaEdit}
-                bisaTandaiSelesai={bisaTandaiSelesai}
                 onToggle={() => toggleAksi(key, 'antar')}
                 onBukaJam={() => bukaEditJam(key, 'antar')}
-                onToggleSelesai={(v) => handleToggleSelesai(key, 'antar', v)}
                 placeholderJam={t.jamOpsional}
               />
-              <AksiSlot
-                hari={key}
-                aksiNama="jemput"
+              <AksiChip
                 label={t.jemput}
                 aktif={Boolean(draft[key]?.jemput?.aktif)}
                 jam={draft[key]?.jemput?.jam}
-                selesai={Boolean(draft[key]?.jemput?.selesai)}
                 bisaEdit={bisaEdit}
-                bisaTandaiSelesai={bisaTandaiSelesai}
                 onToggle={() => toggleAksi(key, 'jemput')}
                 onBukaJam={() => bukaEditJam(key, 'jemput')}
-                onToggleSelesai={(v) => handleToggleSelesai(key, 'jemput', v)}
                 placeholderJam={t.jamOpsional}
               />
             </div>
           </div>
         )
+
+        if (bisaTandaiSelesai && adaJadwal) {
+          return (
+            <SwipeableCheck key={key} selesai={selesai} onToggle={(v) => handleToggleSelesai(key, v)}>
+              {isiHari}
+            </SwipeableCheck>
+          )
+        }
+
+        return <div key={key}>{isiHari}</div>
       })}
 
       {bisaEdit && (
@@ -155,23 +156,9 @@ const JadwalMingguan = forwardRef(function JadwalMingguan(
 
 export default JadwalMingguan
 
-function AksiSlot({ aktif, selesai, bisaEdit, bisaTandaiSelesai, onToggleSelesai, ...props }) {
-  const chip = <AksiChip aktif={aktif} bisaEdit={bisaEdit} selesai={selesai} {...props} />
-
-  if (bisaTandaiSelesai && aktif) {
-    return (
-      <SwipeableCheck selesai={selesai} onToggle={onToggleSelesai}>
-        {chip}
-      </SwipeableCheck>
-    )
-  }
-
-  return chip
-}
-
-function AksiChip({ label, aktif, jam, selesai, bisaEdit, onToggle, onBukaJam, placeholderJam }) {
+function AksiChip({ label, aktif, jam, bisaEdit, onToggle, onBukaJam, placeholderJam }) {
   return (
-    <div style={{ ...s.aksiItem, ...(selesai && aktif ? s.aksiItemSelesai : {}) }}>
+    <div style={s.aksiItem}>
       {bisaEdit ? (
         <button style={aktif ? s.chipAktif : s.chip} onClick={onToggle}>
           {label}
@@ -206,6 +193,10 @@ const s = {
     alignItems: 'center',
     gap: 8,
   },
+  hariBlokSelesai: {
+    border: '1px solid var(--glow-blue)',
+    boxShadow: '0 0 6px rgba(94,208,255,0.5)',
+  },
   hariLabel: {
     fontSize: 13,
     fontWeight: 700,
@@ -221,14 +212,6 @@ const s = {
     gridTemplateColumns: '62px 1fr',
     alignItems: 'center',
     gap: 8,
-    borderRadius: 8,
-    border: '1px solid transparent',
-    padding: 2,
-    boxSizing: 'border-box',
-  },
-  aksiItemSelesai: {
-    border: '1px solid var(--glow-blue)',
-    boxShadow: '0 0 6px rgba(94,208,255,0.5)',
   },
   chip: {
     fontSize: 12.5,
