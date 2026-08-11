@@ -85,18 +85,29 @@ export default function PetaLokasiPenumpang({
   const markerOfficeRef = useRef(null)
   const pesanTampilRef = useRef(null)
   const [teksBubble, setTeksBubble] = useState('')
+  const [pesanTrigger, setPesanTrigger] = useState(null)
+  const [markerSiap, setMarkerSiap] = useState(false)
   const [teksBubbleSaya, setTeksBubbleSaya] = useState('')
   const [pesanSayaTrigger, setPesanSayaTrigger] = useState(null)
   const pesanSayaTampilRef = useRef(null)
   const [markerSayaSiap, setMarkerSayaSiap] = useState(false)
 
   useEffect(() => {
-    if (pesan && markerRef.current) {
+    if (pesan) {
       pesanTampilRef.current = pesan
       setTeksBubble(pesan.teks)
-      markerRef.current.openPopup()
+      setPesanTrigger(pesan.dibuatPada)
     }
-  }, [pesan, lokasi])
+  }, [pesan])
+
+  useEffect(() => {
+    if (pesanTrigger && markerRef.current) {
+      const id = setTimeout(() => {
+        markerRef.current?.openPopup()
+      }, 0)
+      return () => clearTimeout(id)
+    }
+  }, [pesanTrigger, markerSiap])
 
   useEffect(() => {
     if (pesanSaya) {
@@ -147,7 +158,10 @@ export default function PetaLokasiPenumpang({
           <>
             <GeserKePosisi lat={lokasi.lat} lng={lokasi.lng} />
             <Marker
-              ref={markerRef}
+              ref={(instance) => {
+                markerRef.current = instance
+                if (instance && !markerSiap) setMarkerSiap(true)
+              }}
               position={[lokasi.lat, lokasi.lng]}
               icon={ikonPenumpang}
               zIndexOffset={500}

@@ -101,18 +101,29 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
   const mapRefInternal = useRef(null)
   const mapRef = mapRefLuar || mapRefInternal
   const [teksBubble, setTeksBubble] = useState(t.bubbleDefault)
+  const [pesanTrigger, setPesanTrigger] = useState(null)
+  const [markerSiap, setMarkerSiap] = useState(false)
   const [teksBubbleSaya, setTeksBubbleSaya] = useState('')
   const [pesanSayaTrigger, setPesanSayaTrigger] = useState(null)
   const pesanSayaTampilRef = useRef(null)
   const [markerSayaSiap, setMarkerSayaSiap] = useState(false)
 
   useEffect(() => {
-    if (pesan && markerRef.current) {
+    if (pesan) {
       pesanTampilRef.current = pesan
       setTeksBubble(pesan.teks)
-      markerRef.current.openPopup()
+      setPesanTrigger(pesan.dibuatPada)
     }
-  }, [pesan, adaPosisiOjek])
+  }, [pesan])
+
+  useEffect(() => {
+    if (pesanTrigger && markerRef.current) {
+      const id = setTimeout(() => {
+        markerRef.current?.openPopup()
+      }, 0)
+      return () => clearTimeout(id)
+    }
+  }, [pesanTrigger, markerSiap])
 
   useEffect(() => {
     if (pesanSaya) {
@@ -160,7 +171,10 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
           <>
             <GeserKePosisi lat={lokasiOjek.lat} lng={lokasiOjek.lng} />
             <Marker
-              ref={markerRef}
+              ref={(instance) => {
+                markerRef.current = instance
+                if (instance && !markerSiap) setMarkerSiap(true)
+              }}
               position={[lokasiOjek.lat, lokasiOjek.lng]}
               icon={ikonOjek}
               zIndexOffset={1000}
