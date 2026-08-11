@@ -95,7 +95,7 @@ const JadwalMingguan = forwardRef(function JadwalMingguan(
           <div
             style={{
               ...s.hariBlok,
-              gridTemplateColumns: bisaTandaiSelesai ? '70px 1fr 16px' : '78px 1fr',
+              gridTemplateColumns: bisaTandaiSelesai ? '80px 1fr 16px' : '88px 1fr',
               ...(selesai && bisaTandaiSelesai ? s.hariBlokSelesai : {}),
             }}
           >
@@ -249,9 +249,9 @@ const s = {
   },
   aksiItem: {
     display: 'grid',
-    gridTemplateColumns: '62px 1fr',
+    gridTemplateColumns: '72px 1fr',
     alignItems: 'center',
-    gap: 8,
+    gap: 6,
   },
   chip: {
     fontSize: 12.5,
