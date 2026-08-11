@@ -64,7 +64,7 @@ export function useJadwalMingguan() {
   }
 
   async function tandaiSelesai(hari, nilaiBaru) {
-    await setDoc(REF, { [`${hari}.selesai`]: nilaiBaru }, { merge: true })
+    await setDoc(REF, { [hari]: { selesai: nilaiBaru } }, { merge: true })
   }
 
   return { jadwal, simpanJadwal, tandaiSelesai }
