@@ -192,7 +192,7 @@ export const translations = {
     notifikasiLabel: 'Notifications',
     notifikasiDesc: "Get notified about updates, even when the app is closed.",
     aktifkanNotifikasi: 'Enable Notifications',
-    notifikasiAktif: '✓ Notifications on — tap to turn off',
+    notifikasiAktif: '✓ Notifications on',
     matikanNotif: 'Turn Off Notifications',
     memproses: 'Processing…',
     bahasaLabel: 'Bahasa / Language',
