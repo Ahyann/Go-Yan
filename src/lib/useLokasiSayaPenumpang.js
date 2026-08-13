@@ -4,10 +4,27 @@ import { rtdb } from './firebase'
 
 const LOKASI_REF = ref(rtdb, 'lokasi/penumpang')
 
+const JARAK_MINIMUM_METER = 6
+
+function jarakMeter(lat1, lng1, lat2, lng2) {
+  const R = 6371000
+  const dLat = ((lat2 - lat1) * Math.PI) / 180
+  const dLng = ((lng2 - lng1) * Math.PI) / 180
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLng / 2) *
+      Math.sin(dLng / 2)
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+  return R * c
+}
+
 export function useLokasiSayaPenumpang() {
   const [aktif, setAktif] = useState(false)
   const [error, setError] = useState('')
   const watchIdRef = useRef(null)
+  const posisiTerakhirRef = useRef(null)
 
   function mulai() {
     if (!navigator.geolocation) {
@@ -15,12 +32,23 @@ export function useLokasiSayaPenumpang() {
       return
     }
     setError('')
+    posisiTerakhirRef.current = null
 
     watchIdRef.current = navigator.geolocation.watchPosition(
       (pos) => {
+        const lat = pos.coords.latitude
+        const lng = pos.coords.longitude
+        const sebelumnya = posisiTerakhirRef.current
+
+        if (sebelumnya) {
+          const jarak = jarakMeter(sebelumnya.lat, sebelumnya.lng, lat, lng)
+          if (jarak < JARAK_MINIMUM_METER) return
+        }
+
+        posisiTerakhirRef.current = { lat, lng }
         set(LOKASI_REF, {
-          lat: pos.coords.latitude,
-          lng: pos.coords.longitude,
+          lat,
+          lng,
           updatedAt: Date.now(),
         })
       },

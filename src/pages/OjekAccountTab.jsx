@@ -1,12 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { ROLE } from '../lib/constants'
 import { mintaIzinDanSimpanToken, matikanNotifikasi, cekStatusNotifikasi } from '../lib/notifikasi'
 import { useProfilIkon } from '../lib/useProfilIkon'
 
-// Daftar pilihan icon preset — nanti tinggal ganti/tambah nama file
-// di sini kalau kamu udah punya gambar asli buat dipasang.
 const PILIHAN_IKON = ['spidericon.png', 'preset_biru.png', 'preset_merah.png', 'preset_hijau.png']
 
 export default function OjekAccountTab() {
@@ -16,6 +14,11 @@ export default function OjekAccountTab() {
   const [pesanError, setPesanError] = useState('')
   const { ikonAhyan, pilihIkonAhyan } = useProfilIkon()
   const [showPilihIkon, setShowPilihIkon] = useState(false)
+  const [pilihanSementara, setPilihanSementara] = useState(ikonAhyan)
+
+  useEffect(() => {
+    if (showPilihIkon) setPilihanSementara(ikonAhyan)
+  }, [showPilihIkon, ikonAhyan])
 
   useEffect(() => {
     if (!user) return
@@ -68,8 +71,8 @@ export default function OjekAccountTab() {
           <button style={s.avatarWrap} onClick={() => setShowPilihIkon(true)} aria-label={t.gantiFoto}>
             <img src={`/icons/${ikonAhyan}`} style={s.avatarImg} alt="" />
             <div style={s.avatarBadge}>
-              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 5v14M5 12h14" />
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
               </svg>
             </div>
           </button>
@@ -119,30 +122,106 @@ export default function OjekAccountTab() {
         <div style={s.overlay} onClick={() => setShowPilihIkon(false)}>
           <div style={s.sheet} onClick={(e) => e.stopPropagation()}>
             <div style={s.sheetTitle}>{t.gantiFoto}</div>
-            <div style={s.gridIkon}>
-              {PILIHAN_IKON.map((namaFile) => (
-                <button
-                  key={namaFile}
-                  style={{
-                    ...s.pilihanIkon,
-                    ...(namaFile === ikonAhyan ? s.pilihanIkonAktif : {}),
-                  }}
-                  onClick={async () => {
-                    await pilihIkonAhyan(namaFile)
-                    setShowPilihIkon(false)
-                  }}
-                >
-                  <img src={`/icons/${namaFile}`} style={s.pilihanIkonImg} alt="" />
-                </button>
-              ))}
+            <CarouselIkon
+              pilihan={PILIHAN_IKON}
+              ikonAktif={ikonAhyan}
+              onHalamanChange={setPilihanSementara}
+            />
+            <div style={s.tombolRow}>
+              <button style={s.cancelBtn} onClick={() => setShowPilihIkon(false)}>
+                {t.batal}
+              </button>
+              <button
+                style={s.gantiBtn}
+                onClick={async () => {
+                  await pilihIkonAhyan(pilihanSementara)
+                  setShowPilihIkon(false)
+                }}
+              >
+                Confirm
+              </button>
             </div>
-            <button style={s.tutupBtn} onClick={() => setShowPilihIkon(false)}>
-              {t.batal}
-            </button>
           </div>
         </div>
       )}
     </main>
+  )
+}
+
+function CarouselIkon({ pilihan, ikonAktif, onHalamanChange }) {
+  const [halaman, setHalaman] = useState(() => {
+    const idx = pilihan.indexOf(ikonAktif)
+    return idx >= 0 ? idx : 0
+  })
+  const sentuhAwal = useRef(null)
+
+  useEffect(() => {
+    onHalamanChange?.(pilihan[halaman])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [halaman])
+
+  function geser(delta) {
+    setHalaman((h) => Math.max(0, Math.min(h + delta, pilihan.length - 1)))
+  }
+
+  function handleTouchStart(e) {
+    sentuhAwal.current = e.touches[0].clientX
+  }
+
+  function handleTouchEnd(e) {
+    if (sentuhAwal.current === null) return
+    const selisih = sentuhAwal.current - e.changedTouches[0].clientX
+    if (selisih > 40) geser(1)
+    else if (selisih < -40) geser(-1)
+    sentuhAwal.current = null
+  }
+
+  return (
+    <div style={s.carouselWrap}>
+      <button
+        style={{ ...s.arrowBtn, ...s.arrowKiri, ...(halaman === 0 ? s.arrowNonaktif : {}) }}
+        onClick={() => geser(-1)}
+        disabled={halaman === 0}
+        aria-label="Sebelumnya"
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M15 18l-6-6 6-6" />
+        </svg>
+      </button>
+
+      <div
+        style={s.carouselViewport}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
+        <div
+          style={{
+            ...s.carouselTrack,
+            width: `${pilihan.length * 100}%`,
+            transform: `translateX(-${halaman * (100 / pilihan.length)}%)`,
+          }}
+        >
+          {pilihan.map((namaFile) => (
+            <div key={namaFile} style={{ ...s.carouselSlot, width: `${100 / pilihan.length}%` }}>
+              <div style={s.carouselIkonBtn}>
+                <img src={`/icons/${namaFile}`} style={s.carouselIkonImg} alt="" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <button
+        style={{ ...s.arrowBtn, ...s.arrowKanan, ...(halaman === pilihan.length - 1 ? s.arrowNonaktif : {}) }}
+        onClick={() => geser(1)}
+        disabled={halaman === pilihan.length - 1}
+        aria-label="Berikutnya"
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M9 18l6-6-6-6" />
+        </svg>
+      </button>
+    </div>
   )
 }
 
@@ -283,29 +362,63 @@ const s = {
     gap: 16,
   },
   sheetTitle: { fontSize: 15, fontWeight: 700, color: 'var(--text)', textAlign: 'center' },
-  gridIkon: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(4, 1fr)',
-    gap: 12,
+  carouselWrap: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 6,
   },
-  pilihanIkon: {
-    aspectRatio: '1 / 1',
+  arrowBtn: {
+    flexShrink: 0,
+    width: 34,
+    height: 34,
     borderRadius: '50%',
-    padding: 3,
+    background: 'rgba(255,255,255,0.08)',
+    border: '1px solid var(--blue-border)',
+    color: 'var(--text)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  arrowKiri: { paddingRight: 1 },
+  arrowKanan: { paddingLeft: 1 },
+  arrowNonaktif: {
+    opacity: 0.25,
+  },
+  carouselViewport: {
+    flex: 1,
+    overflow: 'hidden',
+  },
+  carouselTrack: {
+    display: 'flex',
+    transition: 'transform 0.3s cubic-bezier(0.34, 1.2, 0.64, 1)',
+  },
+  carouselSlot: {
+    flexShrink: 0,
+    display: 'flex',
+    justifyContent: 'center',
+    padding: '10px 0',
+    boxSizing: 'border-box',
+  },
+  carouselIkonBtn: {
+    width: 100,
+    height: 100,
+    borderRadius: '50%',
+    padding: 0,
     background: 'transparent',
-    border: '2px solid transparent',
+    display: 'block',
   },
-  pilihanIkonAktif: {
-    border: '2px solid var(--glow-blue)',
-    boxShadow: '0 0 8px rgba(94,208,255,0.6)',
-  },
-  pilihanIkonImg: {
+  carouselIkonImg: {
     width: '100%',
     height: '100%',
     borderRadius: '50%',
     objectFit: 'cover',
   },
-  tutupBtn: {
+  tombolRow: {
+    display: 'flex',
+    gap: 10,
+  },
+  cancelBtn: {
+    flex: 1,
     background: 'rgba(255,255,255,0.06)',
     color: '#8FB4DC',
     fontSize: 14,
@@ -313,5 +426,14 @@ const s = {
     padding: '12px',
     borderRadius: 999,
     border: '1px solid var(--blue-border)',
+  },
+  gantiBtn: {
+    flex: 1,
+    background: 'var(--nav-red)',
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 600,
+    padding: '12px',
+    borderRadius: 999,
   },
 }

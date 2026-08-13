@@ -59,7 +59,6 @@ export const translations = {
     akunTitle: 'Pengaturan',
     masukSebagai: 'Masuk sebagai',
     notifikasiLabel: 'Notifikasi',
-    gantiFoto: 'Ganti foto profil',
     notifikasiDesc: 'Dapetin notif pas ada pembaruan, walau app-nya lagi ditutup.',
     aktifkanNotifikasi: 'Aktifkan Notifikasi',
     notifikasiAktif: 'Notifikasi aktif',
@@ -134,6 +133,7 @@ export const translations = {
     pesanPerluLive: 'Nyalain live location dulu buat bisa kirim pesan',
     yourOffice: 'Your Office',
     fajriOffice: "Fajri's Office",
+    gantiFoto: 'Ganti foto profil',
   },
   en: {
     // --- HomeTab (Penumpang) ---
@@ -195,10 +195,9 @@ export const translations = {
     akunTitle: 'Settings',
     masukSebagai: 'Signed in as',
     notifikasiLabel: 'Notifications',
-    gantiFoto: 'Change profile photo',
     notifikasiDesc: "Get notified about updates, even when the app is closed.",
     aktifkanNotifikasi: 'Enable Notifications',
-    notifikasiAktif: '✓ Notifications on — tap to turn off',
+    notifikasiAktif: '✓ Notifications on',
     matikanNotif: 'Turn Off Notifications',
     memproses: 'Processing…',
     bahasaLabel: 'Bahasa / Language',
@@ -270,5 +269,6 @@ export const translations = {
     pesanPerluLive: 'Turn on live location first to send a message',
     yourOffice: 'Your Office',
     fajriOffice: "Fajri's Office",
+    gantiFoto: 'Change profile photo',
   },
 }
