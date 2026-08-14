@@ -11,13 +11,12 @@ export default function SwipeToFinish({ label, onConfirm }) {
   const sudahTrigger = useRef(false)
   const [mengonfirmasi, setMengonfirmasi] = useState(false)
 
-  const LEBAR_HANDLE = 44
-  const PADDING = 3
+  const DIAMETER = 52
 
   function batasGeser() {
     const track = trackRef.current
     if (!track) return 0
-    return track.clientWidth - LEBAR_HANDLE - PADDING * 2
+    return track.clientWidth - DIAMETER
   }
 
   function terapkanPosisi(x, animasi) {
@@ -32,7 +31,7 @@ export default function SwipeToFinish({ label, onConfirm }) {
 
     if (fill) {
       fill.style.transition = transisi
-      fill.style.width = `${x + 46}px`
+      fill.style.width = `${x + DIAMETER}px`
     }
 
     if (lbl) {
@@ -144,12 +143,11 @@ const s = {
   },
   fill: {
     position: 'absolute',
-    top: '50%',
-    marginTop: -23,
-    left: 3,
-    width: 46,
-    height: 46,
-    borderRadius: '50%',
+    top: 0,
+    left: 0,
+    height: 52,
+    width: 52,
+    borderRadius: 999,
     background: 'linear-gradient(90deg, var(--nav-red), #E8404D)',
     boxShadow: '0 0 14px rgba(184,36,47,0.5)',
   },
@@ -170,11 +168,10 @@ const s = {
   },
   handle: {
     position: 'absolute',
-    top: '50%',
-    marginTop: -23,
-    left: 3,
-    width: 46,
-    height: 46,
+    top: 0,
+    left: 0,
+    width: 52,
+    height: 52,
     borderRadius: '50%',
     background: `linear-gradient(160deg, var(--nav-red), #8B1420)`,
     display: 'flex',
