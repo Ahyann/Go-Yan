@@ -38,7 +38,7 @@ export default function SwipeToFinish({ label, onConfirm }) {
     if (lbl) {
       const maks = batasGeser()
       const opasitas = maks > 0 ? Math.max(0, 1 - (x / maks) * 1.3) : 1
-      lbl.style.opacity = opasitas
+      lbl.style.opacity = mengonfirmasi ? 1 : opasitas
     }
   }
 
@@ -61,6 +61,7 @@ export default function SwipeToFinish({ label, onConfirm }) {
       sudahTrigger.current = true
       setMengonfirmasi(true)
       terapkanPosisi(maks, true)
+      if (labelRef.current) labelRef.current.style.opacity = 1
       setTimeout(() => onConfirm(), 200)
     }
   }
@@ -112,7 +113,7 @@ export default function SwipeToFinish({ label, onConfirm }) {
       <div ref={fillRef} style={s.fill} />
 
       <div ref={labelRef} style={s.labelWrap}>
-        <span style={s.label}>{label}</span>
+        <span style={s.label}>{mengonfirmasi ? 'Selesai! ✓' : label}</span>
       </div>
 
       <div ref={handleRef} style={s.handle}>
@@ -136,8 +137,8 @@ const s = {
     boxSizing: 'border-box',
     height: 50,
     borderRadius: 999,
-    background: 'rgba(184,36,47,0.12)',
-    border: '1px solid rgba(184,36,47,0.5)',
+    background: 'rgba(184,36,47,0.28)',
+    border: '1.5px solid var(--nav-red)',
     overflow: 'hidden',
     touchAction: 'pan-y',
   },
