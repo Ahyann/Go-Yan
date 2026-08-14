@@ -32,7 +32,7 @@ export default function SwipeToFinish({ label, onConfirm }) {
 
     if (fill) {
       fill.style.transition = transisi
-      fill.style.width = `${x + LEBAR_HANDLE + PADDING}px`
+      fill.style.width = `${x + 46}px`
     }
 
     if (lbl) {
@@ -144,11 +144,12 @@ const s = {
   },
   fill: {
     position: 'absolute',
-    top: 0,
-    left: 0,
-    bottom: 0,
-    width: 48,
-    borderRadius: 999,
+    top: '50%',
+    marginTop: -23,
+    left: 3,
+    width: 46,
+    height: 46,
+    borderRadius: '50%',
     background: 'linear-gradient(90deg, var(--nav-red), #E8404D)',
     boxShadow: '0 0 14px rgba(184,36,47,0.5)',
   },
