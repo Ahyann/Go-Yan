@@ -57,10 +57,18 @@ export default function OjekView({
 
   useReminderKeberangkatan(permintaan)
 
-  const { pesan: pesanMasuk } = usePesanPenumpang()
+  const { pesan: pesanMasuk, siap: pesanSiap } = usePesanPenumpang()
   const pesanTerakhirRef = useRef(undefined)
 
   useEffect(() => {
+    // Tunggu data BENERAN kemuat dulu (siap=true) sebelum nentuin
+    // "baseline" pesan mana yang udah pernah keliatan. Sebelumnya,
+    // baseline keburu ke-set pas pesanMasuk masih `null` (state awal
+    // React, BUKAN data asli dari server) — begitu data asli nyusul
+    // dateng (walau itu cuma pesan LAMA yang nyangkut belum kehapus),
+    // dikira "pesan baru" dan bunyiin suara chat gak sengaja.
+    if (!pesanSiap) return
+
     if (pesanTerakhirRef.current === undefined) {
       pesanTerakhirRef.current = pesanMasuk?.dibuatPada ?? null
       return
@@ -71,7 +79,7 @@ export default function OjekView({
       playChatSound()
       if (tabAktifRef.current !== 'home') setAdaChatBaru(true)
     }
-  }, [pesanMasuk])
+  }, [pesanMasuk, pesanSiap])
 
   const terakhirDilihatRef = useRef(undefined)
 

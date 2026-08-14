@@ -57,10 +57,12 @@ export default function PenumpangView({
     berhenti: berhentiLokasi,
   } = useLokasiSayaPenumpang()
 
-  const { pesan: pesanMasuk } = usePesanOjek()
+  const { pesan: pesanMasuk, siap: pesanSiap } = usePesanOjek()
   const pesanTerakhirRef = useRef(undefined)
 
   useEffect(() => {
+    if (!pesanSiap) return
+
     if (pesanTerakhirRef.current === undefined) {
       pesanTerakhirRef.current = pesanMasuk?.dibuatPada ?? null
       return
@@ -71,8 +73,10 @@ export default function PenumpangView({
       playChatSound()
       if (tabAktifRef.current !== 'home') setAdaChatBaru(true)
     }
-  }, [pesanMasuk])
+  }, [pesanMasuk, pesanSiap])
 
+  // Cuma buat nyalain/matiin badge titik merah di tab Riwayat — gak
+  // ada lagi tag "New" di dalem card, biar lebih simpel.
   const terakhirDilihatRef = useRef(undefined)
 
   useEffect(() => {

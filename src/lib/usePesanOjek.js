@@ -7,10 +7,12 @@ const PESAN_REF = ref(rtdb, 'pesan/ojek')
 
 export function usePesanOjek() {
   const [pesan, setPesan] = useState(null)
+  const [siap, setSiap] = useState(false)
 
   useEffect(() => {
     const berhentiDengar = onValue(PESAN_REF, (snap) => {
       setPesan(snap.exists() ? snap.val() : null)
+      setSiap(true)
     })
     return berhentiDengar
   }, [])
@@ -25,5 +27,5 @@ export function usePesanOjek() {
     await remove(PESAN_REF)
   }
 
-  return { pesan, kirimPesan, hapusPesan }
+  return { pesan, siap, kirimPesan, hapusPesan }
 }
