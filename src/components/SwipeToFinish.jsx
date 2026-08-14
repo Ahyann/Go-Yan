@@ -118,11 +118,11 @@ export default function SwipeToFinish({ label, onConfirm }) {
 
       <div ref={handleRef} style={s.handle}>
         {mengonfirmasi ? (
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--glow-blue)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
             <path d="M20 6L9 17l-5-5" />
           </svg>
         ) : (
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--glow-blue)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
             <path d="M9 18l6-6-6-6" />
           </svg>
         )}
@@ -164,8 +164,8 @@ const s = {
     fontSize: 14.5,
     fontWeight: 800,
     letterSpacing: '0.3px',
-    color: '#fff',
-    textShadow: '0 1px 2px rgba(11,90,138,0.8), 0 1px 4px rgba(0,0,0,0.3)',
+    color: 'var(--glow-blue)',
+    textShadow: '0 1px 3px rgba(0,0,0,0.4)',
   },
   handle: {
     position: 'absolute',
