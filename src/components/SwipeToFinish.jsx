@@ -104,11 +104,11 @@ export default function SwipeToFinish({ label, onConfirm }) {
       </div>
       <div ref={handleRef} style={s.handle}>
         {mengonfirmasi ? (
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#08130d" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
             <path d="M20 6L9 17l-5-5" />
           </svg>
         ) : (
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#08130d" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
             <path d="M9 18l6-6-6-6" />
           </svg>
         )}
@@ -120,10 +120,11 @@ export default function SwipeToFinish({ label, onConfirm }) {
 const s = {
   track: {
     position: 'relative',
+    boxSizing: 'border-box',
     height: 50,
     borderRadius: 999,
-    background: 'linear-gradient(90deg, rgba(74,222,128,0.10), rgba(74,222,128,0.18))',
-    border: '1px solid var(--signal)',
+    background: 'linear-gradient(90deg, rgba(184,36,47,0.10), rgba(184,36,47,0.18))',
+    border: '1px solid var(--nav-red)',
     overflow: 'hidden',
     touchAction: 'pan-y',
   },
@@ -139,16 +140,17 @@ const s = {
     fontSize: 14,
     fontWeight: 700,
     letterSpacing: '0.3px',
-    color: 'var(--signal)',
+    color: 'var(--nav-red)',
   },
   handle: {
     position: 'absolute',
-    top: 3,
+    top: '50%',
+    marginTop: -22,
     left: 3,
     width: 44,
     height: 44,
     borderRadius: '50%',
-    background: 'var(--signal)',
+    background: 'var(--nav-red)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
