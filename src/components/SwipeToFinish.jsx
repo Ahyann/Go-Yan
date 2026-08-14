@@ -4,6 +4,7 @@ export default function SwipeToFinish({ label, onConfirm }) {
   const trackRef = useRef(null)
   const handleRef = useRef(null)
   const labelRef = useRef(null)
+  const fillRef = useRef(null)
   const mulaiX = useRef(null)
   const gesekIni = useRef(0)
   const gesekSekarang = useRef(0)
@@ -22,9 +23,18 @@ export default function SwipeToFinish({ label, onConfirm }) {
   function terapkanPosisi(x, animasi) {
     const handle = handleRef.current
     const lbl = labelRef.current
+    const fill = fillRef.current
     if (!handle) return
-    handle.style.transition = animasi ? 'transform 0.25s cubic-bezier(0.34, 1.2, 0.64, 1)' : 'none'
+
+    const transisi = animasi ? 'all 0.25s cubic-bezier(0.34, 1.2, 0.64, 1)' : 'none'
+    handle.style.transition = transisi
     handle.style.transform = `translateX(${x}px)`
+
+    if (fill) {
+      fill.style.transition = transisi
+      fill.style.width = `${x + LEBAR_HANDLE + PADDING}px`
+    }
+
     if (lbl) {
       const maks = batasGeser()
       const opasitas = maks > 0 ? Math.max(0, 1 - (x / maks) * 1.3) : 1
@@ -99,16 +109,19 @@ export default function SwipeToFinish({ label, onConfirm }) {
 
   return (
     <div ref={trackRef} style={s.track}>
+      <div ref={fillRef} style={s.fill} />
+
       <div ref={labelRef} style={s.labelWrap}>
         <span style={s.label}>{label}</span>
       </div>
+
       <div ref={handleRef} style={s.handle}>
         {mengonfirmasi ? (
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--nav-red)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
             <path d="M20 6L9 17l-5-5" />
           </svg>
         ) : (
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--nav-red)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
             <path d="M9 18l6-6-6-6" />
           </svg>
         )}
@@ -123,10 +136,20 @@ const s = {
     boxSizing: 'border-box',
     height: 50,
     borderRadius: 999,
-    background: 'linear-gradient(90deg, rgba(184,36,47,0.10), rgba(184,36,47,0.18))',
-    border: '1px solid var(--nav-red)',
+    background: 'rgba(184,36,47,0.12)',
+    border: '1px solid rgba(184,36,47,0.5)',
     overflow: 'hidden',
     touchAction: 'pan-y',
+  },
+  fill: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    width: 47,
+    borderRadius: 999,
+    background: 'linear-gradient(90deg, var(--nav-red), #E8404D)',
+    boxShadow: '0 0 12px rgba(184,36,47,0.5)',
   },
   labelWrap: {
     position: 'absolute',
@@ -140,7 +163,8 @@ const s = {
     fontSize: 14,
     fontWeight: 700,
     letterSpacing: '0.3px',
-    color: 'var(--nav-red)',
+    color: '#fff',
+    textShadow: '0 1px 3px rgba(0,0,0,0.5)',
   },
   handle: {
     position: 'absolute',
@@ -150,13 +174,15 @@ const s = {
     width: 44,
     height: 44,
     borderRadius: '50%',
-    background: 'var(--nav-red)',
+    background: '#fff',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.45)',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.45), 0 0 10px rgba(94,208,255,0.35)',
+    border: '2px solid var(--glow-blue-mid)',
     cursor: 'grab',
     touchAction: 'none',
     willChange: 'transform',
+    zIndex: 2,
   },
 }
