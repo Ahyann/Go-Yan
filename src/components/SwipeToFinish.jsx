@@ -118,11 +118,11 @@ export default function SwipeToFinish({ label, onConfirm }) {
 
       <div ref={handleRef} style={s.handle}>
         {mengonfirmasi ? (
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--nav-red)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
             <path d="M20 6L9 17l-5-5" />
           </svg>
         ) : (
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--nav-red)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
             <path d="M9 18l6-6-6-6" />
           </svg>
         )}
@@ -135,10 +135,10 @@ const s = {
   track: {
     position: 'relative',
     boxSizing: 'border-box',
-    height: 50,
+    height: 52,
     borderRadius: 999,
-    background: 'rgba(184,36,47,0.28)',
-    border: '1.5px solid var(--nav-red)',
+    background: '#F5F7FA',
+    boxShadow: '0 2px 10px rgba(0,0,0,0.35), inset 0 0 0 1px rgba(0,0,0,0.05)',
     overflow: 'hidden',
     touchAction: 'pan-y',
   },
@@ -147,10 +147,9 @@ const s = {
     top: 0,
     left: 0,
     bottom: 0,
-    width: 47,
+    width: 48,
     borderRadius: 999,
-    background: 'linear-gradient(90deg, var(--nav-red), #E8404D)',
-    boxShadow: '0 0 12px rgba(184,36,47,0.5)',
+    background: 'transparent',
   },
   labelWrap: {
     position: 'absolute',
@@ -161,26 +160,24 @@ const s = {
     pointerEvents: 'none',
   },
   label: {
-    fontSize: 14,
-    fontWeight: 700,
+    fontSize: 14.5,
+    fontWeight: 800,
     letterSpacing: '0.3px',
-    color: '#fff',
-    textShadow: '0 1px 3px rgba(0,0,0,0.5)',
+    color: 'var(--nav-red)',
   },
   handle: {
     position: 'absolute',
     top: '50%',
-    marginTop: -22,
+    marginTop: -23,
     left: 3,
-    width: 44,
-    height: 44,
+    width: 46,
+    height: 46,
     borderRadius: '50%',
-    background: '#fff',
+    background: `linear-gradient(160deg, var(--nav-red), #8B1420)`,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.45), 0 0 10px rgba(94,208,255,0.35)',
-    border: '2px solid var(--glow-blue-mid)',
+    boxShadow: '0 2px 10px rgba(184,36,47,0.6)',
     cursor: 'grab',
     touchAction: 'none',
     willChange: 'transform',
