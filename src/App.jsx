@@ -12,10 +12,6 @@ import OjekView from './pages/OjekView.jsx'
 import PenumpangView from './pages/PenumpangView.jsx'
 import { ROLE, TARIF_PER_RIDE, STATUS_BAYAR } from './lib/constants'
 
-// Format tanggal pake komponen LOKAL (bukan toISOString, yang itungannya
-// ikut UTC) — penting soalnya kalau pake UTC, pas dini hari WIB (misal
-// jam 00:00-06:59), UTC-nya masih di HARI SEBELUMNYA, bikin tanggal di
-// riwayat keliru mundur 1 hari.
 function tanggalLokalHariIni() {
   const d = new Date()
   const tahun = d.getFullYear()

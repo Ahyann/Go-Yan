@@ -6,9 +6,6 @@ const LanguageContext = createContext(null)
 const KEY_LOCALSTORAGE = 'go-yan-bahasa'
 
 export function LanguageProvider({ children }) {
-  // Disimpen di localStorage (per-HP, bukan per-akun) — biar pilihan
-  // bahasa gak reset tiap buka app, tapi juga gak perlu nyimpen ke
-  // Firebase (ini preferensi tampilan doang, bukan data penting).
   const [lang, setLangState] = useState(() => {
     try {
       return localStorage.getItem(KEY_LOCALSTORAGE) || 'id'

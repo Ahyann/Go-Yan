@@ -6,6 +6,7 @@ import { usePesanOjek } from '../lib/usePesanOjek'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import PetaLokasiPenumpang from '../components/PetaLokasiPenumpang.jsx'
 import MissionSuccessPopup from '../components/MissionSuccessPopup.jsx'
+import SwipeToFinish from '../components/SwipeToFinish.jsx'
 
 export default function OjekHomeTab({
   permintaan,
@@ -114,9 +115,7 @@ export default function OjekHomeTab({
 
             {lokasiError && <div style={s.lokasiError}>{lokasiError}</div>}
 
-            <button style={s.selesaiBtn} onClick={handleSelesai}>
-              {t.selesai}
-            </button>
+            <SwipeToFinish label={`${t.selesai} →`} onConfirm={handleSelesai} />
           </div>
         )}
       </section>
