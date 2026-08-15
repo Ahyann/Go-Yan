@@ -58,13 +58,13 @@ const ikonKampus = L.divIcon({
   className: '',
   html: `<div style="isolation: isolate;">
     <img src="/icons/UPN.png" style="
-      width:26px;height:26px;
+      width:38px;height:38px;
       image-rendering: pixelated;
     " />
   </div>`,
-  iconSize: [26, 26],
-  iconAnchor: [13, 26],
-  popupAnchor: [42, -8],
+  iconSize: [38, 38],
+  iconAnchor: [19, 38],
+  popupAnchor: [46, -14],
 })
 
 function GeserKePosisi({ lat, lng }) {

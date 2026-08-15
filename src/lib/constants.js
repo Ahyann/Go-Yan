@@ -1,6 +1,6 @@
 export const TARIF_PER_RIDE = 32000
 export const LOKASI_OFFICE = [-6.2146935, 106.8208587]
-export const LOKASI_UPN = [-6.315379, 106.795749]
+export const LOKASI_UPN = [-6.315679, 106.793749]
 
 export const ROLE = {
   OJEK: 'ojek',
