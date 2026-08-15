@@ -3,6 +3,7 @@ import { useLokasiSaya } from '../lib/useLokasiSaya'
 import { usePesanPenumpang } from '../lib/usePesanPenumpang'
 import { playChatSound } from '../lib/sound'
 import { useReminderKeberangkatan } from '../lib/useReminderKeberangkatan'
+import { STATUS_PERMINTAAN } from '../lib/constants'
 import OjekNav from '../components/OjekNav.jsx'
 import OjekHomeTab from './OjekHomeTab.jsx'
 import OjekJadwalTab from './OjekJadwalTab.jsx'
@@ -42,6 +43,7 @@ export default function OjekView({
   const [tabAktif, setTabAktif] = useState('home')
   const [adaChatBaru, setAdaChatBaru] = useState(false)
   const [adaRiwayatBaru, setAdaRiwayatBaru] = useState(false)
+  const [adaPermintaanBaru, setAdaPermintaanBaru] = useState(false)
   const tabAktifRef = useRef('home')
 
   useEffect(() => {
@@ -57,16 +59,31 @@ export default function OjekView({
 
   useReminderKeberangkatan(permintaan)
 
+  const permintaanTerakhirRef = useRef(undefined)
+
+  useEffect(() => {
+    if (permintaan === undefined) return
+
+    if (permintaanTerakhirRef.current === undefined) {
+      permintaanTerakhirRef.current = permintaan?.dibuatPada ?? null
+      return
+    }
+
+    const permintaanBaru =
+      permintaan?.status === STATUS_PERMINTAAN.MENUNGGU &&
+      permintaan.dibuatPada !== permintaanTerakhirRef.current
+
+    permintaanTerakhirRef.current = permintaan?.dibuatPada ?? null
+
+    if (permintaanBaru && tabAktifRef.current !== 'home') {
+      setAdaPermintaanBaru(true)
+    }
+  }, [permintaan])
+
   const { pesan: pesanMasuk, siap: pesanSiap } = usePesanPenumpang()
   const pesanTerakhirRef = useRef(undefined)
 
   useEffect(() => {
-    // Tunggu data BENERAN kemuat dulu (siap=true) sebelum nentuin
-    // "baseline" pesan mana yang udah pernah keliatan. Sebelumnya,
-    // baseline keburu ke-set pas pesanMasuk masih `null` (state awal
-    // React, BUKAN data asli dari server) — begitu data asli nyusul
-    // dateng (walau itu cuma pesan LAMA yang nyangkut belum kehapus),
-    // dikira "pesan baru" dan bunyiin suara chat gak sengaja.
     if (!pesanSiap) return
 
     if (pesanTerakhirRef.current === undefined) {
@@ -105,7 +122,10 @@ export default function OjekView({
 
   function handleTabChange(tab) {
     setTabAktif(tab)
-    if (tab === 'home') setAdaChatBaru(false)
+    if (tab === 'home') {
+      setAdaChatBaru(false)
+      setAdaPermintaanBaru(false)
+    }
     if (tab === 'riwayat') {
       setAdaRiwayatBaru(false)
       const maxWaktu = riwayat.reduce((max, r) => Math.max(max, r.dibuatPada || 0), Date.now())
@@ -147,6 +167,7 @@ export default function OjekView({
         onTabChange={handleTabChange}
         adaChatBaru={adaChatBaru}
         adaRiwayatBaru={adaRiwayatBaru}
+        adaPermintaanBaru={adaPermintaanBaru}
       />
     </div>
   )

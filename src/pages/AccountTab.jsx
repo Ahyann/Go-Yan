@@ -36,8 +36,6 @@ export default function AccountTab() {
     if (hasil.berhasil) {
       setStatus('')
     } else {
-      // Gagal beneran hapus di server — JANGAN tampilin "mati" kalau
-      // kenyataannya masih nyala di server, biar gak nipu diri sendiri.
       setStatus('ok')
       setPesanError(hasil.alasan)
     }

@@ -1,10 +1,10 @@
 import { useLanguage } from '../context/LanguageContext.jsx'
 
-export default function OjekNav({ tabAktif, onTabChange, adaChatBaru = false, adaRiwayatBaru = false }) {
+export default function OjekNav({ tabAktif, onTabChange, adaChatBaru = false, adaRiwayatBaru = false, adaPermintaanBaru = false }) {
   const { t } = useLanguage()
   return (
     <nav style={s.nav}>
-      <IconBtn label={t.navHome} aktif={tabAktif === 'home'} onClick={() => onTabChange('home')} badge={adaChatBaru}>
+      <IconBtn label={t.navHome} aktif={tabAktif === 'home'} onClick={() => onTabChange('home')} badge={adaChatBaru || adaPermintaanBaru}>
         <path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10" />
       </IconBtn>
       <IconBtn label={t.navJadwal} aktif={tabAktif === 'jadwal'} onClick={() => onTabChange('jadwal')}>
