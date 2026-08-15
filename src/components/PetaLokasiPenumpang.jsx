@@ -25,8 +25,6 @@ const ikonPenumpang = L.divIcon({
   popupAnchor: [37, -10],
 })
 
-// Sekarang jadi FUNGSI — biar bisa pake nama file icon yang lagi
-// dipilih Ahyan di Akun (bukan konstanta statis lagi kayak dulu).
 function buatIkonSaya(namaFile) {
   return L.divIcon({
     className: '',
@@ -43,8 +41,6 @@ function buatIkonSaya(namaFile) {
   })
 }
 
-// Proporsi asli gambar office ternyata gedung TINGGI (rasio ~0.667,
-// bukan hampir kotak) — file lama yang salah, ini yang bener.
 const ikonOffice = L.divIcon({
   className: '',
   html: `<div style="isolation: isolate;">
@@ -79,8 +75,6 @@ export default function PetaLokasiPenumpang({
 }) {
   const { t } = useLanguage()
   const teksKosongFinal = teksKosong ?? t.fajriBelumShare
-  // Guard ekstra: cuma dianggap "ada posisi" kalau lat/lng-nya BENERAN
-  // ada, bukan cuma object kosong dengan field aktif doang.
   const posisiValid = lokasi?.lat != null && lokasi?.lng != null
   const lokasiSaya = useLokasiOjek()
   const posisiSayaValid = lokasiSaya?.lat != null && lokasiSaya?.lng != null
@@ -104,10 +98,6 @@ export default function PetaLokasiPenumpang({
   const [markerSayaSiap, setMarkerSayaSiap] = useState(false)
 
   useEffect(() => {
-    // Sama kayak fix "pesan sendiri" — SELALU simpen data & trigger-nya
-    // begitu ada pesan, TERLEPAS marker-nya udah siap apa belom. Ini
-    // yang bikin bubble PESAN MASUK juga gak ilang pas komponen ini
-    // di-mount ulang (misal abis pindah tab terus balik lagi).
     if (pesan) {
       pesanTampilRef.current = pesan
       setTeksBubble(pesan.teks)
@@ -128,12 +118,6 @@ export default function PetaLokasiPenumpang({
     if (pesanSaya) {
       pesanSayaTampilRef.current = pesanSaya
       setTeksBubbleSaya(pesanSaya.teks)
-      // dibuatPada (timestamp) dipake sebagai "penanda" buat effect
-      // kedua di bawah — soalnya kalau cuma andelin teksBubbleSaya,
-      // dan kamu kirim TEKS YANG SAMA PERSIS 2x berturut-turut, React
-      // nganggep "gak ada perubahan" dan gak nge-trigger effect kedua
-      // buat buka popup lagi. dibuatPada SELALU unik tiap pesan baru,
-      // jadi gak akan pernah "keskip" kayak gitu.
       setPesanSayaTrigger(pesanSaya.dibuatPada)
     } else {
       markerSayaRef.current?.closePopup()
@@ -141,10 +125,6 @@ export default function PetaLokasiPenumpang({
   }, [pesanSaya])
 
   useEffect(() => {
-    // Effect KEDUA, terpisah — begitu ADA pesan baru DAN marker-nya
-    // udah siap (dua-duanya, gak peduli mana yang siap duluan), baru
-    // buka popup-nya. Delay dikit (0ms lewat setTimeout) buat jaga-
-    // jaga Leaflet belum bener-bener "settle" pas marker baru mount.
     if (pesanSayaTrigger && markerSayaRef.current) {
       const id = setTimeout(() => {
         markerSayaRef.current?.openPopup()
@@ -221,36 +201,39 @@ export default function PetaLokasiPenumpang({
         )}
 
         {posisiSayaValid && (
-          <Marker
-            ref={(instance) => {
-              markerSayaRef.current = instance
-              if (instance && !markerSayaSiap) setMarkerSayaSiap(true)
-            }}
-            position={[lokasiSaya.lat, lokasiSaya.lng]}
-            icon={ikonSaya}
-            zIndexOffset={1000}
-            eventHandlers={{
-              popupclose: () => {
-                if (pesanSayaTampilRef.current) {
-                  hapusPesanSaya()
-                  pesanSayaTampilRef.current = null
-                }
-              },
-            }}
-          >
-            {teksBubbleSaya && (
-              <Popup closeButton={false} autoClose={false} closeOnClick={false}>
-                <div
-                  style={s.bubbleWrap}
-                  onClick={() => markerSayaRef.current?.closePopup()}
-                >
-                  <span style={{ ...s.bubbleText, fontSize: teksBubbleSaya.length > 16 ? 7 : 9 }}>
-                    {teksBubbleSaya}
-                  </span>
-                </div>
-              </Popup>
-            )}
-          </Marker>
+          <>
+            <GeserKePosisi lat={lokasiSaya.lat} lng={lokasiSaya.lng} />
+            <Marker
+              ref={(instance) => {
+                markerSayaRef.current = instance
+                if (instance && !markerSayaSiap) setMarkerSayaSiap(true)
+              }}
+              position={[lokasiSaya.lat, lokasiSaya.lng]}
+              icon={ikonSaya}
+              zIndexOffset={1000}
+              eventHandlers={{
+                popupclose: () => {
+                  if (pesanSayaTampilRef.current) {
+                    hapusPesanSaya()
+                    pesanSayaTampilRef.current = null
+                  }
+                },
+              }}
+            >
+              {teksBubbleSaya && (
+                <Popup closeButton={false} autoClose={false} closeOnClick={false}>
+                  <div
+                    style={s.bubbleWrap}
+                    onClick={() => markerSayaRef.current?.closePopup()}
+                  >
+                    <span style={{ ...s.bubbleText, fontSize: teksBubbleSaya.length > 16 ? 7 : 9 }}>
+                      {teksBubbleSaya}
+                    </span>
+                  </div>
+                </Popup>
+              )}
+            </Marker>
+          </>
         )}
 
         <Marker
