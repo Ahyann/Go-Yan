@@ -96,13 +96,6 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
   const { pesan: pesanSaya, hapusPesan: hapusPesanSaya } = usePesanPenumpang()
   const { ikonAhyan } = useProfilIkon()
   const ikonOjek = useMemo(() => buatIkonOjek(ikonAhyan), [ikonAhyan])
-  // adaPosisiOjek: ada data posisi Ahyan yang bisa ditampilin di peta
-  // (walau dia lagi gak live — misal abis nutup app, posisi terakhir
-  // tetep keliatan). lagiLive: khusus buat teks/badge "OTWWW!!" doang.
-  // Guard ekstra: cuma dianggap "ada posisi" kalau lat/lng-nya BENERAN
-  // ada — jaga-jaga kalau ada data lama yang kadung rusak (cuma field
-  // aktif doang, tanpa koordinat), biar gak nyoba render marker dari
-  // koordinat kosong (itu yang bikin peta crash).
   const posisiValid = lokasiOjek?.lat != null && lokasiOjek?.lng != null
   const posisiSayaValid = lokasiSaya?.lat != null && lokasiSaya?.lng != null
   const adaPosisiOjek = posisiValid && permintaan?.status === STATUS_PERMINTAAN.DITERIMA
