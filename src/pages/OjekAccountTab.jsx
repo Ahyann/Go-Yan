@@ -4,7 +4,10 @@ import { useLanguage } from '../context/LanguageContext.jsx'
 import { ROLE } from '../lib/constants'
 import { mintaIzinDanSimpanToken, matikanNotifikasi, cekStatusNotifikasi } from '../lib/notifikasi'
 import { useProfilIkon } from '../lib/useProfilIkon'
+import { useLockBodyScroll } from '../lib/useLockBodyScroll'
 
+// Daftar pilihan icon preset — nanti tinggal ganti/tambah nama file
+// di sini kalau kamu udah punya gambar asli buat dipasang.
 const PILIHAN_IKON = ['spidericon.png', 'preset_biru.png', 'preset_merah.png', 'preset_hijau.png']
 
 export default function OjekAccountTab() {
@@ -17,6 +20,9 @@ export default function OjekAccountTab() {
   const [pilihanSementara, setPilihanSementara] = useState(ikonAhyan)
 
   useEffect(() => {
+    // Reset pilihan sementara ke icon yang lagi aktif tiap kali
+    // popup DIBUKA — biar gak "nyangkut" dari sesi buka-tutup
+    // sebelumnya kalau user gak jadi ganti.
     if (showPilihIkon) setPilihanSementara(ikonAhyan)
   }, [showPilihIkon, ikonAhyan])
 
@@ -121,32 +127,53 @@ export default function OjekAccountTab() {
       </button>
 
       {showPilihIkon && (
-        <div style={s.overlay} onClick={() => setShowPilihIkon(false)}>
-          <div style={s.sheet} onClick={(e) => e.stopPropagation()}>
-            <div style={s.sheetTitle}>{t.gantiFoto}</div>
-            <CarouselIkon
-              pilihan={PILIHAN_IKON}
-              ikonAktif={ikonAhyan}
-              onHalamanChange={setPilihanSementara}
-            />
-            <div style={s.tombolRow}>
-              <button style={s.cancelBtn} onClick={() => setShowPilihIkon(false)}>
-                {t.batal}
-              </button>
-              <button
-                style={s.gantiBtn}
-                onClick={async () => {
-                  await pilihIkonAhyan(pilihanSementara)
-                  setShowPilihIkon(false)
-                }}
-              >
-                Confirm
-              </button>
-            </div>
-          </div>
-        </div>
+        <ModalPilihIkon
+          ikonAhyan={ikonAhyan}
+          pilihanSementara={pilihanSementara}
+          setPilihanSementara={setPilihanSementara}
+          onBatal={() => setShowPilihIkon(false)}
+          onKonfirmasi={async () => {
+            await pilihIkonAhyan(pilihanSementara)
+            setShowPilihIkon(false)
+          }}
+          t={t}
+        />
       )}
     </main>
+  )
+}
+
+// Posisi icon aktif SELALU di tengah (fixed). Yang gerak itu "track"
+// di dalemnya, digeser pake CSS transform + transition, jadi
+// kelihatan kayak animasi slide masuk-keluar (bukan discroll manual
+// sama jari, walau tetep bisa digeser jari juga lewat touch event).
+// Komponen TERPISAH khusus buat popup ini — soalnya hook React (kayak
+// useLockBodyScroll) gak boleh dipanggil kondisional. Dengan motong
+// jadi komponen sendiri yang cuma di-render pas showPilihIkon true,
+// hook-nya otomatis "aktif" pas komponen ini muncul dan "mati" (scroll
+// balik normal) pas komponen ini ilang — pas persis kayak yang kita mau.
+function ModalPilihIkon({ ikonAhyan, pilihanSementara, setPilihanSementara, onBatal, onKonfirmasi, t }) {
+  useLockBodyScroll()
+
+  return (
+    <div style={s.overlay} onClick={onBatal}>
+      <div style={s.sheet} onClick={(e) => e.stopPropagation()}>
+        <div style={s.sheetTitle}>{t.gantiFoto}</div>
+        <CarouselIkon
+          pilihan={PILIHAN_IKON}
+          ikonAktif={ikonAhyan}
+          onHalamanChange={setPilihanSementara}
+        />
+        <div style={s.tombolRow}>
+          <button style={s.cancelBtn} onClick={onBatal}>
+            {t.batal}
+          </button>
+          <button style={s.gantiBtn} onClick={onKonfirmasi}>
+            Confirm
+          </button>
+        </div>
+      </div>
+    </div>
   )
 }
 
@@ -293,6 +320,9 @@ const s = {
     overflow: 'hidden',
   },
   avatarImg: {
+    // 78% doang dari lingkarannya — sisanya keliatan warna
+    // background biru di pinggir, jadi gambarnya keliatan "lebih
+    // kecil"/ada jarak ke tepi, bukan mepet penuh ke pinggir lingkaran.
     width: '78%',
     height: '78%',
     borderRadius: '50%',

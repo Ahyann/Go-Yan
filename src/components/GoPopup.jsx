@@ -2,12 +2,14 @@ import { useState, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { AKSI } from '../lib/constants'
 import { useLanguage } from '../context/LanguageContext.jsx'
+import { useLockBodyScroll } from '../lib/useLockBodyScroll'
 import TimeWheelPicker from './TimeWheelPicker.jsx'
 
 const PRESET_LOKASI = ['Office']
 
 export default function GoPopup({ onClose, onSubmit }) {
   const { t } = useLanguage()
+  useLockBodyScroll()
   const jamSekarang = new Date().toTimeString().slice(0, 2) + ':00'
 
   const [aksi, setAksi] = useState(AKSI.JEMPUT)
