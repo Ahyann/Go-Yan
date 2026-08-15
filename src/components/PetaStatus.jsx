@@ -22,20 +22,17 @@ function buatIkonOjek(namaFile) {
     className: '',
     html: `<div style="isolation: isolate;">
       <img src="/icons/${namaFile}" style="
-        width:32px;height:32px;
+        width:24px;height:24px;
         image-rendering: pixelated;
         filter: drop-shadow(0 0 6px #5ED0FF) drop-shadow(0 0 12px #2B9EE8);
       " />
     </div>`,
-    iconSize: [32, 32],
-    iconAnchor: [16, 16],
-    popupAnchor: [42, 3],
+    iconSize: [24, 24],
+    iconAnchor: [12, 12],
+    popupAnchor: [42, 8],
   })
 }
 
-// Icon Fajri (diri sendiri di sini) — ukuran lebih kecil (posisi
-// "self", bukan yang lagi di-track), tapi tetep senada proporsinya
-// (60:92) sama versi yang lebih gede.
 const ikonSaya = L.divIcon({
   className: '',
   html: `<div style="isolation: isolate;">
@@ -50,8 +47,6 @@ const ikonSaya = L.divIcon({
   popupAnchor: [44, -13],
 })
 
-// Proporsi asli gambar office ternyata gedung TINGGI (rasio ~0.667,
-// bukan hampir kotak) — file lama yang salah, ini yang bener.
 const ikonOffice = L.divIcon({
   className: '',
   html: `<div style="isolation: isolate;">
@@ -62,7 +57,7 @@ const ikonOffice = L.divIcon({
   </div>`,
   iconSize: [20, 30],
   iconAnchor: [6, 33],
-  popupAnchor: [38, -11],
+  popupAnchor: [46, -11],
 })
 
 function GeserKePosisi({ lat, lng }) {
