@@ -51,7 +51,7 @@ const ikonOffice = L.divIcon({
   </div>`,
   iconSize: [20, 30],
   iconAnchor: [6, 33],
-  popupAnchor: [38, -11],
+  popupAnchor: [46, -11],
 })
 
 const ikonKampus = L.divIcon({
