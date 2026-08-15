@@ -7,7 +7,7 @@ import { usePesanPenumpang } from '../lib/usePesanPenumpang'
 import { usePesanOjek } from '../lib/usePesanOjek'
 import { useProfilIkon } from '../lib/useProfilIkon'
 import { useLanguage } from '../context/LanguageContext.jsx'
-import { LOKASI_OFFICE } from '../lib/constants'
+import { LOKASI_OFFICE, LOKASI_UPN } from '../lib/constants'
 
 const PUSAT_DEFAULT = [-6.2088, 106.8456]
 
@@ -54,6 +54,19 @@ const ikonOffice = L.divIcon({
   popupAnchor: [38, -11],
 })
 
+const ikonKampus = L.divIcon({
+  className: '',
+  html: `<div style="isolation: isolate;">
+    <img src="/icons/UPN.png" style="
+      width:26px;height:26px;
+      image-rendering: pixelated;
+    " />
+  </div>`,
+  iconSize: [26, 26],
+  iconAnchor: [13, 26],
+  popupAnchor: [42, -8],
+})
+
 function GeserKePosisi({ lat, lng }) {
   const map = useMap()
   const sudahDicenter = useRef(false)
@@ -88,6 +101,7 @@ export default function PetaLokasiPenumpang({
   const markerRef = useRef(null)
   const markerSayaRef = useRef(null)
   const markerOfficeRef = useRef(null)
+  const markerKampusRef = useRef(null)
   const pesanTampilRef = useRef(null)
   const [teksBubble, setTeksBubble] = useState('')
   const [pesanTrigger, setPesanTrigger] = useState(null)
@@ -252,6 +266,26 @@ export default function PetaLokasiPenumpang({
           <Popup closeButton={false} autoClose={false} closeOnClick={false}>
             <div style={s.bubbleWrap}>
               <span style={s.bubbleText}>{t.fajriOffice}</span>
+            </div>
+          </Popup>
+        </Marker>
+
+        <Marker
+          ref={markerKampusRef}
+          position={LOKASI_UPN}
+          icon={ikonKampus}
+          zIndexOffset={-100}
+          eventHandlers={{
+            popupopen: () => {
+              setTimeout(() => {
+                markerKampusRef.current?.closePopup()
+              }, 2500)
+            },
+          }}
+        >
+          <Popup closeButton={false} autoClose={false} closeOnClick={false}>
+            <div style={s.bubbleWrap}>
+              <span style={s.bubbleText}>UPN Veteran Jakarta</span>
             </div>
           </Popup>
         </Marker>

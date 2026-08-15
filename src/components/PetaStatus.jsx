@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { MapContainer, TileLayer, Marker, Popup, ZoomControl, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-import { STATUS_PERMINTAAN, LOKASI_OFFICE } from '../lib/constants'
+import { STATUS_PERMINTAAN, LOKASI_OFFICE, LOKASI_UPN } from '../lib/constants'
 import { useLokasiOjek } from '../lib/useLokasiOjek'
 import { useLokasiPenumpang } from '../lib/useLokasiPenumpang'
 import { usePesanOjek } from '../lib/usePesanOjek'
@@ -60,6 +60,19 @@ const ikonOffice = L.divIcon({
   popupAnchor: [46, -11],
 })
 
+const ikonKampus = L.divIcon({
+  className: '',
+  html: `<div style="isolation: isolate;">
+    <img src="/icons/UPN.png" style="
+      width:26px;height:26px;
+      image-rendering: pixelated;
+    " />
+  </div>`,
+  iconSize: [26, 26],
+  iconAnchor: [13, 26],
+  popupAnchor: [42, -8],
+})
+
 function GeserKePosisi({ lat, lng }) {
   const map = useMap()
   const sudahDicenter = useRef(false)
@@ -102,6 +115,7 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
   const markerRef = useRef(null)
   const markerSayaRef = useRef(null)
   const markerOfficeRef = useRef(null)
+  const markerKampusRef = useRef(null)
   const pesanTampilRef = useRef(null)
   const mapRefInternal = useRef(null)
   const mapRef = mapRefLuar || mapRefInternal
@@ -261,6 +275,26 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
           <Popup closeButton={false} autoClose={false} closeOnClick={false}>
             <div style={s.bubbleWrap}>
               <span style={s.bubbleText}>{t.yourOffice}</span>
+            </div>
+          </Popup>
+        </Marker>
+
+        <Marker
+          ref={markerKampusRef}
+          position={LOKASI_UPN}
+          icon={ikonKampus}
+          zIndexOffset={-100}
+          eventHandlers={{
+            popupopen: () => {
+              setTimeout(() => {
+                markerKampusRef.current?.closePopup()
+              }, 2500)
+            },
+          }}
+        >
+          <Popup closeButton={false} autoClose={false} closeOnClick={false}>
+            <div style={s.bubbleWrap}>
+              <span style={s.bubbleText}>UPN Veteran Jakarta</span>
             </div>
           </Popup>
         </Marker>
