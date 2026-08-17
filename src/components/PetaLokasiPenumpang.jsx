@@ -11,6 +11,11 @@ import { LOKASI_OFFICE, LOKASI_UPN } from '../lib/constants'
 
 const PUSAT_DEFAULT = [-6.2088, 106.8456]
 
+const BATAS_PETA = [
+  [-11.5, 94.5],
+  [6.5, 141.5],
+]
+
 const ikonPenumpang = L.divIcon({
   className: '',
   html: `<div style="isolation: isolate;">
@@ -161,6 +166,9 @@ export default function PetaLokasiPenumpang({
         ref={mapRef}
         center={pusat}
         zoom={lokasi ? 16 : 13}
+        minZoom={5}
+        maxBounds={BATAS_PETA}
+        maxBoundsViscosity={1.0}
         style={s.map}
         zoomControl={false}
         attributionControl={false}
