@@ -78,16 +78,16 @@ export default function OjekAccountTab() {
             onClick={() => setShowPilihIkon(true)}
             aria-label={t.gantiFoto}
           >
-            <img
-              src={`/icons/${ikonAhyan}`}
+            <div
               style={{
-                ...s.avatarImg,
+                ...s.avatarLingkaran,
                 background: `${warnaAktif.utama}1F`,
                 border: `2px solid ${warnaAktif.kuat}`,
                 boxShadow: `0 0 8px ${warnaAktif.utama}66`,
               }}
-              alt=""
-            />
+            >
+              <img src={`/icons/${ikonAhyan}`} style={s.avatarImg} alt="" />
+            </div>
             <div style={{ ...s.avatarBadge, background: warnaAktif.kuat }}>
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
@@ -340,13 +340,22 @@ const s = {
     alignItems: 'center',
     justifyContent: 'center',
   },
-  avatarImg: {
+  avatarLingkaran: {
     width: '100%',
     height: '100%',
     borderRadius: '50%',
+    boxSizing: 'border-box',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  avatarImg: {
+    width: '80%',
+    height: '80%',
+    borderRadius: '50%',
     objectFit: 'cover',
     imageRendering: 'pixelated',
-    boxSizing: 'border-box',
   },
   label: { fontSize: 12.5, color: '#9FC3E8', marginBottom: 6 },
   email: { fontSize: 15, color: 'var(--text)', fontWeight: 600 },
