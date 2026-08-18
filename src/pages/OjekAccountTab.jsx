@@ -4,10 +4,10 @@ import { useLanguage } from '../context/LanguageContext.jsx'
 import { ROLE } from '../lib/constants'
 import { mintaIzinDanSimpanToken, matikanNotifikasi, cekStatusNotifikasi } from '../lib/notifikasi'
 import { useProfilIkon } from '../lib/useProfilIkon'
+import { useWarnaGlow } from '../lib/useWarnaGlow'
+import { WARNA_GLOW_PRESET, ambilWarnaGlow } from '../lib/warnaGlow'
 import { useLockBodyScroll } from '../lib/useLockBodyScroll'
 
-// Daftar pilihan icon preset — nanti tinggal ganti/tambah nama file
-// di sini kalau kamu udah punya gambar asli buat dipasang.
 const PILIHAN_IKON = ['spidericon.png', 'preset_biru.png', 'preset_merah.png', 'preset_hijau.png']
 
 export default function OjekAccountTab() {
@@ -16,13 +16,12 @@ export default function OjekAccountTab() {
   const [status, setStatus] = useState('')
   const [pesanError, setPesanError] = useState('')
   const { ikonAhyan, pilihIkonAhyan } = useProfilIkon()
+  const { warnaAhyan, pilihWarnaAhyan } = useWarnaGlow()
+  const warnaAktif = ambilWarnaGlow(warnaAhyan)
   const [showPilihIkon, setShowPilihIkon] = useState(false)
   const [pilihanSementara, setPilihanSementara] = useState(ikonAhyan)
 
   useEffect(() => {
-    // Reset pilihan sementara ke icon yang lagi aktif tiap kali
-    // popup DIBUKA — biar gak "nyangkut" dari sesi buka-tutup
-    // sebelumnya kalau user gak jadi ganti.
     if (showPilihIkon) setPilihanSementara(ikonAhyan)
   }, [showPilihIkon, ikonAhyan])
 
@@ -74,11 +73,22 @@ export default function OjekAccountTab() {
 
       <section style={s.card}>
         <div style={s.profilRow}>
-          <button style={s.avatarWrap} onClick={() => setShowPilihIkon(true)} aria-label={t.gantiFoto}>
-            <div style={s.avatarLingkaran}>
-              <img src={`/icons/${ikonAhyan}`} style={s.avatarImg} alt="" />
-            </div>
-            <div style={s.avatarBadge}>
+          <button
+            style={s.avatarWrap}
+            onClick={() => setShowPilihIkon(true)}
+            aria-label={t.gantiFoto}
+          >
+            <img
+              src={`/icons/${ikonAhyan}`}
+              style={{
+                ...s.avatarImg,
+                background: `${warnaAktif.utama}1F`,
+                border: `2px solid ${warnaAktif.kuat}`,
+                boxShadow: `0 0 8px ${warnaAktif.utama}66`,
+              }}
+              alt=""
+            />
+            <div style={{ ...s.avatarBadge, background: warnaAktif.kuat }}>
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
               </svg>
@@ -131,6 +141,8 @@ export default function OjekAccountTab() {
           ikonAhyan={ikonAhyan}
           pilihanSementara={pilihanSementara}
           setPilihanSementara={setPilihanSementara}
+          warnaAhyan={warnaAhyan}
+          pilihWarnaAhyan={pilihWarnaAhyan}
           onBatal={() => setShowPilihIkon(false)}
           onKonfirmasi={async () => {
             await pilihIkonAhyan(pilihanSementara)
@@ -143,16 +155,16 @@ export default function OjekAccountTab() {
   )
 }
 
-// Posisi icon aktif SELALU di tengah (fixed). Yang gerak itu "track"
-// di dalemnya, digeser pake CSS transform + transition, jadi
-// kelihatan kayak animasi slide masuk-keluar (bukan discroll manual
-// sama jari, walau tetep bisa digeser jari juga lewat touch event).
-// Komponen TERPISAH khusus buat popup ini — soalnya hook React (kayak
-// useLockBodyScroll) gak boleh dipanggil kondisional. Dengan motong
-// jadi komponen sendiri yang cuma di-render pas showPilihIkon true,
-// hook-nya otomatis "aktif" pas komponen ini muncul dan "mati" (scroll
-// balik normal) pas komponen ini ilang — pas persis kayak yang kita mau.
-function ModalPilihIkon({ ikonAhyan, pilihanSementara, setPilihanSementara, onBatal, onKonfirmasi, t }) {
+function ModalPilihIkon({
+  ikonAhyan,
+  pilihanSementara,
+  setPilihanSementara,
+  warnaAhyan,
+  pilihWarnaAhyan,
+  onBatal,
+  onKonfirmasi,
+  t,
+}) {
   useLockBodyScroll()
 
   return (
@@ -164,6 +176,29 @@ function ModalPilihIkon({ ikonAhyan, pilihanSementara, setPilihanSementara, onBa
           ikonAktif={ikonAhyan}
           onHalamanChange={setPilihanSementara}
         />
+
+        <div style={s.warnaLabel}>Warna glow</div>
+        <div style={s.warnaRow}>
+          {Object.entries(WARNA_GLOW_PRESET).map(([key, warna]) => (
+            <button
+              key={key}
+              style={{
+                ...s.warnaSwatch,
+                background: `linear-gradient(160deg, ${warna.utama}, ${warna.kuat})`,
+                ...(key === warnaAhyan ? s.warnaSwatchAktif : {}),
+              }}
+              onClick={() => pilihWarnaAhyan(key)}
+              aria-label={warna.nama}
+            >
+              {key === warnaAhyan && (
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 6L9 17l-5-5" />
+                </svg>
+              )}
+            </button>
+          ))}
+        </div>
+
         <div style={s.tombolRow}>
           <button style={s.cancelBtn} onClick={onBatal}>
             {t.batal}
@@ -300,34 +335,18 @@ const s = {
     width: 18,
     height: 18,
     borderRadius: '50%',
-    background: 'var(--glow-blue-mid)',
     border: '2px solid var(--card-blue)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  avatarLingkaran: {
+  avatarImg: {
     width: '100%',
     height: '100%',
     borderRadius: '50%',
-    background: 'rgba(94,208,255,0.12)',
-    border: '2px solid var(--glow-blue-mid)',
-    boxShadow: '0 0 8px rgba(94,208,255,0.4)',
-    boxSizing: 'border-box',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'hidden',
-  },
-  avatarImg: {
-    // 78% doang dari lingkarannya — sisanya keliatan warna
-    // background biru di pinggir, jadi gambarnya keliatan "lebih
-    // kecil"/ada jarak ke tepi, bukan mepet penuh ke pinggir lingkaran.
-    width: '78%',
-    height: '78%',
-    borderRadius: '50%',
     objectFit: 'cover',
     imageRendering: 'pixelated',
+    boxSizing: 'border-box',
   },
   label: { fontSize: 12.5, color: '#9FC3E8', marginBottom: 6 },
   email: { fontSize: 15, color: 'var(--text)', fontWeight: 600 },
@@ -453,6 +472,30 @@ const s = {
     height: '100%',
     borderRadius: '50%',
     objectFit: 'cover',
+  },
+  warnaLabel: {
+    fontSize: 12.5,
+    color: '#9FC3E8',
+    textAlign: 'center',
+    marginTop: -6,
+  },
+  warnaRow: {
+    display: 'flex',
+    justifyContent: 'center',
+    gap: 10,
+  },
+  warnaSwatch: {
+    width: 34,
+    height: 34,
+    borderRadius: '50%',
+    border: '2px solid transparent',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  warnaSwatchAktif: {
+    border: '2px solid #fff',
+    boxShadow: '0 0 0 2px rgba(255,255,255,0.3)',
   },
   tombolRow: {
     display: 'flex',

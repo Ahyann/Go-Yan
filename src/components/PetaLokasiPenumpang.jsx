@@ -6,6 +6,8 @@ import { useLokasiOjek } from '../lib/useLokasiOjek'
 import { usePesanPenumpang } from '../lib/usePesanPenumpang'
 import { usePesanOjek } from '../lib/usePesanOjek'
 import { useProfilIkon } from '../lib/useProfilIkon'
+import { useWarnaGlow } from '../lib/useWarnaGlow'
+import { ambilWarnaGlow } from '../lib/warnaGlow'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { LOKASI_OFFICE, LOKASI_UPN } from '../lib/constants'
 
@@ -30,14 +32,14 @@ const ikonPenumpang = L.divIcon({
   popupAnchor: [37, -10],
 })
 
-function buatIkonSaya(namaFile) {
+function buatIkonSaya(namaFile, warna) {
   return L.divIcon({
     className: '',
     html: `<div style="isolation: isolate;">
       <img src="/icons/${namaFile}" style="
         width:24px;height:24px;
         image-rendering: pixelated;
-        filter: drop-shadow(0 0 6px #5ED0FF) drop-shadow(0 0 10px #2B9EE8);
+        filter: drop-shadow(0 0 6px ${warna.utama}) drop-shadow(0 0 10px ${warna.kuat});
       " />
     </div>`,
     iconSize: [24, 24],
@@ -99,7 +101,9 @@ export default function PetaLokasiPenumpang({
   const { pesan, hapusPesan } = usePesanPenumpang()
   const { pesan: pesanSaya, hapusPesan: hapusPesanSaya } = usePesanOjek()
   const { ikonAhyan } = useProfilIkon()
-  const ikonSaya = useMemo(() => buatIkonSaya(ikonAhyan), [ikonAhyan])
+  const { warnaAhyan } = useWarnaGlow()
+  const warnaAktif = ambilWarnaGlow(warnaAhyan)
+  const ikonSaya = useMemo(() => buatIkonSaya(ikonAhyan, warnaAktif), [ikonAhyan, warnaAktif])
   const pusat = posisiValid ? [lokasi.lat, lokasi.lng] : PUSAT_DEFAULT
   const tampilkanTombolLokasi = typeof onToggleLokasi === 'function'
   const mapRef = useRef(null)

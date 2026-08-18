@@ -8,6 +8,8 @@ import { useLokasiPenumpang } from '../lib/useLokasiPenumpang'
 import { usePesanOjek } from '../lib/usePesanOjek'
 import { usePesanPenumpang } from '../lib/usePesanPenumpang'
 import { useProfilIkon } from '../lib/useProfilIkon'
+import { useWarnaGlow } from '../lib/useWarnaGlow'
+import { ambilWarnaGlow } from '../lib/warnaGlow'
 import { useLanguage } from '../context/LanguageContext.jsx'
 
 const PUSAT_DEFAULT = [-6.2088, 106.8456]
@@ -17,14 +19,14 @@ const BATAS_PETA = [
   [6.5, 141.5],
 ]
 
-function buatIkonOjek(namaFile) {
+function buatIkonOjek(namaFile, warna) {
   return L.divIcon({
     className: '',
     html: `<div style="isolation: isolate;">
       <img src="/icons/${namaFile}" style="
         width:24px;height:24px;
         image-rendering: pixelated;
-        filter: drop-shadow(0 0 6px #5ED0FF) drop-shadow(0 0 12px #2B9EE8);
+        filter: drop-shadow(0 0 6px ${warna.utama}) drop-shadow(0 0 12px ${warna.kuat});
       " />
     </div>`,
     iconSize: [24, 24],
@@ -108,7 +110,9 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
   const { pesan, hapusPesan } = usePesanOjek()
   const { pesan: pesanSaya, hapusPesan: hapusPesanSaya } = usePesanPenumpang()
   const { ikonAhyan } = useProfilIkon()
-  const ikonOjek = useMemo(() => buatIkonOjek(ikonAhyan), [ikonAhyan])
+  const { warnaAhyan } = useWarnaGlow()
+  const warnaAktif = ambilWarnaGlow(warnaAhyan)
+  const ikonOjek = useMemo(() => buatIkonOjek(ikonAhyan, warnaAktif), [ikonAhyan, warnaAktif])
   const posisiValid = lokasiOjek?.lat != null && lokasiOjek?.lng != null
   const posisiSayaValid = lokasiSaya?.lat != null && lokasiSaya?.lng != null
   const adaPosisiOjek = posisiValid && permintaan?.status === STATUS_PERMINTAAN.DITERIMA
