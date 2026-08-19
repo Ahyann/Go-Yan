@@ -89,6 +89,16 @@ if (typeof window !== 'undefined') {
       audioCtx.resume()
     }
   })
+
+  const bukaKunciAudio = () => {
+    const ctx = getAudioCtx()
+    if (ctx.state === 'suspended') {
+      ctx.resume()
+    }
+  }
+  document.addEventListener('touchstart', bukaKunciAudio, { passive: true })
+  document.addEventListener('touchend', bukaKunciAudio, { passive: true })
+  document.addEventListener('click', bukaKunciAudio, { passive: true })
 }
 
 export async function playSpiderSound() {
