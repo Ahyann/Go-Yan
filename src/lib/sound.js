@@ -1,8 +1,3 @@
-// Suara ini dibuat langsung oleh browser (Web Audio API), BUKAN file
-// audio yang diputar. Alasannya dua: (1) gak bisa makein rekaman asli
-// dari film Spider-Man karena itu berhak cipta, (2) sintesis kode kayak
-// gini nol kilobyte tambahan ke ukuran app — cocok sama prinsip "jangan
-// berat" dari awal.
 let audioCtx
 
 function getAudioCtx() {
@@ -77,6 +72,25 @@ function putarBuffer(buffer) {
   source.start(0)
 }
 
+// Kalau suatu suara GAGAL bunyi gara-gara AudioContext masih kekunci
+// (misal app abis di-background terus HP-nya sengaja nyoba mainin
+// suara notif sebelum sempet ada sentuhan baru), jangan langsung
+// dibuang gitu aja — simpen dulu "siapa yang mau diputer", nanti
+// begitu kamu nyentuh layar lagi (AudioContext kebuka), otomatis
+// diputer. Jadi suaranya cuma TELAT dikit, bukan ilang sama sekali.
+let suaraTertunda = null
+
+function antrikanSuara(namaFungsi) {
+  suaraTertunda = namaFungsi
+}
+
+function putarSuaraTertundaJikaAda() {
+  if (!suaraTertunda) return
+  const nama = suaraTertunda
+  suaraTertunda = null
+  PETA_FUNGSI_SUARA[nama]?.()
+}
+
 if (typeof window !== 'undefined') {
   muatSpiderBuffer()
   muatNotifSelesaiBuffer()
@@ -93,7 +107,11 @@ if (typeof window !== 'undefined') {
   const bukaKunciAudio = () => {
     const ctx = getAudioCtx()
     if (ctx.state === 'suspended') {
-      ctx.resume()
+      ctx.resume().then(() => {
+        putarSuaraTertundaJikaAda()
+      })
+    } else {
+      putarSuaraTertundaJikaAda()
     }
   }
   document.addEventListener('touchstart', bukaKunciAudio, { passive: true })
@@ -113,7 +131,10 @@ export async function playSpiderSound() {
     await ctx.resume()
   }
 
-  if (ctx.state !== 'running') return
+  if (ctx.state !== 'running') {
+    antrikanSuara('playSpiderSound')
+    return
+  }
 
   putarBuffer(spiderBuffer)
 }
@@ -130,7 +151,10 @@ export async function playNotifSelesai() {
     await ctx.resume()
   }
 
-  if (ctx.state !== 'running') return false
+  if (ctx.state !== 'running') {
+    antrikanSuara('playNotifSelesai')
+    return false
+  }
 
   putarBuffer(notifSelesaiBuffer)
   return true
@@ -148,7 +172,10 @@ export async function playChatSound() {
     await ctx.resume()
   }
 
-  if (ctx.state !== 'running') return false
+  if (ctx.state !== 'running') {
+    antrikanSuara('playChatSound')
+    return false
+  }
 
   putarBuffer(chatBuffer)
   return true
@@ -166,7 +193,10 @@ export async function playReminderSound() {
     await ctx.resume()
   }
 
-  if (ctx.state !== 'running') return false
+  if (ctx.state !== 'running') {
+    antrikanSuara('playReminderSound')
+    return false
+  }
 
   putarBuffer(reminderBuffer)
   return true
@@ -184,8 +214,19 @@ export async function playMissionSuccess() {
     await ctx.resume()
   }
 
-  if (ctx.state !== 'running') return false
+  if (ctx.state !== 'running') {
+    antrikanSuara('playMissionSuccess')
+    return false
+  }
 
   putarBuffer(missionSuccessBuffer)
   return true
+}
+
+const PETA_FUNGSI_SUARA = {
+  playSpiderSound,
+  playNotifSelesai,
+  playChatSound,
+  playReminderSound,
+  playMissionSuccess,
 }
