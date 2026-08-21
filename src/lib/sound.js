@@ -72,12 +72,6 @@ function putarBuffer(buffer) {
   source.start(0)
 }
 
-// Kalau suatu suara GAGAL bunyi gara-gara AudioContext masih kekunci
-// (misal app abis di-background terus HP-nya sengaja nyoba mainin
-// suara notif sebelum sempet ada sentuhan baru), jangan langsung
-// dibuang gitu aja — simpen dulu "siapa yang mau diputer", nanti
-// begitu kamu nyentuh layar lagi (AudioContext kebuka), otomatis
-// diputer. Jadi suaranya cuma TELAT dikit, bukan ilang sama sekali.
 let suaraTertunda = null
 
 function antrikanSuara(namaFungsi) {
