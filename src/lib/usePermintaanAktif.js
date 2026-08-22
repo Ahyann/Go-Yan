@@ -3,18 +3,22 @@ import { doc, onSnapshot, setDoc, updateDoc, deleteDoc } from 'firebase/firestor
 import { db } from './firebase'
 import { STATUS_PERMINTAAN } from './constants'
 import { kirimNotifikasi } from './notifikasi'
+import { useAuth } from '../context/AuthContext.jsx'
 
 const REF = doc(db, 'state', 'permintaanAktif')
 
 export function usePermintaanAktif() {
+  const { user } = useAuth()
   const [permintaan, setPermintaan] = useState(undefined)
 
   useEffect(() => {
+    if (!user) return
+
     const berhentiDengar = onSnapshot(REF, (snap) => {
       setPermintaan(snap.exists() ? snap.data() : null)
     })
     return berhentiDengar
-  }, [])
+  }, [user])
 
   async function kirimGo({ aksi, where, waktu }) {
     await setDoc(REF, {

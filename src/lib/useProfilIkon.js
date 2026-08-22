@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { doc, onSnapshot, setDoc } from 'firebase/firestore'
 import { db } from './firebase'
+import { useAuth } from '../context/AuthContext.jsx'
 
 const REF = doc(db, 'state', 'profilIkon')
 
@@ -11,16 +12,19 @@ const REF = doc(db, 'state', 'profilIkon')
 const DEFAULT_IKON_AHYAN = 'spidericon.png'
 
 export function useProfilIkon() {
+  const { user } = useAuth()
   const [ikonAhyan, setIkonAhyan] = useState(DEFAULT_IKON_AHYAN)
 
   useEffect(() => {
+    if (!user) return
+
     const berhentiDengar = onSnapshot(REF, (snap) => {
       if (snap.exists() && snap.data().ahyan) {
         setIkonAhyan(snap.data().ahyan)
       }
     })
     return berhentiDengar
-  }, [])
+  }, [user])
 
   async function pilihIkonAhyan(namaFile) {
     await setDoc(REF, { ahyan: namaFile }, { merge: true })
