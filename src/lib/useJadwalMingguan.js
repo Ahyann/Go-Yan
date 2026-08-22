@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { doc, onSnapshot, setDoc } from 'firebase/firestore'
 import { db } from './firebase'
+import { useAuth } from '../context/AuthContext.jsx'
 
 const REF = doc(db, 'state', 'jadwalMingguan')
 
@@ -37,9 +38,12 @@ function kodeMingguIni() {
 }
 
 export function useJadwalMingguan() {
+  const { user } = useAuth()
   const [jadwal, setJadwal] = useState(undefined)
 
   useEffect(() => {
+    if (!user) return
+
     const berhentiDengar = onSnapshot(REF, (snap) => {
       const mingguSekarang = kodeMingguIni()
 
@@ -57,7 +61,7 @@ export function useJadwalMingguan() {
       setJadwal({ ...KOSONG, ...data })
     })
     return berhentiDengar
-  }, [])
+  }, [user])
 
   async function simpanJadwal(dataBaru) {
     await setDoc(REF, { ...dataBaru, kodeMinggu: kodeMingguIni() })
