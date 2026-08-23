@@ -44,6 +44,7 @@ export default function PenumpangView({
   const [showGo, setShowGo] = useState(false)
   const [adaChatBaru, setAdaChatBaru] = useState(false)
   const [adaRiwayatBaru, setAdaRiwayatBaru] = useState(false)
+  const [baruDibatalkan, setBaruDibatalkan] = useState(false)
   const tabAktifRef = useRef('home')
 
   useEffect(() => {
@@ -129,6 +130,8 @@ export default function PenumpangView({
       setShowGo(true)
     } else if (modeGo === 'batal') {
       onBatal()
+      setBaruDibatalkan(true)
+      setTimeout(() => setBaruDibatalkan(false), 5000)
     }
   }
 
@@ -148,6 +151,7 @@ export default function PenumpangView({
             lokasiError={lokasiError}
             mulaiLokasi={mulaiLokasi}
             berhentiLokasi={berhentiLokasi}
+            baruDibatalkan={baruDibatalkan}
           />
         )}
         {tabAktif === 'jadwal' && (

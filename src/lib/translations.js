@@ -30,7 +30,8 @@ export const translations = {
     belumAdaPermintaan: 'Belum ada permintaan masuk',
 
     // --- PetaStatus (badge status) ---
-    belumAdaPerjalanan: 'Belum ada perjalanan aktif',
+    belumAdaPerjalanan: 'Ready for a ride?',
+    perjalananDibatalkan: 'Kamu batalin perjalanan',
     menungguAhyanTerima: 'Menunggu Ahyan menerima…',
     ahyanBelumBisa: 'Ahyan belum bisa sekarang!',
     ahyanUdahTerima: 'Okay',
@@ -166,7 +167,8 @@ export const translations = {
     belumAdaPermintaan: 'No requests yet',
 
     // --- PetaStatus (badge status) ---
-    belumAdaPerjalanan: 'No active trip yet',
+    belumAdaPerjalanan: 'Ready for a ride?',
+    perjalananDibatalkan: 'You cancelled the ride',
     menungguAhyanTerima: 'Waiting for Ahyan to accept…',
     ahyanBelumBisa: "Ahyan can't right now!",
     ahyanUdahTerima: 'Okay!',
