@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLokasiSaya } from '../lib/useLokasiSaya'
 import { usePesanPenumpang } from '../lib/usePesanPenumpang'
-import { playChatSound } from '../lib/sound'
+import { playChatSound, playSpiderSound } from '../lib/sound'
 import { useReminderKeberangkatan } from '../lib/useReminderKeberangkatan'
 import { STATUS_PERMINTAAN } from '../lib/constants'
 import OjekNav from '../components/OjekNav.jsx'
+import PermintaanBaruToast from '../components/PermintaanBaruToast.jsx'
 import OjekHomeTab from './OjekHomeTab.jsx'
 import OjekJadwalTab from './OjekJadwalTab.jsx'
 import OjekRiwayatTab from './OjekRiwayatTab.jsx'
@@ -44,6 +45,7 @@ export default function OjekView({
   const [adaChatBaru, setAdaChatBaru] = useState(false)
   const [adaRiwayatBaru, setAdaRiwayatBaru] = useState(false)
   const [adaPermintaanBaru, setAdaPermintaanBaru] = useState(false)
+  const [toastPermintaan, setToastPermintaan] = useState(null)
   const tabAktifRef = useRef('home')
 
   useEffect(() => {
@@ -77,6 +79,8 @@ export default function OjekView({
 
     if (permintaanBaru && tabAktifRef.current !== 'home') {
       setAdaPermintaanBaru(true)
+      setToastPermintaan(permintaan)
+      playSpiderSound()
     }
   }, [permintaan])
 
@@ -161,6 +165,17 @@ export default function OjekView({
         )}
         {tabAktif === 'akun' && <OjekAccountTab />}
       </div>
+
+      {toastPermintaan && (
+        <PermintaanBaruToast
+          permintaan={toastPermintaan}
+          onTap={() => {
+            setToastPermintaan(null)
+            handleTabChange('home')
+          }}
+          onDismiss={() => setToastPermintaan(null)}
+        />
+      )}
 
       <OjekNav
         tabAktif={tabAktif}
