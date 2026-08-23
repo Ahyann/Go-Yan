@@ -31,10 +31,10 @@ export const translations = {
 
     // --- PetaStatus (badge status) ---
     belumAdaPerjalanan: 'Ready for a ride?',
-    perjalananDibatalkan: 'Kamu batalin pesenannya',
+    perjalananDibatalkan: 'Kamu membatalkan pesanannya',
     menungguAhyanTerima: 'Menunggu Ahyan menerima…',
     ahyanBelumBisa: 'Ahyan belum bisa sekarang!',
-    ahyanUdahTerima: 'Okay',
+    ahyanUdahTerima: 'Okay!',
     otwText: 'On My Way!',
     bubbleDefault: 'Otw dutzz!',
 
