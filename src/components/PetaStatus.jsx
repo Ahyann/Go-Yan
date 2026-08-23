@@ -319,7 +319,8 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
 
           {permintaan?.status === STATUS_PERMINTAAN.DITOLAK && (
             <div style={s.badgeTolak}>
-              <span>{t.ahyanBelumBisa}</span>
+              <img src={`/icons/${ikonAhyan}`} style={s.tolakAvatar} alt="" />
+              <span style={s.tolakText}>{t.ahyanBelumBisa}</span>
               <button style={s.okeTolakBtn} onClick={onOkeTolak}>{t.selesaiOke}</button>
             </div>
           )}
@@ -380,10 +381,20 @@ const s = {
   menungguText: { display: 'flex', alignItems: 'center', justifyContent: 'center' },
   badgeTolak: {
     background: 'rgba(11,14,26,0.95)', color: 'var(--text-dim)', fontSize: 13,
-    padding: '10px 14px', borderRadius: 999,
+    padding: '8px 10px 8px 8px', borderRadius: 999,
     border: '1px solid var(--web-red)',
-    display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10,
+    display: 'flex', alignItems: 'center', gap: 10,
   },
+  tolakAvatar: {
+    flexShrink: 0,
+    width: 30,
+    height: 30,
+    borderRadius: '50%',
+    objectFit: 'cover',
+    border: '1px solid var(--web-red)',
+    background: '#0B0E1A',
+  },
+  tolakText: { flex: 1, textAlign: 'left' },
   okeTolakBtn: {
     flexShrink: 0,
     background: 'var(--web-red)',
