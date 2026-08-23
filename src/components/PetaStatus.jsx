@@ -333,7 +333,7 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
         <div style={s.overlay}>
           {!permintaan && (
             <div style={s.badgeIdle}>
-              <img src="/icons/spidericon.png" style={s.idleLogo} alt="" />
+              <img src={`/icons/${ikonAhyan}`} style={s.idleLogo} alt="" />
               <span>: <TeksMengetik teks={baruDibatalkan ? t.perjalananDibatalkan : t.belumAdaPerjalanan} /></span>
             </div>
           )}
