@@ -87,6 +87,31 @@ function GeserKePosisi({ lat, lng }) {
   return null
 }
 
+function TeksMengetik({ teks }) {
+  const [jumlahHuruf, setJumlahHuruf] = useState(0)
+
+  useEffect(() => {
+    setJumlahHuruf(0)
+    const id = setInterval(() => {
+      setJumlahHuruf((n) => {
+        if (n >= teks.length) {
+          clearInterval(id)
+          return n
+        }
+        return n + 1
+      })
+    }, 45)
+    return () => clearInterval(id)
+  }, [teks])
+
+  return (
+    <>
+      {teks.slice(0, jumlahHuruf)}
+      {jumlahHuruf < teks.length && <span className="typing-cursor">|</span>}
+    </>
+  )
+}
+
 function IkonLabaLaba() {
   return (
     <svg
@@ -103,7 +128,7 @@ function IkonLabaLaba() {
   )
 }
 
-export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef: mapRefLuar }) {
+export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef: mapRefLuar, baruDibatalkan = false }) {
   const { t } = useLanguage()
   const lokasiOjek = useLokasiOjek()
   const lokasiSaya = useLokasiPenumpang()
@@ -306,7 +331,12 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
 
       {tampilkanOverlay && (
         <div style={s.overlay}>
-          {!permintaan && <div style={s.badgeIdle}>{t.belumAdaPerjalanan}</div>}
+          {!permintaan && (
+            <div style={s.badgeIdle}>
+              <img src="/icons/spidericon.png" style={s.idleLogo} alt="" />
+              <span>: <TeksMengetik teks={baruDibatalkan ? t.perjalananDibatalkan : t.belumAdaPerjalanan} /></span>
+            </div>
+          )}
 
           {permintaan?.status === STATUS_PERMINTAAN.MENUNGGU && (
             <div style={s.badgeMenunggu}>
@@ -368,9 +398,16 @@ const s = {
     lineHeight: 1.2,
   },
   badgeIdle: {
-    background: 'rgba(11,14,26,0.9)', color: 'var(--text-dim)', fontSize: 13,
-    padding: '10px 14px', borderRadius: 999, textAlign: 'center',
+    background: 'rgba(11,14,26,0.9)', color: '#fff', fontSize: 13,
+    padding: '10px 14px', borderRadius: 999,
     border: '1px solid var(--line)',
+    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+  },
+  idleLogo: {
+    flexShrink: 0,
+    width: 20,
+    height: 20,
+    objectFit: 'contain',
   },
   badgeMenunggu: {
     background: 'rgba(11,14,26,0.95)', color: 'var(--text)', fontSize: 13,
