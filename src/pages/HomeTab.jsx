@@ -7,7 +7,7 @@ import { useLanguage } from '../context/LanguageContext.jsx'
 import PetaStatus from '../components/PetaStatus.jsx'
 import KirimPesanPopup from '../components/KirimPesanPopup.jsx'
 
-export default function HomeTab({ permintaan, lokasiAktif, lokasiError, mulaiLokasi, berhentiLokasi, onBatal }) {
+export default function HomeTab({ permintaan, lokasiAktif, lokasiError, mulaiLokasi, berhentiLokasi }) {
   const { t } = useLanguage()
   const lokasiOjek = useLokasiOjek()
   const { kirimPesan } = usePesanPenumpang()
@@ -42,7 +42,7 @@ export default function HomeTab({ permintaan, lokasiAktif, lokasiError, mulaiLok
         <h1 style={s.title}>{t.penumpangHalo}</h1>
       </div>
 
-      <PetaStatus permintaan={permintaan} mapRef={mapRef} onOkeTolak={onBatal} />
+      <PetaStatus permintaan={permintaan} mapRef={mapRef} />
 
       {sedangJalan && createPortal(
         <>

@@ -103,7 +103,7 @@ function IkonLabaLaba() {
   )
 }
 
-export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef: mapRefLuar, onOkeTolak }) {
+export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef: mapRefLuar }) {
   const { t } = useLanguage()
   const lokasiOjek = useLokasiOjek()
   const lokasiSaya = useLokasiPenumpang()
@@ -321,7 +321,6 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
             <div style={s.badgeTolak}>
               <img src={`/icons/${ikonAhyan}`} style={s.tolakAvatar} alt="" />
               <span style={s.tolakText}>: {t.ahyanBelumBisa}</span>
-              <button style={s.okeTolakBtn} onClick={onOkeTolak}>{t.selesaiOke}</button>
             </div>
           )}
 
@@ -383,25 +382,15 @@ const s = {
     background: 'rgba(11,14,26,0.95)', color: '#fff', fontSize: 13,
     padding: '10px 14px', borderRadius: 999,
     border: '1px solid var(--web-red)',
-    display: 'flex', alignItems: 'center', gap: 4,
+    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
   },
   tolakAvatar: {
     flexShrink: 0,
-    width: 30,
-    height: 30,
-    marginLeft: 6,
+    width: 22,
+    height: 22,
     objectFit: 'contain',
   },
-  tolakText: { flex: 1, textAlign: 'left' },
-  okeTolakBtn: {
-    flexShrink: 0,
-    background: 'var(--web-red)',
-    color: '#fff',
-    fontSize: 12,
-    fontWeight: 700,
-    padding: '6px 14px',
-    borderRadius: 999,
-  },
+  tolakText: { textAlign: 'left' },
   dotKuning: { width: 7, height: 7, borderRadius: '50%', background: 'var(--warn)', display: 'inline-block', marginRight: 6 },
   dotHijau: { width: 7, height: 7, borderRadius: '50%', background: 'var(--signal)', display: 'inline-block', marginRight: 6 },
   badgeLive: {

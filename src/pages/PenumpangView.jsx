@@ -148,7 +148,6 @@ export default function PenumpangView({
             lokasiError={lokasiError}
             mulaiLokasi={mulaiLokasi}
             berhentiLokasi={berhentiLokasi}
-            onBatal={onBatal}
           />
         )}
         {tabAktif === 'jadwal' && (
