@@ -1,4 +1,4 @@
-# Go-Yan 🕷️
+# Go-Yan 
 
 **Aplikasi ojek pribadi** yang dibangun buat kebutuhan nyata sehari-hari: nganter-jemput sepupu ke kampus/kantor. Dua peran (Ojek & Penumpang), data real-time, live GPS 2 arah, dan tema visual terinspirasi Spider-Man. Dibangun dari nol sebagai proyek belajar frontend development.
 
