@@ -31,7 +31,7 @@ export const translations = {
 
     // --- PetaStatus (badge status) ---
     belumAdaPerjalanan: 'Ready for a ride?',
-    perjalananDibatalkan: 'Kamu batalin perjalanan',
+    perjalananDibatalkan: 'Kamu batalin pesenannya',
     menungguAhyanTerima: 'Menunggu Ahyan menerima…',
     ahyanBelumBisa: 'Ahyan belum bisa sekarang!',
     ahyanUdahTerima: 'Okay',

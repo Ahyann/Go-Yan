@@ -350,14 +350,14 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
           {permintaan?.status === STATUS_PERMINTAAN.DITOLAK && (
             <div style={s.badgeTolak}>
               <img src={`/icons/${ikonAhyan}`} style={s.tolakAvatar} alt="" />
-              <span style={s.tolakText}>: {t.ahyanBelumBisa}</span>
+              <span style={s.tolakText}>: <TeksMengetik teks={t.ahyanBelumBisa} /></span>
             </div>
           )}
 
           {permintaan?.status === STATUS_PERMINTAAN.DITERIMA && (
             <div style={s.badgeLive}>
-              <span style={s.dotHijau} />
-              {adaPosisiOjek ? t.otwText : t.ahyanUdahTerima}
+              <img src={`/icons/${ikonAhyan}`} style={s.liveAvatar} alt="" />
+              <span>: <TeksMengetik teks={adaPosisiOjek ? t.otwText : t.ahyanUdahTerima} /></span>
             </div>
           )}
         </div>
@@ -429,10 +429,11 @@ const s = {
   },
   tolakText: { textAlign: 'left' },
   dotKuning: { width: 7, height: 7, borderRadius: '50%', background: 'var(--warn)', display: 'inline-block', marginRight: 6 },
-  dotHijau: { width: 7, height: 7, borderRadius: '50%', background: 'var(--signal)', display: 'inline-block', marginRight: 6 },
+  liveAvatar: { flexShrink: 0, width: 22, height: 22, objectFit: 'contain' },
   badgeLive: {
     background: 'rgba(11,14,26,0.95)', color: 'var(--text)', fontSize: 13.5, fontWeight: 600,
-    padding: '10px 14px', borderRadius: 999, textAlign: 'center',
+    padding: '10px 14px', borderRadius: 999,
+    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
     border: '1px solid var(--signal)',
   },
 }
