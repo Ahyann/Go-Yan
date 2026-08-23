@@ -305,7 +305,6 @@ export default function PetaLokasiPenumpang({
 
       {tampilkanTombolLokasi && (
         <button
-          className="btn-map-control"
           style={lokasiAktif ? s.lokasiIconAktif : s.lokasiIcon}
           onClick={onToggleLokasi}
           aria-label={lokasiAktif ? t.ariaMatikanLive : t.ariaNyalakanLive}
