@@ -380,7 +380,7 @@ const s = {
   },
   menungguText: { display: 'flex', alignItems: 'center', justifyContent: 'center' },
   badgeTolak: {
-    background: 'rgba(11,14,26,0.95)', color: 'var(--text-dim)', fontSize: 13,
+    background: 'rgba(11,14,26,0.95)', color: '#fff', fontSize: 13,
     padding: '10px 14px', borderRadius: 999,
     border: '1px solid var(--web-red)',
     display: 'flex', alignItems: 'center', gap: 4,
