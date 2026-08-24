@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { playMissionSuccess } from '../lib/sound'
 
@@ -7,10 +7,14 @@ const DURASI_TAMPIL = 3500
 
 export default function MissionSuccessPopup({ onDismiss }) {
   const [tampil, setTampil] = useState(false)
+  const sudahPutarSuara = useRef(false)
 
   useEffect(() => {
     const id = requestAnimationFrame(() => setTampil(true))
-    playMissionSuccess()
+
+    playMissionSuccess().then((berhasil) => {
+      sudahPutarSuara.current = berhasil
+    })
 
     const timer = setTimeout(() => {
       handleClose()
@@ -24,6 +28,10 @@ export default function MissionSuccessPopup({ onDismiss }) {
   }, [])
 
   function handleClose() {
+    if (!sudahPutarSuara.current) {
+      playMissionSuccess()
+      sudahPutarSuara.current = true
+    }
     setTampil(false)
     setTimeout(() => {
       onDismiss()
