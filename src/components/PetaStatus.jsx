@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { MapContainer, TileLayer, Marker, Popup, ZoomControl, useMap } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Popup, ZoomControl, useMap, useMapEvents } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { STATUS_PERMINTAAN, LOKASI_OFFICE, LOKASI_UPN } from '../lib/constants'
@@ -10,9 +10,11 @@ import { usePesanPenumpang } from '../lib/usePesanPenumpang'
 import { useProfilIkon } from '../lib/useProfilIkon'
 import { useWarnaGlow } from '../lib/useWarnaGlow'
 import { ambilWarnaGlow } from '../lib/warnaGlow'
+import { ambilPetaTerakhir, simpanPetaTerakhir } from '../lib/petaTerakhir'
 import { useLanguage } from '../context/LanguageContext.jsx'
 
 const PUSAT_DEFAULT = [-6.2088, 106.8456]
+const KEY_PETA_TERAKHIR = 'go-yan-peta-terakhir-penumpang'
 
 const BATAS_PETA = [
   [-11.5, 94.5],
@@ -74,6 +76,16 @@ const ikonKampus = L.divIcon({
   iconAnchor: [19, 38],
   popupAnchor: [46, -14],
 })
+
+function SimpanPosisiPeta() {
+  useMapEvents({
+    moveend: (e) => {
+      const map = e.target
+      simpanPetaTerakhir(KEY_PETA_TERAKHIR, map.getCenter(), map.getZoom())
+    },
+  })
+  return null
+}
 
 function GeserKePosisi({ lat, lng }) {
   const map = useMap()
@@ -138,6 +150,7 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
   const { warnaAhyan } = useWarnaGlow()
   const warnaAktif = ambilWarnaGlow(warnaAhyan)
   const ikonOjek = useMemo(() => buatIkonOjek(ikonAhyan, warnaAktif), [ikonAhyan, warnaAktif])
+  const posisiAwal = useMemo(() => ambilPetaTerakhir(KEY_PETA_TERAKHIR, PUSAT_DEFAULT, 15), [])
   const posisiValid = lokasiOjek?.lat != null && lokasiOjek?.lng != null
   const posisiSayaValid = lokasiSaya?.lat != null && lokasiSaya?.lng != null
   const adaPosisiOjek = posisiValid && permintaan?.status === STATUS_PERMINTAAN.DITERIMA
@@ -198,8 +211,8 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
     <div style={s.wrap}>
       <MapContainer
         ref={mapRef}
-        center={PUSAT_DEFAULT}
-        zoom={15}
+        center={posisiAwal.center}
+        zoom={posisiAwal.zoom}
         minZoom={5}
         maxBounds={BATAS_PETA}
         maxBoundsViscosity={1.0}
@@ -210,6 +223,7 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
         scrollWheelZoom={true}
       >
         <ZoomControl position="topright" />
+        <SimpanPosisiPeta />
 
         <TileLayer
           url={`https://api.maptiler.com/maps/streets-v4-dark/{z}/{x}/{y}.png?key=${import.meta.env.VITE_MAPTILER_KEY}`}

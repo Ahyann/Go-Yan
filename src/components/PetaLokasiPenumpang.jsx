@@ -1,4 +1,4 @@
-import { MapContainer, TileLayer, Marker, Popup, ZoomControl, useMap } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Popup, ZoomControl, useMap, useMapEvents } from 'react-leaflet'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
@@ -8,10 +8,12 @@ import { usePesanOjek } from '../lib/usePesanOjek'
 import { useProfilIkon } from '../lib/useProfilIkon'
 import { useWarnaGlow } from '../lib/useWarnaGlow'
 import { ambilWarnaGlow } from '../lib/warnaGlow'
+import { ambilPetaTerakhir, simpanPetaTerakhir } from '../lib/petaTerakhir'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { LOKASI_OFFICE, LOKASI_UPN } from '../lib/constants'
 
 const PUSAT_DEFAULT = [-6.2088, 106.8456]
+const KEY_PETA_TERAKHIR = 'go-yan-peta-terakhir-ojek'
 
 const BATAS_PETA = [
   [-11.5, 94.5],
@@ -86,6 +88,16 @@ function GeserKePosisi({ lat, lng }) {
   return null
 }
 
+function SimpanPosisiPeta() {
+  useMapEvents({
+    moveend: (e) => {
+      const map = e.target
+      simpanPetaTerakhir(KEY_PETA_TERAKHIR, map.getCenter(), map.getZoom())
+    },
+  })
+  return null
+}
+
 export default function PetaLokasiPenumpang({
   lokasi,
   teksKosong,
@@ -104,7 +116,8 @@ export default function PetaLokasiPenumpang({
   const { warnaAhyan } = useWarnaGlow()
   const warnaAktif = ambilWarnaGlow(warnaAhyan)
   const ikonSaya = useMemo(() => buatIkonSaya(ikonAhyan, warnaAktif), [ikonAhyan, warnaAktif])
-  const pusat = posisiValid ? [lokasi.lat, lokasi.lng] : PUSAT_DEFAULT
+  const posisiAwal = useMemo(() => ambilPetaTerakhir(KEY_PETA_TERAKHIR, PUSAT_DEFAULT, 13), [])
+  const pusat = posisiValid ? [lokasi.lat, lokasi.lng] : posisiAwal.center
   const tampilkanTombolLokasi = typeof onToggleLokasi === 'function'
   const mapRef = useRef(null)
   const markerRef = useRef(null)
@@ -169,7 +182,7 @@ export default function PetaLokasiPenumpang({
       <MapContainer
         ref={mapRef}
         center={pusat}
-        zoom={lokasi ? 16 : 13}
+        zoom={lokasi ? 16 : posisiAwal.zoom}
         minZoom={5}
         maxBounds={BATAS_PETA}
         maxBoundsViscosity={1.0}
@@ -179,6 +192,7 @@ export default function PetaLokasiPenumpang({
         dragging={true}
         scrollWheelZoom={true}
       >
+        <SimpanPosisiPeta />
         <ZoomControl position="topright" />
 
         <TileLayer
