@@ -33,7 +33,7 @@ export default function App() {
 function AppIsi() {
   const { user, role, logout } = useAuth()
   const { permintaan, kirimGo, terima, tolak, selesai, batal } = usePermintaanAktif()
-  const { riwayat, siap: riwayatSiap, tambahRiwayat, tandaiLunas, hapusRiwayat } = useRiwayat()
+  const { riwayat, siap: riwayatSiap, tambahRiwayat, tandaiLunas, hapusRiwayat, editRiwayat } = useRiwayat()
   const { jadwal: jadwalMingguan, simpanJadwal, tandaiSelesai: tandaiSelesaiJadwal } = useJadwalMingguan()
   const { data: notifSelesaiData, tandaiSelesai, hapusNotifSelesai } = usePesananSelesai()
   usePresence(role)
@@ -110,6 +110,7 @@ function AppIsi() {
           onSelesai={selesaikanRide}
           onTandaiLunas={tandaiLunas}
           onHapusRiwayat={hapusRiwayat}
+          onEditRiwayat={editRiwayat}
         />
       ) : (
         <PenumpangView
