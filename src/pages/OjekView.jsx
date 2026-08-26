@@ -40,6 +40,7 @@ export default function OjekView({
   onSelesai,
   onTandaiLunas,
   onHapusRiwayat,
+  onEditRiwayat,
 }) {
   const [tabAktif, setTabAktif] = useState('home')
   const [adaChatBaru, setAdaChatBaru] = useState(false)
@@ -161,6 +162,7 @@ export default function OjekView({
             riwayat={riwayat}
             onTandaiLunas={onTandaiLunas}
             onHapusRiwayat={onHapusRiwayat}
+            onEditRiwayat={onEditRiwayat}
           />
         )}
         {tabAktif === 'akun' && <OjekAccountTab />}

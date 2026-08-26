@@ -34,5 +34,9 @@ export function useRiwayat() {
     await deleteDoc(doc(db, 'riwayat', id))
   }
 
-  return { riwayat, siap, tambahRiwayat, tandaiLunas, hapusRiwayat }
+  async function editRiwayat(id, data) {
+    await updateDoc(doc(db, 'riwayat', id), data)
+  }
+
+  return { riwayat, siap, tambahRiwayat, tandaiLunas, hapusRiwayat, editRiwayat }
 }

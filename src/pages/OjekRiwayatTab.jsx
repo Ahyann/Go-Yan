@@ -2,11 +2,13 @@ import { useRef, useState } from 'react'
 import { STATUS_BAYAR, formatRupiah } from '../lib/constants'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import MonthPickerPopup from '../components/MonthPickerPopup.jsx'
+import EditRiwayatPopup from '../components/EditRiwayatPopup.jsx'
 import SwipeableItem from '../components/SwipeableItem.jsx'
 
-export default function OjekRiwayatTab({ riwayat, onTandaiLunas, onHapusRiwayat }) {
+export default function OjekRiwayatTab({ riwayat, onTandaiLunas, onHapusRiwayat, onEditRiwayat }) {
   const { t } = useLanguage()
   const [showBulan, setShowBulan] = useState(false)
+  const [itemEdit, setItemEdit] = useState(null)
 
   const sekarang = new Date()
   const [bulanAktif, setBulanAktif] = useState(sekarang.getMonth())
@@ -78,7 +80,7 @@ export default function OjekRiwayatTab({ riwayat, onTandaiLunas, onHapusRiwayat 
           <div style={s.kosong}>{t.belumAdaRiwayatBulanIni}</div>
         ) : (
           riwayatBulanIni.map((r) => (
-            <SwipeableItem key={r.id} onDelete={() => onHapusRiwayat(r.id)}>
+            <SwipeableItem key={r.id} onDelete={() => onHapusRiwayat(r.id)} onEdit={() => setItemEdit(r)}>
               <div style={s.item}>
                 <div>
                   <div style={s.itemJam}>{r.jam} · {r.tanggal.split('-')[2]}</div>
@@ -108,6 +110,17 @@ export default function OjekRiwayatTab({ riwayat, onTandaiLunas, onHapusRiwayat 
           tahun={tahunAktif}
           onClose={() => setShowBulan(false)}
           onSelect={handlePilihBulan}
+        />
+      )}
+
+      {itemEdit && (
+        <EditRiwayatPopup
+          item={itemEdit}
+          onClose={() => setItemEdit(null)}
+          onSimpan={async (data) => {
+            await onEditRiwayat(itemEdit.id, data)
+            setItemEdit(null)
+          }}
         />
       )}
     </main>
