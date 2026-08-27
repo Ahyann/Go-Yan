@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useLanguage } from '../context/LanguageContext.jsx'
+import { STATUS_BAYAR } from '../lib/constants'
 
 export default function EditRiwayatPopup({ item, onClose, onSimpan }) {
   const { t } = useLanguage()
@@ -7,6 +8,7 @@ export default function EditRiwayatPopup({ item, onClose, onSimpan }) {
   const [where, setWhere] = useState(item.where)
   const [jam, setJam] = useState(item.jam)
   const [tarif, setTarif] = useState(String(item.tarif))
+  const [statusBayar, setStatusBayar] = useState(item.statusBayar)
 
   function handleSimpan() {
     onSimpan({
@@ -14,6 +16,7 @@ export default function EditRiwayatPopup({ item, onClose, onSimpan }) {
       where,
       jam,
       tarif: Number(tarif) || 0,
+      statusBayar,
     })
   }
 
@@ -61,6 +64,26 @@ export default function EditRiwayatPopup({ item, onClose, onSimpan }) {
             value={tarif}
             onChange={(e) => setTarif(e.target.value)}
           />
+        </label>
+
+        <label style={s.label}>
+          {t.labelStatusBayar}
+          <div style={s.statusRow}>
+            <button
+              type="button"
+              style={statusBayar === STATUS_BAYAR.BELUM ? s.statusBtnAktifBelum : s.statusBtn}
+              onClick={() => setStatusBayar(STATUS_BAYAR.BELUM)}
+            >
+              {t.belum}
+            </button>
+            <button
+              type="button"
+              style={statusBayar === STATUS_BAYAR.LUNAS ? s.statusBtnAktifLunas : s.statusBtn}
+              onClick={() => setStatusBayar(STATUS_BAYAR.LUNAS)}
+            >
+              {t.lunas}
+            </button>
+          </div>
         </label>
 
         <div style={s.tombolRow}>
@@ -137,6 +160,39 @@ const s = {
     background: 'var(--nav-red)',
     color: '#fff',
     fontSize: 14,
+    fontWeight: 600,
+  },
+  statusRow: {
+    display: 'flex',
+    gap: 8,
+  },
+  statusBtn: {
+    flex: 1,
+    padding: '10px 0',
+    borderRadius: 10,
+    background: 'rgba(255,255,255,0.06)',
+    border: '1px solid var(--blue-border)',
+    color: 'var(--text)',
+    fontSize: 13,
+  },
+  statusBtnAktifBelum: {
+    flex: 1,
+    padding: '10px 0',
+    borderRadius: 10,
+    background: 'rgba(255,180,60,0.18)',
+    border: '1px solid #FFB43C',
+    color: '#FFB43C',
+    fontSize: 13,
+    fontWeight: 600,
+  },
+  statusBtnAktifLunas: {
+    flex: 1,
+    padding: '10px 0',
+    borderRadius: 10,
+    background: 'rgba(60,200,120,0.18)',
+    border: '1px solid #3CC878',
+    color: '#3CC878',
+    fontSize: 13,
     fontWeight: 600,
   },
 }
