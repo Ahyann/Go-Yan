@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import { AuthProvider, useAuth } from './context/AuthContext.jsx'
 import { LanguageProvider } from './context/LanguageContext.jsx'
 import { usePermintaanAktif } from './lib/usePermintaanAktif'
@@ -8,9 +8,14 @@ import { dengarkanNotifForeground, kirimNotifikasi } from './lib/notifikasi'
 import { usePresence } from './lib/usePresence'
 import { usePesananSelesai } from './lib/usePesananSelesai'
 import LoginPage from './pages/LoginPage.jsx'
-import OjekView from './pages/OjekView.jsx'
-import PenumpangView from './pages/PenumpangView.jsx'
 import { ROLE, TARIF_PER_RIDE, STATUS_BAYAR } from './lib/constants'
+
+// Lazy-load: Ojek & Penumpang gak pernah kepake bareng dalam satu sesi
+// (dipilih berdasarkan role sekali login), jadi gak perlu ikut kebawa
+// di bundle awal punya peran yang satunya (termasuk Leaflet/peta yang
+// lumayan berat, cuma dipake di dalem 2 komponen ini).
+const OjekView = lazy(() => import('./pages/OjekView.jsx'))
+const PenumpangView = lazy(() => import('./pages/PenumpangView.jsx'))
 
 function tanggalLokalHariIni() {
   const d = new Date()
@@ -66,20 +71,7 @@ function AppIsi() {
   }
 
   if (user === undefined) {
-    return (
-      <div style={s.loading}>
-        <div style={s.loadingEyebrow}>GO-YAN</div>
-        <div style={s.eqRow}>
-          {[0, 1, 2, 3, 4, 5, 6].map((i) => (
-            <span
-              key={i}
-              className="eq-bar"
-              style={{ ...s.eqBar, animationDelay: `${(i % 4) * 0.12}s` }}
-            />
-          ))}
-        </div>
-      </div>
-    )
+    return <LoadingScreen />
   }
 
   if (!user) {
@@ -97,7 +89,7 @@ function AppIsi() {
   }
 
   return (
-    <>
+    <Suspense fallback={<LoadingScreen />}>
       {role === ROLE.OJEK ? (
         <OjekView
           permintaan={permintaan}
@@ -125,7 +117,24 @@ function AppIsi() {
           onDismissNotifSelesai={hapusNotifSelesai}
         />
       )}
-    </>
+    </Suspense>
+  )
+}
+
+function LoadingScreen() {
+  return (
+    <div style={s.loading}>
+      <div style={s.loadingEyebrow}>GO-YAN</div>
+      <div style={s.eqRow}>
+        {[0, 1, 2, 3, 4, 5, 6].map((i) => (
+          <span
+            key={i}
+            className="eq-bar"
+            style={{ ...s.eqBar, animationDelay: `${(i % 4) * 0.12}s` }}
+          />
+        ))}
+      </div>
+    </div>
   )
 }
 
