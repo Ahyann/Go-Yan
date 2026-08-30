@@ -4,7 +4,8 @@ import App from './App.jsx'
 import './index.css'
 
 function setTinggiApp() {
-  document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`)
+  const tinggi = window.visualViewport?.height ?? window.innerHeight
+  document.documentElement.style.setProperty('--app-height', `${tinggi}px`)
 }
 setTinggiApp()
 window.addEventListener('resize', setTinggiApp)
