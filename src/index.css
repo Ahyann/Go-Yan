@@ -93,14 +93,14 @@ button {
 }
 
 .leaflet-popup-content-wrapper {
-  background: transparent;
-  border: none;
-  border-radius: 0;
-  box-shadow: none;
-  padding: 0;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
 }
 .leaflet-popup-content {
-  margin: 0;
+  margin: 0 !important;
 }
 .leaflet-popup-tip-container {
   display: none;
