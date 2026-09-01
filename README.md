@@ -74,8 +74,8 @@ npm run dev
 ## Roadmap
 
 - [ ] Marker lokasi custom (kantor/kampus/rumah) tambahan di peta
-- [ ] Perbaikan bug layout iOS terkait keyboard di beberapa kondisi
-- [ ] Code splitting buat ngecilin ukuran bundle production
+- [x] Perbaikan bug layout iOS terkait keyboard di beberapa kondisi
+- [x] Code splitting buat ngecilin ukuran bundle production
 
 ## Dibuat oleh
 
