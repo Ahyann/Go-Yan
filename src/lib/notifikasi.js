@@ -1,5 +1,4 @@
 import { doc, setDoc, deleteDoc, getDoc } from 'firebase/firestore'
-import { getToken, onMessage } from 'firebase/messaging'
 import { db, getMessagingInstance } from './firebase'
 
 const VAPID_KEY = import.meta.env.VITE_FB_VAPID_KEY
@@ -23,6 +22,7 @@ export async function mintaIzinDanSimpanToken(uid, role) {
   }
 
   try {
+    const { getToken } = await import('firebase/messaging')
     const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js')
     const token = await getToken(messaging, {
       vapidKey: VAPID_KEY,
@@ -46,8 +46,9 @@ export async function mintaIzinDanSimpanToken(uid, role) {
 }
 
 export function dengarkanNotifForeground(callback) {
-  getMessagingInstance().then((messaging) => {
+  getMessagingInstance().then(async (messaging) => {
     if (!messaging) return
+    const { onMessage } = await import('firebase/messaging')
     onMessage(messaging, callback)
   })
 }
