@@ -1,5 +1,5 @@
 import { doc, setDoc, deleteDoc, getDoc } from 'firebase/firestore'
-import { db, getMessagingInstance } from './firebase'
+import { db, auth, getMessagingInstance } from './firebase'
 
 const VAPID_KEY = import.meta.env.VITE_FB_VAPID_KEY
 
@@ -73,9 +73,15 @@ export async function matikanNotifikasi(uid) {
 
 export async function kirimNotifikasi(targetRole, title, body, type = 'umum', tag = type) {
   try {
+    const token = await auth?.currentUser?.getIdToken()
+    if (!token) return
+
     await fetch('/api/send-notification', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
       body: JSON.stringify({ targetRole, title, body, type, tag }),
     })
   } catch (err) {

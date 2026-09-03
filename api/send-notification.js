@@ -2,6 +2,7 @@ import { initializeApp, cert, getApps } from 'firebase-admin/app'
 import { getMessaging } from 'firebase-admin/messaging'
 import { getFirestore } from 'firebase-admin/firestore'
 import { getDatabase } from 'firebase-admin/database'
+import { getAuth } from 'firebase-admin/auth'
 
 if (!getApps().length) {
   const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY)
@@ -14,6 +15,19 @@ if (!getApps().length) {
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
+  }
+
+  const authHeader = req.headers.authorization || ''
+  const idToken = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null
+
+  if (!idToken) {
+    return res.status(401).json({ error: 'Gak ada token' })
+  }
+
+  try {
+    await getAuth().verifyIdToken(idToken)
+  } catch {
+    return res.status(401).json({ error: 'Token gak valid' })
   }
 
   const { targetRole, title, body, type = 'umum', tag = type } = req.body
