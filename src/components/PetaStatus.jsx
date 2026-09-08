@@ -37,14 +37,14 @@ function buatIkonOjek(namaFile, warna) {
   })
 }
 
-function buatIkonSaya(namaFile) {
+function buatIkonSaya(namaFile, warna) {
   return L.divIcon({
     className: '',
     html: `<div style="isolation: isolate;">
       <img src="/icons/${namaFile}" style="
         width:16px;height:24px;
         image-rendering: pixelated;
-        filter: drop-shadow(0 0 5px #E8EDF9) drop-shadow(0 0 8px #8B96B4);
+        filter: drop-shadow(0 0 5px ${warna.utama}) drop-shadow(0 0 8px ${warna.kuat});
       " />
     </div>`,
     iconSize: [16, 24],
@@ -149,10 +149,11 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
   const { pesan, hapusPesan } = usePesanOjek()
   const { pesan: pesanSaya, hapusPesan: hapusPesanSaya } = usePesanPenumpang()
   const { ikonAhyan, ikonFajri } = useProfilIkon()
-  const { warnaAhyan } = useWarnaGlow()
+  const { warnaAhyan, warnaFajri } = useWarnaGlow()
   const warnaAktif = ambilWarnaGlow(warnaAhyan)
+  const warnaAktifFajri = ambilWarnaGlow(warnaFajri)
   const ikonOjek = useMemo(() => buatIkonOjek(ikonAhyan, warnaAktif), [ikonAhyan, warnaAktif])
-  const ikonSaya = useMemo(() => buatIkonSaya(ikonFajri), [ikonFajri])
+  const ikonSaya = useMemo(() => buatIkonSaya(ikonFajri, warnaAktifFajri), [ikonFajri, warnaAktifFajri])
   const posisiAwal = useMemo(() => ambilPetaTerakhir(KEY_PETA_TERAKHIR, PUSAT_DEFAULT, 15), [])
   const posisiValid = lokasiOjek?.lat != null && lokasiOjek?.lng != null
   const posisiSayaValid = lokasiSaya?.lat != null && lokasiSaya?.lng != null

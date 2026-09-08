@@ -4,6 +4,8 @@ import { useLanguage } from '../context/LanguageContext.jsx'
 import { ROLE } from '../lib/constants'
 import { mintaIzinDanSimpanToken, matikanNotifikasi, cekStatusNotifikasi } from '../lib/notifikasi'
 import { useProfilIkon } from '../lib/useProfilIkon'
+import { useWarnaGlow } from '../lib/useWarnaGlow'
+import { WARNA_GLOW_PRESET, ambilWarnaGlow } from '../lib/warnaGlow'
 import { useLockBodyScroll } from '../lib/useLockBodyScroll'
 
 const PILIHAN_IKON_FAJRI = ['fajri.png', 'fajri2.png', 'fajri3.png']
@@ -14,6 +16,8 @@ export default function AccountTab() {
   const [status, setStatus] = useState('') // '', 'loading', 'ok', 'gagal'
   const [pesanError, setPesanError] = useState('')
   const { ikonFajri, pilihIkonFajri } = useProfilIkon()
+  const { warnaFajri, pilihWarnaFajri } = useWarnaGlow()
+  const warnaAktif = ambilWarnaGlow(warnaFajri)
   const [showPilihIkon, setShowPilihIkon] = useState(false)
   const [pilihanSementara, setPilihanSementara] = useState(ikonFajri)
 
@@ -74,10 +78,16 @@ export default function AccountTab() {
             onClick={() => setShowPilihIkon(true)}
             aria-label={t.gantiFoto}
           >
-            <div style={s.avatarWrap}>
+            <div
+              style={{
+                ...s.avatarWrap,
+                border: `2px solid ${warnaAktif.kuat}`,
+                boxShadow: `0 0 8px ${warnaAktif.utama}66`,
+              }}
+            >
               <img src={`/icons/${ikonFajri}`} style={s.avatarImg} alt="" />
             </div>
-            <div style={s.avatarBadge}>
+            <div style={{ ...s.avatarBadge, background: warnaAktif.kuat }}>
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
               </svg>
@@ -130,6 +140,8 @@ export default function AccountTab() {
           ikonFajri={ikonFajri}
           pilihanSementara={pilihanSementara}
           setPilihanSementara={setPilihanSementara}
+          warnaFajri={warnaFajri}
+          pilihWarnaFajri={pilihWarnaFajri}
           onBatal={() => setShowPilihIkon(false)}
           onKonfirmasi={async () => {
             await pilihIkonFajri(pilihanSementara)
@@ -142,7 +154,16 @@ export default function AccountTab() {
   )
 }
 
-function ModalPilihIkon({ ikonFajri, pilihanSementara, setPilihanSementara, onBatal, onKonfirmasi, t }) {
+function ModalPilihIkon({
+  ikonFajri,
+  pilihanSementara,
+  setPilihanSementara,
+  warnaFajri,
+  pilihWarnaFajri,
+  onBatal,
+  onKonfirmasi,
+  t,
+}) {
   useLockBodyScroll()
 
   return (
@@ -154,6 +175,28 @@ function ModalPilihIkon({ ikonFajri, pilihanSementara, setPilihanSementara, onBa
           ikonAktif={ikonFajri}
           onHalamanChange={setPilihanSementara}
         />
+
+        <div style={s.warnaLabel}>Warna glow</div>
+        <div style={s.warnaRow}>
+          {Object.entries(WARNA_GLOW_PRESET).map(([key, warna]) => (
+            <button
+              key={key}
+              style={{
+                ...s.warnaSwatch,
+                background: `linear-gradient(160deg, ${warna.utama}, ${warna.kuat})`,
+                ...(key === warnaFajri ? s.warnaSwatchAktif : {}),
+              }}
+              onClick={() => pilihWarnaFajri(key)}
+              aria-label={warna.nama}
+            >
+              {key === warnaFajri && (
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 6L9 17l-5-5" />
+                </svg>
+              )}
+            </button>
+          ))}
+        </div>
 
         <div style={s.tombolRow}>
           <button style={s.cancelBtn} onClick={onBatal}>
@@ -389,6 +432,30 @@ const s = {
     gap: 16,
   },
   sheetTitle: { fontSize: 15, fontWeight: 700, color: 'var(--text)', textAlign: 'center' },
+  warnaLabel: {
+    fontSize: 12.5,
+    color: '#9FC3E8',
+    textAlign: 'center',
+    marginTop: -6,
+  },
+  warnaRow: {
+    display: 'flex',
+    justifyContent: 'center',
+    gap: 10,
+  },
+  warnaSwatch: {
+    width: 34,
+    height: 34,
+    borderRadius: '50%',
+    border: '2px solid transparent',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  warnaSwatchAktif: {
+    border: '2px solid #fff',
+    boxShadow: '0 0 0 2px rgba(255,255,255,0.3)',
+  },
   carouselWrap: {
     display: 'flex',
     alignItems: 'center',
