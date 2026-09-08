@@ -20,14 +20,14 @@ const BATAS_PETA = [
   [6.5, 141.5],
 ]
 
-function buatIkonPenumpang(namaFile) {
+function buatIkonPenumpang(namaFile, warna) {
   return L.divIcon({
     className: '',
     html: `<div style="isolation: isolate;">
       <img src="/icons/${namaFile}" style="
         width:16px;height:24px;
         image-rendering: pixelated;
-        filter: drop-shadow(0 0 6px #E8EDF9) drop-shadow(0 0 10px #8B96B4);
+        filter: drop-shadow(0 0 6px ${warna.utama}) drop-shadow(0 0 10px ${warna.kuat});
       " />
     </div>`,
     iconSize: [16, 24],
@@ -115,10 +115,11 @@ export default function PetaLokasiPenumpang({
   const { pesan, hapusPesan } = usePesanPenumpang()
   const { pesan: pesanSaya, hapusPesan: hapusPesanSaya } = usePesanOjek()
   const { ikonAhyan, ikonFajri } = useProfilIkon()
-  const { warnaAhyan } = useWarnaGlow()
+  const { warnaAhyan, warnaFajri } = useWarnaGlow()
   const warnaAktif = ambilWarnaGlow(warnaAhyan)
+  const warnaAktifFajri = ambilWarnaGlow(warnaFajri)
   const ikonSaya = useMemo(() => buatIkonSaya(ikonAhyan, warnaAktif), [ikonAhyan, warnaAktif])
-  const ikonPenumpang = useMemo(() => buatIkonPenumpang(ikonFajri), [ikonFajri])
+  const ikonPenumpang = useMemo(() => buatIkonPenumpang(ikonFajri, warnaAktifFajri), [ikonFajri, warnaAktifFajri])
   const posisiAwal = useMemo(() => ambilPetaTerakhir(KEY_PETA_TERAKHIR, PUSAT_DEFAULT, 13), [])
   const pusat = posisiValid ? [lokasi.lat, lokasi.lng] : posisiAwal.center
   const tampilkanTombolLokasi = typeof onToggleLokasi === 'function'
