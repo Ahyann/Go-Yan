@@ -20,19 +20,21 @@ const BATAS_PETA = [
   [6.5, 141.5],
 ]
 
-const ikonPenumpang = L.divIcon({
-  className: '',
-  html: `<div style="isolation: isolate;">
-    <img src="/icons/fajri.png" style="
-      width:16px;height:24px;
-      image-rendering: pixelated;
-      filter: drop-shadow(0 0 6px #E8EDF9) drop-shadow(0 0 10px #8B96B4);
-    " />
-  </div>`,
-  iconSize: [16, 24],
-  iconAnchor: [8, 24],
-  popupAnchor: [37, -10],
-})
+function buatIkonPenumpang(namaFile) {
+  return L.divIcon({
+    className: '',
+    html: `<div style="isolation: isolate;">
+      <img src="/icons/${namaFile}" style="
+        width:16px;height:24px;
+        image-rendering: pixelated;
+        filter: drop-shadow(0 0 6px #E8EDF9) drop-shadow(0 0 10px #8B96B4);
+      " />
+    </div>`,
+    iconSize: [16, 24],
+    iconAnchor: [8, 24],
+    popupAnchor: [37, -10],
+  })
+}
 
 function buatIkonSaya(namaFile, warna) {
   return L.divIcon({
@@ -112,10 +114,11 @@ export default function PetaLokasiPenumpang({
   const posisiSayaValid = lokasiSaya?.lat != null && lokasiSaya?.lng != null
   const { pesan, hapusPesan } = usePesanPenumpang()
   const { pesan: pesanSaya, hapusPesan: hapusPesanSaya } = usePesanOjek()
-  const { ikonAhyan } = useProfilIkon()
+  const { ikonAhyan, ikonFajri } = useProfilIkon()
   const { warnaAhyan } = useWarnaGlow()
   const warnaAktif = ambilWarnaGlow(warnaAhyan)
   const ikonSaya = useMemo(() => buatIkonSaya(ikonAhyan, warnaAktif), [ikonAhyan, warnaAktif])
+  const ikonPenumpang = useMemo(() => buatIkonPenumpang(ikonFajri), [ikonFajri])
   const posisiAwal = useMemo(() => ambilPetaTerakhir(KEY_PETA_TERAKHIR, PUSAT_DEFAULT, 13), [])
   const pusat = posisiValid ? [lokasi.lat, lokasi.lng] : posisiAwal.center
   const tampilkanTombolLokasi = typeof onToggleLokasi === 'function'

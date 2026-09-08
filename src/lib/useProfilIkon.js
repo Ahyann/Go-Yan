@@ -10,18 +10,20 @@ const REF = doc(db, 'state', 'profilIkon')
 // public/icons/), BUKAN data gambar. Jauh lebih ringan & simpel,
 // gak butuh kompres apa pun.
 const DEFAULT_IKON_AHYAN = 'spidericon.png'
+const DEFAULT_IKON_FAJRI = 'fajri.png'
 
 export function useProfilIkon() {
   const { user } = useAuth()
   const [ikonAhyan, setIkonAhyan] = useState(DEFAULT_IKON_AHYAN)
+  const [ikonFajri, setIkonFajri] = useState(DEFAULT_IKON_FAJRI)
 
   useEffect(() => {
     if (!user) return
 
     const berhentiDengar = onSnapshot(REF, (snap) => {
-      if (snap.exists() && snap.data().ahyan) {
-        setIkonAhyan(snap.data().ahyan)
-      }
+      if (!snap.exists()) return
+      if (snap.data().ahyan) setIkonAhyan(snap.data().ahyan)
+      if (snap.data().fajri) setIkonFajri(snap.data().fajri)
     })
     return berhentiDengar
   }, [user])
@@ -30,5 +32,9 @@ export function useProfilIkon() {
     await setDoc(REF, { ahyan: namaFile }, { merge: true })
   }
 
-  return { ikonAhyan, pilihIkonAhyan }
+  async function pilihIkonFajri(namaFile) {
+    await setDoc(REF, { fajri: namaFile }, { merge: true })
+  }
+
+  return { ikonAhyan, pilihIkonAhyan, ikonFajri, pilihIkonFajri }
 }
