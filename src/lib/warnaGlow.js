@@ -4,6 +4,7 @@ export const WARNA_GLOW_PRESET = {
   hijau: { nama: 'Hijau', utama: '#5EFFB8', kuat: '#2BE89E' },
   ungu: { nama: 'Ungu', utama: '#B85EFF', kuat: '#8E2BE8' },
   emas: { nama: 'Emas', utama: '#FFD65E', kuat: '#E8B82B' },
+  abu: { nama: 'Abu-abu', utama: '#C4CBD6', kuat: '#8A93A3' },
 }
 
 export const DEFAULT_WARNA_GLOW = 'biru'
