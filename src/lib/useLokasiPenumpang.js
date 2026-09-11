@@ -7,7 +7,10 @@ import { useAuth } from '../context/AuthContext.jsx'
 export function useLokasiPenumpang() {
   const { user, isDemo } = useAuth()
   const [lokasi, setLokasi] = useState(null)
-  const LOKASI_REF = useMemo(() => ref(rtdb, rtdbPath('lokasi/penumpang', isDemo)), [isDemo])
+  const LOKASI_REF = useMemo(
+    () => ref(rtdb, rtdbPath('lokasi/penumpang', isDemo, user?.uid)),
+    [isDemo, user?.uid]
+  )
 
   useEffect(() => {
     if (!user) return
@@ -21,6 +24,6 @@ export function useLokasiPenumpang() {
   return lokasi
 }
 
-export async function hapusLokasiPenumpangSekarang(isDemo) {
-  await remove(ref(rtdb, rtdbPath('lokasi/penumpang', isDemo)))
+export async function hapusLokasiPenumpangSekarang(isDemo, uid) {
+  await remove(ref(rtdb, rtdbPath('lokasi/penumpang', isDemo, uid)))
 }

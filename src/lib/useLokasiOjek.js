@@ -7,7 +7,10 @@ import { useAuth } from '../context/AuthContext.jsx'
 export function useLokasiOjek() {
   const { user, isDemo } = useAuth()
   const [lokasi, setLokasi] = useState(null)
-  const LOKASI_REF = useMemo(() => ref(rtdb, rtdbPath('lokasi/ojek', isDemo)), [isDemo])
+  const LOKASI_REF = useMemo(
+    () => ref(rtdb, rtdbPath('lokasi/ojek', isDemo, user?.uid)),
+    [isDemo, user?.uid]
+  )
 
   useEffect(() => {
     if (!user) return

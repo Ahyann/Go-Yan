@@ -20,7 +20,7 @@ export default function OjekHomeTab({
   berhentiLokasi,
 }) {
   const { t } = useLanguage()
-  const { isDemo } = useAuth()
+  const { user, isDemo } = useAuth()
   const adaPermintaanMasuk = permintaan?.status === STATUS_PERMINTAAN.MENUNGGU
   const sedangJalan = permintaan?.status === STATUS_PERMINTAAN.DITERIMA
   const lokasiPenumpang = useLokasiPenumpang()
@@ -41,7 +41,7 @@ export default function OjekHomeTab({
 
   function handleSelesai() {
     berhentiLokasi()
-    hapusLokasiPenumpangSekarang(isDemo)
+    hapusLokasiPenumpangSekarang(isDemo, user?.uid)
     hapusPesan()
     setShowMissionSuccess(true)
     onSelesai()

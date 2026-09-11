@@ -5,11 +5,11 @@ import { rtdbPath } from './demoPath'
 import { useAuth } from '../context/AuthContext.jsx'
 
 export function usePresence(role) {
-  const { isDemo } = useAuth()
+  const { user, isDemo } = useAuth()
 
   useEffect(() => {
     if (!role) return
-    const presenceRef = ref(rtdb, rtdbPath(`presence/${role}`, isDemo))
+    const presenceRef = ref(rtdb, rtdbPath(`presence/${role}`, isDemo, user?.uid))
 
     function updatePresence() {
       set(presenceRef, document.visibilityState === 'visible')
@@ -28,5 +28,5 @@ export function usePresence(role) {
       window.removeEventListener('blur', updatePresence)
       remove(presenceRef)
     }
-  }, [role, isDemo])
+  }, [role, isDemo, user?.uid])
 }

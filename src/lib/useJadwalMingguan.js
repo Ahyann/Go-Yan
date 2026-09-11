@@ -39,7 +39,10 @@ export function kodeMingguIni() {
 export function useJadwalMingguan() {
   const { user, isDemo } = useAuth()
   const [jadwal, setJadwal] = useState(undefined)
-  const REF = useMemo(() => doc(db, 'state', firestoreId('jadwalMingguan', isDemo)), [isDemo])
+  const REF = useMemo(
+    () => doc(db, 'state', firestoreId('jadwalMingguan', isDemo, user?.uid)),
+    [isDemo, user?.uid]
+  )
 
   useEffect(() => {
     if (!user) return

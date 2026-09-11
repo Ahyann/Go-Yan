@@ -9,7 +9,10 @@ export function usePesanOjek() {
   const { user, isDemo } = useAuth()
   const [pesan, setPesan] = useState(null)
   const [siap, setSiap] = useState(false)
-  const PESAN_REF = useMemo(() => ref(rtdb, rtdbPath('pesan/ojek', isDemo)), [isDemo])
+  const PESAN_REF = useMemo(
+    () => ref(rtdb, rtdbPath('pesan/ojek', isDemo, user?.uid)),
+    [isDemo, user?.uid]
+  )
 
   useEffect(() => {
     if (!user) return

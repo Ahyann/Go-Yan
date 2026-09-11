@@ -21,12 +21,15 @@ function jarakMeter(lat1, lng1, lat2, lng2) {
 }
 
 export function useLokasiSayaPenumpang() {
-  const { isDemo } = useAuth()
+  const { user, isDemo } = useAuth()
   const [aktif, setAktif] = useState(false)
   const [error, setError] = useState('')
   const watchIdRef = useRef(null)
   const posisiTerakhirRef = useRef(null)
-  const LOKASI_REF = useMemo(() => ref(rtdb, rtdbPath('lokasi/penumpang', isDemo)), [isDemo])
+  const LOKASI_REF = useMemo(
+    () => ref(rtdb, rtdbPath('lokasi/penumpang', isDemo, user?.uid)),
+    [isDemo, user?.uid]
+  )
 
   function mulai() {
     if (!navigator.geolocation) {

@@ -9,7 +9,7 @@ export function useRiwayat() {
   const { user, isDemo } = useAuth()
   const [riwayat, setRiwayat] = useState([])
   const [siap, setSiap] = useState(false)
-  const namaKoleksi = firestoreId('riwayat', isDemo)
+  const namaKoleksi = firestoreId('riwayat', isDemo, user?.uid)
   const REF = useMemo(() => collection(db, namaKoleksi), [namaKoleksi])
 
   useEffect(() => {
