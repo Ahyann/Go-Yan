@@ -2,6 +2,7 @@ import { useState, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { AKSI } from '../lib/constants'
 import { useLanguage } from '../context/LanguageContext.jsx'
+import { useAuth } from '../context/AuthContext.jsx'
 import { useLockBodyScroll } from '../lib/useLockBodyScroll'
 import TimeWheelPicker from './TimeWheelPicker.jsx'
 
@@ -9,6 +10,7 @@ const PRESET_LOKASI = ['Office']
 
 export default function GoPopup({ onClose, onSubmit }) {
   const { t } = useLanguage()
+  const { isDemo } = useAuth()
   useLockBodyScroll()
   const jamSekarang = new Date().toTimeString().slice(0, 2) + ':00'
 
@@ -102,7 +104,7 @@ export default function GoPopup({ onClose, onSubmit }) {
         </div>
 
         <button style={bisaKirim ? s.kirim : s.kirimDisabled} onClick={handleKirim}>
-          {t.kirimKeAhyan}
+          {isDemo ? t.kirimKeDriver : t.kirimKeAhyan}
         </button>
       </div>
     </div>,

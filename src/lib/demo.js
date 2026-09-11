@@ -28,35 +28,35 @@ const JADWAL_CONTOH = {
 
 // Dipanggil begitu sesi demo baru mulai, biar app-nya keliatan "hidup"
 // (ada riwayat & jadwal contoh) daripada kosong melompong pas dicoba.
-// Di-scope per UID akun anonim (uid) biar orang lain yang lagi nyoba
-// demo bersamaan gak keganggu / ke-timpa data contoh punya orang ini.
-export async function seedDataDemo(uid) {
-  if (!uid) return
+// Semua sesi demo sengaja berbagi 1 data yang sama (lihat demoPath.js)
+// biar demo Ojek & Penumpang di 2 window bisa saling connect.
+export async function seedDataDemo() {
+  const riwayatSnap = await getDocs(collection(db, 'riwayat_demo')).catch(() => null)
+  if (riwayatSnap && !riwayatSnap.empty) return // udah ada isinya, gak usah di-seed ulang
+
   await Promise.all([
     ...RIWAYAT_CONTOH.map((data) =>
-      addDoc(collection(db, `riwayat_demo_${uid}`), { ...data, dibuatPada: Date.now() }).catch(() => {})
+      addDoc(collection(db, 'riwayat_demo'), { ...data, dibuatPada: Date.now() }).catch(() => {})
     ),
-    setDoc(doc(db, 'state', `jadwalMingguan_demo_${uid}`), {
+    setDoc(doc(db, 'state', 'jadwalMingguan_demo'), {
       ...JADWAL_CONTOH,
       kodeMinggu: kodeMingguIni(),
     }).catch(() => {}),
   ])
 }
 
-async function hapusKoleksiRiwayatDemo(uid) {
-  const snap = await getDocs(collection(db, `riwayat_demo_${uid}`))
+async function hapusKoleksiRiwayatDemo() {
+  const snap = await getDocs(collection(db, 'riwayat_demo'))
   await Promise.all(snap.docs.map((d) => deleteDoc(d.ref)))
 }
 
 // Dipanggil pas sesi demo logout — bersihin semua jejak data demo
-// milik sesi INI doang (permintaan, riwayat, jadwal, icon/warna profil
-// demo, lokasi/chat di RTDB), gak nyentuh data demo punya orang lain
-// yang kebetulan lagi nyoba bersamaan.
-export async function resetDataDemo(uid) {
-  if (!uid) return
+// (permintaan, riwayat, jadwal, icon/warna profil demo, lokasi/chat di
+// RTDB) biar orang berikutnya yang nyoba demo mulai dari kondisi bersih.
+export async function resetDataDemo() {
   await Promise.all([
-    ...NAMA_DOKUMEN_STATE.map((nama) => deleteDoc(doc(db, 'state', `${nama}_demo_${uid}`)).catch(() => {})),
-    hapusKoleksiRiwayatDemo(uid).catch(() => {}),
-    remove(ref(rtdb, `demo/${uid}`)).catch(() => {}),
+    ...NAMA_DOKUMEN_STATE.map((nama) => deleteDoc(doc(db, 'state', `${nama}_demo`)).catch(() => {})),
+    hapusKoleksiRiwayatDemo().catch(() => {}),
+    remove(ref(rtdb, 'demo')).catch(() => {}),
   ])
 }
