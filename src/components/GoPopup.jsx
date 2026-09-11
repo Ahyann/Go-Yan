@@ -20,11 +20,9 @@ export default function GoPopup({ onClose, onSubmit }) {
   const [showDropdown, setShowDropdown] = useState(false)
   const inputRef = useRef(null)
 
-  const bisaKirim = where.trim().length > 0
-
   function handleKirim() {
-    if (!bisaKirim) return
-    onSubmit({ aksi, where: where.trim(), waktu })
+    const tujuanFinal = where.trim() || 'Office'
+    onSubmit({ aksi, where: tujuanFinal, waktu })
   }
 
   function pilihPreset(nama) {
@@ -104,7 +102,7 @@ export default function GoPopup({ onClose, onSubmit }) {
           <TimeWheelPicker value={waktu} onChange={setWaktu} />
         </div>
 
-        <button style={bisaKirim ? s.kirim : s.kirimDisabled} onClick={handleKirim}>
+        <button style={s.kirim} onClick={handleKirim}>
           {isDemo ? t.kirimKeDriver : t.kirimKeAhyan}
         </button>
       </div>
@@ -209,15 +207,6 @@ const s = {
   kirim: {
     background: 'var(--nav-red)',
     color: '#fff',
-    fontSize: 15,
-    fontWeight: 600,
-    padding: '14px',
-    borderRadius: 999,
-    marginTop: 6,
-  },
-  kirimDisabled: {
-    background: 'rgba(255,255,255,0.06)',
-    color: '#5C7CA0',
     fontSize: 15,
     fontWeight: 600,
     padding: '14px',
