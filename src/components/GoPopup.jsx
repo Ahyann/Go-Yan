@@ -64,6 +64,7 @@ export default function GoPopup({ onClose, onSubmit }) {
                 if (where === 'Office') setWhere('')
               }}
               onBlur={() => {
+                if (where.trim() === '') setWhere('Office')
                 window.scrollTo(0, 0)
                 setTimeout(() => window.scrollTo(0, 0), 300)
               }}
