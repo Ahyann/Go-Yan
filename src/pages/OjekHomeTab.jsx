@@ -102,18 +102,18 @@ export default function OjekHomeTab({
               {permintaan.aksi === AKSI.JEMPUT ? t.sedangMenjemput : t.sedangMengantar} Fajri · {permintaan.where} · {permintaan.waktu}
             </div>
 
-            <div style={{ ...s.pesanRow, opacity: lokasiAktif ? 1 : 0.5 }}>
+            <div style={{ ...s.pesanRow, opacity: lokasiAktif || isDemo ? 1 : 0.5 }}>
               <input
                 style={s.pesanInput}
                 value={teksPesan}
                 onChange={(e) => setTeksPesan(e.target.value)}
                 placeholder={t.placeholderPesanBubble}
                 maxLength={24}
-                disabled={!lokasiAktif}
+                disabled={!lokasiAktif && !isDemo}
               />
-              <button style={s.pesanBtn} onClick={handleKirimPesan} disabled={!lokasiAktif}>{t.kirim}</button>
+              <button style={s.pesanBtn} onClick={handleKirimPesan} disabled={!lokasiAktif && !isDemo}>{t.kirim}</button>
             </div>
-            {!lokasiAktif && <div style={s.pesanHint}>{t.pesanPerluLive}</div>}
+            {!lokasiAktif && !isDemo && <div style={s.pesanHint}>{t.pesanPerluLive}</div>}
 
             {lokasiError && <div style={s.lokasiError}>{lokasiError}</div>}
 
