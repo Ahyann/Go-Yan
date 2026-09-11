@@ -49,6 +49,7 @@ export const translations = {
 
     // --- GoPopup ---
     kirimKeAhyan: 'Kirim ke Ahyan',
+    kirimKeDriver: 'Kirim ke Driver',
     ariaLokasiTersimpan: 'Pilih dari lokasi tersimpan',
     labelTujuan: 'Tujuan',
     labelWaktu: 'Waktu',
@@ -198,6 +199,7 @@ export const translations = {
 
     // --- GoPopup ---
     kirimKeAhyan: 'Send to Ahyan',
+    kirimKeDriver: 'Send to Driver',
     ariaLokasiTersimpan: 'Choose a saved location',
     labelTujuan: 'Where',
     labelWaktu: 'Time',

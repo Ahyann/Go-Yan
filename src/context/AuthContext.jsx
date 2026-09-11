@@ -35,13 +35,13 @@ export function AuthProvider({ children }) {
       localStorage.setItem(KEY_DEMO_ROLE, roleDipilih)
     } catch {}
     setDemoRole(roleDipilih)
-    const { user: userBaru } = await signInAnonymously(auth)
-    seedDataDemo(userBaru.uid)
+    await signInAnonymously(auth)
+    seedDataDemo()
   }
 
   async function logout() {
     if (isDemo) {
-      await resetDataDemo(user?.uid)
+      await resetDataDemo()
       try {
         localStorage.removeItem(KEY_DEMO_ROLE)
       } catch {}

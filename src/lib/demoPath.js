@@ -3,13 +3,14 @@
 // TERPISAH dari data asli Ahyan/Fajri — jadi orang yang lagi nyobain
 // demo gak bisa liat atau ngerusak data beneran, dan sebaliknya.
 //
-// Di-scope per UID akun anonim (bukan 1 namespace "_demo" yang dipakai
-// bareng semua orang), biar beberapa orang bisa nyoba demo bersamaan
-// tanpa saling numpuk/ngerusak data satu sama lain.
-export function firestoreId(nama, isDemo, uid) {
-  return isDemo && uid ? `${nama}_demo_${uid}` : nama
+// Semua sesi demo (siapa pun yang klik "Coba Demo") SENGAJA berbagi
+// 1 namespace yang sama, bukan dipisah per orang — biar demo Ojek &
+// Penumpang di 2 window/device bisa saling connect dan nunjukkin
+// fitur live-sync-nya, sama kayak akun asli Ahyan & Fajri.
+export function firestoreId(nama, isDemo) {
+  return isDemo ? `${nama}_demo` : nama
 }
 
-export function rtdbPath(path, isDemo, uid) {
-  return isDemo && uid ? `demo/${uid}/${path}` : path
+export function rtdbPath(path, isDemo) {
+  return isDemo ? `demo/${path}` : path
 }
