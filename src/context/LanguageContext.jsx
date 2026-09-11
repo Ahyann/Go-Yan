@@ -8,9 +8,9 @@ const KEY_LOCALSTORAGE = 'go-yan-bahasa'
 export function LanguageProvider({ children }) {
   const [lang, setLangState] = useState(() => {
     try {
-      return localStorage.getItem(KEY_LOCALSTORAGE) || 'id'
+      return localStorage.getItem(KEY_LOCALSTORAGE) || 'en'
     } catch {
-      return 'id'
+      return 'en'
     }
   })
 
