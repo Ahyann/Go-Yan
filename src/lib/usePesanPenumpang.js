@@ -9,7 +9,10 @@ export function usePesanPenumpang() {
   const { user, isDemo } = useAuth()
   const [pesan, setPesan] = useState(null)
   const [siap, setSiap] = useState(false)
-  const PESAN_REF = useMemo(() => ref(rtdb, rtdbPath('pesan/penumpang', isDemo)), [isDemo])
+  const PESAN_REF = useMemo(
+    () => ref(rtdb, rtdbPath('pesan/penumpang', isDemo, user?.uid)),
+    [isDemo, user?.uid]
+  )
 
   useEffect(() => {
     if (!user) return

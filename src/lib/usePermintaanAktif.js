@@ -9,7 +9,10 @@ import { useAuth } from '../context/AuthContext.jsx'
 export function usePermintaanAktif() {
   const { user, isDemo } = useAuth()
   const [permintaan, setPermintaan] = useState(undefined)
-  const REF = useMemo(() => doc(db, 'state', firestoreId('permintaanAktif', isDemo)), [isDemo])
+  const REF = useMemo(
+    () => doc(db, 'state', firestoreId('permintaanAktif', isDemo, user?.uid)),
+    [isDemo, user?.uid]
+  )
 
   useEffect(() => {
     if (!user) return

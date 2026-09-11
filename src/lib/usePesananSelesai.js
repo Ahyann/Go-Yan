@@ -11,7 +11,10 @@ import { useAuth } from '../context/AuthContext.jsx'
 export function usePesananSelesai() {
   const { user, isDemo } = useAuth()
   const [data, setData] = useState(null)
-  const REF = useMemo(() => ref(rtdb, rtdbPath('notifSelesai/penumpang', isDemo)), [isDemo])
+  const REF = useMemo(
+    () => ref(rtdb, rtdbPath('notifSelesai/penumpang', isDemo, user?.uid)),
+    [isDemo, user?.uid]
+  )
 
   useEffect(() => {
     if (!user) return

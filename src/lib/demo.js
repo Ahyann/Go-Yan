@@ -4,12 +4,7 @@ import { db, rtdb } from './firebase'
 import { AKSI, STATUS_BAYAR } from './constants'
 import { kodeMingguIni } from './useJadwalMingguan'
 
-const DOKUMEN_STATE_DEMO = [
-  'permintaanAktif_demo',
-  'jadwalMingguan_demo',
-  'profilIkon_demo',
-  'profilWarna_demo',
-]
+const NAMA_DOKUMEN_STATE = ['permintaanAktif', 'jadwalMingguan', 'profilIkon', 'profilWarna']
 
 function tanggalLaluISO(hariLalu) {
   const d = new Date()
@@ -33,30 +28,35 @@ const JADWAL_CONTOH = {
 
 // Dipanggil begitu sesi demo baru mulai, biar app-nya keliatan "hidup"
 // (ada riwayat & jadwal contoh) daripada kosong melompong pas dicoba.
-export async function seedDataDemo() {
+// Di-scope per UID akun anonim (uid) biar orang lain yang lagi nyoba
+// demo bersamaan gak keganggu / ke-timpa data contoh punya orang ini.
+export async function seedDataDemo(uid) {
+  if (!uid) return
   await Promise.all([
     ...RIWAYAT_CONTOH.map((data) =>
-      addDoc(collection(db, 'riwayat_demo'), { ...data, dibuatPada: Date.now() }).catch(() => {})
+      addDoc(collection(db, `riwayat_demo_${uid}`), { ...data, dibuatPada: Date.now() }).catch(() => {})
     ),
-    setDoc(doc(db, 'state', 'jadwalMingguan_demo'), {
+    setDoc(doc(db, 'state', `jadwalMingguan_demo_${uid}`), {
       ...JADWAL_CONTOH,
       kodeMinggu: kodeMingguIni(),
     }).catch(() => {}),
   ])
 }
 
-async function hapusKoleksiRiwayatDemo() {
-  const snap = await getDocs(collection(db, 'riwayat_demo'))
+async function hapusKoleksiRiwayatDemo(uid) {
+  const snap = await getDocs(collection(db, `riwayat_demo_${uid}`))
   await Promise.all(snap.docs.map((d) => deleteDoc(d.ref)))
 }
 
 // Dipanggil pas sesi demo logout — bersihin semua jejak data demo
-// (permintaan, riwayat, jadwal, icon/warna profil demo, lokasi/chat di
-// RTDB) biar orang berikutnya yang nyoba demo mulai dari kondisi bersih.
-export async function resetDataDemo() {
+// milik sesi INI doang (permintaan, riwayat, jadwal, icon/warna profil
+// demo, lokasi/chat di RTDB), gak nyentuh data demo punya orang lain
+// yang kebetulan lagi nyoba bersamaan.
+export async function resetDataDemo(uid) {
+  if (!uid) return
   await Promise.all([
-    ...DOKUMEN_STATE_DEMO.map((id) => deleteDoc(doc(db, 'state', id)).catch(() => {})),
-    hapusKoleksiRiwayatDemo().catch(() => {}),
-    remove(ref(rtdb, 'demo')).catch(() => {}),
+    ...NAMA_DOKUMEN_STATE.map((nama) => deleteDoc(doc(db, 'state', `${nama}_demo_${uid}`)).catch(() => {})),
+    hapusKoleksiRiwayatDemo(uid).catch(() => {}),
+    remove(ref(rtdb, `demo/${uid}`)).catch(() => {}),
   ])
 }

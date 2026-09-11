@@ -9,7 +9,10 @@ export function useWarnaGlow() {
   const { user, isDemo } = useAuth()
   const [warnaAhyan, setWarnaAhyan] = useState(DEFAULT_WARNA_GLOW)
   const [warnaFajri, setWarnaFajri] = useState(DEFAULT_WARNA_GLOW)
-  const REF = useMemo(() => doc(db, 'state', firestoreId('profilWarna', isDemo)), [isDemo])
+  const REF = useMemo(
+    () => doc(db, 'state', firestoreId('profilWarna', isDemo, user?.uid)),
+    [isDemo, user?.uid]
+  )
 
   useEffect(() => {
     if (!user) return

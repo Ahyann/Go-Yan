@@ -15,7 +15,10 @@ export function useProfilIkon() {
   const { user, isDemo } = useAuth()
   const [ikonAhyan, setIkonAhyan] = useState(DEFAULT_IKON_AHYAN)
   const [ikonFajri, setIkonFajri] = useState(DEFAULT_IKON_FAJRI)
-  const REF = useMemo(() => doc(db, 'state', firestoreId('profilIkon', isDemo)), [isDemo])
+  const REF = useMemo(
+    () => doc(db, 'state', firestoreId('profilIkon', isDemo, user?.uid)),
+    [isDemo, user?.uid]
+  )
 
   useEffect(() => {
     if (!user) return
