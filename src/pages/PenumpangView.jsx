@@ -137,8 +137,13 @@ export default function PenumpangView({
 
   async function handleKirimGo({ aksi, where, waktu }) {
     playSpiderSound()
-    await kirimGo({ aksi, where, waktu })
-    setShowGo(false)
+    try {
+      await kirimGo({ aksi, where, waktu })
+      setShowGo(false)
+    } catch (err) {
+      console.error('Gagal kirim GO:', err)
+      alert('Gagal kirim permintaan: ' + err.message)
+    }
   }
 
   return (
