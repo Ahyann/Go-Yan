@@ -87,7 +87,7 @@ export const translations = {
     // --- Riwayat ---
     riwayatEyebrow: 'RIWAYAT',
     riwayatTitlePenumpang: 'Perjalanan & tagihan',
-    riwayatTitleOjek: 'Tagihan sepupu',
+    riwayatTitleOjek: 'Tagihan penumpang',
     belumDitransfer: 'Belum ditransfer',
     sudahDiterima: 'Sudah diterima',
     lihatPerBulan: 'Per Bulan',
@@ -236,7 +236,7 @@ export const translations = {
     // --- Riwayat ---
     riwayatEyebrow: 'HISTORY',
     riwayatTitlePenumpang: 'Trips & billing',
-    riwayatTitleOjek: "Cousin's tab",
+    riwayatTitleOjek: "Passenger's tab",
     belumDitransfer: 'Not transferred yet',
     sudahDiterima: 'Received',
     lihatPerBulan: 'Monthly',
