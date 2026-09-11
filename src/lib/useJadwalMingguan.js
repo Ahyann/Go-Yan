@@ -1,9 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { doc, onSnapshot, setDoc } from 'firebase/firestore'
 import { db } from './firebase'
+import { firestoreId } from './demoPath'
 import { useAuth } from '../context/AuthContext.jsx'
-
-const REF = doc(db, 'state', 'jadwalMingguan')
 
 const KOSONG = {
   senin: { antar: { aktif: false, jam: '' }, jemput: { aktif: false, jam: '' }, selesai: false },
@@ -20,7 +19,7 @@ function formatTanggalLokal(d) {
   return `${tahun}-${bulan}-${tanggal}`
 }
 
-function kodeMingguIni() {
+export function kodeMingguIni() {
   const d = new Date()
   const hari = d.getDay()
 
@@ -38,8 +37,9 @@ function kodeMingguIni() {
 }
 
 export function useJadwalMingguan() {
-  const { user } = useAuth()
+  const { user, isDemo } = useAuth()
   const [jadwal, setJadwal] = useState(undefined)
+  const REF = useMemo(() => doc(db, 'state', firestoreId('jadwalMingguan', isDemo)), [isDemo])
 
   useEffect(() => {
     if (!user) return
@@ -61,7 +61,7 @@ export function useJadwalMingguan() {
       setJadwal({ ...KOSONG, ...data })
     })
     return berhentiDengar
-  }, [user])
+  }, [user, REF])
 
   async function simpanJadwal(dataBaru) {
     await setDoc(REF, { ...dataBaru, kodeMinggu: kodeMingguIni() })

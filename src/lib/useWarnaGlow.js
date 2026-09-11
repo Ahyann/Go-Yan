@@ -1,15 +1,15 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { doc, onSnapshot, setDoc } from 'firebase/firestore'
 import { db } from './firebase'
 import { DEFAULT_WARNA_GLOW } from './warnaGlow'
+import { firestoreId } from './demoPath'
 import { useAuth } from '../context/AuthContext.jsx'
 
-const REF = doc(db, 'state', 'profilWarna')
-
 export function useWarnaGlow() {
-  const { user } = useAuth()
+  const { user, isDemo } = useAuth()
   const [warnaAhyan, setWarnaAhyan] = useState(DEFAULT_WARNA_GLOW)
   const [warnaFajri, setWarnaFajri] = useState(DEFAULT_WARNA_GLOW)
+  const REF = useMemo(() => doc(db, 'state', firestoreId('profilWarna', isDemo)), [isDemo])
 
   useEffect(() => {
     if (!user) return
@@ -20,7 +20,7 @@ export function useWarnaGlow() {
       if (snap.data().fajri) setWarnaFajri(snap.data().fajri)
     })
     return berhentiDengar
-  }, [user])
+  }, [user, REF])
 
   async function pilihWarnaAhyan(namaWarna) {
     await setDoc(REF, { ahyan: namaWarna }, { merge: true })

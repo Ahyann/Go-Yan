@@ -1,11 +1,15 @@
 import { useEffect } from 'react'
 import { ref, set, onDisconnect, remove } from 'firebase/database'
 import { rtdb } from './firebase'
+import { rtdbPath } from './demoPath'
+import { useAuth } from '../context/AuthContext.jsx'
 
 export function usePresence(role) {
+  const { isDemo } = useAuth()
+
   useEffect(() => {
     if (!role) return
-    const presenceRef = ref(rtdb, `presence/${role}`)
+    const presenceRef = ref(rtdb, rtdbPath(`presence/${role}`, isDemo))
 
     function updatePresence() {
       set(presenceRef, document.visibilityState === 'visible')
@@ -24,5 +28,5 @@ export function usePresence(role) {
       window.removeEventListener('blur', updatePresence)
       remove(presenceRef)
     }
-  }, [role])
+  }, [role, isDemo])
 }

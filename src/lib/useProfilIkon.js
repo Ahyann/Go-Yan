@@ -1,9 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { doc, onSnapshot, setDoc } from 'firebase/firestore'
 import { db } from './firebase'
+import { firestoreId } from './demoPath'
 import { useAuth } from '../context/AuthContext.jsx'
-
-const REF = doc(db, 'state', 'profilIkon')
 
 // Beda dari fitur upload foto (yang kita batalin) — ini cuma nyimpen
 // NAMA FILE icon yang dipilih (dari daftar preset yang udah ada di
@@ -13,9 +12,10 @@ const DEFAULT_IKON_AHYAN = 'spidericon.png'
 const DEFAULT_IKON_FAJRI = 'fajri.png'
 
 export function useProfilIkon() {
-  const { user } = useAuth()
+  const { user, isDemo } = useAuth()
   const [ikonAhyan, setIkonAhyan] = useState(DEFAULT_IKON_AHYAN)
   const [ikonFajri, setIkonFajri] = useState(DEFAULT_IKON_FAJRI)
+  const REF = useMemo(() => doc(db, 'state', firestoreId('profilIkon', isDemo)), [isDemo])
 
   useEffect(() => {
     if (!user) return
@@ -26,7 +26,7 @@ export function useProfilIkon() {
       if (snap.data().fajri) setIkonFajri(snap.data().fajri)
     })
     return berhentiDengar
-  }, [user])
+  }, [user, REF])
 
   async function pilihIkonAhyan(namaFile) {
     await setDoc(REF, { ahyan: namaFile }, { merge: true })

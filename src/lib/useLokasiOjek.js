@@ -1,13 +1,13 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { ref, onValue } from 'firebase/database'
 import { rtdb } from './firebase'
+import { rtdbPath } from './demoPath'
 import { useAuth } from '../context/AuthContext.jsx'
 
-const LOKASI_REF = ref(rtdb, 'lokasi/ojek')
-
 export function useLokasiOjek() {
-  const { user } = useAuth()
+  const { user, isDemo } = useAuth()
   const [lokasi, setLokasi] = useState(null)
+  const LOKASI_REF = useMemo(() => ref(rtdb, rtdbPath('lokasi/ojek', isDemo)), [isDemo])
 
   useEffect(() => {
     if (!user) return
@@ -16,7 +16,7 @@ export function useLokasiOjek() {
       setLokasi(snap.exists() ? snap.val() : null)
     })
     return berhentiDengar
-  }, [user])
+  }, [user, LOKASI_REF])
 
   return lokasi
 }

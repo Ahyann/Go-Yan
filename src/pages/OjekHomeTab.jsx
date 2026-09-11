@@ -4,6 +4,7 @@ import { playSpiderSound } from '../lib/sound'
 import { useLokasiPenumpang, hapusLokasiPenumpangSekarang } from '../lib/useLokasiPenumpang'
 import { usePesanOjek } from '../lib/usePesanOjek'
 import { useLanguage } from '../context/LanguageContext.jsx'
+import { useAuth } from '../context/AuthContext.jsx'
 import PetaLokasiPenumpang from '../components/PetaLokasiPenumpang.jsx'
 import MissionSuccessPopup from '../components/MissionSuccessPopup.jsx'
 import SwipeToFinish from '../components/SwipeToFinish.jsx'
@@ -19,6 +20,7 @@ export default function OjekHomeTab({
   berhentiLokasi,
 }) {
   const { t } = useLanguage()
+  const { isDemo } = useAuth()
   const adaPermintaanMasuk = permintaan?.status === STATUS_PERMINTAAN.MENUNGGU
   const sedangJalan = permintaan?.status === STATUS_PERMINTAAN.DITERIMA
   const lokasiPenumpang = useLokasiPenumpang()
@@ -39,7 +41,7 @@ export default function OjekHomeTab({
 
   function handleSelesai() {
     berhentiLokasi()
-    hapusLokasiPenumpangSekarang()
+    hapusLokasiPenumpangSekarang(isDemo)
     hapusPesan()
     setShowMissionSuccess(true)
     onSelesai()
@@ -54,7 +56,7 @@ export default function OjekHomeTab({
     <main style={s.wrap}>
       <header style={s.header}>
         <div style={s.eyebrow}>{t.ojekEyebrow}</div>
-        <h1 style={s.title}>{t.ojekHalo}</h1>
+        <h1 style={s.title}>{isDemo ? t.haloDemo : t.ojekHalo}</h1>
       </header>
 
       <section style={s.mainCard}>

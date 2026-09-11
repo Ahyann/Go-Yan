@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import { auth } from '../lib/firebase'
 import { useLanguage } from '../context/LanguageContext.jsx'
+import { useAuth } from '../context/AuthContext.jsx'
 
 function usernameKeEmail(input) {
   const bersih = input.trim().toLowerCase().replace(/\s+/g, '')
@@ -11,11 +12,13 @@ function usernameKeEmail(input) {
 
 export default function LoginPage() {
   const { t } = useLanguage()
+  const { masukDemoOjek, masukDemoPenumpang } = useAuth()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [tampilkanPw, setTampilkanPw] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [demoLoading, setDemoLoading] = useState('')
 
   const PESAN_ERROR = {
     'auth/invalid-email': t.errInvalidCredential,
@@ -33,6 +36,17 @@ export default function LoginPage() {
     } catch (err) {
       setError(PESAN_ERROR[err.code] || t.errGeneric)
       setLoading(false)
+    }
+  }
+
+  async function handleDemo(peran, jalankan) {
+    setError('')
+    setDemoLoading(peran)
+    try {
+      await jalankan()
+    } catch {
+      setError(t.errGeneric)
+      setDemoLoading('')
     }
   }
 
@@ -96,6 +110,32 @@ export default function LoginPage() {
           {loading ? t.loginMemproses : t.loginSubmit}
         </button>
       </form>
+
+      <div style={s.demoWrap}>
+        <div style={s.demoDivider}>
+          <span style={s.demoDividerGaris} />
+          <span style={s.demoDividerTeks}>{t.demoAtau}</span>
+          <span style={s.demoDividerGaris} />
+        </div>
+        <div style={s.demoRow}>
+          <button
+            type="button"
+            style={s.demoBtn}
+            onClick={() => handleDemo('ojek', masukDemoOjek)}
+            disabled={Boolean(demoLoading)}
+          >
+            {demoLoading === 'ojek' ? t.loginMemproses : t.demoOjek}
+          </button>
+          <button
+            type="button"
+            style={s.demoBtn}
+            onClick={() => handleDemo('penumpang', masukDemoPenumpang)}
+            disabled={Boolean(demoLoading)}
+          >
+            {demoLoading === 'penumpang' ? t.loginMemproses : t.demoPenumpang}
+          </button>
+        </div>
+      </div>
     </main>
   )
 }
@@ -168,5 +208,40 @@ const s = {
     padding: '14px',
     borderRadius: 999,
     marginTop: 6,
+  },
+  demoWrap: {
+    marginTop: 24,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 14,
+  },
+  demoDivider: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 10,
+  },
+  demoDividerGaris: {
+    flex: 1,
+    height: 1,
+    background: 'var(--blue-border)',
+  },
+  demoDividerTeks: {
+    fontSize: 11.5,
+    color: 'var(--text-dim)',
+    letterSpacing: '0.04em',
+  },
+  demoRow: {
+    display: 'flex',
+    gap: 10,
+  },
+  demoBtn: {
+    flex: 1,
+    background: 'var(--card-blue)',
+    color: 'var(--glow-blue)',
+    fontSize: 13.5,
+    fontWeight: 600,
+    padding: '13px',
+    borderRadius: 999,
+    border: '1px solid var(--glow-blue-mid)',
   },
 }
