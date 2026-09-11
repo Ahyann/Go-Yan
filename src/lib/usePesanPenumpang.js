@@ -1,15 +1,15 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { ref, set, remove, onValue } from 'firebase/database'
 import { rtdb } from './firebase'
 import { kirimNotifikasi } from './notifikasi'
+import { rtdbPath } from './demoPath'
 import { useAuth } from '../context/AuthContext.jsx'
 
-const PESAN_REF = ref(rtdb, 'pesan/penumpang')
-
 export function usePesanPenumpang() {
-  const { user } = useAuth()
+  const { user, isDemo } = useAuth()
   const [pesan, setPesan] = useState(null)
   const [siap, setSiap] = useState(false)
+  const PESAN_REF = useMemo(() => ref(rtdb, rtdbPath('pesan/penumpang', isDemo)), [isDemo])
 
   useEffect(() => {
     if (!user) return
@@ -19,12 +19,12 @@ export function usePesanPenumpang() {
       setSiap(true)
     })
     return berhentiDengar
-  }, [user])
+  }, [user, PESAN_REF])
 
   async function kirimPesan(teks) {
     if (!teks.trim()) return
     await set(PESAN_REF, { teks: teks.trim(), dibuatPada: Date.now() })
-    kirimNotifikasi('ojek', 'Pesan dari Fajri 💬', teks.trim(), 'pesan')
+    if (!isDemo) kirimNotifikasi('ojek', 'Pesan dari Fajri 💬', teks.trim(), 'pesan')
   }
 
   async function hapusPesan() {

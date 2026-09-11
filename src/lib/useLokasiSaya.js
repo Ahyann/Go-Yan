@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { ref, set, remove } from 'firebase/database'
 import { rtdb } from './firebase'
 import { kirimNotifikasi } from './notifikasi'
-
-const LOKASI_REF = ref(rtdb, 'lokasi/ojek')
+import { rtdbPath } from './demoPath'
+import { useAuth } from '../context/AuthContext.jsx'
 
 const JARAK_MINIMUM_METER = 6
 
@@ -22,10 +22,12 @@ function jarakMeter(lat1, lng1, lat2, lng2) {
 }
 
 export function useLokasiSaya() {
+  const { isDemo } = useAuth()
   const [aktif, setAktif] = useState(false)
   const [error, setError] = useState('')
   const watchIdRef = useRef(null)
   const posisiTerakhirRef = useRef(null)
+  const LOKASI_REF = useMemo(() => ref(rtdb, rtdbPath('lokasi/ojek', isDemo)), [isDemo])
 
   function mulai() {
     if (!navigator.geolocation) {
@@ -60,7 +62,9 @@ export function useLokasiSaya() {
       { enableHighAccuracy: true, maximumAge: 5000, timeout: 15000 }
     )
     setAktif(true)
-    kirimNotifikasi('penumpang', 'Ahyan otw! 🕸️', 'Live location udah nyala, cek lokasinya di peta.', 'live-lokasi')
+    if (!isDemo) {
+      kirimNotifikasi('penumpang', 'Ahyan otw! 🕸️', 'Live location udah nyala, cek lokasinya di peta.', 'live-lokasi')
+    }
   }
 
   function berhenti() {
@@ -80,7 +84,7 @@ export function useLokasiSaya() {
         navigator.geolocation.clearWatch(watchIdRef.current)
       }
     }
-  }, [])
+  }, [LOKASI_REF])
 
   return { aktif, error, mulai, berhenti }
 }

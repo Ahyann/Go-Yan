@@ -11,7 +11,7 @@ import { useLockBodyScroll } from '../lib/useLockBodyScroll'
 const PILIHAN_IKON_FAJRI = ['fajri.png', 'fajri2.png', 'fajri3.png']
 
 export default function AccountTab() {
-  const { user, logout } = useAuth()
+  const { user, logout, isDemo } = useAuth()
   const { lang, setLang, t } = useLanguage()
   const [status, setStatus] = useState('') // '', 'loading', 'ok', 'gagal'
   const [pesanError, setPesanError] = useState('')
@@ -95,7 +95,7 @@ export default function AccountTab() {
           </button>
           <div>
             <div style={s.label}>{t.masukSebagai}</div>
-            <div style={s.email}>Wotkins</div>
+            <div style={s.email}>{isDemo ? t.namaDemo : 'Wotkins'}</div>
           </div>
         </div>
       </section>

@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { ref, set, remove } from 'firebase/database'
 import { rtdb } from './firebase'
-
-const LOKASI_REF = ref(rtdb, 'lokasi/penumpang')
+import { rtdbPath } from './demoPath'
+import { useAuth } from '../context/AuthContext.jsx'
 
 const JARAK_MINIMUM_METER = 6
 
@@ -21,10 +21,12 @@ function jarakMeter(lat1, lng1, lat2, lng2) {
 }
 
 export function useLokasiSayaPenumpang() {
+  const { isDemo } = useAuth()
   const [aktif, setAktif] = useState(false)
   const [error, setError] = useState('')
   const watchIdRef = useRef(null)
   const posisiTerakhirRef = useRef(null)
+  const LOKASI_REF = useMemo(() => ref(rtdb, rtdbPath('lokasi/penumpang', isDemo)), [isDemo])
 
   function mulai() {
     if (!navigator.geolocation) {
@@ -78,7 +80,7 @@ export function useLokasiSayaPenumpang() {
         navigator.geolocation.clearWatch(watchIdRef.current)
       }
     }
-  }, [])
+  }, [LOKASI_REF])
 
   return { aktif, error, mulai, berhenti }
 }

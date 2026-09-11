@@ -4,11 +4,13 @@ import { STATUS_PERMINTAAN } from '../lib/constants'
 import { useLokasiOjek } from '../lib/useLokasiOjek'
 import { usePesanPenumpang } from '../lib/usePesanPenumpang'
 import { useLanguage } from '../context/LanguageContext.jsx'
+import { useAuth } from '../context/AuthContext.jsx'
 import PetaStatus from '../components/PetaStatus.jsx'
 import KirimPesanPopup from '../components/KirimPesanPopup.jsx'
 
 export default function HomeTab({ permintaan, lokasiAktif, lokasiError, mulaiLokasi, berhentiLokasi, baruDibatalkan }) {
   const { t } = useLanguage()
+  const { isDemo } = useAuth()
   const lokasiOjek = useLokasiOjek()
   const { kirimPesan } = usePesanPenumpang()
   const sedangJalan = permintaan?.status === STATUS_PERMINTAAN.DITERIMA
@@ -39,7 +41,7 @@ export default function HomeTab({ permintaan, lokasiAktif, lokasiError, mulaiLok
     <div style={s.wrap}>
       <div style={s.headerFloat}>
         <div style={s.eyebrow}>{t.penumpangEyebrow}</div>
-        <h1 style={s.title}>{t.penumpangHalo}</h1>
+        <h1 style={s.title}>{isDemo ? t.haloDemo : t.penumpangHalo}</h1>
       </div>
 
       <PetaStatus permintaan={permintaan} mapRef={mapRef} baruDibatalkan={baruDibatalkan} />

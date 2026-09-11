@@ -1,13 +1,13 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { ref, onValue, remove } from 'firebase/database'
 import { rtdb } from './firebase'
+import { rtdbPath } from './demoPath'
 import { useAuth } from '../context/AuthContext.jsx'
 
-const LOKASI_REF = ref(rtdb, 'lokasi/penumpang')
-
 export function useLokasiPenumpang() {
-  const { user } = useAuth()
+  const { user, isDemo } = useAuth()
   const [lokasi, setLokasi] = useState(null)
+  const LOKASI_REF = useMemo(() => ref(rtdb, rtdbPath('lokasi/penumpang', isDemo)), [isDemo])
 
   useEffect(() => {
     if (!user) return
@@ -16,11 +16,11 @@ export function useLokasiPenumpang() {
       setLokasi(snap.exists() ? snap.val() : null)
     })
     return berhentiDengar
-  }, [user])
+  }, [user, LOKASI_REF])
 
   return lokasi
 }
 
-export async function hapusLokasiPenumpangSekarang() {
-  await remove(LOKASI_REF)
+export async function hapusLokasiPenumpangSekarang(isDemo) {
+  await remove(ref(rtdb, rtdbPath('lokasi/penumpang', isDemo)))
 }

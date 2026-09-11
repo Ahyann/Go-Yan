@@ -1,15 +1,15 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { doc, onSnapshot, setDoc, updateDoc, deleteDoc } from 'firebase/firestore'
 import { db } from './firebase'
 import { STATUS_PERMINTAAN } from './constants'
 import { kirimNotifikasi } from './notifikasi'
+import { firestoreId } from './demoPath'
 import { useAuth } from '../context/AuthContext.jsx'
 
-const REF = doc(db, 'state', 'permintaanAktif')
-
 export function usePermintaanAktif() {
-  const { user } = useAuth()
+  const { user, isDemo } = useAuth()
   const [permintaan, setPermintaan] = useState(undefined)
+  const REF = useMemo(() => doc(db, 'state', firestoreId('permintaanAktif', isDemo)), [isDemo])
 
   useEffect(() => {
     if (!user) return
@@ -18,7 +18,7 @@ export function usePermintaanAktif() {
       setPermintaan(snap.exists() ? snap.data() : null)
     })
     return berhentiDengar
-  }, [user])
+  }, [user, REF])
 
   async function kirimGo({ aksi, where, waktu }) {
     await setDoc(REF, {
@@ -28,17 +28,19 @@ export function usePermintaanAktif() {
       status: STATUS_PERMINTAAN.MENUNGGU,
       dibuatPada: Date.now(),
     })
-    kirimNotifikasi(
-      'ojek',
-      'Pesenan baru! 🕸️',
-      `Fajri mau ${aksi === 'jemput' ? 'dijemput' : 'diantar'} · ${where} · ${waktu}`,
-      'pesenan'
-    )
+    if (!isDemo) {
+      kirimNotifikasi(
+        'ojek',
+        'Pesenan baru! 🕸️',
+        `Fajri mau ${aksi === 'jemput' ? 'dijemput' : 'diantar'} · ${where} · ${waktu}`,
+        'pesenan'
+      )
+    }
   }
 
   async function terima() {
     await updateDoc(REF, { status: STATUS_PERMINTAAN.DITERIMA })
-    if (permintaan) {
+    if (permintaan && !isDemo) {
       kirimNotifikasi(
         'penumpang',
         'Ahyan Menerima! ✅',

@@ -11,7 +11,7 @@ import { useLockBodyScroll } from '../lib/useLockBodyScroll'
 const PILIHAN_IKON = ['spidericon.png', 'preset_biru.png', 'preset_merah.png', 'preset_hijau.png']
 
 export default function OjekAccountTab() {
-  const { user, logout } = useAuth()
+  const { user, logout, isDemo } = useAuth()
   const { lang, setLang, t } = useLanguage()
   const [status, setStatus] = useState('')
   const [pesanError, setPesanError] = useState('')
@@ -96,7 +96,7 @@ export default function OjekAccountTab() {
           </button>
           <div>
             <div style={s.label}>{t.masukSebagai}</div>
-            <div style={s.email}>Ahyan</div>
+            <div style={s.email}>{isDemo ? t.namaDemo : 'Ahyan'}</div>
           </div>
         </div>
       </section>
