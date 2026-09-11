@@ -75,10 +75,10 @@ export default function HomeTab({ permintaan, lokasiAktif, lokasiError, mulaiLok
 
           <button
             className="btn-map-control"
-            style={{ ...(adaLokasiLive ? s.pesanIconBawah : s.pesanIcon), opacity: lokasiAktif ? 1 : 0.5 }}
-            onClick={() => lokasiAktif && setShowKirimPesan(true)}
-            disabled={!lokasiAktif}
-            aria-label={lokasiAktif ? t.ariaKirimPesanAhyan : t.pesanPerluLive}
+            style={{ ...(adaLokasiLive ? s.pesanIconBawah : s.pesanIcon), opacity: lokasiAktif || isDemo ? 1 : 0.5 }}
+            onClick={() => (lokasiAktif || isDemo) && setShowKirimPesan(true)}
+            disabled={!lokasiAktif && !isDemo}
+            aria-label={lokasiAktif || isDemo ? t.ariaKirimPesanAhyan : t.pesanPerluLive}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" />
