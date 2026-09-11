@@ -28,9 +28,11 @@ export function usePermintaanAktif() {
   // jadi kalau app-nya sempet ketutup terus dibuka lagi di tengah
   // jalan, sisa waktunya tetep bener (bukan mulai ulang dari 5 detik).
   useEffect(() => {
-    if (permintaan?.status !== STATUS_PERMINTAAN.DITOLAK || !permintaan.ditolakPada) return
+    if (permintaan?.status !== STATUS_PERMINTAAN.DITOLAK) return
 
-    const sisaWaktu = 5000 - (Date.now() - permintaan.ditolakPada)
+    // Data lama (dari sebelum fitur ini ada) gak punya ditolakPada —
+    // anggap aja udah kadaluarsa daripada nyangkut selamanya.
+    const sisaWaktu = permintaan.ditolakPada ? 5000 - (Date.now() - permintaan.ditolakPada) : 0
     if (sisaWaktu <= 0) {
       deleteDoc(REF).catch(() => {})
       return
