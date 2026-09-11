@@ -12,6 +12,7 @@ import { useWarnaGlow } from '../lib/useWarnaGlow'
 import { ambilWarnaGlow } from '../lib/warnaGlow'
 import { ambilPetaTerakhir, simpanPetaTerakhir } from '../lib/petaTerakhir'
 import { useLanguage } from '../context/LanguageContext.jsx'
+import { useAuth } from '../context/AuthContext.jsx'
 
 const PUSAT_DEFAULT = [-6.2088, 106.8456]
 const KEY_PETA_TERAKHIR = 'go-yan-peta-terakhir-penumpang'
@@ -144,6 +145,7 @@ function IkonLabaLaba() {
 
 export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef: mapRefLuar, baruDibatalkan = false }) {
   const { t } = useLanguage()
+  const { isDemo } = useAuth()
   const lokasiOjek = useLokasiOjek()
   const lokasiSaya = useLokasiPenumpang()
   const { pesan, hapusPesan } = usePesanOjek()
@@ -360,7 +362,7 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
             <div style={s.badgeMenunggu}>
               <IkonLabaLaba />
               <div style={s.menungguText}>
-                <span style={s.dotKuning} />{t.menungguAhyanTerima}
+                <span style={s.dotKuning} />{isDemo ? t.menungguDriverTerima : t.menungguAhyanTerima}
               </div>
             </div>
           )}
@@ -368,7 +370,7 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
           {permintaan?.status === STATUS_PERMINTAAN.DITOLAK && (
             <div style={s.badgeTolak}>
               <img src={`/icons/${ikonAhyan}`} style={s.tolakAvatar} alt="" />
-              <span style={s.tolakText}>: <TeksMengetik teks={t.ahyanBelumBisa} /></span>
+              <span style={s.tolakText}>: <TeksMengetik teks={isDemo ? t.driverBelumBisa : t.ahyanBelumBisa} /></span>
             </div>
           )}
 
