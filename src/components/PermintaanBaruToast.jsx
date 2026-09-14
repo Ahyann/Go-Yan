@@ -2,12 +2,14 @@ import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { AKSI } from '../lib/constants'
 import { useLanguage } from '../context/LanguageContext.jsx'
+import { useAuth } from '../context/AuthContext.jsx'
 
 const DURASI_ANIMASI = 300
 const DURASI_TAMPIL = 6000
 
 export default function PermintaanBaruToast({ permintaan, onTap, onDismiss }) {
   const { t } = useLanguage()
+  const { isDemo } = useAuth()
   const [tampil, setTampil] = useState(false)
 
   useEffect(() => {
@@ -46,7 +48,7 @@ export default function PermintaanBaruToast({ permintaan, onTap, onDismiss }) {
           </svg>
         </div>
         <div style={s.isi}>
-          <div style={s.judul}>{t.permintaanBaru}</div>
+          <div style={s.judul}>{isDemo ? t.permintaanBaruDemo : t.permintaanBaru}</div>
           <div style={s.detail}>
             {permintaan.aksi === AKSI.JEMPUT ? t.jemput : t.antar} · {permintaan.where} · {permintaan.waktu}
           </div>

@@ -1,8 +1,10 @@
 import { useLanguage } from '../context/LanguageContext.jsx'
+import { useAuth } from '../context/AuthContext.jsx'
 import JadwalMingguan from '../components/JadwalMingguan.jsx'
 
 export default function OjekJadwalTab({ jadwalMingguan, onTandaiSelesai }) {
   const { t } = useLanguage()
+  const { isDemo } = useAuth()
   return (
     <main style={s.wrap}>
       <header style={s.header}>
@@ -17,7 +19,7 @@ export default function OjekJadwalTab({ jadwalMingguan, onTandaiSelesai }) {
         onTandaiSelesai={onTandaiSelesai}
       />
 
-      <p style={s.catatan}>{t.jadwalCatatanOjek}</p>
+      <p style={s.catatan}>{isDemo ? t.jadwalCatatanOjekDemo : t.jadwalCatatanOjek}</p>
     </main>
   )
 }

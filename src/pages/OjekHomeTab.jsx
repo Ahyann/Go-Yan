@@ -48,7 +48,7 @@ export default function OjekHomeTab({
   }
 
   const teksKosongPeta = adaPermintaanMasuk || sedangJalan
-    ? t.fajriBelumShare
+    ? (isDemo ? t.passengerBelumShare : t.fajriBelumShare)
     : t.belumAdaPermintaan
 
   return (
@@ -82,7 +82,7 @@ export default function OjekHomeTab({
                   <path d="M15 7.5 L19.5 5 M15 8.8 L20.5 8.8 M15 10.5 L19.5 12.5 M15 12.5 L19 15.5" />
                 </svg>
               </div>
-              <div style={s.misiBaruLabel}>{t.misiBaru}</div>
+              <div style={s.misiBaruLabel}>{isDemo ? t.misiBaruDemo : t.misiBaru}</div>
             </div>
             <div style={s.permintaanAksi}>
               {permintaan.aksi === AKSI.JEMPUT ? t.jemput : t.antar} · {permintaan.waktu}
@@ -99,7 +99,7 @@ export default function OjekHomeTab({
           <div style={s.bawahCard}>
             <div style={s.jalanRow}>
               <span style={s.dotHijau} />
-              {permintaan.aksi === AKSI.JEMPUT ? t.sedangMenjemput : t.sedangMengantar} Fajri · {permintaan.where} · {permintaan.waktu}
+              {permintaan.aksi === AKSI.JEMPUT ? t.sedangMenjemput : t.sedangMengantar} {isDemo ? t.namaDemo : 'Fajri'} · {permintaan.where} · {permintaan.waktu}
             </div>
 
             <div style={{ ...s.pesanRow, opacity: lokasiAktif || isDemo ? 1 : 0.5 }}>
@@ -107,7 +107,7 @@ export default function OjekHomeTab({
                 style={s.pesanInput}
                 value={teksPesan}
                 onChange={(e) => setTeksPesan(e.target.value)}
-                placeholder={t.placeholderPesanBubble}
+                placeholder={isDemo ? t.placeholderPesanBubbleDemo : t.placeholderPesanBubble}
                 maxLength={24}
                 disabled={!lokasiAktif && !isDemo}
               />
