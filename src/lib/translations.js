@@ -82,7 +82,8 @@ export const translations = {
     // --- Jadwal ---
     jadwalEyebrow: 'JADWAL',
     jadwalTitlePenumpang: 'Jadwal mingguan',
-    jadwalTitleOjek: 'Jadwal mingguan Penumpang',
+    jadwalTitleOjek: 'Jadwal mingguan Fajri',
+    jadwalTitleOjekDemo: 'Jadwal mingguan Penumpang',
     jadwalCatatanPenumpang: 'Jadwal ini otomatis kosong lagi tiap hari Sabtu jam 12:00 — atur ulang tiap minggu sesuai kebutuhan.',
     jadwalCatatanOjek: 'Jadwal ini otomatis kosong lagi tiap hari Sabtu jam 12:00, nunggu Fajri atur ulang.',
     jadwalCatatanOjekDemo: 'Jadwal ini otomatis kosong lagi tiap hari Sabtu jam 12:00, nunggu Penumpang atur ulang.',
@@ -97,7 +98,8 @@ export const translations = {
     // --- Riwayat ---
     riwayatEyebrow: 'RIWAYAT',
     riwayatTitlePenumpang: 'Perjalanan & tagihan',
-    riwayatTitleOjek: 'Tagihan penumpang',
+    riwayatTitleOjek: 'Tagihan Fajri',
+    riwayatTitleOjekDemo: 'Tagihan penumpang',
     belumDitransfer: 'Belum ditransfer',
     sudahDiterima: 'Sudah diterima',
     lihatPerBulan: 'Per Bulan',
@@ -242,7 +244,8 @@ export const translations = {
     // --- Jadwal ---
     jadwalEyebrow: 'SCHEDULE',
     jadwalTitlePenumpang: 'Weekly schedule',
-    jadwalTitleOjek: "Passenger's weekly schedule",
+    jadwalTitleOjek: "Fajri's weekly schedule",
+    jadwalTitleOjekDemo: "Passenger's weekly schedule",
     jadwalCatatanPenumpang: 'This schedule clears itself every Saturday at 12:00 — set it up again each week as needed.',
     jadwalCatatanOjek: 'This schedule clears itself every Saturday at 12:00, waiting for Fajri to set it up again.',
     jadwalCatatanOjekDemo: 'This schedule clears itself every Saturday at 12:00, waiting for Passenger to set it up again.',
@@ -257,7 +260,8 @@ export const translations = {
     // --- Riwayat ---
     riwayatEyebrow: 'HISTORY',
     riwayatTitlePenumpang: 'Trips & billing',
-    riwayatTitleOjek: "Passenger's tab",
+    riwayatTitleOjek: "Fajri's tab",
+    riwayatTitleOjekDemo: "Passenger's tab",
     belumDitransfer: 'Not transferred yet',
     sudahDiterima: 'Received',
     lihatPerBulan: 'Monthly',

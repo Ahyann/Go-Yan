@@ -9,7 +9,7 @@ export default function OjekJadwalTab({ jadwalMingguan, onTandaiSelesai }) {
     <main style={s.wrap}>
       <header style={s.header}>
         <div style={s.eyebrow}>{t.jadwalEyebrow}</div>
-        <h1 style={s.title}>{t.jadwalTitleOjek}</h1>
+        <h1 style={s.title}>{isDemo ? t.jadwalTitleOjekDemo : t.jadwalTitleOjek}</h1>
       </header>
 
       <JadwalMingguan
