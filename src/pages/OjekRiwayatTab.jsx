@@ -1,12 +1,14 @@
 import { useRef, useState } from 'react'
 import { STATUS_BAYAR, formatRupiah } from '../lib/constants'
 import { useLanguage } from '../context/LanguageContext.jsx'
+import { useAuth } from '../context/AuthContext.jsx'
 import MonthPickerPopup from '../components/MonthPickerPopup.jsx'
 import EditRiwayatPopup from '../components/EditRiwayatPopup.jsx'
 import SwipeableItem from '../components/SwipeableItem.jsx'
 
 export default function OjekRiwayatTab({ riwayat, onTandaiLunas, onHapusRiwayat, onEditRiwayat }) {
   const { t } = useLanguage()
+  const { isDemo } = useAuth()
   const [showBulan, setShowBulan] = useState(false)
   const [itemEdit, setItemEdit] = useState(null)
 
@@ -45,7 +47,7 @@ export default function OjekRiwayatTab({ riwayat, onTandaiLunas, onHapusRiwayat,
       <div style={s.sectionHead}>
         <div>
           <div style={s.eyebrow}>{t.riwayatEyebrow}</div>
-          <h1 style={s.title}>{t.riwayatTitleOjek}</h1>
+          <h1 style={s.title}>{isDemo ? t.riwayatTitleOjekDemo : t.riwayatTitleOjek}</h1>
         </div>
         <button style={s.bulanBtn} onClick={() => setShowBulan(true)}>
           {t.namaBulanPanjang[bulanAktif]} {tahunAktif} ▾
