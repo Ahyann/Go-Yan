@@ -10,6 +10,7 @@ import { useWarnaGlow } from '../lib/useWarnaGlow'
 import { ambilWarnaGlow } from '../lib/warnaGlow'
 import { ambilPetaTerakhir, simpanPetaTerakhir } from '../lib/petaTerakhir'
 import { useLanguage } from '../context/LanguageContext.jsx'
+import { useAuth } from '../context/AuthContext.jsx'
 import { LOKASI_OFFICE, LOKASI_UPN } from '../lib/constants'
 
 const PUSAT_DEFAULT = [-6.2088, 106.8456]
@@ -108,7 +109,8 @@ export default function PetaLokasiPenumpang({
   onToggleLokasi,
 }) {
   const { t } = useLanguage()
-  const teksKosongFinal = teksKosong ?? t.fajriBelumShare
+  const { isDemo } = useAuth()
+  const teksKosongFinal = teksKosong ?? (isDemo ? t.passengerBelumShare : t.fajriBelumShare)
   const posisiValid = lokasi?.lat != null && lokasi?.lng != null
   const lokasiSaya = useLokasiOjek()
   const posisiSayaValid = lokasiSaya?.lat != null && lokasiSaya?.lng != null
@@ -295,7 +297,7 @@ export default function PetaLokasiPenumpang({
         >
           <Popup closeButton={false} autoClose={false} closeOnClick={false}>
             <div style={s.bubbleWrap}>
-              <span style={s.bubbleText}>{t.fajriOffice}</span>
+              <span style={s.bubbleText}>{isDemo ? t.passengerOffice : t.fajriOffice}</span>
             </div>
           </Popup>
         </Marker>
@@ -350,7 +352,7 @@ export default function PetaLokasiPenumpang({
 
       <div style={s.badge}>
         <span style={posisiValid ? s.dotHijau : s.dotMerah} />
-        {posisiValid ? t.lokasiFajriLive : teksKosongFinal}
+        {posisiValid ? (isDemo ? t.lokasiPassengerLive : t.lokasiFajriLive) : teksKosongFinal}
       </div>
     </div>
   )

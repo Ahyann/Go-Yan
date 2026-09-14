@@ -16,7 +16,9 @@ export const translations = {
     ojekEyebrow: 'GO-YAN',
     ojekHalo: 'Halo, Ahyan',
     permintaanBaru: 'Permintaan baru dari Fajri',
+    permintaanBaruDemo: 'Permintaan baru dari Penumpang',
     misiBaru: 'NEW MISSION FROM FAJRI',
+    misiBaruDemo: 'NEW MISSION FROM PASSENGER',
     mulaiMisi: 'START MISSION',
     batalMisi: 'CANCEL',
     jemput: 'Jemput',
@@ -26,9 +28,11 @@ export const translations = {
     sedangMenjemput: 'Sedang menjemput',
     sedangMengantar: 'Sedang mengantar',
     placeholderPesanBubble: 'Kirim pesan ke bubble Fajri...',
+    placeholderPesanBubbleDemo: 'Kirim pesan ke bubble Penumpang...',
     kirim: 'Kirim',
     selesai: 'Selesai',
     fajriBelumShare: 'Fajri belum nyalain share lokasi',
+    passengerBelumShare: 'Penumpang belum nyalain share lokasi',
     belumAdaPermintaan: 'Belum ada permintaan masuk',
 
     // --- PetaStatus (badge status) ---
@@ -44,6 +48,7 @@ export const translations = {
 
     // --- PetaLokasiPenumpang (badge) ---
     lokasiFajriLive: 'Lokasi Fajri live',
+    lokasiPassengerLive: 'Lokasi Penumpang live',
     lokasiTerakhirFajri: 'Posisi terakhir Fajri',
     ariaMatikanLive: 'Matikan live location',
     ariaNyalakanLive: 'Nyalain live location',
@@ -58,6 +63,7 @@ export const translations = {
 
     // --- KirimPesanPopup ---
     judulKirimPesan: 'Kirim pesan ke Ahyan',
+    judulKirimPesanDemo: 'Kirim pesan ke Driver',
     placeholderKetik: 'Ketik pesan...',
 
     // --- Akun / Settings (baru) ---
@@ -79,6 +85,7 @@ export const translations = {
     jadwalTitleOjek: 'Jadwal mingguan Penumpang',
     jadwalCatatanPenumpang: 'Jadwal ini otomatis kosong lagi tiap hari Sabtu jam 12:00 — atur ulang tiap minggu sesuai kebutuhan.',
     jadwalCatatanOjek: 'Jadwal ini otomatis kosong lagi tiap hari Sabtu jam 12:00, nunggu Fajri atur ulang.',
+    jadwalCatatanOjekDemo: 'Jadwal ini otomatis kosong lagi tiap hari Sabtu jam 12:00, nunggu Penumpang atur ulang.',
     hariLabel: ['Senin', 'Selasa', 'Rabu', 'Kamis', "Jum'at"],
     menyimpan: 'Menyimpan…',
     tersimpan: 'Tersimpan ✓',
@@ -149,6 +156,7 @@ export const translations = {
     pesanPerluLive: 'Nyalain live location dulu buat bisa kirim pesan',
     yourOffice: 'Your Office',
     fajriOffice: "Fajri's Office",
+    passengerOffice: "Passenger's Office",
     gantiFoto: 'Ganti foto profil',
   },
   en: {
@@ -168,7 +176,9 @@ export const translations = {
     ojekEyebrow: 'GO-YAN',
     ojekHalo: 'Hi, Ahyan',
     permintaanBaru: 'New request from Fajri',
+    permintaanBaruDemo: 'New request from Passenger',
     misiBaru: 'NEW MISSION FROM FAJRI',
+    misiBaruDemo: 'NEW MISSION FROM PASSENGER',
     mulaiMisi: 'START MISSION',
     batalMisi: 'CANCEL',
     jemput: 'Pickup',
@@ -178,9 +188,11 @@ export const translations = {
     sedangMenjemput: 'Picking up',
     sedangMengantar: 'Dropping off',
     placeholderPesanBubble: "Send a message to Fajri's bubble...",
+    placeholderPesanBubbleDemo: "Send a message to Passenger's bubble...",
     kirim: 'Send',
     selesai: 'Finish',
     fajriBelumShare: "Fajri hasn't shared her location",
+    passengerBelumShare: "Passenger hasn't shared their location",
     belumAdaPermintaan: 'No requests yet',
 
     // --- PetaStatus (badge status) ---
@@ -196,6 +208,7 @@ export const translations = {
 
     // --- PetaLokasiPenumpang (badge) ---
     lokasiFajriLive: "Fajri's location is live",
+    lokasiPassengerLive: "Passenger's location is live",
     lokasiTerakhirFajri: "Fajri's last known location",
     ariaMatikanLive: 'Turn off live location',
     ariaNyalakanLive: 'Turn on live location',
@@ -210,6 +223,7 @@ export const translations = {
 
     // --- KirimPesanPopup ---
     judulKirimPesan: 'Send message to Ahyan',
+    judulKirimPesanDemo: 'Send message to Driver',
     placeholderKetik: 'Type a message...',
 
     // --- Akun / Settings (baru) ---
@@ -231,6 +245,7 @@ export const translations = {
     jadwalTitleOjek: "Passenger's weekly schedule",
     jadwalCatatanPenumpang: 'This schedule clears itself every Saturday at 12:00 — set it up again each week as needed.',
     jadwalCatatanOjek: 'This schedule clears itself every Saturday at 12:00, waiting for Fajri to set it up again.',
+    jadwalCatatanOjekDemo: 'This schedule clears itself every Saturday at 12:00, waiting for Passenger to set it up again.',
     hariLabel: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
     menyimpan: 'Saving…',
     tersimpan: 'Saved ✓',
@@ -301,6 +316,7 @@ export const translations = {
     pesanPerluLive: 'Turn on live location first to send a message',
     yourOffice: 'Your Office',
     fajriOffice: "Fajri's Office",
+    passengerOffice: "Passenger's Office",
     gantiFoto: 'Change profile photo',
   },
 }

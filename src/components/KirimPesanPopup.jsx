@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useLanguage } from '../context/LanguageContext.jsx'
+import { useAuth } from '../context/AuthContext.jsx'
 
 export default function KirimPesanPopup({ onClose, onKirim }) {
   const { t } = useLanguage()
+  const { isDemo } = useAuth()
   const [teks, setTeks] = useState('')
 
   function handleKirim() {
@@ -16,7 +18,7 @@ export default function KirimPesanPopup({ onClose, onKirim }) {
   return createPortal(
     <div style={s.overlay} onClick={onClose}>
       <div style={s.sheet} onClick={(e) => e.stopPropagation()}>
-        <div style={s.title}>{t.judulKirimPesan}</div>
+        <div style={s.title}>{isDemo ? t.judulKirimPesanDemo : t.judulKirimPesan}</div>
         <input
           style={s.input}
           value={teks}
