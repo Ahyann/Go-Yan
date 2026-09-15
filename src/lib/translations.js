@@ -8,8 +8,11 @@ export const translations = {
     penumpangTagline: 'Siap berangkat?',
     ariaMatikanShare: 'Matikan share lokasi',
     ariaNyalakanShare: 'Share lokasi ke Ahyan',
+    ariaNyalakanShareDemo: 'Share lokasi ke driver',
     ariaKembaliLokasiAhyan: 'Kembali ke lokasi Ahyan',
+    ariaKembaliLokasiDriver: 'Kembali ke lokasi driver',
     ariaKirimPesanAhyan: 'Kirim pesan ke Ahyan',
+    ariaKirimPesanDriver: 'Kirim pesan ke driver',
     liveLocationAktif: 'Live location aktif',
 
     // --- OjekHomeTab ---
@@ -53,6 +56,7 @@ export const translations = {
     ariaMatikanLive: 'Matikan live location',
     ariaNyalakanLive: 'Nyalain live location',
     ariaKembaliLokasiFajri: 'Kembali ke lokasi Fajri',
+    ariaKembaliLokasiPassenger: 'Kembali ke lokasi penumpang',
 
     // --- GoPopup ---
     kirimKeAhyan: 'Kirim ke Ahyan',
@@ -170,8 +174,11 @@ export const translations = {
     penumpangTagline: 'Ready for a ride?',
     ariaMatikanShare: 'Turn off location sharing',
     ariaNyalakanShare: 'Share location with Ahyan',
+    ariaNyalakanShareDemo: 'Share location with driver',
     ariaKembaliLokasiAhyan: "Back to Ahyan's location",
+    ariaKembaliLokasiDriver: "Back to driver's location",
     ariaKirimPesanAhyan: 'Send message to Ahyan',
+    ariaKirimPesanDriver: 'Send message to driver',
     liveLocationAktif: 'Live location active',
 
     // --- OjekHomeTab ---
@@ -215,6 +222,7 @@ export const translations = {
     ariaMatikanLive: 'Turn off live location',
     ariaNyalakanLive: 'Turn on live location',
     ariaKembaliLokasiFajri: "Back to Fajri's location",
+    ariaKembaliLokasiPassenger: "Back to passenger's location",
 
     // --- GoPopup ---
     kirimKeAhyan: 'Send to Ahyan',
