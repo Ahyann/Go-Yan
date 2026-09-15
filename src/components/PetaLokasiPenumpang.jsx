@@ -341,7 +341,7 @@ export default function PetaLokasiPenumpang({
           className="btn-map-control"
           style={tampilkanTombolLokasi ? s.recenterIconBawah : s.recenterIcon}
           onClick={handleRecenter}
-          aria-label={t.ariaKembaliLokasiFajri}
+          aria-label={isDemo ? t.ariaKembaliLokasiPassenger : t.ariaKembaliLokasiFajri}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="12" r="3" />
