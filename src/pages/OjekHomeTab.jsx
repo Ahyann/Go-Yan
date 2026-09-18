@@ -34,9 +34,23 @@ export default function OjekHomeTab({
     setTeksPesan('')
   }
 
-  function handleTerima() {
+  async function handleTerima() {
     playSpiderSound()
-    onTerima()
+    try {
+      await onTerima()
+    } catch (err) {
+      console.error('Gagal terima permintaan:', err)
+      alert('Gagal terima permintaan: ' + err.message)
+    }
+  }
+
+  async function handleTolak() {
+    try {
+      await onTolak()
+    } catch (err) {
+      console.error('Gagal tolak permintaan:', err)
+      alert('Gagal tolak permintaan: ' + err.message)
+    }
   }
 
   function handleSelesai() {
@@ -89,7 +103,7 @@ export default function OjekHomeTab({
             </div>
             <div style={s.permintaanWhere}>{permintaan.where}</div>
             <div style={s.tombolRow}>
-              <button style={s.tolakBtn} onClick={onTolak}>{t.batalMisi}</button>
+              <button style={s.tolakBtn} onClick={handleTolak}>{t.batalMisi}</button>
               <button style={s.terimaBtn} onClick={handleTerima}>{t.mulaiMisi}</button>
             </div>
           </div>
