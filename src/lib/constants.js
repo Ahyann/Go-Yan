@@ -7,13 +7,6 @@ export const ROLE = {
   PENUMPANG: 'penumpang',
 }
 
-export const STATUS_RIDE = {
-  DIJADWALKAN: 'dijadwalkan',
-  BERJALAN: 'berjalan',
-  SELESAI: 'selesai',
-  BATAL: 'batal',
-}
-
 export const STATUS_BAYAR = {
   BELUM: 'belum',
   LUNAS: 'lunas',
@@ -22,13 +15,6 @@ export const STATUS_BAYAR = {
 export const AKSI = {
   JEMPUT: 'jemput',
   ANTAR: 'antar',
-}
-
-export const WAKTU = {
-  PAGI: 'pagi',
-  SIANG: 'siang',
-  SORE: 'sore',
-  MALAM: 'malam',
 }
 
 export const STATUS_PERMINTAAN = {

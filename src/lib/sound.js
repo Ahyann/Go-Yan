@@ -5,27 +5,6 @@ function getAudioCtx() {
   return audioCtx
 }
 
-export function playThwip() {
-  if (typeof window === 'undefined') return
-  const ctx = getAudioCtx()
-
-  const osc = ctx.createOscillator()
-  const gain = ctx.createGain()
-
-  osc.type = 'sawtooth'
-  osc.frequency.setValueAtTime(1200, ctx.currentTime)
-  osc.frequency.exponentialRampToValueAtTime(80, ctx.currentTime + 0.15)
-
-  gain.gain.setValueAtTime(0.25, ctx.currentTime)
-  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.18)
-
-  osc.connect(gain)
-  gain.connect(ctx.destination)
-
-  osc.start()
-  osc.stop(ctx.currentTime + 0.2)
-}
-
 let spiderBuffer = null
 let notifSelesaiBuffer = null
 let chatBuffer = null
