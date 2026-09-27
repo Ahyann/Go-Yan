@@ -97,6 +97,7 @@ function AppIsi() {
           riwayatSiap={riwayatSiap}
           jadwalMingguan={jadwalMingguan}
           onTandaiSelesaiJadwal={tandaiSelesaiJadwal}
+          simpanJadwal={simpanJadwal}
           onTerima={terima}
           onTolak={tolak}
           onSelesai={selesaikanRide}
