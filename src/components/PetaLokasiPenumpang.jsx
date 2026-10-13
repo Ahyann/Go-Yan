@@ -144,6 +144,13 @@ export default function PetaLokasiPenumpang({
       pesanTampilRef.current = pesan
       setTeksBubble(pesan.teks)
       setPesanTrigger(pesan.dibuatPada)
+    } else {
+      // Ref direset dulu supaya closePopup() di bawah gak ikut manggil
+      // hapusPesan() lagi lewat handler popupclose.
+      pesanTampilRef.current = null
+      setTeksBubble('')
+      setPesanTrigger(null)
+      markerRef.current?.closePopup()
     }
   }, [pesan])
 
@@ -162,6 +169,9 @@ export default function PetaLokasiPenumpang({
       setTeksBubbleSaya(pesanSaya.teks)
       setPesanSayaTrigger(pesanSaya.dibuatPada)
     } else {
+      pesanSayaTampilRef.current = null
+      setTeksBubbleSaya('')
+      setPesanSayaTrigger(null)
       markerSayaRef.current?.closePopup()
     }
   }, [pesanSaya])

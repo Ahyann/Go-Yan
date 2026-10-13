@@ -180,7 +180,15 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
       pesanTampilRef.current = pesan
       setTeksBubble(pesan.teks)
       setPesanTrigger(pesan.dibuatPada)
+    } else {
+      // Ref direset dulu supaya closePopup() di bawah gak ikut manggil
+      // hapusPesan() lagi lewat handler popupclose.
+      pesanTampilRef.current = null
+      setTeksBubble(t.bubbleDefault)
+      setPesanTrigger(null)
+      markerRef.current?.closePopup()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pesan])
 
   useEffect(() => {
@@ -198,6 +206,9 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
       setTeksBubbleSaya(pesanSaya.teks)
       setPesanSayaTrigger(pesanSaya.dibuatPada)
     } else {
+      pesanSayaTampilRef.current = null
+      setTeksBubbleSaya('')
+      setPesanSayaTrigger(null)
       markerSayaRef.current?.closePopup()
     }
   }, [pesanSaya])

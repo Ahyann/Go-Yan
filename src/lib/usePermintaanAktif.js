@@ -1,10 +1,22 @@
 import { useEffect, useMemo, useState } from 'react'
 import { doc, onSnapshot, setDoc, updateDoc, deleteDoc } from 'firebase/firestore'
-import { db } from './firebase'
+import { ref as rtdbRef, remove as rtdbRemove } from 'firebase/database'
+import { db, rtdb } from './firebase'
 import { STATUS_PERMINTAAN } from './constants'
 import { kirimNotifikasi } from './notifikasi'
-import { firestoreId } from './demoPath'
+import { firestoreId, rtdbPath } from './demoPath'
 import { useAuth } from '../context/AuthContext.jsx'
+
+// Chat bubble di peta cuma kehapus kalau popup-nya ditutup manual, jadi
+// kalau perjalanan keburu selesai/batal sebelum popup ditutup, chat lama
+// nyangkut dan muncul lagi di order berikutnya. Makanya dibersihin
+// paksa di tiap awal & akhir order.
+function bersihkanSemuaPesan(isDemo) {
+  return Promise.all([
+    rtdbRemove(rtdbRef(rtdb, rtdbPath('pesan/ojek', isDemo))),
+    rtdbRemove(rtdbRef(rtdb, rtdbPath('pesan/penumpang', isDemo))),
+  ]).catch(() => {})
+}
 
 export function usePermintaanAktif() {
   const { user, isDemo } = useAuth()
@@ -45,6 +57,7 @@ export function usePermintaanAktif() {
   }, [permintaan, REF])
 
   async function kirimGo({ aksi, where, waktu }) {
+    await bersihkanSemuaPesan(isDemo)
     await setDoc(REF, {
       aksi,
       where,
@@ -80,10 +93,12 @@ export function usePermintaanAktif() {
 
   async function selesai() {
     await deleteDoc(REF)
+    await bersihkanSemuaPesan(isDemo)
   }
 
   async function batal() {
     await deleteDoc(REF)
+    await bersihkanSemuaPesan(isDemo)
   }
 
   return { permintaan, kirimGo, terima, tolak, selesai, batal }
