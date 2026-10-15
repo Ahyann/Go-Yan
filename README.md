@@ -73,9 +73,30 @@ npm run dev
 
 ## Roadmap
 
-- [ ] Marker lokasi custom (kantor/kampus/rumah) tambahan di peta
+### Fitur yang direncanain
+
+- [ ] **Level up akun Ojek**: naik level tiap total pendapatan nambah Rp500.000
+- [ ] **Level up akun Penumpang**: dapet reward kosmetik, kemungkinan juga diskon (mekanisme naik level dan bentuk rewardnya belum ditentuin)
+- [ ] **Quick chat dengan slide hold**: kirim pesan cepat lewat gestur tahan dan geser
+- [ ] **History chat**: riwayat percakapan Ojek dan Penumpang
+- [ ] **Upload foto di chat**, dengan tampilan bertema Spider-Man
+- [ ] **Tema kedua "Pixel Modern (Spider-Man)"** dan pilihan ganti tema di halaman Settings (desain dibuat dulu; warna sebagian besar udah lewat CSS variables dan `--font-pixel` udah disiapin)
+- [ ] **Marker lokasi custom** (kantor/kampus/rumah) tambahan di peta (draft datanya ada di `src/lib/lokasiPOI.js`, belum dipakai)
+- [ ] Eksplorasi pakai komponen UI dari library berbasis TSX (perlu dikonversi ke JSX, dan dicek apakah butuh Tailwind)
+
+### Perbaikan teknis
+
+- [ ] Konfirmasi final security rules Firestore dan Realtime Database (disetting di Firebase Console, bukan di repo)
+- [ ] Hapus dependency `react-router-dom` yang udah gak dipakai
+- [ ] Pantau rilis `firebase-admin` buat nutup 10 vulnerability level moderate dari `uuid` (`npm audit`)
+
+### Selesai
+
 - [x] Perbaikan bug layout iOS terkait keyboard di beberapa kondisi
 - [x] Code splitting buat ngecilin ukuran bundle production
+- [x] Mode demo terisolasi dari data akun utama
+- [x] Ganti icon profil dan warna glow buat Ojek dan Penumpang
+- [x] Atur jadwal sendiri dari akun Ojek
 
 ## Dibuat oleh
 
