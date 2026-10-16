@@ -2,6 +2,7 @@ import { MapContainer, TileLayer, Marker, Popup, ZoomControl, useMap, useMapEven
 import { useEffect, useMemo, useRef, useState } from 'react'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+import QuickChatMarker from './QuickChatMarker.jsx'
 import { useLokasiOjek } from '../lib/useLokasiOjek'
 import { usePesanPenumpang } from '../lib/usePesanPenumpang'
 import { usePesanOjek } from '../lib/usePesanOjek'
@@ -115,7 +116,7 @@ export default function PetaLokasiPenumpang({
   const lokasiSaya = useLokasiOjek()
   const posisiSayaValid = lokasiSaya?.lat != null && lokasiSaya?.lng != null
   const { pesan, hapusPesan } = usePesanPenumpang()
-  const { pesan: pesanSaya, hapusPesan: hapusPesanSaya } = usePesanOjek()
+  const { pesan: pesanSaya, hapusPesan: hapusPesanSaya, kirimPesan: kirimPesanSaya } = usePesanOjek()
   const { ikonAhyan, ikonFajri } = useProfilIkon()
   const { warnaAhyan, warnaFajri } = useWarnaGlow()
   const warnaAktif = ambilWarnaGlow(warnaAhyan)
@@ -289,6 +290,14 @@ export default function PetaLokasiPenumpang({
                 </Popup>
               )}
             </Marker>
+            <QuickChatMarker
+              marker={markerSayaRef.current}
+              siap={markerSayaSiap}
+              ikon={ikonSaya}
+              aktif
+              onKirim={kirimPesanSaya}
+              pesanCepat={t.quickChatPesan}
+            />
           </>
         )}
 
