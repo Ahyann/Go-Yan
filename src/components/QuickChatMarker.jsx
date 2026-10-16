@@ -24,9 +24,22 @@ export default function QuickChatMarker({ marker, siap, ikon, aktif, onKirim, pe
   })
 
   useEffect(() => {
-    const el = marker?.getElement()
-    if (!el) return
+    if (!marker) return
+    let lepas = null
+    // Elemen marker baru ada setelah marker masuk ke peta, bisa sesudah
+    // ref-nya terisi, jadi tunggu event 'add' kalau belum ada.
+    const el = marker.getElement()
+    if (el) lepas = pasang(el)
+    const saatMasuk = () => {
+      if (!lepas && marker.getElement()) lepas = pasang(marker.getElement())
+    }
+    marker.on('add', saatMasuk)
+    return () => {
+      marker.off('add', saatMasuk)
+      lepas?.()
+    }
 
+    function pasang(el) {
     let timer = null
     let pusat = null
     let idx = null
@@ -115,7 +128,7 @@ export default function QuickChatMarker({ marker, siap, ikon, aktif, onKirim, pe
     el.addEventListener('touchstart', stop, { passive: true })
 
     return () => {
-      clearTimeout(timer)
+      tutup()
       el.removeEventListener('pointerdown', onDown)
       el.removeEventListener('pointermove', onMove)
       el.removeEventListener('pointerup', onUp)
@@ -125,6 +138,7 @@ export default function QuickChatMarker({ marker, siap, ikon, aktif, onKirim, pe
       el.removeEventListener('dragstart', cegahMenu)
       el.removeEventListener('mousedown', stop)
       el.removeEventListener('touchstart', stop)
+    }
     }
   }, [marker, siap, ikon])
 
