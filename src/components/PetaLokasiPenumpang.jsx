@@ -94,6 +94,19 @@ function GeserKePosisi({ lat, lng }) {
   return null
 }
 
+// Kartu di bawah peta muncul/hilang bikin tinggi peta berubah, tapi Leaflet
+// gak sadar sendiri, jadi "tengah" peta jadi meleset. Pantau ukurannya.
+function PantauUkuran() {
+  const map = useMap()
+  useEffect(() => {
+    const el = map.getContainer()
+    const ro = new ResizeObserver(() => map.invalidateSize({ animate: false }))
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [map])
+  return null
+}
+
 function SimpanPosisiPeta() {
   useMapEvents({
     moveend: (e) => {
@@ -129,6 +142,8 @@ export default function PetaLokasiPenumpang({
   const pusat = posisiValid ? [lokasi.lat, lokasi.lng] : posisiAwal.center
   const tampilkanTombolLokasi = typeof onToggleLokasi === 'function'
   const mapRef = useRef(null)
+  const wrapRef = useRef(null)
+  const [posisiBar, setPosisiBar] = useState(null)
   const markerRef = useRef(null)
   const markerSayaRef = useRef(null)
   const markerOfficeRef = useRef(null)
@@ -141,6 +156,25 @@ export default function PetaLokasiPenumpang({
   const [pesanSayaTrigger, setPesanSayaTrigger] = useState(null)
   const pesanSayaTampilRef = useRef(null)
   const [markerSayaSiap, setMarkerSayaSiap] = useState(false)
+
+  // Tombol kontrol tambahan ditempel persis di bawah tombol +/- (tanpa celah),
+  // posisinya diukur dari kontrol zoom Leaflet supaya selalu sejajar.
+  useEffect(() => {
+    function ukur() {
+      const wrap = wrapRef.current
+      const zoom = wrap?.querySelector('.leaflet-control-zoom')
+      if (!wrap || !zoom) return
+      const w = wrap.getBoundingClientRect()
+      const z = zoom.getBoundingClientRect()
+      setPosisiBar({ top: z.bottom - w.top, right: w.right - z.right, width: z.width })
+    }
+    const id = requestAnimationFrame(ukur)
+    window.addEventListener('resize', ukur)
+    return () => {
+      cancelAnimationFrame(id)
+      window.removeEventListener('resize', ukur)
+    }
+  }, [])
 
   useEffect(() => {
     if (pesan) {
@@ -192,21 +226,20 @@ export default function PetaLokasiPenumpang({
 
   function handleRecenter() {
     if (posisiValid && mapRef.current) {
+      mapRef.current.invalidateSize({ animate: false })
       mapRef.current.setView([lokasi.lat, lokasi.lng], 16)
     }
   }
 
   function handleRecenterSaya() {
     if (posisiSayaValid && mapRef.current) {
+      mapRef.current.invalidateSize({ animate: false })
       mapRef.current.setView([lokasiSaya.lat, lokasiSaya.lng], 16)
     }
   }
 
-  // Tombol-tombol kontrol di kanan peta ditumpuk ke bawah sesuai yang tampil.
-  const topRecenterSaya = 88 + (tampilkanTombolLokasi ? 42 : 0) + (posisiValid ? 42 : 0)
-
   return (
-    <div className="peta-embed" style={isiPenuh ? s.wrapPolos : s.wrap}>
+    <div ref={wrapRef} className="peta-embed" style={isiPenuh ? s.wrapPolos : s.wrap}>
       <MapContainer
         ref={mapRef}
         center={pusat}
@@ -221,6 +254,7 @@ export default function PetaLokasiPenumpang({
         scrollWheelZoom={true}
       >
         <SimpanPosisiPeta />
+        <PantauUkuran />
         <ZoomControl position="topright" />
 
         <TileLayer
@@ -353,45 +387,55 @@ export default function PetaLokasiPenumpang({
         </Marker>
       </MapContainer>
 
-      {tampilkanTombolLokasi && (
-        <button
-          style={lokasiAktif ? s.lokasiIconAktif : s.lokasiIcon}
-          onClick={onToggleLokasi}
-          aria-label={lokasiAktif ? t.ariaMatikanLive : t.ariaNyalakanLive}
+      {(tampilkanTombolLokasi || posisiValid || posisiSayaValid) && (
+        <div
+          className="leaflet-bar peta-bar-tambahan"
+          style={{
+            ...s.barTambahan,
+            ...(posisiBar ?? { visibility: 'hidden' }),
+          }}
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 2C8 2 5 5 5 9c0 5.5 7 13 7 13s7-7.5 7-13c0-4-3-7-7-7z" />
-            <circle cx="12" cy="9" r="2.5" />
-          </svg>
-        </button>
-      )}
-
-      {posisiValid && (
-        <button
-          className="btn-map-control"
-          style={tampilkanTombolLokasi ? s.recenterIconBawah : s.recenterIcon}
-          onClick={handleRecenter}
-          aria-label={isDemo ? t.ariaKembaliLokasiPassenger : t.ariaKembaliLokasiFajri}
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="3" />
-            <path d="M12 2v3M12 19v3M2 12h3M19 12h3" />
-          </svg>
-        </button>
-      )}
-
-      {posisiSayaValid && (
-        <button
-          className="btn-map-control"
-          style={{ ...s.recenterIcon, top: topRecenterSaya }}
-          onClick={handleRecenterSaya}
-          aria-label={t.ariaKembaliKarakterSaya}
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="8" r="3.5" />
-            <path d="M5 21c0-3.9 3.1-7 7-7s7 3.1 7 7" />
-          </svg>
-        </button>
+          {tampilkanTombolLokasi && (
+            <a
+              href="#"
+              role="button"
+              style={lokasiAktif ? s.barAktif : undefined}
+              onClick={(e) => { e.preventDefault(); onToggleLokasi() }}
+              aria-label={lokasiAktif ? t.ariaMatikanLive : t.ariaNyalakanLive}
+            >
+              <svg style={s.ikonBar} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 2C8 2 5 5 5 9c0 5.5 7 13 7 13s7-7.5 7-13c0-4-3-7-7-7z" />
+                <circle cx="12" cy="9" r="2.5" />
+              </svg>
+            </a>
+          )}
+          {posisiValid && (
+            <a
+              href="#"
+              role="button"
+              onClick={(e) => { e.preventDefault(); handleRecenter() }}
+              aria-label={isDemo ? t.ariaKembaliLokasiPassenger : t.ariaKembaliLokasiFajri}
+            >
+              <svg style={s.ikonBar} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="3" />
+                <path d="M12 2v3M12 19v3M2 12h3M19 12h3" />
+              </svg>
+            </a>
+          )}
+          {posisiSayaValid && (
+            <a
+              href="#"
+              role="button"
+              onClick={(e) => { e.preventDefault(); handleRecenterSaya() }}
+              aria-label={t.ariaKembaliKarakterSaya}
+            >
+              <svg style={s.ikonBar} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="8" r="3.5" />
+                <path d="M5 21c0-3.9 3.1-7 7-7s7 3.1 7 7" />
+              </svg>
+            </a>
+          )}
+        </div>
       )}
 
       <div style={s.badge}>
@@ -436,66 +480,16 @@ const s = {
     textAlign: 'center',
     lineHeight: 1.2,
   },
-  lokasiIcon: {
+  barTambahan: {
     position: 'absolute',
-    top: 88,
-    right: 10,
-    width: 32,
-    height: 32,
-    borderRadius: 8,
-    background: '#fff',
-    color: '#333',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    boxShadow: '0 1px 5px rgba(0,0,0,0.4)',
     zIndex: 1000,
   },
-  lokasiIconAktif: {
-    position: 'absolute',
-    top: 88,
-    right: 10,
-    width: 32,
-    height: 32,
-    borderRadius: 8,
+  barAktif: {
     background: '#B8242F',
     color: '#fff',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    boxShadow: '0 0 10px #B8242F, 0 1px 5px rgba(0,0,0,0.4)',
-    zIndex: 1000,
+    boxShadow: '0 0 10px #B8242F',
   },
-  recenterIcon: {
-    position: 'absolute',
-    top: 88,
-    right: 10,
-    width: 32,
-    height: 32,
-    borderRadius: 8,
-    background: '#fff',
-    color: '#333',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    boxShadow: '0 1px 5px rgba(0,0,0,0.4)',
-    zIndex: 1000,
-  },
-  recenterIconBawah: {
-    position: 'absolute',
-    top: 130,
-    right: 10,
-    width: 32,
-    height: 32,
-    borderRadius: 8,
-    background: '#fff',
-    color: '#333',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    boxShadow: '0 1px 5px rgba(0,0,0,0.4)',
-    zIndex: 1000,
-  },
+  ikonBar: { display: 'inline-block', verticalAlign: 'middle' },
   badge: {
     position: 'absolute',
     left: 10,
