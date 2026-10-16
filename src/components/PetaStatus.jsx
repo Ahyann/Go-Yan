@@ -169,7 +169,7 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
   const pesanTampilRef = useRef(null)
   const mapRefInternal = useRef(null)
   const mapRef = mapRefLuar || mapRefInternal
-  const [teksBubble, setTeksBubble] = useState(t.bubbleDefault)
+  const [teksBubble, setTeksBubble] = useState('')
   const [pesanTrigger, setPesanTrigger] = useState(null)
   const [markerSiap, setMarkerSiap] = useState(false)
   const [teksBubbleSaya, setTeksBubbleSaya] = useState('')
@@ -186,7 +186,7 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
       // Ref direset dulu supaya closePopup() di bawah gak ikut manggil
       // hapusPesan() lagi lewat handler popupclose.
       pesanTampilRef.current = null
-      setTeksBubble(t.bubbleDefault)
+      setTeksBubble('')
       setPesanTrigger(null)
       markerRef.current?.closePopup()
     }
@@ -260,14 +260,6 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
               icon={ikonOjek}
               zIndexOffset={1000}
               eventHandlers={{
-                popupopen: () => {
-                  if (!pesanTampilRef.current) {
-                    setTeksBubble(t.bubbleDefault)
-                    setTimeout(() => {
-                      markerRef.current?.closePopup()
-                    }, 2000)
-                  }
-                },
                 popupclose: () => {
                   if (pesanTampilRef.current) {
                     hapusPesan()
@@ -276,14 +268,16 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
                 },
               }}
             >
-              <Popup closeButton={false} autoClose={false} closeOnClick={false}>
-                <div
-                  style={s.bubbleWrap}
-                  onClick={() => markerRef.current?.closePopup()}
-                >
-                  <span style={{ ...s.bubbleText, fontSize: ukuranFont }}>{teksBubble}</span>
-                </div>
-              </Popup>
+              {teksBubble && (
+                <Popup closeButton={false} autoClose={false} closeOnClick={false}>
+                  <div
+                    style={s.bubbleWrap}
+                    onClick={() => markerRef.current?.closePopup()}
+                  >
+                    <span style={{ ...s.bubbleText, fontSize: ukuranFont }}>{teksBubble}</span>
+                  </div>
+                </Popup>
+              )}
             </Marker>
           </>
         )}

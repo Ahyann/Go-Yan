@@ -47,7 +47,6 @@ export const translations = {
     driverBelumBisa: 'Driver belum bisa sekarang!',
     ahyanUdahTerima: 'Okay!',
     otwText: 'On My Way!',
-    bubbleDefault: 'Otw dutzz!',
 
     // --- PetaLokasiPenumpang (badge) ---
     lokasiFajriLive: 'Lokasi Fajri live',
@@ -208,7 +207,6 @@ export const translations = {
     driverBelumBisa: "Driver can't right now!",
     ahyanUdahTerima: 'Okay!',
     otwText: 'On My Way!',
-    bubbleDefault: 'Otw dutzz!',
 
     // --- PetaLokasiPenumpang (badge) ---
     lokasiFajriLive: "Fajri's location is live",
