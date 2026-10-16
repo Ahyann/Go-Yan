@@ -15,8 +15,10 @@ import { useAuth } from '../context/AuthContext.jsx'
 import { LOKASI_OFFICE, LOKASI_UPN } from '../lib/constants'
 
 const PUSAT_DEFAULT = [-6.2088, 106.8456]
-// Jarak antar tombol kontrol, sama kayak garis pemisah tombol +/- Leaflet.
-const JARAK_TOMBOL = 1
+// Ukuran dan jarak tombol kontrol, disamain sama peta di akun Fajri.
+const JARAK_TOMBOL = 10
+const JARAK_DARI_ZOOM = 14
+const UKURAN_TOMBOL = 36
 const KEY_PETA_TERAKHIR = 'go-yan-peta-terakhir-ojek'
 
 const BATAS_PETA = [
@@ -159,7 +161,7 @@ export default function PetaLokasiPenumpang({
   const pesanSayaTampilRef = useRef(null)
   const [markerSayaSiap, setMarkerSayaSiap] = useState(false)
 
-  // Tombol kontrol tambahan ditempel di bawah tombol +/- dengan jarak yang sama,
+  // Tombol kontrol tambahan ditaruh di bawah tombol +/- dengan jarak seperti di akun Fajri,
   // posisinya diukur dari kontrol zoom Leaflet supaya selalu sejajar.
   useEffect(() => {
     function ukur() {
@@ -168,7 +170,7 @@ export default function PetaLokasiPenumpang({
       if (!wrap || !zoom) return
       const w = wrap.getBoundingClientRect()
       const z = zoom.getBoundingClientRect()
-      setPosisiBar({ top: z.bottom - w.top + JARAK_TOMBOL, right: w.right - z.right })
+      setPosisiBar({ top: z.bottom - w.top + JARAK_DARI_ZOOM, right: w.right - z.right })
     }
     const id = requestAnimationFrame(ukur)
     window.addEventListener('resize', ukur)
@@ -489,8 +491,8 @@ const s = {
     gap: JARAK_TOMBOL,
   },
   kotakKontrol: {
-    width: 32,
-    height: 32,
+    width: UKURAN_TOMBOL,
+    height: UKURAN_TOMBOL,
     borderRadius: 8,
     background: '#fff',
     color: '#333',
@@ -500,8 +502,8 @@ const s = {
     boxShadow: '0 1px 5px rgba(0,0,0,0.4)',
   },
   lokasiIconAktif: {
-    width: 32,
-    height: 32,
+    width: UKURAN_TOMBOL,
+    height: UKURAN_TOMBOL,
     borderRadius: 8,
     background: '#B8242F',
     color: '#fff',
