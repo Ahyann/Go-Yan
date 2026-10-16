@@ -7,6 +7,7 @@ import { useLokasiOjek } from '../lib/useLokasiOjek'
 import { useLokasiPenumpang } from '../lib/useLokasiPenumpang'
 import { usePesanOjek } from '../lib/usePesanOjek'
 import { usePesanPenumpang } from '../lib/usePesanPenumpang'
+import QuickChatMarker from './QuickChatMarker.jsx'
 import { useProfilIkon } from '../lib/useProfilIkon'
 import { useWarnaGlow } from '../lib/useWarnaGlow'
 import { ambilWarnaGlow } from '../lib/warnaGlow'
@@ -149,7 +150,7 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
   const lokasiOjek = useLokasiOjek()
   const lokasiSaya = useLokasiPenumpang()
   const { pesan, hapusPesan } = usePesanOjek()
-  const { pesan: pesanSaya, hapusPesan: hapusPesanSaya } = usePesanPenumpang()
+  const { pesan: pesanSaya, hapusPesan: hapusPesanSaya, kirimPesan: kirimPesanSaya } = usePesanPenumpang()
   const { ikonAhyan, ikonFajri } = useProfilIkon()
   const { warnaAhyan, warnaFajri } = useWarnaGlow()
   const warnaAktif = ambilWarnaGlow(warnaAhyan)
@@ -317,6 +318,17 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
               </Popup>
             )}
           </Marker>
+        )}
+
+        {posisiSayaValid && (
+          <QuickChatMarker
+            marker={markerSayaRef.current}
+            siap={markerSayaSiap}
+            ikon={ikonSaya}
+            aktif
+            onKirim={kirimPesanSaya}
+            pesanCepat={t.quickChatPesanPenumpang}
+          />
         )}
 
         <Marker

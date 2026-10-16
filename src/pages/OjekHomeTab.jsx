@@ -127,7 +127,9 @@ export default function OjekHomeTab({
               />
               <button style={s.pesanBtn} onClick={handleKirimPesan} disabled={!lokasiAktif && !isDemo}>{t.kirim}</button>
             </div>
-            {!lokasiAktif && !isDemo && <div style={s.pesanHint}>{t.pesanPerluLive}</div>}
+            <div style={s.pesanHint}>
+              {lokasiAktif || isDemo ? t.quickChatHint : t.pesanPerluLive}
+            </div>
 
             {lokasiError && <div style={s.lokasiError}>{lokasiError}</div>}
 
