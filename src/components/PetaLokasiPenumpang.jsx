@@ -15,10 +15,10 @@ import { useAuth } from '../context/AuthContext.jsx'
 import { LOKASI_OFFICE, LOKASI_UPN } from '../lib/constants'
 
 const PUSAT_DEFAULT = [-6.2088, 106.8456]
-// Ukuran dan jarak tombol kontrol, disamain sama peta di akun Fajri.
+// Ukuran dan jarak tombol kontrol, hampir sama dengan peta di akun Fajri tapi sedikit lebih kecil.
 const JARAK_TOMBOL = 10
-const JARAK_DARI_ZOOM = 14
-const UKURAN_TOMBOL = 36
+const JARAK_DARI_ZOOM = 8
+const UKURAN_TOMBOL = 32
 const KEY_PETA_TERAKHIR = 'go-yan-peta-terakhir-ojek'
 
 const BATAS_PETA = [
