@@ -196,6 +196,15 @@ export default function PetaLokasiPenumpang({
     }
   }
 
+  function handleRecenterSaya() {
+    if (posisiSayaValid && mapRef.current) {
+      mapRef.current.setView([lokasiSaya.lat, lokasiSaya.lng], 16)
+    }
+  }
+
+  // Tombol-tombol kontrol di kanan peta ditumpuk ke bawah sesuai yang tampil.
+  const topRecenterSaya = 88 + (tampilkanTombolLokasi ? 42 : 0) + (posisiValid ? 42 : 0)
+
   return (
     <div className="peta-embed" style={isiPenuh ? s.wrapPolos : s.wrap}>
       <MapContainer
@@ -367,6 +376,20 @@ export default function PetaLokasiPenumpang({
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="12" r="3" />
             <path d="M12 2v3M12 19v3M2 12h3M19 12h3" />
+          </svg>
+        </button>
+      )}
+
+      {posisiSayaValid && (
+        <button
+          className="btn-map-control"
+          style={{ ...s.recenterIcon, top: topRecenterSaya }}
+          onClick={handleRecenterSaya}
+          aria-label={t.ariaKembaliKarakterSaya}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="8" r="3.5" />
+            <path d="M5 21c0-3.9 3.1-7 7-7s7 3.1 7 7" />
           </svg>
         </button>
       )}
