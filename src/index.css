@@ -115,12 +115,6 @@ button {
   color: #fff !important;
 }
 
-.peta-bar-tambahan a:hover,
-.peta-bar-tambahan a:active {
-  background: var(--nav-red) !important;
-  color: #fff !important;
-}
-
 .btn-map-control {
   transition: background 0.15s ease, color 0.15s ease;
 }

@@ -15,6 +15,8 @@ import { useAuth } from '../context/AuthContext.jsx'
 import { LOKASI_OFFICE, LOKASI_UPN } from '../lib/constants'
 
 const PUSAT_DEFAULT = [-6.2088, 106.8456]
+// Jarak antar tombol kontrol, sama kayak garis pemisah tombol +/- Leaflet.
+const JARAK_TOMBOL = 1
 const KEY_PETA_TERAKHIR = 'go-yan-peta-terakhir-ojek'
 
 const BATAS_PETA = [
@@ -157,7 +159,7 @@ export default function PetaLokasiPenumpang({
   const pesanSayaTampilRef = useRef(null)
   const [markerSayaSiap, setMarkerSayaSiap] = useState(false)
 
-  // Tombol kontrol tambahan ditempel persis di bawah tombol +/- (tanpa celah),
+  // Tombol kontrol tambahan ditempel di bawah tombol +/- dengan jarak yang sama,
   // posisinya diukur dari kontrol zoom Leaflet supaya selalu sejajar.
   useEffect(() => {
     function ukur() {
@@ -166,7 +168,7 @@ export default function PetaLokasiPenumpang({
       if (!wrap || !zoom) return
       const w = wrap.getBoundingClientRect()
       const z = zoom.getBoundingClientRect()
-      setPosisiBar({ top: z.bottom - w.top, right: w.right - z.right, width: z.width })
+      setPosisiBar({ top: z.bottom - w.top + JARAK_TOMBOL, right: w.right - z.right })
     }
     const id = requestAnimationFrame(ukur)
     window.addEventListener('resize', ukur)
@@ -389,51 +391,50 @@ export default function PetaLokasiPenumpang({
 
       {(tampilkanTombolLokasi || posisiValid || posisiSayaValid) && (
         <div
-          className="leaflet-bar peta-bar-tambahan"
+          className="peta-bar-tambahan"
           style={{
             ...s.barTambahan,
             ...(posisiBar ?? { visibility: 'hidden' }),
           }}
         >
           {tampilkanTombolLokasi && (
-            <a
-              href="#"
-              role="button"
-              style={lokasiAktif ? s.barAktif : undefined}
-              onClick={(e) => { e.preventDefault(); onToggleLokasi() }}
+            <button
+              className="btn-map-control"
+              style={lokasiAktif ? s.lokasiIconAktif : s.kotakKontrol}
+              onClick={onToggleLokasi}
               aria-label={lokasiAktif ? t.ariaMatikanLive : t.ariaNyalakanLive}
             >
-              <svg style={s.ikonBar} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M12 2C8 2 5 5 5 9c0 5.5 7 13 7 13s7-7.5 7-13c0-4-3-7-7-7z" />
                 <circle cx="12" cy="9" r="2.5" />
               </svg>
-            </a>
+            </button>
           )}
           {posisiValid && (
-            <a
-              href="#"
-              role="button"
-              onClick={(e) => { e.preventDefault(); handleRecenter() }}
+            <button
+              className="btn-map-control"
+              style={s.kotakKontrol}
+              onClick={handleRecenter}
               aria-label={isDemo ? t.ariaKembaliLokasiPassenger : t.ariaKembaliLokasiFajri}
             >
-              <svg style={s.ikonBar} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="3" />
                 <path d="M12 2v3M12 19v3M2 12h3M19 12h3" />
               </svg>
-            </a>
+            </button>
           )}
           {posisiSayaValid && (
-            <a
-              href="#"
-              role="button"
-              onClick={(e) => { e.preventDefault(); handleRecenterSaya() }}
+            <button
+              className="btn-map-control"
+              style={s.kotakKontrol}
+              onClick={handleRecenterSaya}
               aria-label={t.ariaKembaliKarakterSaya}
             >
-              <svg style={s.ikonBar} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="8" r="3.5" />
                 <path d="M5 21c0-3.9 3.1-7 7-7s7 3.1 7 7" />
               </svg>
-            </a>
+            </button>
           )}
         </div>
       )}
@@ -483,13 +484,32 @@ const s = {
   barTambahan: {
     position: 'absolute',
     zIndex: 1000,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: JARAK_TOMBOL,
   },
-  barAktif: {
+  kotakKontrol: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    background: '#fff',
+    color: '#333',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    boxShadow: '0 1px 5px rgba(0,0,0,0.4)',
+  },
+  lokasiIconAktif: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
     background: '#B8242F',
     color: '#fff',
-    boxShadow: '0 0 10px #B8242F',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    boxShadow: '0 0 10px #B8242F, 0 1px 5px rgba(0,0,0,0.4)',
   },
-  ikonBar: { display: 'inline-block', verticalAlign: 'middle' },
   badge: {
     position: 'absolute',
     left: 10,
