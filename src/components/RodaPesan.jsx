@@ -7,15 +7,18 @@ const R_LABEL = 80
 const LEBAR_LABEL = 64
 const TINGGI_LABEL = 36
 
+// Sektor pertama berpusat lurus ke atas (bukan mulai dari atas), jadi pesan
+// pertama ada di atas, dan kalau jumlahnya genap, pesan di tengah daftar
+// (indeks jumlah/2) ada tepat di bawah.
 // Titik di roda: sudut 0 = lurus ke atas, PI/2 = lurus ke kiri, PI = lurus ke bawah,
-// 3PI/2 = lurus ke kanan. Sektor disusun berlawanan arah jarum jam dari atas.
+// 3PI/2 = lurus ke kanan. Sektor disusun berlawanan arah jarum jam.
 function titikRoda(pusat, radius, sudut) {
   return { x: pusat.x - radius * Math.sin(sudut), y: pusat.y - radius * Math.cos(sudut) }
 }
 
 function jalurSektor(pusat, i, jumlah) {
-  const a0 = (2 * Math.PI * i) / jumlah
-  const a1 = (2 * Math.PI * (i + 1)) / jumlah
+  const a0 = (2 * Math.PI * (i - 0.5)) / jumlah
+  const a1 = (2 * Math.PI * (i + 0.5)) / jumlah
   const luar0 = titikRoda(pusat, R_LUAR, a0)
   const luar1 = titikRoda(pusat, R_LUAR, a1)
   const dalam0 = titikRoda(pusat, R_DALAM, a0)
@@ -33,9 +36,11 @@ export function indeksDariArah(pusat, x, y, jumlah) {
   const vy = y - pusat.y
   const jarak = Math.hypot(vx, vy)
   if (jarak < R_DALAM || jarak > R_LUAR + JARAK_LEBIH_RODA) return null
-  let sudut = Math.atan2(0 - vx, -vy)
+  const lebar = (2 * Math.PI) / jumlah
+  let sudut = Math.atan2(0 - vx, -vy) + lebar / 2
   if (sudut < 0) sudut += 2 * Math.PI
-  return Math.min(jumlah - 1, Math.floor(sudut / ((2 * Math.PI) / jumlah)))
+  if (sudut >= 2 * Math.PI) sudut -= 2 * Math.PI
+  return Math.min(jumlah - 1, Math.floor(sudut / lebar))
 }
 
 // Roda penuh di sekeliling `pusat`, dibagi sektor sebanyak `pesanCepat`.
@@ -79,7 +84,7 @@ export default function RodaPesan({ pusat, terpilih, pesanCepat }) {
         </svg>
 
         {pesanCepat.map((teks, i) => {
-          const titik = titikRoda(pusat, R_LABEL, (2 * Math.PI * (i + 0.5)) / pesanCepat.length)
+          const titik = titikRoda(pusat, R_LABEL, (2 * Math.PI * i) / pesanCepat.length)
           return (
             <div
               key={teks}
