@@ -29,6 +29,7 @@ function buatIkonPenumpang(namaFile, warna) {
       <img src="/icons/${namaFile}" style="
         width:16px;height:24px;
         image-rendering: pixelated;
+        pointer-events:none;-webkit-user-drag:none;-webkit-touch-callout:none;user-select:none;
         filter: drop-shadow(0 0 6px ${warna.utama}) drop-shadow(0 0 10px ${warna.kuat});
       " />
     </div>`,
@@ -45,6 +46,7 @@ function buatIkonSaya(namaFile, warna) {
       <img src="/icons/${namaFile}" style="
         width:24px;height:24px;
         image-rendering: pixelated;
+        pointer-events:none;-webkit-user-drag:none;-webkit-touch-callout:none;user-select:none;
         filter: drop-shadow(0 0 6px ${warna.utama}) drop-shadow(0 0 10px ${warna.kuat});
       " />
     </div>`,
