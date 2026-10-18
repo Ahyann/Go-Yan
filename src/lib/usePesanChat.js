@@ -13,6 +13,17 @@ import { catat } from './debugLog'
 // dikirim ulang sekali supaya gak ilang.
 const JENDELA_PULIH_MS = 1500
 
+// Format pesan di database: { v: 2, t: teks, f: foto (opsional), d: waktu }.
+// Sengaja beda nama field dari versi lama (teks/foto/dibuatPada): perangkat
+// yang masih menjalankan app versi lama gak ngenalin field baru, jadi gak
+// nampilin bubble dan gak ikut-ikutan ngehapus pesan (versi lama pernah
+// punya bug yang ngehapus pesan pas isinya ganti dari teks ke foto).
+function bacaPesan(v) {
+  if (!v) return null
+  if (v.v === 2) return { teks: v.t ?? '', foto: v.f, dibuatPada: v.d }
+  return { teks: v.teks ?? '', foto: v.foto, dibuatPada: v.dibuatPada } // format lama
+}
+
 // Satu "kotak pesan" di database (pesan/ojek atau pesan/penumpang): ngirim
 // teks/foto, dengerin isinya, dan hapus.
 export function usePesanChat({ nama, path, tujuanNotif, judulNotif }) {
@@ -29,7 +40,7 @@ export function usePesanChat({ nama, path, tujuanNotif, judulNotif }) {
     if (!user) return
 
     const berhentiDengar = onValue(PESAN_REF, (snap) => {
-      const nilai = snap.exists() ? snap.val() : null
+      const nilai = snap.exists() ? bacaPesan(snap.val()) : null
       catat(`[${nama}] data masuk:`, nilai ? (nilai.foto ? 'FOTO' : `teks "${nilai.teks}"`) : 'KOSONG')
 
       const k = terakhirKirimRef.current
@@ -56,14 +67,14 @@ export function usePesanChat({ nama, path, tujuanNotif, judulNotif }) {
   async function kirimPesan(teks) {
     if (!teks.trim()) return
     catat(`[${nama}] kirim teks`, teks.trim())
-    await tulis({ teks: teks.trim(), dibuatPada: Date.now() })
+    await tulis({ v: 2, t: teks.trim(), d: Date.now() })
     if (!isDemo) kirimNotifikasi(tujuanNotif, judulNotif, teks.trim(), 'pesan')
   }
 
   async function kirimFoto(foto) {
     if (!foto) return
     catat(`[${nama}] kirim foto`)
-    await tulis({ teks: '', foto, dibuatPada: Date.now() })
+    await tulis({ v: 2, t: '', f: foto, d: Date.now() })
     if (!isDemo) kirimNotifikasi(tujuanNotif, judulNotif, '📷 Foto', 'pesan')
   }
 
