@@ -144,11 +144,11 @@ function useFotoPiksel(foto, cermin) {
 // tengah popup dibuat sama (-38 px dari tengah karakter) di kedua peta, apa
 // pun popupAnchor ikon karakternya (beda di peta Fajri dan peta Ahyan).
 const TENGAH_POPUP_CERMIN = -38
-// popupAnchor ikon Fajri diturunin 6 px (bubble teks), bubble foto ikut turun,
-// jadi geseran ke bawahnya dikurangi 6.
+// popupAnchor ikon Fajri diturunin 9 px (bubble teks), bubble foto ikut turun,
+// jadi geseran ke bawahnya dikurangi 9.
 export const geserPopupCermin = (anchorX) => [
   TENGAH_POPUP_CERMIN - anchorX + GESER_KANAN_FOTO,
-  GESER_BAWAH_FOTO - 6,
+  GESER_BAWAH_FOTO - 9,
 ]
 
 // Bubble foto diturunin dikit dari posisi bubble teks supaya ekornya

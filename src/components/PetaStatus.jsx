@@ -54,7 +54,7 @@ function buatIkonSaya(namaFile, warna) {
     </div>`,
     iconSize: [16, 24],
     iconAnchor: [8, 24],
-    popupAnchor: [44, -14],
+    popupAnchor: [44, -11],
   })
 }
 
