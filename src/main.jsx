@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
+import DebugPanel from './components/DebugPanel.jsx'
 import './index.css'
 
 function setTinggiApp() {
@@ -22,5 +23,6 @@ document.addEventListener('visibilitychange', () => {
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <App />
+    <DebugPanel />
   </React.StrictMode>
 )

@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import QuickChatMarker from './QuickChatMarker.jsx'
+import { useBubblePesan } from '../lib/useBubblePesan'
 import { useLokasiOjek } from '../lib/useLokasiOjek'
 import { usePesanPenumpang } from '../lib/usePesanPenumpang'
 import { usePesanOjek } from '../lib/usePesanOjek'
@@ -148,17 +149,11 @@ export default function PetaLokasiPenumpang({
   const tampilkanTombolLokasi = typeof onToggleLokasi === 'function'
   const mapRef = useRef(null)
   const wrapRef = useRef(null)
+  const bubblePenumpang = useBubblePesan(pesan, hapusPesan, 'peta-ahyan:bubble-fajri')
+  const bubbleSaya = useBubblePesan(pesanSaya, hapusPesanSaya, 'peta-ahyan:bubble-ahyan')
   const [posisiBar, setPosisiBar] = useState(null)
-  const markerRef = useRef(null)
-  const markerSayaRef = useRef(null)
   const markerOfficeRef = useRef(null)
   const markerKampusRef = useRef(null)
-  const pesanTampilRef = useRef(null)
-  const [pesanTrigger, setPesanTrigger] = useState(null)
-  const [markerSiap, setMarkerSiap] = useState(false)
-  const [pesanSayaTrigger, setPesanSayaTrigger] = useState(null)
-  const pesanSayaTampilRef = useRef(null)
-  const [markerSayaSiap, setMarkerSayaSiap] = useState(false)
 
   // Tombol kontrol tambahan ditaruh di bawah tombol +/- dengan jarak seperti di akun Fajri,
   // posisinya diukur dari kontrol zoom Leaflet supaya selalu sejajar.
@@ -178,50 +173,6 @@ export default function PetaLokasiPenumpang({
       window.removeEventListener('resize', ukur)
     }
   }, [])
-
-  useEffect(() => {
-    if (pesan) {
-      pesanTampilRef.current = pesan
-      setPesanTrigger(pesan.dibuatPada)
-    } else {
-      // Ref direset dulu supaya closePopup() di bawah gak ikut manggil
-      // hapusPesan() lagi lewat handler popupclose.
-      pesanTampilRef.current = null
-      setPesanTrigger(null)
-      markerRef.current?.closePopup()
-    }
-  }, [pesan])
-
-  useEffect(() => {
-    if (pesanTrigger && markerRef.current) {
-      const id = setTimeout(() => {
-        markerRef.current?.getPopup()?.update()
-        markerRef.current?.openPopup()
-      }, 0)
-      return () => clearTimeout(id)
-    }
-  }, [pesanTrigger, markerSiap])
-
-  useEffect(() => {
-    if (pesanSaya) {
-      pesanSayaTampilRef.current = pesanSaya
-      setPesanSayaTrigger(pesanSaya.dibuatPada)
-    } else {
-      pesanSayaTampilRef.current = null
-      setPesanSayaTrigger(null)
-      markerSayaRef.current?.closePopup()
-    }
-  }, [pesanSaya])
-
-  useEffect(() => {
-    if (pesanSayaTrigger && markerSayaRef.current) {
-      const id = setTimeout(() => {
-        markerSayaRef.current?.getPopup()?.update()
-        markerSayaRef.current?.openPopup()
-      }, 0)
-      return () => clearTimeout(id)
-    }
-  }, [pesanSayaTrigger, markerSayaSiap])
 
   // Teks & foto sama-sama diturunkan langsung dari pesan (bukan state terpisah)
   // supaya popup gak sempat dirender kosong sesaat saat pesan berganti, karena
@@ -272,32 +223,15 @@ export default function PetaLokasiPenumpang({
           <>
             <GeserKePosisi lat={lokasi.lat} lng={lokasi.lng} />
             <Marker
-              ref={(instance) => {
-                markerRef.current = instance
-                if (instance && !markerSiap) setMarkerSiap(true)
-              }}
+              ref={bubblePenumpang.refMarker}
               position={[lokasi.lat, lokasi.lng]}
               icon={ikonPenumpang}
               zIndexOffset={500}
-              eventHandlers={{
-                popupopen: () => {
-                  if (!pesanTampilRef.current) {
-                    setTimeout(() => {
-                      markerRef.current?.closePopup()
-                    }, 1500)
-                  }
-                },
-                popupclose: () => {
-                  if (pesanTampilRef.current) {
-                    hapusPesan()
-                    pesanTampilRef.current = null
-                  }
-                },
-              }}
+              eventHandlers={bubblePenumpang.eventHandlers}
             >
               {(teksBubble || fotoBubble) && (
 <Popup closeButton={false} autoClose={false} closeOnClick={false}>
-<BubblePesan teks={teksBubble} foto={fotoBubble} cermin onTutup={() => markerRef.current?.closePopup()} geser={geserPopupCermin(37)} />
+<BubblePesan teks={teksBubble} foto={fotoBubble} cermin onTutup={bubblePenumpang.tutup} geser={geserPopupCermin(37)} />
 </Popup>
 )}
             </Marker>
@@ -308,31 +242,21 @@ export default function PetaLokasiPenumpang({
           <>
             <GeserKePosisi lat={lokasiSaya.lat} lng={lokasiSaya.lng} />
             <Marker
-              ref={(instance) => {
-                markerSayaRef.current = instance
-                if (instance && !markerSayaSiap) setMarkerSayaSiap(true)
-              }}
+              ref={bubbleSaya.refMarker}
               position={[lokasiSaya.lat, lokasiSaya.lng]}
               icon={ikonSaya}
               zIndexOffset={1000}
-              eventHandlers={{
-                popupclose: () => {
-                  if (pesanSayaTampilRef.current) {
-                    hapusPesanSaya()
-                    pesanSayaTampilRef.current = null
-                  }
-                },
-              }}
+              eventHandlers={bubbleSaya.eventHandlers}
             >
               {(teksBubbleSaya || fotoBubbleSaya) && (
 <Popup closeButton={false} autoClose={false} closeOnClick={false}>
-<BubblePesan teks={teksBubbleSaya} foto={fotoBubbleSaya} onTutup={() => markerSayaRef.current?.closePopup()} geser={geserPopupFoto} />
+<BubblePesan teks={teksBubbleSaya} foto={fotoBubbleSaya} onTutup={bubbleSaya.tutup} geser={geserPopupFoto} />
 </Popup>
 )}
             </Marker>
             <QuickChatMarker
-              marker={markerSayaRef.current}
-              siap={markerSayaSiap}
+              marker={bubbleSaya.marker}
+              siap={Boolean(bubbleSaya.marker)}
               ikon={ikonSaya}
               aktif
               onKirim={kirimPesanSaya}

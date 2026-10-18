@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { catat } from './debugLog'
 
 // Ngurus bubble chat di marker peta. Satu pesan di database = satu bubble.
 //
@@ -11,7 +12,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 //
 // Pakai: ref={bubble.refMarker} eventHandlers={bubble.eventHandlers} di
 // <Marker>, dan onTutup={bubble.tutup} di isi bubble-nya.
-export function useBubblePesan(pesan, hapusPesan) {
+export function useBubblePesan(pesan, hapusPesan, nama = 'bubble') {
   const markerRef = useRef(null)
   const [marker, setMarker] = useState(null)
   const pesanAktifRef = useRef(null)
@@ -35,6 +36,7 @@ export function useBubblePesan(pesan, hapusPesan) {
   // karena isi popup bisa beda ukuran (teks vs foto). Pesan hilang -> tutup.
   useEffect(() => {
     if (!marker) return
+    catat(`[${nama}] pesan ${adaPesan ? 'ADA' : 'tidak ada'} -> ${adaPesan ? 'buka' : 'tutup'} popup`)
     if (!adaPesan) {
       marker.closePopup()
       return
@@ -49,6 +51,7 @@ export function useBubblePesan(pesan, hapusPesan) {
   const eventHandlers = useMemo(
     () => ({
       popupclose: () => {
+        catat(`[${nama}] popup TERTUTUP, pesan aktif: ${pesanAktifRef.current ? 'ya' : 'tidak'}`)
         if (!pesanAktifRef.current) return
         // Jangan buka-tutup terus kalau ada yang nutup berulang.
         const sekarang = Date.now()
@@ -59,14 +62,15 @@ export function useBubblePesan(pesan, hapusPesan) {
         }, 0)
       },
     }),
-    []
+    [nama]
   )
 
   const tutup = useCallback(() => {
+    catat(`[${nama}] user nutup bubble`)
     pesanAktifRef.current = null
     hapusRef.current()
     markerRef.current?.closePopup()
-  }, [])
+  }, [nama])
 
   return { marker, refMarker, eventHandlers, tutup }
 }

@@ -168,8 +168,8 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
   const markerKampusRef = useRef(null)
   const mapRefInternal = useRef(null)
   const mapRef = mapRefLuar || mapRefInternal
-  const bubbleAhyan = useBubblePesan(pesan, hapusPesan)
-  const bubbleSaya = useBubblePesan(pesanSaya, hapusPesanSaya)
+  const bubbleAhyan = useBubblePesan(pesan, hapusPesan, 'peta-fajri:bubble-ahyan')
+  const bubbleSaya = useBubblePesan(pesanSaya, hapusPesanSaya, 'peta-fajri:bubble-fajri')
 
   // Teks & foto sama-sama diturunkan langsung dari pesan (bukan state terpisah)
   // supaya popup gak sempat dirender kosong sesaat saat pesan berganti, karena

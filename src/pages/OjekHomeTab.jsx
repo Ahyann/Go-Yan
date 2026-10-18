@@ -31,7 +31,10 @@ export default function OjekHomeTab({
 
   function handleKirimPesan() {
     if (!teksPesan.trim()) return
-    kirimPesan(teksPesan)
+    Promise.resolve(kirimPesan(teksPesan)).catch((err) => {
+      console.error('Gagal kirim pesan:', err)
+      alert('Gagal kirim pesan: ' + err.message)
+    })
     setTeksPesan('')
   }
 

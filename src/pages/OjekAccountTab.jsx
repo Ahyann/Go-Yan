@@ -136,6 +136,8 @@ export default function OjekAccountTab() {
         {t.keluar}
       </button>
 
+      <div style={s.idBuild}>build {__ID_BUILD__}</div>
+
       {showPilihIkon && (
         <ModalPilihIkon
           ikonAhyan={ikonAhyan}
@@ -400,6 +402,12 @@ const s = {
     padding: '12px',
     borderRadius: 999,
     border: '1px solid var(--glow-blue-mid)',
+  },
+  idBuild: {
+    textAlign: 'center',
+    fontSize: 10,
+    color: 'var(--text-dim)',
+    marginTop: -4,
   },
   logoutBtn: {
     background: 'var(--nav-red)',

@@ -11,7 +11,10 @@ export default function KirimPesanPopup({ onClose, onKirim, onKirimFoto }) {
 
   function handleKirim() {
     if (!teks.trim()) return
-    onKirim(teks.trim())
+    Promise.resolve(onKirim(teks.trim())).catch((err) => {
+      console.error('Gagal kirim pesan:', err)
+      alert('Gagal kirim pesan: ' + err.message)
+    })
     setTeks('')
     onClose()
   }
