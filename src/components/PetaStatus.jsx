@@ -8,6 +8,7 @@ import { useLokasiPenumpang } from '../lib/useLokasiPenumpang'
 import { usePesanOjek } from '../lib/usePesanOjek'
 import { usePesanPenumpang } from '../lib/usePesanPenumpang'
 import QuickChatMarker from './QuickChatMarker.jsx'
+import { useBubblePesan } from '../lib/useBubblePesan'
 import { useProfilIkon } from '../lib/useProfilIkon'
 import { useWarnaGlow } from '../lib/useWarnaGlow'
 import { ambilWarnaGlow } from '../lib/warnaGlow'
@@ -163,63 +164,12 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
   const posisiValid = lokasiOjek?.lat != null && lokasiOjek?.lng != null
   const posisiSayaValid = lokasiSaya?.lat != null && lokasiSaya?.lng != null
   const adaPosisiOjek = posisiValid && permintaan?.status === STATUS_PERMINTAAN.DITERIMA
-  const markerRef = useRef(null)
-  const markerSayaRef = useRef(null)
   const markerOfficeRef = useRef(null)
   const markerKampusRef = useRef(null)
-  const pesanTampilRef = useRef(null)
   const mapRefInternal = useRef(null)
   const mapRef = mapRefLuar || mapRefInternal
-  const [pesanTrigger, setPesanTrigger] = useState(null)
-  const [markerSiap, setMarkerSiap] = useState(false)
-  const [pesanSayaTrigger, setPesanSayaTrigger] = useState(null)
-  const pesanSayaTampilRef = useRef(null)
-  const [markerSayaSiap, setMarkerSayaSiap] = useState(false)
-
-  useEffect(() => {
-    if (pesan) {
-      pesanTampilRef.current = pesan
-      setPesanTrigger(pesan.dibuatPada)
-    } else {
-      // Ref direset dulu supaya closePopup() di bawah gak ikut manggil
-      // hapusPesan() lagi lewat handler popupclose.
-      pesanTampilRef.current = null
-      setPesanTrigger(null)
-      markerRef.current?.closePopup()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pesan])
-
-  useEffect(() => {
-    if (pesanTrigger && markerRef.current) {
-      const id = setTimeout(() => {
-        markerRef.current?.getPopup()?.update()
-        markerRef.current?.openPopup()
-      }, 0)
-      return () => clearTimeout(id)
-    }
-  }, [pesanTrigger, markerSiap])
-
-  useEffect(() => {
-    if (pesanSaya) {
-      pesanSayaTampilRef.current = pesanSaya
-      setPesanSayaTrigger(pesanSaya.dibuatPada)
-    } else {
-      pesanSayaTampilRef.current = null
-      setPesanSayaTrigger(null)
-      markerSayaRef.current?.closePopup()
-    }
-  }, [pesanSaya])
-
-  useEffect(() => {
-    if (pesanSayaTrigger && markerSayaRef.current) {
-      const id = setTimeout(() => {
-        markerSayaRef.current?.getPopup()?.update()
-        markerSayaRef.current?.openPopup()
-      }, 0)
-      return () => clearTimeout(id)
-    }
-  }, [pesanSayaTrigger, markerSayaSiap])
+  const bubbleAhyan = useBubblePesan(pesan, hapusPesan)
+  const bubbleSaya = useBubblePesan(pesanSaya, hapusPesanSaya)
 
   // Teks & foto sama-sama diturunkan langsung dari pesan (bukan state terpisah)
   // supaya popup gak sempat dirender kosong sesaat saat pesan berganti, karena
@@ -255,25 +205,15 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
           <>
             <GeserKePosisi lat={lokasiOjek.lat} lng={lokasiOjek.lng} />
             <Marker
-              ref={(instance) => {
-                markerRef.current = instance
-                if (instance && !markerSiap) setMarkerSiap(true)
-              }}
+              ref={bubbleAhyan.refMarker}
               position={[lokasiOjek.lat, lokasiOjek.lng]}
               icon={ikonOjek}
               zIndexOffset={1000}
-              eventHandlers={{
-                popupclose: () => {
-                  if (pesanTampilRef.current) {
-                    hapusPesan()
-                    pesanTampilRef.current = null
-                  }
-                },
-              }}
+              eventHandlers={bubbleAhyan.eventHandlers}
             >
               {(teksBubble || fotoBubble) && (
 <Popup closeButton={false} autoClose={false} closeOnClick={false}>
-<BubblePesan teks={teksBubble} foto={fotoBubble} onTutup={() => markerRef.current?.closePopup()} geser={geserPopupFoto} />
+<BubblePesan teks={teksBubble} foto={fotoBubble} onTutup={bubbleAhyan.tutup} geser={geserPopupFoto} />
 </Popup>
 )}
             </Marker>
@@ -282,25 +222,15 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
 
         {posisiSayaValid && (
           <Marker
-            ref={(instance) => {
-              markerSayaRef.current = instance
-              if (instance && !markerSayaSiap) setMarkerSayaSiap(true)
-            }}
+            ref={bubbleSaya.refMarker}
             position={[lokasiSaya.lat, lokasiSaya.lng]}
             icon={ikonSaya}
             zIndexOffset={500}
-            eventHandlers={{
-              popupclose: () => {
-                if (pesanSayaTampilRef.current) {
-                  hapusPesanSaya()
-                  pesanSayaTampilRef.current = null
-                }
-              },
-            }}
+            eventHandlers={bubbleSaya.eventHandlers}
           >
             {(teksBubbleSaya || fotoBubbleSaya) && (
 <Popup closeButton={false} autoClose={false} closeOnClick={false}>
-<BubblePesan teks={teksBubbleSaya} foto={fotoBubbleSaya} cermin onTutup={() => markerSayaRef.current?.closePopup()} geser={geserPopupCermin(44)} />
+<BubblePesan teks={teksBubbleSaya} foto={fotoBubbleSaya} cermin onTutup={bubbleSaya.tutup} geser={geserPopupCermin(44)} />
 </Popup>
 )}
           </Marker>
@@ -308,8 +238,8 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
 
         {posisiSayaValid && (
           <QuickChatMarker
-            marker={markerSayaRef.current}
-            siap={markerSayaSiap}
+            marker={bubbleSaya.marker}
+            siap={Boolean(bubbleSaya.marker)}
             ikon={ikonSaya}
             aktif
             onKirim={kirimPesanSaya}
