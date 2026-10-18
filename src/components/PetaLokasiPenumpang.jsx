@@ -347,7 +347,7 @@ export default function PetaLokasiPenumpang({
               ikon={ikonSaya}
               aktif
               onKirim={kirimPesanSaya}
-              pesanCepat={t.quickChatPesan}
+              pesanCepat={isDemo ? t.quickChatPesanDemo : t.quickChatPesan}
             />
           </>
         )}

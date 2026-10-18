@@ -324,7 +324,7 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
             ikon={ikonSaya}
             aktif
             onKirim={kirimPesanSaya}
-            pesanCepat={t.quickChatPesanPenumpang}
+            pesanCepat={isDemo ? t.quickChatPesanPenumpangDemo : t.quickChatPesanPenumpang}
           />
         )}
 
