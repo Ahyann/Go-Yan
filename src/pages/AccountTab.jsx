@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { debugAktif, gantiDebug } from '../lib/debugLog'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { ROLE } from '../lib/constants'
@@ -9,6 +10,19 @@ import { WARNA_GLOW_PRESET, ambilWarnaGlow } from '../lib/warnaGlow'
 import { useLockBodyScroll } from '../lib/useLockBodyScroll'
 
 const PILIHAN_IKON_FAJRI = ['fajri.png', 'fajri2.png', 'fajri3.png']
+
+// Ketuk tulisan build 5x berturut-turut (jeda < 2 detik) buat ganti mode debug.
+let ketukan = 0
+let ketukanTerakhir = 0
+function ketukBuild() {
+  const sekarang = Date.now()
+  ketukan = sekarang - ketukanTerakhir < 2000 ? ketukan + 1 : 1
+  ketukanTerakhir = sekarang
+  if (ketukan >= 5) {
+    ketukan = 0
+    gantiDebug()
+  }
+}
 
 export default function AccountTab() {
   const { user, logout, isDemo } = useAuth()
@@ -135,7 +149,9 @@ export default function AccountTab() {
         {t.keluar}
       </button>
 
-      <div style={s.idBuild}>build {__ID_BUILD__}</div>
+      <div style={s.idBuild} onClick={ketukBuild}>
+        build {__ID_BUILD__}{debugAktif ? ' · debug ON' : ''}
+      </div>
 
       {showPilihIkon && (
         <ModalPilihIkon
@@ -409,6 +425,8 @@ const s = {
     fontSize: 10,
     color: 'var(--text-dim)',
     marginTop: -4,
+    userSelect: 'none',
+    WebkitUserSelect: 'none',
   },
   logoutBtn: {
     background: 'var(--nav-red)',

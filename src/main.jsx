@@ -2,6 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import DebugPanel from './components/DebugPanel.jsx'
+import { pantauVersiBaru } from './lib/pantauVersiBaru'
 import './index.css'
 
 function setTinggiApp() {
@@ -19,6 +20,8 @@ window.addEventListener('pageshow', setTinggiApp)
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible') setTinggiApp()
 })
+
+pantauVersiBaru()
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

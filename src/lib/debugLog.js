@@ -34,3 +34,15 @@ export function dengarkan(f) {
   pendengar.add(f)
   return () => pendengar.delete(f)
 }
+
+// Dipakai tab Akun: ketuk tulisan build 5x buat nyalain/matiin mode debug
+// tanpa perlu ngetik alamat pakai ?debug=1.
+export function gantiDebug() {
+  try {
+    if (debugAktif) localStorage.removeItem('goyan-debug')
+    else localStorage.setItem('goyan-debug', '1')
+  } catch {
+    // penyimpanan diblokir, mode debug gak bisa disimpan
+  }
+  window.location.reload()
+}
