@@ -41,7 +41,7 @@ function buatIkonPenumpang(namaFile, warna) {
     </div>`,
     iconSize: [16, 24],
     iconAnchor: [8, 24],
-    popupAnchor: [37, -7],
+    popupAnchor: [37, -13],
   })
 }
 
@@ -58,7 +58,7 @@ function buatIkonSaya(namaFile, warna) {
     </div>`,
     iconSize: [24, 24],
     iconAnchor: [12, 12],
-    popupAnchor: [42, 12],
+    popupAnchor: [42, 6],
   })
 }
 

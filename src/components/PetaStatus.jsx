@@ -37,7 +37,7 @@ function buatIkonOjek(namaFile, warna) {
     </div>`,
     iconSize: [24, 24],
     iconAnchor: [12, 12],
-    popupAnchor: [42, 12],
+    popupAnchor: [42, 6],
   })
 }
 
@@ -54,7 +54,7 @@ function buatIkonSaya(namaFile, warna) {
     </div>`,
     iconSize: [16, 24],
     iconAnchor: [8, 24],
-    popupAnchor: [44, -8],
+    popupAnchor: [44, -14],
   })
 }
 
