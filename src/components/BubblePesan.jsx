@@ -179,25 +179,26 @@ export default function BubblePesan({ teks, foto, onTutup, cermin = false, geser
 
   if (foto) {
     return (
-      <div style={{ ...s.fotoWrap, transform: `translate(${geser[0]}px, ${geser[1]}px)` }}>
+      <div
+        style={{ ...s.fotoWrap, transform: `translate(${geser[0]}px, ${geser[1]}px)` }}
+        onContextMenu={(e) => e.preventDefault()}
+      >
+        {/* Gambarnya sendiri gak nangkep sentuhan (pointer-events: none), yang
+            nangkep tap itu lapisan transparan di atasnya. Kalau gambarnya yang
+            kena tahan lama, browser nampilin menu "simpan gambar / buka di tab". */}
         {fotoPiksel ? (
-          <img
-            src={fotoPiksel}
-            alt=""
-            style={{ ...s.fotoBingkai, backgroundImage: 'none', pointerEvents: 'auto', cursor: 'zoom-in' }}
-            onClick={() => setBesar(true)}
-            draggable={false}
-          />
+          <img src={fotoPiksel} alt="" style={{ ...s.fotoBingkai, backgroundImage: 'none' }} draggable={false} />
         ) : (
           <>
             <div style={s.fotoBingkai} />
-            <img src={foto} alt="" style={s.foto} onClick={() => setBesar(true)} draggable={false} />
+            <img src={foto} alt="" style={s.foto} draggable={false} />
           </>
         )}
+        <div style={s.fotoTap} onClick={() => setBesar(true)} />
         <button type="button" style={{ ...s.tutup, ...(cermin ? { left: -6 } : null) }} onClick={onTutup} aria-label="Tutup">×</button>
         {besar && createPortal(
-          <div style={s.overlay} onClick={() => setBesar(false)}>
-            <img src={foto} alt="" style={s.fotoBesar} />
+          <div style={s.overlay} onClick={() => setBesar(false)} onContextMenu={(e) => e.preventDefault()}>
+            <img src={foto} alt="" style={s.fotoBesar} draggable={false} />
           </div>,
           document.body
         )}
@@ -249,6 +250,9 @@ const s = {
     height: TINGGI_PNG * SKALA,
   },
   fotoBingkai: {
+    WebkitTouchCallout: 'none',
+    userSelect: 'none',
+    WebkitUserSelect: 'none',
     position: 'absolute',
     left: GESER_X,
     top: 0,
@@ -261,6 +265,10 @@ const s = {
     pointerEvents: 'none',
   },
   foto: {
+    pointerEvents: 'none',
+    WebkitTouchCallout: 'none',
+    userSelect: 'none',
+    WebkitUserSelect: 'none',
     position: 'absolute',
     left: GESER_X + JENDELA.x * SKALA,
     top: JENDELA.y * SKALA,
@@ -294,7 +302,22 @@ const s = {
     padding: 20,
     zIndex: 1000000,
   },
+  fotoTap: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    width: LEBAR_PNG * SKALA,
+    height: TINGGI_PNG * SKALA,
+    cursor: 'zoom-in',
+    WebkitTouchCallout: 'none',
+    userSelect: 'none',
+    WebkitUserSelect: 'none',
+  },
   fotoBesar: {
+    pointerEvents: 'none',
+    WebkitTouchCallout: 'none',
+    userSelect: 'none',
+    WebkitUserSelect: 'none',
     width: '100%',
     maxWidth: 480,
     aspectRatio: '4 / 3',
