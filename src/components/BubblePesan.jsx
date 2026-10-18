@@ -174,7 +174,21 @@ const TENGAH_TEKS_CERMIN = -44
 export const geserPopupTeksCermin = (anchorX) => [TENGAH_TEKS_CERMIN - anchorX, 0]
 
 export default function BubblePesan({ teks, foto, onTutup, cermin = false, geser = [0, 0], geserTeks = [0, 0] }) {
-  const [besar, setBesar] = useState(false)
+  // besar: null (tutup) | { dx, dy, menutup } — dx/dy = jarak bubble dari
+  // tengah layar, titik awal foto "muncul maju" dan titik tujuan pas nutup.
+  const [besar, setBesar] = useState(null)
+  const bukaBesar = (e) => {
+    const r = e.currentTarget.getBoundingClientRect()
+    setBesar({
+      dx: Math.round(r.left + r.width / 2 - window.innerWidth / 2),
+      dy: Math.round(r.top + r.height / 2 - window.innerHeight / 2),
+      menutup: false,
+    })
+  }
+  const tutupBesar = () => {
+    setBesar((b) => (b ? { ...b, menutup: true } : b))
+    setTimeout(() => setBesar(null), 200)
+  }
   const fotoPiksel = useFotoPiksel(foto || '', cermin)
 
   if (foto) {
@@ -194,11 +208,22 @@ export default function BubblePesan({ teks, foto, onTutup, cermin = false, geser
             <img src={foto} alt="" style={s.foto} draggable={false} />
           </>
         )}
-        <div style={s.fotoTap} onClick={() => setBesar(true)} />
+        <div style={s.fotoTap} onClick={bukaBesar} />
         <button type="button" style={{ ...s.tutup, ...(cermin ? { left: -6 } : null) }} onClick={onTutup} aria-label="Tutup">×</button>
         {besar && createPortal(
-          <div style={s.overlay} onClick={() => setBesar(false)} onContextMenu={(e) => e.preventDefault()}>
-            <img src={foto} alt="" style={s.fotoBesar} draggable={false} />
+          <div
+            className={besar.menutup ? 'foto-latar-keluar' : 'foto-latar-masuk'}
+            style={s.overlay}
+            onClick={tutupBesar}
+            onContextMenu={(e) => e.preventDefault()}
+          >
+            <img
+              src={foto}
+              alt=""
+              className={besar.menutup ? 'foto-besar-keluar' : 'foto-besar-masuk'}
+              style={{ ...s.fotoBesar, '--dx': `${besar.dx}px`, '--dy': `${besar.dy}px` }}
+              draggable={false}
+            />
           </div>,
           document.body
         )}

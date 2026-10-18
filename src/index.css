@@ -170,3 +170,20 @@ button {
 .quick-chat-roda {
   animation: quick-chat-roda 0.24s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
 }
+
+/* Foto di bubble diperbesar: muncul maju dari posisi bubble-nya, nutup balik ke sana. */
+@keyframes foto-masuk {
+  from { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0.18); }
+  to { opacity: 1; transform: translate(0, 0) scale(1); }
+}
+@keyframes foto-keluar {
+  from { opacity: 1; transform: translate(0, 0) scale(1); }
+  to { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0.18); }
+}
+@keyframes foto-latar-masuk { from { opacity: 0; } to { opacity: 1; } }
+@keyframes foto-latar-keluar { from { opacity: 1; } to { opacity: 0; } }
+.foto-besar-masuk { animation: foto-masuk 0.34s cubic-bezier(0.34, 1.35, 0.64, 1) both; }
+.foto-besar-keluar { animation: foto-keluar 0.2s cubic-bezier(0.5, 0, 0.75, 0) both; }
+.foto-latar-masuk { animation: foto-latar-masuk 0.25s ease-out both; }
+.foto-latar-keluar { animation: foto-latar-keluar 0.2s ease-in both; }
+
