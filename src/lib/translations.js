@@ -72,6 +72,7 @@ export const translations = {
     fotoGagal: 'Foto gagal diproses atau dikirim',
     batal: 'Batal',
     ambilFoto: 'Ambil foto',
+    balikKamera: 'Balik kamera',
 
     // --- Akun / Settings (baru) ---
     akunEyebrow: 'AKUN',
@@ -237,6 +238,7 @@ export const translations = {
     fotoGagal: 'Photo could not be processed or sent',
     batal: 'Cancel',
     ambilFoto: 'Take photo',
+    balikKamera: 'Switch camera',
 
     // --- Akun / Settings (baru) ---
     akunEyebrow: 'ACCOUNT',

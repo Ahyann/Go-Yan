@@ -4,20 +4,23 @@ import { kompresFoto, kompresVideo } from '../lib/kompresFoto'
 import { useLanguage } from '../context/LanguageContext.jsx'
 
 // Tombol kamera/galeri: pilih foto, lihat pratinjau 4:3, lalu kirim.
-// HP: atribut capture langsung buka kamera. Laptop gak ngedukung itu (malah
-// buka file), jadi di sana kamera dibuka lewat getUserMedia.
+// Kamera dibuka di dalam app lewat getUserMedia (HP maupun laptop), dengan
+// bingkai 4:3 yang sama persis dengan hasil fotonya. Kalau kamera gak bisa
+// dipakai (gak ada / izin ditolak), jatuh ke pilih file.
 const layarSentuh = () => window.matchMedia('(pointer: coarse)').matches
 
 function KameraLangsung({ onAmbil, onBatal, onGagal }) {
   const { t } = useLanguage()
   const videoRef = useRef(null)
   const [siap, setSiap] = useState(false)
+  const [hadap, setHadap] = useState(layarSentuh() ? 'environment' : 'user')
 
   useEffect(() => {
     let stream = null
     let batal = false
+    setSiap(false)
     navigator.mediaDevices
-      ?.getUserMedia({ video: { width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false })
+      ?.getUserMedia({ video: { facingMode: { ideal: hadap }, width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false })
       .then((s) => {
         if (batal) {
           s.getTracks().forEach((tr) => tr.stop())
@@ -34,7 +37,7 @@ function KameraLangsung({ onAmbil, onBatal, onGagal }) {
       stream?.getTracks().forEach((tr) => tr.stop())
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [hadap])
 
   return createPortal(
     <div style={s.overlay} onClick={onBatal}>
@@ -42,6 +45,16 @@ function KameraLangsung({ onAmbil, onBatal, onGagal }) {
         <video ref={videoRef} style={{ ...s.gambar, background: '#000' }} playsInline muted />
         <div style={s.baris}>
           <button type="button" style={s.batal} onClick={onBatal}>{t.batal}</button>
+          {layarSentuh() && (
+            <button
+              type="button"
+              style={s.balik}
+              onClick={() => setHadap((h) => (h === 'environment' ? 'user' : 'environment'))}
+              aria-label={t.balikKamera}
+            >
+              ⟲
+            </button>
+          )}
           <button
             type="button"
             style={{ ...s.kirim, opacity: siap ? 1 : 0.5 }}
@@ -93,11 +106,11 @@ export default function TombolFoto({ onKirimFoto, disabled, onSelesai }) {
 
   return (
     <>
-      <input ref={inputRef} type="file" accept="image/*" capture="environment" hidden onChange={handlePilih} />
+      <input ref={inputRef} type="file" accept="image/*" hidden onChange={handlePilih} />
       <button
         type="button"
         style={{ ...s.tombol, opacity: disabled || sibuk ? 0.5 : 1 }}
-        onClick={() => (layarSentuh() ? inputRef.current?.click() : setKameraAktif(true))}
+        onClick={() => setKameraAktif(true)}
         disabled={disabled || sibuk}
         aria-label={t.ariaKirimFoto}
       >
@@ -186,6 +199,14 @@ const s = {
     fontSize: 15,
     fontWeight: 600,
     padding: 12,
+    borderRadius: 999,
+    border: '1px solid var(--blue-border)',
+  },
+  balik: {
+    width: 46,
+    background: 'rgba(255,255,255,0.06)',
+    color: 'var(--text)',
+    fontSize: 20,
     borderRadius: 999,
     border: '1px solid var(--blue-border)',
   },
