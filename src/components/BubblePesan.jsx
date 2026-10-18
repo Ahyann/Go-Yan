@@ -164,13 +164,16 @@ export const GESER_KANAN_FOTO = 4
 export const GESER_BAWAH_FOTO_AHYAN = GESER_BAWAH_FOTO - 7 - 7
 export const geserPopupFoto = [GESER_KANAN_FOTO, GESER_BAWAH_FOTO_AHYAN]
 
-export default function BubblePesan({ teks, foto, onTutup, cermin = false }) {
+// geser: [x, y] px, menggeser bubble foto dari posisi default popup. Pakai CSS,
+// bukan offset Popup Leaflet, supaya popup gak perlu dibuat ulang (dibuat ulang
+// bikin popupclose kepanggil dan pesan barunya ikut kehapus).
+export default function BubblePesan({ teks, foto, onTutup, cermin = false, geser = [0, 0] }) {
   const [besar, setBesar] = useState(false)
   const fotoPiksel = useFotoPiksel(foto || '', cermin)
 
   if (foto) {
     return (
-      <div style={s.fotoWrap}>
+      <div style={{ ...s.fotoWrap, transform: `translate(${geser[0]}px, ${geser[1]}px)` }}>
         {fotoPiksel ? (
           <img
             src={fotoPiksel}

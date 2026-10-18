@@ -197,6 +197,7 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
   useEffect(() => {
     if (pesanTrigger && markerRef.current) {
       const id = setTimeout(() => {
+        markerRef.current?.getPopup()?.update()
         markerRef.current?.openPopup()
       }, 0)
       return () => clearTimeout(id)
@@ -219,6 +220,7 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
   useEffect(() => {
     if (pesanSayaTrigger && markerSayaRef.current) {
       const id = setTimeout(() => {
+        markerSayaRef.current?.getPopup()?.update()
         markerSayaRef.current?.openPopup()
       }, 0)
       return () => clearTimeout(id)
@@ -271,14 +273,8 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
               }}
             >
               {(teksBubble || fotoBubble) && (
-<Popup
-  key={fotoBubble ? 'foto' : 'teks'}
-  closeButton={false}
-  autoClose={false}
-  closeOnClick={false}
-  offset={fotoBubble ? geserPopupFoto : [0, 0]}
->
-<BubblePesan teks={teksBubble} foto={fotoBubble} onTutup={() => markerRef.current?.closePopup()} />
+<Popup closeButton={false} autoClose={false} closeOnClick={false}>
+<BubblePesan teks={teksBubble} foto={fotoBubble} onTutup={() => markerRef.current?.closePopup()} geser={geserPopupFoto} />
 </Popup>
 )}
             </Marker>
@@ -304,14 +300,8 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
             }}
           >
             {(teksBubbleSaya || fotoBubbleSaya) && (
-<Popup
-  key={fotoBubbleSaya ? 'foto' : 'teks'}
-  closeButton={false}
-  autoClose={false}
-  closeOnClick={false}
-  offset={fotoBubbleSaya ? geserPopupCermin(44) : [0, 0]}
->
-<BubblePesan teks={teksBubbleSaya} foto={fotoBubbleSaya} cermin onTutup={() => markerSayaRef.current?.closePopup()} />
+<Popup closeButton={false} autoClose={false} closeOnClick={false}>
+<BubblePesan teks={teksBubbleSaya} foto={fotoBubbleSaya} cermin onTutup={() => markerSayaRef.current?.closePopup()} geser={geserPopupCermin(44)} />
 </Popup>
 )}
           </Marker>

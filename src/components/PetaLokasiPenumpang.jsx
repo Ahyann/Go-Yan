@@ -199,6 +199,7 @@ export default function PetaLokasiPenumpang({
   useEffect(() => {
     if (pesanTrigger && markerRef.current) {
       const id = setTimeout(() => {
+        markerRef.current?.getPopup()?.update()
         markerRef.current?.openPopup()
       }, 0)
       return () => clearTimeout(id)
@@ -221,6 +222,7 @@ export default function PetaLokasiPenumpang({
   useEffect(() => {
     if (pesanSayaTrigger && markerSayaRef.current) {
       const id = setTimeout(() => {
+        markerSayaRef.current?.getPopup()?.update()
         markerSayaRef.current?.openPopup()
       }, 0)
       return () => clearTimeout(id)
@@ -295,14 +297,8 @@ export default function PetaLokasiPenumpang({
               }}
             >
               {(teksBubble || fotoBubble) && (
-<Popup
-  key={fotoBubble ? 'foto' : 'teks'}
-  closeButton={false}
-  autoClose={false}
-  closeOnClick={false}
-  offset={fotoBubble ? geserPopupCermin(37) : [0, 0]}
->
-<BubblePesan teks={teksBubble} foto={fotoBubble} cermin onTutup={() => markerRef.current?.closePopup()} />
+<Popup closeButton={false} autoClose={false} closeOnClick={false}>
+<BubblePesan teks={teksBubble} foto={fotoBubble} cermin onTutup={() => markerRef.current?.closePopup()} geser={geserPopupCermin(37)} />
 </Popup>
 )}
             </Marker>
@@ -330,14 +326,8 @@ export default function PetaLokasiPenumpang({
               }}
             >
               {(teksBubbleSaya || fotoBubbleSaya) && (
-<Popup
-  key={fotoBubbleSaya ? 'foto' : 'teks'}
-  closeButton={false}
-  autoClose={false}
-  closeOnClick={false}
-  offset={fotoBubbleSaya ? geserPopupFoto : [0, 0]}
->
-<BubblePesan teks={teksBubbleSaya} foto={fotoBubbleSaya} onTutup={() => markerSayaRef.current?.closePopup()} />
+<Popup closeButton={false} autoClose={false} closeOnClick={false}>
+<BubblePesan teks={teksBubbleSaya} foto={fotoBubbleSaya} onTutup={() => markerSayaRef.current?.closePopup()} geser={geserPopupFoto} />
 </Popup>
 )}
             </Marker>
