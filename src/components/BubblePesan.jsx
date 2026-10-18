@@ -153,7 +153,7 @@ export const geserPopupCermin = (anchorX) => [
 
 // Bubble foto diturunin dikit dari posisi bubble teks supaya ekornya
 // pas nempel ke karakter (positif = makin ke bawah, dalam px).
-export const GESER_BAWAH_FOTO = 11
+export const GESER_BAWAH_FOTO = 14
 // Geser ke kanan (positif = kanan, dalam px), berlaku untuk bubble foto biasa
 // maupun yang dicerminkan.
 export const GESER_KANAN_FOTO = 4
