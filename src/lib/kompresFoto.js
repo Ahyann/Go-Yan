@@ -20,7 +20,7 @@ function muatGambar(file) {
 
 // Foto di chat cuma kepake selama pesanan aktif, jadi cukup dikecilin jadi
 // 4:3 (320x240) dan disimpen sebagai teks di database bareng pesannya.
-function sumberKeJpeg(sumber, lebarAsli, tinggiAsli) {
+function sumberKeJpeg(sumber, lebarAsli, tinggiAsli, balik = false) {
   const canvas = document.createElement('canvas')
   canvas.width = LEBAR
   canvas.height = TINGGI
@@ -34,6 +34,10 @@ function sumberKeJpeg(sumber, lebarAsli, tinggiAsli) {
   else sh = sw / rasio
   const sx = (lebarAsli - sw) / 2
   const sy = (tinggiAsli - sh) / 2
+  if (balik) {
+    ctx.translate(LEBAR, 0)
+    ctx.scale(-1, 1)
+  }
   ctx.drawImage(sumber, sx, sy, sw, sh, 0, 0, LEBAR, TINGGI)
 
   let kualitas = 0.7
@@ -51,6 +55,7 @@ export async function kompresFoto(file) {
 }
 
 // Ambil satu frame dari <video> kamera.
-export function kompresVideo(video) {
-  return sumberKeJpeg(video, video.videoWidth, video.videoHeight)
+// balik: dibalik kiri-kanan (buat kamera depan HP yang aliran videonya mirror).
+export function kompresVideo(video, balik = false) {
+  return sumberKeJpeg(video, video.videoWidth, video.videoHeight, balik)
 }

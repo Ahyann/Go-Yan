@@ -15,6 +15,10 @@ function KameraLangsung({ onAmbil, onBatal, onGagal }) {
   const [siap, setSiap] = useState(false)
   const [hadap, setHadap] = useState(layarSentuh() ? 'environment' : 'user')
 
+  // Kamera depan HP ngasih gambar yang sudah mirror, dibalikin supaya hasilnya
+  // normal (tulisan gak kebalik), baik di pratinjau maupun hasil foto.
+  const balik = layarSentuh() && hadap === 'user'
+
   useEffect(() => {
     let stream = null
     let batal = false
@@ -42,7 +46,7 @@ function KameraLangsung({ onAmbil, onBatal, onGagal }) {
   return createPortal(
     <div style={s.overlay} onClick={onBatal}>
       <div style={s.sheet} onClick={(e) => e.stopPropagation()}>
-        <video ref={videoRef} style={{ ...s.gambar, background: '#000' }} playsInline muted />
+        <video ref={videoRef} style={{ ...s.gambar, background: '#000', transform: balik ? 'scaleX(-1)' : undefined }} playsInline muted />
         <div style={s.baris}>
           <button type="button" style={s.batal} onClick={onBatal}>{t.batal}</button>
           {layarSentuh() && (
@@ -59,7 +63,7 @@ function KameraLangsung({ onAmbil, onBatal, onGagal }) {
             type="button"
             style={{ ...s.kirim, opacity: siap ? 1 : 0.5 }}
             disabled={!siap}
-            onClick={() => onAmbil(kompresVideo(videoRef.current))}
+            onClick={() => onAmbil(kompresVideo(videoRef.current, balik))}
           >
             {t.ambilFoto}
           </button>
