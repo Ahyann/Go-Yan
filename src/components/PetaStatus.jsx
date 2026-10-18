@@ -170,10 +170,8 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
   const pesanTampilRef = useRef(null)
   const mapRefInternal = useRef(null)
   const mapRef = mapRefLuar || mapRefInternal
-  const [teksBubble, setTeksBubble] = useState('')
   const [pesanTrigger, setPesanTrigger] = useState(null)
   const [markerSiap, setMarkerSiap] = useState(false)
-  const [teksBubbleSaya, setTeksBubbleSaya] = useState('')
   const [pesanSayaTrigger, setPesanSayaTrigger] = useState(null)
   const pesanSayaTampilRef = useRef(null)
   const [markerSayaSiap, setMarkerSayaSiap] = useState(false)
@@ -181,13 +179,11 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
   useEffect(() => {
     if (pesan) {
       pesanTampilRef.current = pesan
-      setTeksBubble(pesan.teks)
       setPesanTrigger(pesan.dibuatPada)
     } else {
       // Ref direset dulu supaya closePopup() di bawah gak ikut manggil
       // hapusPesan() lagi lewat handler popupclose.
       pesanTampilRef.current = null
-      setTeksBubble('')
       setPesanTrigger(null)
       markerRef.current?.closePopup()
     }
@@ -207,11 +203,9 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
   useEffect(() => {
     if (pesanSaya) {
       pesanSayaTampilRef.current = pesanSaya
-      setTeksBubbleSaya(pesanSaya.teks)
       setPesanSayaTrigger(pesanSaya.dibuatPada)
     } else {
       pesanSayaTampilRef.current = null
-      setTeksBubbleSaya('')
       setPesanSayaTrigger(null)
       markerSayaRef.current?.closePopup()
     }
@@ -227,6 +221,11 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
     }
   }, [pesanSayaTrigger, markerSayaSiap])
 
+  // Teks & foto sama-sama diturunkan langsung dari pesan (bukan state terpisah)
+  // supaya popup gak sempat dirender kosong sesaat saat pesan berganti, karena
+  // popup yang terlepas memicu popupclose dan menghapus pesan barunya.
+  const teksBubble = pesan?.teks ?? ''
+  const teksBubbleSaya = pesanSaya?.teks ?? ''
   const fotoBubble = pesan?.foto ?? ''
   const fotoBubbleSaya = pesanSaya?.foto ?? ''
 
