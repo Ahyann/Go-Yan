@@ -11,7 +11,7 @@ import { useProfilIkon } from '../lib/useProfilIkon'
 import { useWarnaGlow } from '../lib/useWarnaGlow'
 import { ambilWarnaGlow } from '../lib/warnaGlow'
 import { ambilPetaTerakhir, simpanPetaTerakhir } from '../lib/petaTerakhir'
-import BubblePesan, { geserPopupCermin, geserPopupFoto } from './BubblePesan.jsx'
+import BubblePesan, { geserPopupCermin, geserPopupFoto, geserPopupTeksCermin } from './BubblePesan.jsx'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { LOKASI_OFFICE, LOKASI_UPN } from '../lib/constants'
@@ -231,7 +231,7 @@ export default function PetaLokasiPenumpang({
             >
               {(teksBubble || fotoBubble) && (
 <Popup closeButton={false} autoClose={false} closeOnClick={false}>
-<BubblePesan teks={teksBubble} foto={fotoBubble} cermin onTutup={bubblePenumpang.tutup} geser={geserPopupCermin(37)} />
+<BubblePesan teks={teksBubble} foto={fotoBubble} cermin onTutup={bubblePenumpang.tutup} geser={geserPopupCermin(37)} geserTeks={geserPopupTeksCermin(37)} />
 </Popup>
 )}
             </Marker>

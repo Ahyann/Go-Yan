@@ -13,7 +13,7 @@ import { useProfilIkon } from '../lib/useProfilIkon'
 import { useWarnaGlow } from '../lib/useWarnaGlow'
 import { ambilWarnaGlow } from '../lib/warnaGlow'
 import { ambilPetaTerakhir, simpanPetaTerakhir } from '../lib/petaTerakhir'
-import BubblePesan, { geserPopupCermin, geserPopupFoto } from './BubblePesan.jsx'
+import BubblePesan, { geserPopupCermin, geserPopupFoto, geserPopupTeksCermin } from './BubblePesan.jsx'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 
@@ -230,7 +230,7 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
           >
             {(teksBubbleSaya || fotoBubbleSaya) && (
 <Popup closeButton={false} autoClose={false} closeOnClick={false}>
-<BubblePesan teks={teksBubbleSaya} foto={fotoBubbleSaya} cermin onTutup={bubbleSaya.tutup} geser={geserPopupCermin(44)} />
+<BubblePesan teks={teksBubbleSaya} foto={fotoBubbleSaya} cermin onTutup={bubbleSaya.tutup} geser={geserPopupCermin(44)} geserTeks={geserPopupTeksCermin(44)} />
 </Popup>
 )}
           </Marker>

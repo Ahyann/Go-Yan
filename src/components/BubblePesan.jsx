@@ -167,7 +167,13 @@ export const geserPopupFoto = [GESER_KANAN_FOTO, GESER_BAWAH_FOTO_AHYAN]
 // geser: [x, y] px, menggeser bubble foto dari posisi default popup. Pakai CSS,
 // bukan offset Popup Leaflet, supaya popup gak perlu dibuat ulang (dibuat ulang
 // bikin popupclose kepanggil dan pesan barunya ikut kehapus).
-export default function BubblePesan({ teks, foto, onTutup, cermin = false, geser = [0, 0] }) {
+// Bubble teks yang dicerminkan (Fajri): ekor di kanan bawah, keluar ke sisi
+// kiri karakter. Ujung ekor (kolom 30 dari 34 setelah dibalik) harus jatuh di
+// sisi kiri karakter, bayangan dari bubble biasa di sisi kanan.
+const TENGAH_TEKS_CERMIN = -44
+export const geserPopupTeksCermin = (anchorX) => [TENGAH_TEKS_CERMIN - anchorX, 0]
+
+export default function BubblePesan({ teks, foto, onTutup, cermin = false, geser = [0, 0], geserTeks = [0, 0] }) {
   const [besar, setBesar] = useState(false)
   const fotoPiksel = useFotoPiksel(foto || '', cermin)
 
@@ -200,7 +206,11 @@ export default function BubblePesan({ teks, foto, onTutup, cermin = false, geser
   }
 
   return (
-    <div style={s.bubbleWrap} onClick={onTutup}>
+    <div
+      style={{ ...s.bubbleWrap, transform: `translate(${geserTeks[0]}px, ${geserTeks[1]}px)` }}
+      onClick={onTutup}
+    >
+      <div style={{ ...s.bubbleLatar, transform: cermin ? 'scaleX(-1)' : undefined }} />
       <span style={{ ...s.bubbleText, fontSize: teks.length > 16 ? 7 : 9 }}>{teks}</span>
     </div>
   )
@@ -208,10 +218,7 @@ export default function BubblePesan({ teks, foto, onTutup, cermin = false, geser
 
 const s = {
   bubbleWrap: {
-    backgroundImage: 'url(/icons/bubbletext.png)',
-    backgroundSize: '100% 100%',
-    backgroundRepeat: 'no-repeat',
-    imageRendering: 'pixelated',
+    position: 'relative',
     width: 102,
     height: 51,
     display: 'flex',
@@ -221,7 +228,16 @@ const s = {
     paddingLeft: 6,
     paddingRight: 6,
   },
+  bubbleLatar: {
+    position: 'absolute',
+    inset: 0,
+    backgroundImage: 'url(/icons/bubbletext.png)',
+    backgroundSize: '100% 100%',
+    backgroundRepeat: 'no-repeat',
+    imageRendering: 'pixelated',
+  },
   bubbleText: {
+    position: 'relative',
     fontFamily: 'var(--font-pixel)',
     color: '#0B0E1A',
     textAlign: 'center',
