@@ -7,6 +7,7 @@ import { useLanguage } from '../context/LanguageContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import PetaLokasiPenumpang from '../components/PetaLokasiPenumpang.jsx'
 import MissionSuccessPopup from '../components/MissionSuccessPopup.jsx'
+import TombolFoto from '../components/TombolFoto.jsx'
 import SwipeToFinish from '../components/SwipeToFinish.jsx'
 
 export default function OjekHomeTab({
@@ -24,7 +25,7 @@ export default function OjekHomeTab({
   const adaPermintaanMasuk = permintaan?.status === STATUS_PERMINTAAN.MENUNGGU
   const sedangJalan = permintaan?.status === STATUS_PERMINTAAN.DITERIMA
   const lokasiPenumpang = useLokasiPenumpang()
-  const { kirimPesan, hapusPesan } = usePesanOjek()
+  const { kirimPesan, kirimFoto, hapusPesan } = usePesanOjek()
   const [teksPesan, setTeksPesan] = useState('')
   const [showMissionSuccess, setShowMissionSuccess] = useState(false)
 
@@ -117,6 +118,7 @@ export default function OjekHomeTab({
             </div>
 
             <div style={{ ...s.pesanRow, opacity: lokasiAktif || isDemo ? 1 : 0.5 }}>
+              <TombolFoto onKirimFoto={kirimFoto} disabled={!lokasiAktif && !isDemo} />
               <input
                 style={s.pesanInput}
                 value={teksPesan}

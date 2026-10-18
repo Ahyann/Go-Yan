@@ -12,6 +12,7 @@ import { useProfilIkon } from '../lib/useProfilIkon'
 import { useWarnaGlow } from '../lib/useWarnaGlow'
 import { ambilWarnaGlow } from '../lib/warnaGlow'
 import { ambilPetaTerakhir, simpanPetaTerakhir } from '../lib/petaTerakhir'
+import BubblePesan, { geserPopupCermin, geserPopupFoto } from './BubblePesan.jsx'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 
@@ -35,7 +36,7 @@ function buatIkonOjek(namaFile, warna) {
     </div>`,
     iconSize: [24, 24],
     iconAnchor: [12, 12],
-    popupAnchor: [42, 8],
+    popupAnchor: [42, 15],
   })
 }
 
@@ -52,7 +53,7 @@ function buatIkonSaya(namaFile, warna) {
     </div>`,
     iconSize: [16, 24],
     iconAnchor: [8, 24],
-    popupAnchor: [44, -11],
+    popupAnchor: [44, -5],
   })
 }
 
@@ -224,7 +225,8 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
     }
   }, [pesanSayaTrigger, markerSayaSiap])
 
-  const ukuranFont = teksBubble.length > 16 ? 7 : 9
+  const fotoBubble = pesan?.foto ?? ''
+  const fotoBubbleSaya = pesanSaya?.foto ?? ''
 
   return (
     <div style={s.wrap}>
@@ -268,16 +270,17 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
                 },
               }}
             >
-              {teksBubble && (
-                <Popup closeButton={false} autoClose={false} closeOnClick={false}>
-                  <div
-                    style={s.bubbleWrap}
-                    onClick={() => markerRef.current?.closePopup()}
-                  >
-                    <span style={{ ...s.bubbleText, fontSize: ukuranFont }}>{teksBubble}</span>
-                  </div>
-                </Popup>
-              )}
+              {(teksBubble || fotoBubble) && (
+<Popup
+  key={fotoBubble ? 'foto' : 'teks'}
+  closeButton={false}
+  autoClose={false}
+  closeOnClick={false}
+  offset={fotoBubble ? geserPopupFoto : [0, 0]}
+>
+<BubblePesan teks={teksBubble} foto={fotoBubble} onTutup={() => markerRef.current?.closePopup()} />
+</Popup>
+)}
             </Marker>
           </>
         )}
@@ -300,18 +303,17 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
               },
             }}
           >
-            {teksBubbleSaya && (
-              <Popup closeButton={false} autoClose={false} closeOnClick={false}>
-                <div
-                  style={s.bubbleWrap}
-                  onClick={() => markerSayaRef.current?.closePopup()}
-                >
-                  <span style={{ ...s.bubbleText, fontSize: teksBubbleSaya.length > 16 ? 7 : 9 }}>
-                    {teksBubbleSaya}
-                  </span>
-                </div>
-              </Popup>
-            )}
+            {(teksBubbleSaya || fotoBubbleSaya) && (
+<Popup
+  key={fotoBubbleSaya ? 'foto' : 'teks'}
+  closeButton={false}
+  autoClose={false}
+  closeOnClick={false}
+  offset={fotoBubbleSaya ? geserPopupCermin(44) : [0, 0]}
+>
+<BubblePesan teks={teksBubbleSaya} foto={fotoBubbleSaya} cermin onTutup={() => markerSayaRef.current?.closePopup()} />
+</Popup>
+)}
           </Marker>
         )}
 

@@ -10,6 +10,7 @@ import { useProfilIkon } from '../lib/useProfilIkon'
 import { useWarnaGlow } from '../lib/useWarnaGlow'
 import { ambilWarnaGlow } from '../lib/warnaGlow'
 import { ambilPetaTerakhir, simpanPetaTerakhir } from '../lib/petaTerakhir'
+import BubblePesan, { geserPopupCermin, geserPopupFoto } from './BubblePesan.jsx'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { LOKASI_OFFICE, LOKASI_UPN } from '../lib/constants'
@@ -39,7 +40,7 @@ function buatIkonPenumpang(namaFile, warna) {
     </div>`,
     iconSize: [16, 24],
     iconAnchor: [8, 24],
-    popupAnchor: [37, -10],
+    popupAnchor: [37, -4],
   })
 }
 
@@ -56,7 +57,7 @@ function buatIkonSaya(namaFile, warna) {
     </div>`,
     iconSize: [24, 24],
     iconAnchor: [12, 12],
-    popupAnchor: [42, 8],
+    popupAnchor: [42, 15],
   })
 }
 
@@ -226,7 +227,8 @@ export default function PetaLokasiPenumpang({
     }
   }, [pesanSayaTrigger, markerSayaSiap])
 
-  const ukuranFont = teksBubble.length > 16 ? 7 : 9
+  const fotoBubble = pesan?.foto ?? ''
+  const fotoBubbleSaya = pesanSaya?.foto ?? ''
 
   function handleRecenter() {
     if (posisiValid && mapRef.current) {
@@ -292,16 +294,17 @@ export default function PetaLokasiPenumpang({
                 },
               }}
             >
-              {teksBubble && (
-                <Popup closeButton={false} autoClose={false} closeOnClick={false}>
-                  <div
-                    style={s.bubbleWrap}
-                    onClick={() => markerRef.current?.closePopup()}
-                  >
-                    <span style={{ ...s.bubbleText, fontSize: ukuranFont }}>{teksBubble}</span>
-                  </div>
-                </Popup>
-              )}
+              {(teksBubble || fotoBubble) && (
+<Popup
+  key={fotoBubble ? 'foto' : 'teks'}
+  closeButton={false}
+  autoClose={false}
+  closeOnClick={false}
+  offset={fotoBubble ? geserPopupCermin(37) : [0, 0]}
+>
+<BubblePesan teks={teksBubble} foto={fotoBubble} cermin onTutup={() => markerRef.current?.closePopup()} />
+</Popup>
+)}
             </Marker>
           </>
         )}
@@ -326,18 +329,17 @@ export default function PetaLokasiPenumpang({
                 },
               }}
             >
-              {teksBubbleSaya && (
-                <Popup closeButton={false} autoClose={false} closeOnClick={false}>
-                  <div
-                    style={s.bubbleWrap}
-                    onClick={() => markerSayaRef.current?.closePopup()}
-                  >
-                    <span style={{ ...s.bubbleText, fontSize: teksBubbleSaya.length > 16 ? 7 : 9 }}>
-                      {teksBubbleSaya}
-                    </span>
-                  </div>
-                </Popup>
-              )}
+              {(teksBubbleSaya || fotoBubbleSaya) && (
+<Popup
+  key={fotoBubbleSaya ? 'foto' : 'teks'}
+  closeButton={false}
+  autoClose={false}
+  closeOnClick={false}
+  offset={fotoBubbleSaya ? geserPopupFoto : [0, 0]}
+>
+<BubblePesan teks={teksBubbleSaya} foto={fotoBubbleSaya} onTutup={() => markerSayaRef.current?.closePopup()} />
+</Popup>
+)}
             </Marker>
             <QuickChatMarker
               marker={markerSayaRef.current}

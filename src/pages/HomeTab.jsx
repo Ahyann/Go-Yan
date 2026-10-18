@@ -12,7 +12,7 @@ export default function HomeTab({ permintaan, lokasiAktif, lokasiError, mulaiLok
   const { t } = useLanguage()
   const { isDemo } = useAuth()
   const lokasiOjek = useLokasiOjek()
-  const { kirimPesan } = usePesanPenumpang()
+  const { kirimPesan, kirimFoto } = usePesanPenumpang()
   const sedangJalan = permintaan?.status === STATUS_PERMINTAAN.DITERIMA
   const [showToast, setShowToast] = useState(false)
   const [showKirimPesan, setShowKirimPesan] = useState(false)
@@ -100,7 +100,7 @@ export default function HomeTab({ permintaan, lokasiAktif, lokasiError, mulaiLok
       )}
 
       {showKirimPesan && (
-        <KirimPesanPopup onClose={() => setShowKirimPesan(false)} onKirim={kirimPesan} />
+        <KirimPesanPopup onClose={() => setShowKirimPesan(false)} onKirim={kirimPesan} onKirimFoto={kirimFoto} />
       )}
     </div>
   )

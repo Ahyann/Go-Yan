@@ -68,6 +68,10 @@ export const translations = {
     judulKirimPesan: 'Kirim pesan ke Ahyan',
     judulKirimPesanDemo: 'Kirim pesan ke Driver',
     placeholderKetik: 'Ketik pesan...',
+    ariaKirimFoto: 'Kirim foto',
+    fotoGagal: 'Foto gagal diproses atau dikirim',
+    batal: 'Batal',
+    ambilFoto: 'Ambil foto',
 
     // --- Akun / Settings (baru) ---
     akunEyebrow: 'AKUN',
@@ -229,6 +233,10 @@ export const translations = {
     judulKirimPesan: 'Send message to Ahyan',
     judulKirimPesanDemo: 'Send message to Driver',
     placeholderKetik: 'Type a message...',
+    ariaKirimFoto: 'Send photo',
+    fotoGagal: 'Photo could not be processed or sent',
+    batal: 'Cancel',
+    ambilFoto: 'Take photo',
 
     // --- Akun / Settings (baru) ---
     akunEyebrow: 'ACCOUNT',

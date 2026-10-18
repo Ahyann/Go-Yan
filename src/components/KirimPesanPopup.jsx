@@ -2,8 +2,9 @@ import { useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
+import TombolFoto from './TombolFoto.jsx'
 
-export default function KirimPesanPopup({ onClose, onKirim }) {
+export default function KirimPesanPopup({ onClose, onKirim, onKirimFoto }) {
   const { t } = useLanguage()
   const { isDemo } = useAuth()
   const [teks, setTeks] = useState('')
@@ -19,6 +20,7 @@ export default function KirimPesanPopup({ onClose, onKirim }) {
     <div style={s.overlay} onClick={onClose}>
       <div style={s.sheet} onClick={(e) => e.stopPropagation()}>
         <div style={s.title}>{isDemo ? t.judulKirimPesanDemo : t.judulKirimPesan}</div>
+        <div style={s.baris}>
         <input
           style={s.input}
           value={teks}
@@ -27,6 +29,8 @@ export default function KirimPesanPopup({ onClose, onKirim }) {
           maxLength={24}
           autoFocus
         />
+        {onKirimFoto && <TombolFoto onKirimFoto={onKirimFoto} onSelesai={onClose} />}
+        </div>
         <button style={teks.trim() ? s.kirimBtn : s.kirimBtnDisabled} onClick={handleKirim}>
           {t.kirim}
         </button>
@@ -59,7 +63,10 @@ const s = {
     gap: 14,
   },
   title: { fontSize: 14, fontWeight: 700, color: 'var(--text)', textAlign: 'center' },
+  baris: { display: 'flex', gap: 8 },
   input: {
+    flex: 1,
+    minWidth: 0,
     background: 'rgba(255,255,255,0.06)',
     border: '1px solid var(--blue-border)',
     borderRadius: 10,

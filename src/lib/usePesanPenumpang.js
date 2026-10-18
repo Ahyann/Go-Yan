@@ -30,9 +30,15 @@ export function usePesanPenumpang() {
     if (!isDemo) kirimNotifikasi('ojek', 'Pesan dari Fajri 💬', teks.trim(), 'pesan')
   }
 
+  async function kirimFoto(foto) {
+    if (!foto) return
+    await set(PESAN_REF, { teks: '', foto, dibuatPada: Date.now() })
+    if (!isDemo) kirimNotifikasi('ojek', 'Pesan dari Fajri 💬', '📷 Foto', 'pesan')
+  }
+
   async function hapusPesan() {
     await remove(PESAN_REF)
   }
 
-  return { pesan, siap, kirimPesan, hapusPesan }
+  return { pesan, siap, kirimPesan, kirimFoto, hapusPesan }
 }
