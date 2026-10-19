@@ -145,6 +145,16 @@ export default function PetaLokasiPenumpang({
   const ikonSaya = useMemo(() => buatIkonSaya(ikonAhyan, warnaAktif), [ikonAhyan, warnaAktif])
   const ikonPenumpang = useMemo(() => buatIkonPenumpang(ikonFajri, warnaAktifFajri), [ikonFajri, warnaAktifFajri])
   const posisiAwal = useMemo(() => ambilPetaTerakhir(KEY_PETA_TERAKHIR, PUSAT_DEFAULT, 13), [])
+  // Posisi marker dibikin stabil, biar Leaflet gak ngegeser ulang marker (dan
+  // popup yang kebuka) tiap render.
+  const posisiPenumpangMarker = useMemo(
+    () => (posisiValid ? [lokasi.lat, lokasi.lng] : null),
+    [posisiValid, lokasi?.lat, lokasi?.lng]
+  )
+  const posisiSayaMarker = useMemo(
+    () => (posisiSayaValid ? [lokasiSaya.lat, lokasiSaya.lng] : null),
+    [posisiSayaValid, lokasiSaya?.lat, lokasiSaya?.lng]
+  )
   const pusat = posisiValid ? [lokasi.lat, lokasi.lng] : posisiAwal.center
   const tampilkanTombolLokasi = typeof onToggleLokasi === 'function'
   const mapRef = useRef(null)
@@ -224,13 +234,13 @@ export default function PetaLokasiPenumpang({
             <GeserKePosisi lat={lokasi.lat} lng={lokasi.lng} />
             <Marker
               ref={bubblePenumpang.refMarker}
-              position={[lokasi.lat, lokasi.lng]}
+              position={posisiPenumpangMarker}
               icon={ikonPenumpang}
               zIndexOffset={500}
               eventHandlers={bubblePenumpang.eventHandlers}
             >
               {(teksBubble || fotoBubble) && (
-<Popup closeButton={false} autoClose={false} closeOnClick={false}>
+<Popup closeButton={false} autoClose={false} closeOnClick={false} autoPan={false}>
 <BubblePesan teks={teksBubble} foto={fotoBubble} cermin onTutup={bubblePenumpang.tutup} geser={geserPopupCermin(37)} geserTeks={geserPopupTeksCermin(37)} />
 </Popup>
 )}
@@ -243,13 +253,13 @@ export default function PetaLokasiPenumpang({
             <GeserKePosisi lat={lokasiSaya.lat} lng={lokasiSaya.lng} />
             <Marker
               ref={bubbleSaya.refMarker}
-              position={[lokasiSaya.lat, lokasiSaya.lng]}
+              position={posisiSayaMarker}
               icon={ikonSaya}
               zIndexOffset={1000}
               eventHandlers={bubbleSaya.eventHandlers}
             >
               {(teksBubbleSaya || fotoBubbleSaya) && (
-<Popup closeButton={false} autoClose={false} closeOnClick={false}>
+<Popup closeButton={false} autoClose={false} closeOnClick={false} autoPan={false}>
 <BubblePesan teks={teksBubbleSaya} foto={fotoBubbleSaya} onTutup={bubbleSaya.tutup} geser={geserPopupFoto} />
 </Popup>
 )}
