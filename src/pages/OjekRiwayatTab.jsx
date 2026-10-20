@@ -106,6 +106,8 @@ export default function OjekRiwayatTab({ riwayat, onTandaiLunas, onHapusRiwayat,
         )}
       </div>
 
+      {isDemo && riwayatBulanIni.length > 0 && <div style={s.tipDemo}>{t.demoTipRiwayat}</div>}
+
       {showBulan && (
         <MonthPickerPopup
           bulan={bulanAktif}
@@ -251,6 +253,7 @@ const s = {
   },
   tagihanSub: { fontSize: 12, color: '#8FB4DC', marginTop: 4 },
   list: { display: 'flex', flexDirection: 'column', gap: 10 },
+  tipDemo: { fontSize: 11, color: 'var(--text-dim)', textAlign: 'center', marginTop: 4, lineHeight: 1.4 },
   kosong: { fontSize: 13.5, color: 'var(--text-dim)', textAlign: 'center', padding: '20px 0' },
   item: {
     display: 'flex',
