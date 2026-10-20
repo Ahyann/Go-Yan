@@ -226,6 +226,7 @@ export default function PetaLokasiPenumpang({
         center={pusat}
         zoom={lokasi ? 16 : posisiAwal.zoom}
         minZoom={5}
+        maxZoom={22}
         maxBounds={BATAS_PETA}
         maxBoundsViscosity={1.0}
         style={s.map}
@@ -240,6 +241,8 @@ export default function PetaLokasiPenumpang({
         <ZoomControl position="topright" />
 
         <TileLayer
+          maxNativeZoom={20}
+          maxZoom={22}
           url={`https://api.maptiler.com/maps/streets-v4-dark/{z}/{x}/{y}.png?key=${import.meta.env.VITE_MAPTILER_KEY}`}
         />
 

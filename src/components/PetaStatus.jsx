@@ -210,6 +210,7 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
         center={posisiAwal.center}
         zoom={posisiAwal.zoom}
         minZoom={5}
+        maxZoom={22}
         maxBounds={BATAS_PETA}
         maxBoundsViscosity={1.0}
         style={s.map}
@@ -223,6 +224,8 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
         <TandaiGeserUser />
 
         <TileLayer
+          maxNativeZoom={20}
+          maxZoom={22}
           url={`https://api.maptiler.com/maps/streets-v4-dark/{z}/{x}/{y}.png?key=${import.meta.env.VITE_MAPTILER_KEY}`}
         />
 
