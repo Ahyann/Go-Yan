@@ -195,3 +195,24 @@ button {
   pointer-events: none !important;
 }
 
+/* Pop up sambutan demo: latar memudar masuk, kartu muncul membesar dengan
+   sedikit pantulan, logo menyusul. Pas ditutup, kebalikannya. */
+@keyframes demo-latar-masuk { from { opacity: 0; } to { opacity: 1; } }
+@keyframes demo-latar-keluar { from { opacity: 1; } to { opacity: 0; } }
+@keyframes demo-kartu-masuk {
+  from { opacity: 0; transform: translateY(24px) scale(0.82); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes demo-kartu-keluar {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to { opacity: 0; transform: translateY(16px) scale(0.9); }
+}
+@keyframes demo-logo-masuk {
+  from { opacity: 0; transform: scale(0.4) translateY(-8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+.demo-latar-masuk { animation: demo-latar-masuk 0.3s ease-out both; }
+.demo-latar-keluar { animation: demo-latar-keluar 0.22s ease-in both; }
+.demo-kartu-masuk { animation: demo-kartu-masuk 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+.demo-kartu-keluar { animation: demo-kartu-keluar 0.22s ease-in both; }
+.demo-logo-masuk { animation: demo-logo-masuk 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.25s both; }

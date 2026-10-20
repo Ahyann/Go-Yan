@@ -7,6 +7,8 @@ import { useLanguage } from '../context/LanguageContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 
 const KECEPATAN_KETIK_MS = 22
+const DURASI_ANIMASI_MASUK_MS = 450 // teks mulai diketik setelah kartu selesai muncul
+const DURASI_ANIMASI_KELUAR_MS = 220
 const CEK_PETA_MS = 250
 const JEDA_SETELAH_PETA_MS = 500
 const BATAS_TUNGGU_PETA_MS = 8000 // kalau peta gak kunjung selesai (koneksi jelek), tetap muncul
@@ -58,6 +60,7 @@ export default function DemoWelcomePopup() {
   const [terbuka, setTerbuka] = useState(() => Boolean(isDemo && uid && !sudahDitutup(uid)))
   const [jumlah, setJumlah] = useState(0)
   const [petaSiap, setPetaSiap] = useState(false)
+  const [menutup, setMenutup] = useState(false)
 
   // Akun demo bisa baru kebaca setelah komponen dipasang.
   useEffect(() => {
@@ -95,16 +98,22 @@ export default function DemoWelcomePopup() {
   useEffect(() => {
     if (!tampil) return
     setJumlah(0)
-    const id = setInterval(() => {
-      setJumlah((n) => {
-        if (n >= isi.length) {
-          clearInterval(id)
-          return n
-        }
-        return n + 1
-      })
-    }, KECEPATAN_KETIK_MS)
-    return () => clearInterval(id)
+    let id = null
+    const mulai = setTimeout(() => {
+      id = setInterval(() => {
+        setJumlah((n) => {
+          if (n >= isi.length) {
+            clearInterval(id)
+            return n
+          }
+          return n + 1
+        })
+      }, KECEPATAN_KETIK_MS)
+    }, DURASI_ANIMASI_MASUK_MS)
+    return () => {
+      clearTimeout(mulai)
+      clearInterval(id)
+    }
   }, [tampil, isi])
 
   function tutup() {
@@ -113,7 +122,9 @@ export default function DemoWelcomePopup() {
     } catch {
       // penyimpanan diblokir, popup cuma nutup sampai halaman dimuat ulang
     }
-    setTerbuka(false)
+    // Animasi keluar dulu, baru dicopot dari layar.
+    setMenutup(true)
+    setTimeout(() => setTerbuka(false), DURASI_ANIMASI_KELUAR_MS)
   }
 
   if (!tampil) return null
@@ -121,9 +132,15 @@ export default function DemoWelcomePopup() {
   const selesaiKetik = jumlah >= isi.length
 
   return createPortal(
-    <div style={s.overlay} role="dialog" aria-modal="true" aria-label={t.demoSelamatDatangJudul}>
-      <div style={s.kartu}>
-        <div style={s.logo}>
+    <div
+      className={menutup ? 'demo-latar-keluar' : 'demo-latar-masuk'}
+      style={s.overlay}
+      role="dialog"
+      aria-modal="true"
+      aria-label={t.demoSelamatDatangJudul}
+    >
+      <div className={menutup ? 'demo-kartu-keluar' : 'demo-kartu-masuk'} style={s.kartu}>
+        <div className="demo-logo-masuk" style={s.logo}>
           <LogoSpiderman />
         </div>
         <h2 style={s.judul}>{t.demoSelamatDatangJudul}</h2>
@@ -131,7 +148,7 @@ export default function DemoWelcomePopup() {
           {isi.slice(0, jumlah)}
           {!selesaiKetik && <span className="typing-cursor">|</span>}
         </div>
-        <button type="button" style={s.tombol} onClick={tutup}>
+        <button type="button" style={s.tombol} onClick={tutup} disabled={menutup}>
           {t.demoOke}
         </button>
       </div>
