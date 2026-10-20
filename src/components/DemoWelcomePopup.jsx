@@ -54,7 +54,7 @@ function LogoSpiderman() {
 // Pop up sambutan di akun demo: penjelasan singkat cara nyobain demo, tulisannya
 // muncul kayak diketik. Ketuk teksnya buat langsung nampilin semuanya.
 export default function DemoWelcomePopup() {
-  const { t } = useLanguage()
+  const { t, lang } = useLanguage()
   const { isDemo, user } = useAuth()
   const uid = user?.uid
   const [terbuka, setTerbuka] = useState(() => Boolean(isDemo && uid && !sudahDitutup(uid)))
@@ -144,9 +144,19 @@ export default function DemoWelcomePopup() {
           <LogoSpiderman />
         </div>
         <h2 style={s.judul}>{t.demoSelamatDatangJudul}</h2>
-        <div style={s.teks} onClick={() => setJumlah(isi.length)}>
+        {/* Teks rata kiri-kanan. Bagian yang belum diketik tetap dirender (tapi
+            tak kelihatan) supaya pemenggalan barisnya sudah final dari awal:
+            gak ada kata yang loncat antar baris dan tinggi kartu gak berubah. */}
+        <div style={s.teks} lang={lang} aria-label={isi} onClick={() => setJumlah(isi.length)}>
           {isi.slice(0, jumlah)}
-          {!selesaiKetik && <span className="typing-cursor">|</span>}
+          {!selesaiKetik && (
+            <span className="typing-cursor" style={s.kursor}>
+              |
+            </span>
+          )}
+          <span style={s.belumDiketik} aria-hidden="true">
+            {isi.slice(jumlah)}
+          </span>
         </div>
         <button type="button" style={s.tombol} onClick={tutup} disabled={menutup}>
           {t.demoOke}
@@ -192,16 +202,22 @@ const s = {
     textAlign: 'center',
   },
   teks: {
-    minHeight: 150,
     width: '100%',
     fontSize: 14,
     lineHeight: 1.5,
     color: 'var(--text)',
-    textAlign: 'left',
+    textAlign: 'justify',
+    textJustify: 'inter-word',
+    hyphens: 'auto',
+    WebkitHyphens: 'auto',
+    overflowWrap: 'break-word',
     cursor: 'pointer',
     userSelect: 'none',
     WebkitUserSelect: 'none',
   },
+  // Kursor gak makan lebar, jadi gak ngubah pemenggalan baris.
+  kursor: { display: 'inline-block', width: 0, overflow: 'visible' },
+  belumDiketik: { visibility: 'hidden' },
   tombol: {
     marginTop: 4,
     width: '100%',

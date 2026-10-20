@@ -282,11 +282,15 @@ const s = {
   },
   demoBtn: {
     flex: 1,
+    minWidth: 0, // biar tombol gak melebar gara-gara teks panjang
+    whiteSpace: 'nowrap', // satu baris, tinggi tombol sama di semua bahasa
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
     background: 'var(--card-blue)',
     color: 'var(--glow-blue)',
     fontSize: 13.5,
     fontWeight: 600,
-    padding: '13px',
+    padding: '13px 8px',
     borderRadius: 999,
     border: '1px solid var(--glow-blue-mid)',
   },
