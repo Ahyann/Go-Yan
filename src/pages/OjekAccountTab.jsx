@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { debugAktif, gantiDebug } from '../lib/debugLog'
+import PengaturanSuara from '../components/PengaturanSuara.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { ROLE } from '../lib/constants'
@@ -145,6 +146,8 @@ export default function OjekAccountTab() {
           </button>
         </div>
       </section>
+
+      <PengaturanSuara />
 
       <button style={s.logoutBtn} onClick={logout}>
         {t.keluar}

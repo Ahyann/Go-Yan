@@ -1,3 +1,46 @@
+// ---------- Mode suara (pengaturan per perangkat) ----------
+// normal: semua bunyi. tanpa-voice: efek suara tetap ada, voice over asisten AI
+// mati. senyap: gak ada suara sama sekali dari app (suara notifikasi dari HP
+// diatur sistem HP, bukan app).
+export const MODE_SUARA = { NORMAL: 'normal', TANPA_VOICE: 'tanpa-voice', SENYAP: 'senyap' }
+const KUNCI_MODE_SUARA = 'goyan-mode-suara'
+
+function bacaModeSuara() {
+  try {
+    const tersimpan = localStorage.getItem(KUNCI_MODE_SUARA)
+    return Object.values(MODE_SUARA).includes(tersimpan) ? tersimpan : MODE_SUARA.NORMAL
+  } catch {
+    return MODE_SUARA.NORMAL
+  }
+}
+
+let modeSuara = bacaModeSuara()
+const pendengarMode = new Set()
+
+export function ambilModeSuara() {
+  return modeSuara
+}
+
+export function dengarkanModeSuara(fungsi) {
+  pendengarMode.add(fungsi)
+  return () => pendengarMode.delete(fungsi)
+}
+
+export function aturModeSuara(mode) {
+  if (!Object.values(MODE_SUARA).includes(mode)) return
+  modeSuara = mode
+  try {
+    localStorage.setItem(KUNCI_MODE_SUARA, mode)
+  } catch {
+    // penyimpanan diblokir, pilihan cuma berlaku sampai app ditutup
+  }
+  if (mode === MODE_SUARA.SENYAP) suaraTertunda = null // jangan bunyi nanti pas layar disentuh
+  pendengarMode.forEach((fungsi) => fungsi())
+}
+
+const efekBoleh = () => modeSuara !== MODE_SUARA.SENYAP
+const voiceBoleh = () => modeSuara === MODE_SUARA.NORMAL
+
 let audioCtx
 
 function getAudioCtx() {
@@ -159,6 +202,7 @@ if (typeof window !== 'undefined') {
 }
 
 export async function playSpiderSound() {
+  if (!efekBoleh()) return false
   const ctx = getAudioCtx()
 
   if (!spiderBuffer) {
@@ -179,6 +223,7 @@ export async function playSpiderSound() {
 }
 
 export async function playNotifSelesai() {
+  if (!efekBoleh()) return false
   const ctx = getAudioCtx()
 
   if (!notifSelesaiBuffer) {
@@ -200,6 +245,7 @@ export async function playNotifSelesai() {
 }
 
 export async function playChatSound() {
+  if (!efekBoleh()) return false
   const ctx = getAudioCtx()
 
   if (!chatBuffer) {
@@ -221,6 +267,7 @@ export async function playChatSound() {
 }
 
 export async function playReminderSound() {
+  if (!efekBoleh()) return false
   const ctx = getAudioCtx()
 
   if (!reminderBuffer) {
@@ -242,6 +289,7 @@ export async function playReminderSound() {
 }
 
 export async function playMissionSuccess() {
+  if (!efekBoleh()) return false
   const ctx = getAudioCtx()
 
   if (!missionSuccessBuffer) {
@@ -310,6 +358,7 @@ function putarSampaiSelesai(buffer, denganEfekAi) {
 const JEDA_ANTAR_SUARA_MS = 150
 
 function mainkanDuaSuara(kunci, namaAntrian, labaLabaDulu) {
+  if (!efekBoleh()) return Promise.resolve(false)
   return masukAntrean(async () => {
     const ctx = getAudioCtx()
 
@@ -325,9 +374,11 @@ function mainkanDuaSuara(kunci, namaAntrian, labaLabaDulu) {
       return false
     }
 
-    const suaraAi = bufferSuaraAi[kunci] && { buffer: bufferSuaraAi[kunci], efek: true }
+    // Mode tanpa-voice: cuma efek suara laba-laba yang bunyi.
+    const suaraAi = voiceBoleh() && bufferSuaraAi[kunci] && { buffer: bufferSuaraAi[kunci], efek: true }
     const labaLaba = spiderBuffer && { buffer: spiderBuffer, efek: false }
     const urutan = (labaLabaDulu ? [labaLaba, suaraAi] : [suaraAi, labaLaba]).filter(Boolean)
+    if (urutan.length === 0) return false
 
     for (let i = 0; i < urutan.length; i++) {
       if (i > 0) await tunggu(JEDA_ANTAR_SUARA_MS)
@@ -339,6 +390,7 @@ function mainkanDuaSuara(kunci, namaAntrian, labaLabaDulu) {
 
 // Suara AI saja, tanpa efek suara laba-laba.
 function mainkanSuaraAiSaja(kunci, namaAntrian) {
+  if (!voiceBoleh()) return Promise.resolve(false)
   return masukAntrean(async () => {
     const ctx = getAudioCtx()
 
