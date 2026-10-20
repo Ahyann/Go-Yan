@@ -7,6 +7,7 @@ import { useLanguage } from '../context/LanguageContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import PetaStatus from '../components/PetaStatus.jsx'
 import KirimPesanPopup from '../components/KirimPesanPopup.jsx'
+import DemoWelcomePopup from '../components/DemoWelcomePopup.jsx'
 
 export default function HomeTab({ permintaan, lokasiAktif, lokasiError, mulaiLokasi, berhentiLokasi, baruDibatalkan }) {
   const { t } = useLanguage()
@@ -47,6 +48,8 @@ export default function HomeTab({ permintaan, lokasiAktif, lokasiError, mulaiLok
       </div>
 
       <PetaStatus permintaan={permintaan} mapRef={mapRef} baruDibatalkan={baruDibatalkan} sinyalLive={sinyalLive} />
+
+      <DemoWelcomePopup />
 
       {sedangJalan && createPortal(
         <>

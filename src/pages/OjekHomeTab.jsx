@@ -9,6 +9,7 @@ import PetaLokasiPenumpang from '../components/PetaLokasiPenumpang.jsx'
 import MissionSuccessPopup from '../components/MissionSuccessPopup.jsx'
 import TombolFoto from '../components/TombolFoto.jsx'
 import SwipeToFinish from '../components/SwipeToFinish.jsx'
+import DemoWelcomePopup from '../components/DemoWelcomePopup.jsx'
 
 export default function OjekHomeTab({
   permintaan,
@@ -143,6 +144,8 @@ export default function OjekHomeTab({
         )}
       </section>
     </main>
+
+    <DemoWelcomePopup />
 
     {showMissionSuccess && (
       <MissionSuccessPopup onDismiss={() => setShowMissionSuccess(false)} />
