@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { STATUS_PERMINTAAN } from '../lib/constants'
-import { playPesanTerkirim, playChatSound } from '../lib/sound'
+import { playPesanTerkirim, playBatalDipencet, playChatSound } from '../lib/sound'
 import { useLokasiSayaPenumpang } from '../lib/useLokasiSayaPenumpang'
 import { usePesanOjek } from '../lib/usePesanOjek'
 import GoPopup from '../components/GoPopup.jsx'
@@ -129,6 +129,7 @@ export default function PenumpangView({
     if (modeGo === 'go') {
       setShowGo(true)
     } else if (modeGo === 'batal') {
+      playBatalDipencet()
       onBatal()
       setBaruDibatalkan(true)
       setTimeout(() => setBaruDibatalkan(false), 5000)

@@ -14,6 +14,7 @@ let missionSuccessBuffer = null
 const URL_SUARA_AI = {
   terima: '/sounds/jarvis_terima.mp3', // "Mission accepted. Proceeding to pickup."
   pesan: '/sounds/jarvis_pesan.mp3', // "Request sent. Awaiting confirmation."
+  batal: '/sounds/jarvis_batal.mp3', // "Request cancelled."
 }
 const bufferSuaraAi = {}
 
@@ -303,11 +304,34 @@ async function mainkanDuaSuara(kunci, namaAntrian, labaLabaDulu) {
   return true
 }
 
+// Suara AI saja, tanpa efek suara laba-laba.
+async function mainkanSuaraAiSaja(kunci, namaAntrian) {
+  const ctx = getAudioCtx()
+
+  if (!bufferSuaraAi[kunci]) await muatSuaraAi(kunci)
+  if (!bufferSuaraAi[kunci]) return false
+
+  if (ctx.state === 'suspended') {
+    await ctx.resume()
+  }
+
+  if (ctx.state !== 'running') {
+    antrikanSuara(namaAntrian)
+    return false
+  }
+
+  putarBufferDenganEfekAi(bufferSuaraAi[kunci])
+  return true
+}
+
 // Ahyan menerima misi: suara AI dulu, baru suara laba-laba.
 export const playMisiDiterima = () => mainkanDuaSuara('terima', 'playMisiDiterima', false)
 
 // Fajri selesai mengirim pesanan (GO): suara laba-laba dulu, baru suara AI.
 export const playPesanTerkirim = () => mainkanDuaSuara('pesan', 'playPesanTerkirim', true)
+
+// Fajri membatalkan pesanan: suara AI saja.
+export const playBatalDipencet = () => mainkanSuaraAiSaja('batal', 'playBatalDipencet')
 
 const PETA_FUNGSI_SUARA = {
   playSpiderSound,
@@ -317,4 +341,5 @@ const PETA_FUNGSI_SUARA = {
   playMissionSuccess,
   playMisiDiterima,
   playPesanTerkirim,
+  playBatalDipencet,
 }
