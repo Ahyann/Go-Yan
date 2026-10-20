@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
+import { useProfilIkon } from '../lib/useProfilIkon'
+import { useWarnaGlow } from '../lib/useWarnaGlow'
+import { ambilWarnaGlow } from '../lib/warnaGlow'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 
@@ -19,25 +22,27 @@ function sudahDitutup(uid) {
   }
 }
 
-function IkonLabaLaba() {
+// Icon spiderman pixel yang lagi dipakai (default spidericon.png), sama kayak
+// di peta dan di profil, dengan cahaya warna yang dipilih.
+function LogoSpiderman() {
+  const { ikonAhyan } = useProfilIkon()
+  const { warnaAhyan } = useWarnaGlow()
+  const warna = ambilWarnaGlow(warnaAhyan)
   return (
-    <svg
-      className="spider-swing"
-      width="54"
-      height="54"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="var(--glow-blue)"
-      strokeWidth="1.6"
-      strokeLinecap="round"
-      style={{ display: 'block', filter: 'drop-shadow(0 0 6px var(--glow-blue-mid))' }}
-      aria-hidden="true"
-    >
-      <circle cx="12" cy="10" r="3" />
-      <circle cx="12" cy="15.5" r="4" />
-      <path d="M9 8 L4 5 M9 9.5 L3 9.5 M9 11.5 L4 13.5 M9 13.5 L5 16.5" />
-      <path d="M15 8 L20 5 M15 9.5 L21 9.5 M15 11.5 L20 13.5 M15 13.5 L19 16.5" />
-    </svg>
+    <img
+      src={`/icons/${ikonAhyan}`}
+      alt=""
+      draggable={false}
+      style={{
+        width: 64,
+        height: 64,
+        display: 'block',
+        imageRendering: 'pixelated',
+        pointerEvents: 'none',
+        WebkitUserDrag: 'none',
+        filter: `drop-shadow(0 0 6px ${warna.utama}) drop-shadow(0 0 12px ${warna.kuat})`,
+      }}
+    />
   )
 }
 
@@ -89,7 +94,7 @@ export default function DemoWelcomePopup() {
     <div style={s.overlay} role="dialog" aria-modal="true" aria-label={t.demoSelamatDatangJudul}>
       <div style={s.kartu}>
         <div style={s.logo}>
-          <IkonLabaLaba />
+          <LogoSpiderman />
         </div>
         <h2 style={s.judul}>{t.demoSelamatDatangJudul}</h2>
         <div style={s.teks} onClick={() => setJumlah(isi.length)}>
@@ -129,7 +134,7 @@ const s = {
     alignItems: 'center',
     gap: 12,
   },
-  logo: { height: 58, display: 'flex', alignItems: 'flex-start', justifyContent: 'center' },
+  logo: { display: 'flex', alignItems: 'center', justifyContent: 'center' },
   judul: {
     fontFamily: 'var(--font-judul)',
     fontSize: 24,
