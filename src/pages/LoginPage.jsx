@@ -11,7 +11,7 @@ function usernameKeEmail(input) {
 }
 
 export default function LoginPage() {
-  const { t } = useLanguage()
+  const { t, lang, setLang } = useLanguage()
   const { masukDemoOjek, masukDemoPenumpang } = useAuth()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -52,6 +52,20 @@ export default function LoginPage() {
 
   return (
     <main style={s.wrap}>
+      <div style={s.bahasa} role="group" aria-label={t.bahasaLabel}>
+        {['id', 'en'].map((kode) => (
+          <button
+            key={kode}
+            type="button"
+            style={lang === kode ? s.bahasaBtnAktif : s.bahasaBtn}
+            onClick={() => setLang(kode)}
+            aria-pressed={lang === kode}
+          >
+            {kode.toUpperCase()}
+          </button>
+        ))}
+      </div>
+
       <div style={s.brand}>
         <div style={s.eyebrow}>GO-YAN</div>
         <h1 style={s.title}>{t.loginTitle}</h1>
@@ -142,6 +156,7 @@ export default function LoginPage() {
 
 const s = {
   wrap: {
+    position: 'relative',
     minHeight: 'var(--app-height, 100dvh)',
     display: 'flex',
     flexDirection: 'column',
@@ -149,6 +164,37 @@ const s = {
     padding: '24px 24px calc(var(--safe-bottom) + 24px)',
     maxWidth: 400,
     margin: '0 auto',
+  },
+  // Pilihan bahasa kecil di pojok kanan atas.
+  bahasa: {
+    position: 'absolute',
+    top: 'calc(var(--safe-top) + 14px)',
+    right: 24,
+    display: 'flex',
+    background: 'rgba(255,255,255,0.06)',
+    border: '1px solid var(--blue-border)',
+    borderRadius: 999,
+    padding: 2,
+  },
+  bahasaBtn: {
+    minWidth: 34,
+    fontSize: 11.5,
+    fontWeight: 700,
+    letterSpacing: '0.04em',
+    color: '#8FB4DC',
+    padding: '5px 9px',
+    borderRadius: 999,
+  },
+  bahasaBtnAktif: {
+    minWidth: 34,
+    fontSize: 11.5,
+    fontWeight: 700,
+    letterSpacing: '0.04em',
+    color: 'var(--glow-blue)',
+    background: 'rgba(94,208,255,0.18)',
+    boxShadow: '0 0 6px rgba(94,208,255,0.35)',
+    padding: '5px 9px',
+    borderRadius: 999,
   },
   brand: { marginBottom: 32 },
   eyebrow: { fontSize: 11, letterSpacing: '0.16em', color: 'var(--glow-blue)', marginBottom: 6, fontWeight: 700, textShadow: '0 0 6px var(--glow-blue-mid)' },
