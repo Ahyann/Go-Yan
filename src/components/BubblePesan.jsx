@@ -232,18 +232,20 @@ export default function BubblePesan({ teks, foto, onTutup, cermin = false, geser
   }
 
   return (
-    <div
-      style={{ ...s.bubbleWrap, transform: `translate(${geserTeks[0]}px, ${geserTeks[1]}px)` }}
-      onClick={onTutup}
-    >
+    <div style={{ ...s.bubbleWrap, transform: `translate(${geserTeks[0]}px, ${geserTeks[1]}px)` }}>
       <div style={{ ...s.bubbleLatar, transform: cermin ? 'scaleX(-1)' : undefined }} />
       <span style={{ ...s.bubbleText, fontSize: teks.length > 16 ? 7 : 9 }}>{teks}</span>
+      {/* Cuma badan bubble yang nangkep tap. Sisanya (ekor, pojok transparan)
+          dan kotak popup-nya sendiri tembus sentuhan, biar karakter di bawahnya
+          bisa ditahan dan peta bisa digeser/di-zoom dari atas bubble. */}
+      <div style={s.bubbleTap} onClick={onTutup} />
     </div>
   )
 }
 
 const s = {
   bubbleWrap: {
+    pointerEvents: 'none',
     position: 'relative',
     width: 102,
     height: 51,
@@ -253,6 +255,15 @@ const s = {
     paddingBottom: 14,
     paddingLeft: 6,
     paddingRight: 6,
+  },
+  bubbleTap: {
+    position: 'absolute',
+    left: 3,
+    top: 3,
+    width: 96,
+    height: 30,
+    pointerEvents: 'auto',
+    cursor: 'pointer',
   },
   bubbleLatar: {
     position: 'absolute',
@@ -304,6 +315,7 @@ const s = {
     cursor: 'zoom-in',
   },
   tutup: {
+    pointerEvents: 'auto',
     position: 'absolute',
     top: -4,
     left: GESER_X + LEBAR_PNG * SKALA - 10,
@@ -328,11 +340,12 @@ const s = {
     zIndex: 1000000,
   },
   fotoTap: {
+    pointerEvents: 'auto',
     position: 'absolute',
     left: 0,
     top: 0,
     width: LEBAR_PNG * SKALA,
-    height: TINGGI_PNG * SKALA,
+    height: 22 * SKALA, // badan bubble saja, ekor di bawahnya tembus sentuhan
     cursor: 'zoom-in',
     WebkitTouchCallout: 'none',
     userSelect: 'none',

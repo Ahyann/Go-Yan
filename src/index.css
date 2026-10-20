@@ -187,3 +187,11 @@ button {
 .foto-latar-masuk { animation: foto-latar-masuk 0.25s ease-out both; }
 .foto-latar-keluar { animation: foto-latar-keluar 0.2s ease-in both; }
 
+/* Kotak popup bubble tembus sentuhan; bagian yang bisa di-tap (badan bubble,
+   foto, tombol x) ngaktifin lagi pointer-events-nya sendiri. */
+.leaflet-popup,
+.leaflet-popup-content-wrapper,
+.leaflet-popup-content {
+  pointer-events: none !important;
+}
+

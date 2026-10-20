@@ -88,12 +88,25 @@ const ikonKampus = L.divIcon({
   popupAnchor: [46, -14],
 })
 
+// Nandain kalau user udah geser/zoom peta sendiri. Disimpan di objek peta
+// (bukan di komponen) supaya tetap kebaca walau GeserKePosisi dipasang ulang.
+function TandaiGeserUser() {
+  const map = useMap()
+  useMapEvents({
+    dragstart: () => { map.userSudahGeser = true },
+    zoomstart: () => { map.userSudahGeser = true },
+  })
+  return null
+}
+
+// Pusatin peta ke posisi sekali di awal, tapi jangan pernah narik balik peta
+// yang udah digeser atau di-zoom user.
 function GeserKePosisi({ lat, lng }) {
   const map = useMap()
   const sudahDicenter = useRef(false)
   useEffect(() => {
     if (!sudahDicenter.current) {
-      map.setView([lat, lng])
+      if (!map.userSudahGeser) map.setView([lat, lng])
       sudahDicenter.current = true
     }
   }, [lat, lng, map])
@@ -222,6 +235,7 @@ export default function PetaLokasiPenumpang({
         scrollWheelZoom={true}
       >
         <SimpanPosisiPeta />
+        <TandaiGeserUser />
         <PantauUkuran />
         <ZoomControl position="topright" />
 

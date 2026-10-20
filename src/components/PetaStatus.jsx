@@ -94,12 +94,25 @@ function SimpanPosisiPeta() {
   return null
 }
 
+// Nandain kalau user udah geser/zoom peta sendiri. Disimpan di objek peta
+// (bukan di komponen) supaya tetap kebaca walau GeserKePosisi dipasang ulang.
+function TandaiGeserUser() {
+  const map = useMap()
+  useMapEvents({
+    dragstart: () => { map.userSudahGeser = true },
+    zoomstart: () => { map.userSudahGeser = true },
+  })
+  return null
+}
+
+// Pusatin peta ke posisi sekali di awal, tapi jangan pernah narik balik peta
+// yang udah digeser atau di-zoom user.
 function GeserKePosisi({ lat, lng }) {
   const map = useMap()
   const sudahDicenter = useRef(false)
   useEffect(() => {
     if (!sudahDicenter.current) {
-      map.setView([lat, lng])
+      if (!map.userSudahGeser) map.setView([lat, lng])
       sudahDicenter.current = true
     }
   }, [lat, lng, map])
@@ -207,6 +220,7 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
       >
         <ZoomControl position="topright" />
         <SimpanPosisiPeta />
+        <TandaiGeserUser />
 
         <TileLayer
           url={`https://api.maptiler.com/maps/streets-v4-dark/{z}/{x}/{y}.png?key=${import.meta.env.VITE_MAPTILER_KEY}`}
