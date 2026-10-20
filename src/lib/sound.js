@@ -48,6 +48,59 @@ async function muatJarvisTerimaBuffer() {
   jarvisTerimaBuffer = await muatBuffer('/sounds/jarvis_terima.mp3')
 }
 
+// Efek suara asisten AI buat voice line: sedikit "logam" (delay sangat pendek
+// dengan umpan balik, bikin suara terdengar robotik) dan gema tipis. Semua
+// tebalnya bisa disetel di sini; isi 0 buat mematikan efeknya.
+export const EFEK_AI = {
+  logam: 0.45, // 0 - 1, seberapa kuat suara logam/robot
+  gema: 0.28, // 0 - 1, seberapa kuat gema
+  waktuGema: 0.16, // detik antar gema
+}
+
+export function sambungkanEfekAi(ctx, sumber, tujuan = ctx.destination) {
+  const kering = ctx.createGain()
+  kering.gain.value = 0.85
+  sumber.connect(kering)
+  kering.connect(tujuan)
+
+  if (EFEK_AI.logam > 0) {
+    const sisir = ctx.createDelay(0.05)
+    sisir.delayTime.value = 0.012
+    const umpanSisir = ctx.createGain()
+    umpanSisir.gain.value = 0.45
+    const keluarSisir = ctx.createGain()
+    keluarSisir.gain.value = EFEK_AI.logam
+    sumber.connect(sisir)
+    sisir.connect(umpanSisir)
+    umpanSisir.connect(sisir)
+    sisir.connect(keluarSisir)
+    keluarSisir.connect(tujuan)
+  }
+
+  if (EFEK_AI.gema > 0) {
+    const gema = ctx.createDelay(1)
+    gema.delayTime.value = EFEK_AI.waktuGema
+    const umpanGema = ctx.createGain()
+    umpanGema.gain.value = 0.3
+    const keluarGema = ctx.createGain()
+    keluarGema.gain.value = EFEK_AI.gema
+    sumber.connect(gema)
+    gema.connect(umpanGema)
+    umpanGema.connect(gema)
+    gema.connect(keluarGema)
+    keluarGema.connect(tujuan)
+  }
+}
+
+function putarBufferDenganEfekAi(buffer) {
+  const ctx = getAudioCtx()
+  const source = ctx.createBufferSource()
+  source.buffer = buffer
+  sambungkanEfekAi(ctx, source)
+  source.start(0)
+  return source
+}
+
 function putarBuffer(buffer) {
   const ctx = getAudioCtx()
   const source = ctx.createBufferSource()
@@ -221,7 +274,7 @@ export async function playJarvisTerima() {
     return false
   }
 
-  putarBuffer(jarvisTerimaBuffer)
+  putarBufferDenganEfekAi(jarvisTerimaBuffer)
   return true
 }
 
@@ -254,7 +307,7 @@ export async function playMisiDiterima() {
     return true
   }
 
-  const sumber = putarBuffer(jarvisTerimaBuffer)
+  const sumber = putarBufferDenganEfekAi(jarvisTerimaBuffer)
   sumber.onended = mainkanLabaLaba
   return true
 }
