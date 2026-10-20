@@ -52,8 +52,8 @@ async function muatJarvisTerimaBuffer() {
 // dengan umpan balik, bikin suara terdengar robotik) dan gema tipis. Semua
 // tebalnya bisa disetel di sini; isi 0 buat mematikan efeknya.
 export const EFEK_AI = {
-  logam: 0.3, // 0 - 1, seberapa kuat suara logam/robot (awalnya 0.45, terlalu kuat)
-  gema: 0.1, // 0 - 1, seberapa kuat gema (awalnya 0.28, terlalu kuat)
+  logam: 0, // 0 - 1, seberapa kuat suara logam/robot (dicoba 0.45 dan 0.3, kerasa kayak gema)
+  gema: 0, // 0 - 1, seberapa kuat gema (dicoba 0.28 dan 0.1, terlalu kerasa)
   waktuGema: 0.16, // detik antar gema
 }
 
