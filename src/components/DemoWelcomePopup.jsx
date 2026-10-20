@@ -4,6 +4,7 @@ import { useProfilIkon } from '../lib/useProfilIkon'
 import { useWarnaGlow } from '../lib/useWarnaGlow'
 import { ambilWarnaGlow } from '../lib/warnaGlow'
 import { useLanguage } from '../context/LanguageContext.jsx'
+import { ROLE } from '../lib/constants'
 import { useAuth } from '../context/AuthContext.jsx'
 
 const KECEPATAN_KETIK_MS = 22
@@ -78,7 +79,7 @@ function LogoSpiderman({ src }) {
 // muncul kayak diketik. Ketuk teksnya buat langsung nampilin semuanya.
 export default function DemoWelcomePopup() {
   const { t, lang } = useLanguage()
-  const { isDemo, user } = useAuth()
+  const { isDemo, user, role } = useAuth()
   const uid = user?.uid
   const [terbuka, setTerbuka] = useState(() => Boolean(isDemo && uid && !sudahDitutup(uid)))
   const [jumlah, setJumlah] = useState(0)
@@ -110,7 +111,8 @@ export default function DemoWelcomePopup() {
     if (isDemo && uid && !sudahDitutup(uid)) setTerbuka(true)
   }, [isDemo, uid])
 
-  const isi = t.demoSelamatDatangIsi
+  // Penjelasan beda untuk tiap peran demo.
+  const isi = role === ROLE.OJEK ? t.demoIsiDriver : t.demoIsiPenumpang
 
   // Pop up baru muncul setelah petanya selesai dimuat (semua ubin kelihatan),
   // bukan langsung pas masuk. Dicek langsung dari elemen peta di layar: ada

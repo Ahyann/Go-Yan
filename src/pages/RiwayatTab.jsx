@@ -1,10 +1,12 @@
 import { useRef, useState } from 'react'
 import { STATUS_BAYAR, formatRupiah } from '../lib/constants'
 import { useLanguage } from '../context/LanguageContext.jsx'
+import { useAuth } from '../context/AuthContext.jsx'
 import MonthPickerPopup from '../components/MonthPickerPopup.jsx'
 
 export default function RiwayatTab({ riwayat }) {
   const { t } = useLanguage()
+  const { isDemo } = useAuth()
   const [showBulan, setShowBulan] = useState(false)
 
   const sekarang = new Date()
@@ -97,6 +99,8 @@ export default function RiwayatTab({ riwayat }) {
           )}
         </div>
       </section>
+
+      {isDemo && <div style={s.catatanDemo}>{t.demoCatatanRiwayatPenumpang}</div>}
 
       {showBulan && (
         <MonthPickerPopup
@@ -226,6 +230,7 @@ const s = {
   tagihanSub: { fontSize: 12, color: '#8FB4DC', marginTop: 4 },
   sectionTitle: { fontSize: 14, color: 'var(--text-dim)', marginBottom: 10 },
   list: { display: 'flex', flexDirection: 'column', gap: 10 },
+  catatanDemo: { fontSize: 11, color: 'var(--text-dim)', textAlign: 'center', lineHeight: 1.4 },
   kosong: { fontSize: 13.5, color: 'var(--text-dim)', textAlign: 'center', padding: '20px 0' },
   item: {
     display: 'flex',
