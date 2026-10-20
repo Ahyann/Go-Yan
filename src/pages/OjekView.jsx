@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLokasiSaya } from '../lib/useLokasiSaya'
 import { usePesanPenumpang } from '../lib/usePesanPenumpang'
-import { playChatSound, playSpiderSound } from '../lib/sound'
+import { playChatSound } from '../lib/sound'
 import { useReminderKeberangkatan } from '../lib/useReminderKeberangkatan'
 import { STATUS_PERMINTAAN } from '../lib/constants'
 import OjekNav from '../components/OjekNav.jsx'
@@ -82,7 +82,6 @@ export default function OjekView({
     if (permintaanBaru && tabAktifRef.current !== 'home') {
       setAdaPermintaanBaru(true)
       setToastPermintaan(permintaan)
-      playSpiderSound()
     }
   }, [permintaan])
 
