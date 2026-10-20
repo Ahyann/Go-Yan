@@ -32,6 +32,7 @@ function buatIkonOjek(namaFile, warna) {
       <img src="/icons/${namaFile}" style="
         width:24px;height:24px;
         image-rendering: pixelated;
+        pointer-events:none;-webkit-user-drag:none;-webkit-touch-callout:none;user-select:none;
         filter: drop-shadow(0 0 6px ${warna.utama}) drop-shadow(0 0 12px ${warna.kuat});
       " />
     </div>`,
@@ -64,6 +65,7 @@ const ikonOffice = L.divIcon({
     <img src="/icons/office.png" style="
       width:20px;height:30px;
       image-rendering: pixelated;
+        pointer-events:none;-webkit-user-drag:none;-webkit-touch-callout:none;user-select:none;
     " />
   </div>`,
   iconSize: [20, 30],
@@ -77,6 +79,7 @@ const ikonKampus = L.divIcon({
     <img src="/icons/UPN.png" style="
       width:38px;height:38px;
       image-rendering: pixelated;
+        pointer-events:none;-webkit-user-drag:none;-webkit-touch-callout:none;user-select:none;
     " />
   </div>`,
   iconSize: [38, 38],
