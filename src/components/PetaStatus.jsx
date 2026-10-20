@@ -8,6 +8,7 @@ import { useLokasiPenumpang } from '../lib/useLokasiPenumpang'
 import { usePesanOjek } from '../lib/usePesanOjek'
 import { usePesanPenumpang } from '../lib/usePesanPenumpang'
 import QuickChatMarker from './QuickChatMarker.jsx'
+import PusatkanKeSaya from './PusatkanKeSaya.jsx'
 import { useBubblePesan } from '../lib/useBubblePesan'
 import { useProfilIkon } from '../lib/useProfilIkon'
 import { useWarnaGlow } from '../lib/useWarnaGlow'
@@ -163,7 +164,7 @@ function IkonLabaLaba() {
   )
 }
 
-export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef: mapRefLuar, baruDibatalkan = false }) {
+export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef: mapRefLuar, baruDibatalkan = false, sinyalLive = 0 }) {
   const { t } = useLanguage()
   const { isDemo } = useAuth()
   const lokasiOjek = useLokasiOjek()
@@ -225,6 +226,7 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
         <ZoomControl position="topright" />
         <SimpanPosisiPeta />
         <TandaiGeserUser />
+        <PusatkanKeSaya sinyal={sinyalLive} posisi={posisiSayaMarker} />
 
         <TileLayer
           maxNativeZoom={20}

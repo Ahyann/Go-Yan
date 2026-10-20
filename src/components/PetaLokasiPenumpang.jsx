@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import QuickChatMarker from './QuickChatMarker.jsx'
+import PusatkanKeSaya from './PusatkanKeSaya.jsx'
 import { useBubblePesan } from '../lib/useBubblePesan'
 import { useLokasiOjek } from '../lib/useLokasiOjek'
 import { usePesanPenumpang } from '../lib/usePesanPenumpang'
@@ -177,6 +178,7 @@ export default function PetaLokasiPenumpang({
   const bubblePenumpang = useBubblePesan(pesan, hapusPesan, 'peta-ahyan:bubble-fajri')
   const bubbleSaya = useBubblePesan(pesanSaya, hapusPesanSaya, 'peta-ahyan:bubble-ahyan')
   const [posisiBar, setPosisiBar] = useState(null)
+  const [sinyalLive, setSinyalLive] = useState(0)
   const markerOfficeRef = useRef(null)
   const markerKampusRef = useRef(null)
 
@@ -239,6 +241,7 @@ export default function PetaLokasiPenumpang({
       >
         <SimpanPosisiPeta />
         <TandaiGeserUser />
+        <PusatkanKeSaya sinyal={sinyalLive} posisi={posisiSayaMarker} />
         <PantauUkuran />
         <ZoomControl position="topright" />
 
@@ -347,7 +350,11 @@ export default function PetaLokasiPenumpang({
             <button
               className="btn-map-control"
               style={lokasiAktif ? s.lokasiIconAktif : s.kotakKontrol}
-              onClick={onToggleLokasi}
+              onClick={() => {
+                // Baru dinyalakan (bukan dimatikan): peta pindah ke karakter sendiri.
+                if (!lokasiAktif) setSinyalLive((n) => n + 1)
+                onToggleLokasi()
+              }}
               aria-label={lokasiAktif ? t.ariaMatikanLive : t.ariaNyalakanLive}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

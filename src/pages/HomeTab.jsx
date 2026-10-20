@@ -15,10 +15,12 @@ export default function HomeTab({ permintaan, lokasiAktif, lokasiError, mulaiLok
   const { kirimPesan, kirimFoto } = usePesanPenumpang()
   const sedangJalan = permintaan?.status === STATUS_PERMINTAAN.DITERIMA
   const [showToast, setShowToast] = useState(false)
+  const [sinyalLive, setSinyalLive] = useState(0)
   const [showKirimPesan, setShowKirimPesan] = useState(false)
   const mapRef = useRef(null)
 
   function handleMulai() {
+    setSinyalLive((n) => n + 1) // peta pindah ke karakter sendiri begitu lokasi pertama masuk
     mulaiLokasi()
     setShowToast(true)
     setTimeout(() => setShowToast(false), 2500)
@@ -44,7 +46,7 @@ export default function HomeTab({ permintaan, lokasiAktif, lokasiError, mulaiLok
         <h1 style={s.title}>{isDemo ? t.haloDemo : t.penumpangHalo}</h1>
       </div>
 
-      <PetaStatus permintaan={permintaan} mapRef={mapRef} baruDibatalkan={baruDibatalkan} />
+      <PetaStatus permintaan={permintaan} mapRef={mapRef} baruDibatalkan={baruDibatalkan} sinyalLive={sinyalLive} />
 
       {sedangJalan && createPortal(
         <>
