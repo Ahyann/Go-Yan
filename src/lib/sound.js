@@ -261,12 +261,12 @@ export async function playMissionSuccess() {
   return true
 }
 
-// Suara asisten AI ngomong dulu sampai selesai, baru suara laba-laba (efek
-// suaranya) main, jadi gak numpuk. Kalau salah satu suara gagal dimuat, yang
-// satunya tetap main.
-const JEDA_SEBELUM_LABA_LABA_MS = 150
+// Dua suara berurutan: suara asisten AI (voice line) dan suara laba-laba (efek
+// suara). Yang kedua baru mulai setelah yang pertama selesai, jadi gak numpuk.
+// Kalau salah satu gagal dimuat, yang satunya tetap main.
+const JEDA_ANTAR_SUARA_MS = 150
 
-async function mainkanSuaraAiLaluLabaLaba(kunci, namaAntrian, tundaAwalMs = 0) {
+async function mainkanDuaSuara(kunci, namaAntrian, labaLabaDulu) {
   const ctx = getAudioCtx()
 
   if (!bufferSuaraAi[kunci]) await muatSuaraAi(kunci)
@@ -281,31 +281,33 @@ async function mainkanSuaraAiLaluLabaLaba(kunci, namaAntrian, tundaAwalMs = 0) {
     return false
   }
 
-  // Jeda sebelum suara pertama (suara AI) mulai, dihitung dari tombol dipencet.
-  if (tundaAwalMs > 0) await new Promise((r) => setTimeout(r, tundaAwalMs))
+  const suaraAi = () => putarBufferDenganEfekAi(bufferSuaraAi[kunci])
+  const labaLaba = () => putarBuffer(spiderBuffer)
+  const adaAi = Boolean(bufferSuaraAi[kunci])
+  const adaLabaLaba = Boolean(spiderBuffer)
 
-  const mainkanLabaLaba = () => {
-    if (spiderBuffer) setTimeout(() => putarBuffer(spiderBuffer), JEDA_SEBELUM_LABA_LABA_MS)
+  const [pertama, kedua, adaPertama, adaKedua] = labaLabaDulu
+    ? [labaLaba, suaraAi, adaLabaLaba, adaAi]
+    : [suaraAi, labaLaba, adaAi, adaLabaLaba]
+
+  const mainkanKedua = () => {
+    if (adaKedua) setTimeout(kedua, JEDA_ANTAR_SUARA_MS)
   }
 
-  if (!bufferSuaraAi[kunci]) {
-    mainkanLabaLaba()
+  if (!adaPertama) {
+    mainkanKedua()
     return true
   }
 
-  const sumber = putarBufferDenganEfekAi(bufferSuaraAi[kunci])
-  sumber.onended = mainkanLabaLaba
+  pertama().onended = mainkanKedua
   return true
 }
 
-// Ahyan menerima misi.
-export const playMisiDiterima = () => mainkanSuaraAiLaluLabaLaba('terima', 'playMisiDiterima')
+// Ahyan menerima misi: suara AI dulu, baru suara laba-laba.
+export const playMisiDiterima = () => mainkanDuaSuara('terima', 'playMisiDiterima', false)
 
-// Fajri selesai mengirim pesanan (GO). Suara baru mulai setengah detik setelah
-// tombol dipencet.
-const JEDA_SETELAH_GO_MS = 500
-export const playPesanTerkirim = () =>
-  mainkanSuaraAiLaluLabaLaba('pesan', 'playPesanTerkirim', JEDA_SETELAH_GO_MS)
+// Fajri selesai mengirim pesanan (GO): suara laba-laba dulu, baru suara AI.
+export const playPesanTerkirim = () => mainkanDuaSuara('pesan', 'playPesanTerkirim', true)
 
 const PETA_FUNGSI_SUARA = {
   playSpiderSound,
