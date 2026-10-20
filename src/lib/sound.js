@@ -225,16 +225,16 @@ export async function playJarvisTerima() {
   return true
 }
 
-// Ahyan menerima misi: suara laba-laba dulu sampai selesai, baru suara asisten
-// AI ngomong (jadi gak numpuk). Kalau salah satu suara gagal dimuat, yang
-// satunya tetap main.
-const JEDA_SEBELUM_AI_MS = 250
+// Ahyan menerima misi: suara asisten AI ("Mission accepted...") ngomong dulu
+// sampai selesai, baru suara laba-laba (efek suaranya) main, jadi gak numpuk.
+// Kalau salah satu suara gagal dimuat, yang satunya tetap main.
+const JEDA_SEBELUM_LABA_LABA_MS = 150
 
 export async function playMisiDiterima() {
   const ctx = getAudioCtx()
 
-  if (!spiderBuffer) await muatSpiderBuffer()
   if (!jarvisTerimaBuffer) await muatJarvisTerimaBuffer()
+  if (!spiderBuffer) await muatSpiderBuffer()
 
   if (ctx.state === 'suspended') {
     await ctx.resume()
@@ -245,17 +245,17 @@ export async function playMisiDiterima() {
     return false
   }
 
-  const mainkanAi = () => {
-    if (jarvisTerimaBuffer) setTimeout(() => putarBuffer(jarvisTerimaBuffer), JEDA_SEBELUM_AI_MS)
+  const mainkanLabaLaba = () => {
+    if (spiderBuffer) setTimeout(() => putarBuffer(spiderBuffer), JEDA_SEBELUM_LABA_LABA_MS)
   }
 
-  if (!spiderBuffer) {
-    mainkanAi()
+  if (!jarvisTerimaBuffer) {
+    mainkanLabaLaba()
     return true
   }
 
-  const sumber = putarBuffer(spiderBuffer)
-  sumber.onended = mainkanAi
+  const sumber = putarBuffer(jarvisTerimaBuffer)
+  sumber.onended = mainkanLabaLaba
   return true
 }
 
