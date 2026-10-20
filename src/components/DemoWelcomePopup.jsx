@@ -110,7 +110,10 @@ export default function DemoWelcomePopup() {
     if (isDemo && uid && !sudahDitutup(uid)) setTerbuka(true)
   }, [isDemo, uid])
 
-  const isi = t.demoSelamatDatangIsi
+  // Penjelasan utama + tips geser kartu (paragraf kedua).
+  const isi = `${t.demoSelamatDatangIsi}
+
+${t.demoTips}`
 
   // Pop up baru muncul setelah petanya selesai dimuat (semua ubin kelihatan),
   // bukan langsung pas masuk. Dicek langsung dari elemen peta di layar: ada
@@ -227,6 +230,8 @@ const s = {
     background: 'linear-gradient(160deg, var(--card-blue-grad-a), var(--card-blue-grad-b))',
     border: '1px solid var(--blue-border)',
     borderRadius: 16,
+    maxHeight: 'calc(var(--app-height, 100dvh) - 40px)',
+    overflowY: 'auto',
     padding: '22px 20px 20px',
     boxShadow: '0 0 24px rgba(43,158,232,0.35)',
     display: 'flex',
@@ -257,6 +262,7 @@ const s = {
     fontSize: 14,
     lineHeight: 1.5,
     color: 'var(--text)',
+    whiteSpace: 'pre-line', // baris kosong antar paragraf
     textAlign: 'justify',
     textJustify: 'inter-word',
     hyphens: 'auto',
