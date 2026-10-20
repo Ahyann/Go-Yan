@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { STATUS_PERMINTAAN } from '../lib/constants'
-import { playSpiderSound, playChatSound } from '../lib/sound'
+import { playPesanTerkirim, playChatSound } from '../lib/sound'
 import { useLokasiSayaPenumpang } from '../lib/useLokasiSayaPenumpang'
 import { usePesanOjek } from '../lib/usePesanOjek'
 import GoPopup from '../components/GoPopup.jsx'
@@ -136,7 +136,7 @@ export default function PenumpangView({
   }
 
   async function handleKirimGo({ aksi, where, waktu }) {
-    playSpiderSound()
+    playPesanTerkirim()
     try {
       await kirimGo({ aksi, where, waktu })
       setShowGo(false)

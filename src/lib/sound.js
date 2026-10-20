@@ -10,7 +10,12 @@ let notifSelesaiBuffer = null
 let chatBuffer = null
 let reminderBuffer = null
 let missionSuccessBuffer = null
-let jarvisTerimaBuffer = null
+// Suara asisten AI (voice line). Satu entri per kalimat.
+const URL_SUARA_AI = {
+  terima: '/sounds/jarvis_terima.mp3', // "Mission accepted. Proceeding to pickup."
+  pesan: '/sounds/jarvis_pesan.mp3', // "Request sent. Awaiting confirmation."
+}
+const bufferSuaraAi = {}
 
 async function muatBuffer(url) {
   try {
@@ -44,8 +49,8 @@ async function muatMissionSuccessBuffer() {
   missionSuccessBuffer = await muatBuffer('/sounds/missionsuccess.mp3')
 }
 
-async function muatJarvisTerimaBuffer() {
-  jarvisTerimaBuffer = await muatBuffer('/sounds/jarvis_terima.mp3')
+async function muatSuaraAi(kunci) {
+  bufferSuaraAi[kunci] = await muatBuffer(URL_SUARA_AI[kunci])
 }
 
 // Efek suara asisten AI buat voice line: sedikit "logam" (delay sangat pendek
@@ -129,7 +134,7 @@ if (typeof window !== 'undefined') {
   muatChatBuffer()
   muatReminderBuffer()
   muatMissionSuccessBuffer()
-  muatJarvisTerimaBuffer()
+  Object.keys(URL_SUARA_AI).forEach(muatSuaraAi)
 
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible' && audioCtx?.state === 'suspended') {
@@ -256,37 +261,15 @@ export async function playMissionSuccess() {
   return true
 }
 
-// Suara asisten AI: "Mission accepted. Proceeding to pickup." (Ahyan terima misi)
-export async function playJarvisTerima() {
-  const ctx = getAudioCtx()
-
-  if (!jarvisTerimaBuffer) {
-    await muatJarvisTerimaBuffer()
-  }
-  if (!jarvisTerimaBuffer) return false
-
-  if (ctx.state === 'suspended') {
-    await ctx.resume()
-  }
-
-  if (ctx.state !== 'running') {
-    antrikanSuara('playJarvisTerima')
-    return false
-  }
-
-  putarBufferDenganEfekAi(jarvisTerimaBuffer)
-  return true
-}
-
-// Ahyan menerima misi: suara asisten AI ("Mission accepted...") ngomong dulu
-// sampai selesai, baru suara laba-laba (efek suaranya) main, jadi gak numpuk.
-// Kalau salah satu suara gagal dimuat, yang satunya tetap main.
+// Suara asisten AI ngomong dulu sampai selesai, baru suara laba-laba (efek
+// suaranya) main, jadi gak numpuk. Kalau salah satu suara gagal dimuat, yang
+// satunya tetap main.
 const JEDA_SEBELUM_LABA_LABA_MS = 150
 
-export async function playMisiDiterima() {
+async function mainkanSuaraAiLaluLabaLaba(kunci, namaAntrian) {
   const ctx = getAudioCtx()
 
-  if (!jarvisTerimaBuffer) await muatJarvisTerimaBuffer()
+  if (!bufferSuaraAi[kunci]) await muatSuaraAi(kunci)
   if (!spiderBuffer) await muatSpiderBuffer()
 
   if (ctx.state === 'suspended') {
@@ -294,7 +277,7 @@ export async function playMisiDiterima() {
   }
 
   if (ctx.state !== 'running') {
-    antrikanSuara('playMisiDiterima')
+    antrikanSuara(namaAntrian)
     return false
   }
 
@@ -302,15 +285,21 @@ export async function playMisiDiterima() {
     if (spiderBuffer) setTimeout(() => putarBuffer(spiderBuffer), JEDA_SEBELUM_LABA_LABA_MS)
   }
 
-  if (!jarvisTerimaBuffer) {
+  if (!bufferSuaraAi[kunci]) {
     mainkanLabaLaba()
     return true
   }
 
-  const sumber = putarBufferDenganEfekAi(jarvisTerimaBuffer)
+  const sumber = putarBufferDenganEfekAi(bufferSuaraAi[kunci])
   sumber.onended = mainkanLabaLaba
   return true
 }
+
+// Ahyan menerima misi.
+export const playMisiDiterima = () => mainkanSuaraAiLaluLabaLaba('terima', 'playMisiDiterima')
+
+// Fajri selesai mengirim pesanan (GO).
+export const playPesanTerkirim = () => mainkanSuaraAiLaluLabaLaba('pesan', 'playPesanTerkirim')
 
 const PETA_FUNGSI_SUARA = {
   playSpiderSound,
@@ -318,6 +307,6 @@ const PETA_FUNGSI_SUARA = {
   playChatSound,
   playReminderSound,
   playMissionSuccess,
-  playJarvisTerima,
   playMisiDiterima,
+  playPesanTerkirim,
 }
