@@ -28,26 +28,24 @@ function sudahDitutup(uid) {
 }
 
 // Icon spiderman pixel yang lagi dipakai (default spidericon.png), sama kayak
-// di peta dan di profil, dengan cahaya warna yang dipilih.
-function LogoSpiderman() {
-  const { ikonAhyan } = useProfilIkon()
-  const { warnaAhyan } = useWarnaGlow()
-  const warna = ambilWarnaGlow(warnaAhyan)
+// di peta dan di profil.
+//
+// Cahayanya sengaja BUKAN filter drop-shadow di gambar: filter di elemen yang
+// lagi dianimasikan (membesar) dirender kasar dulu lalu baru dihaluskan
+// beberapa saat kemudian, jadi kelihatan kotak di awal. Di sini cahayanya
+// lingkaran gradien terpisah di belakang gambar (tanpa filter), dan gambarnya
+// sudah di-preload sebelum pop up tampil.
+function LogoSpiderman({ src, warna }) {
   return (
-    <img
-      src={`/icons/${ikonAhyan}`}
-      alt=""
-      draggable={false}
-      style={{
-        width: 64,
-        height: 64,
-        display: 'block',
-        imageRendering: 'pixelated',
-        pointerEvents: 'none',
-        WebkitUserDrag: 'none',
-        filter: `drop-shadow(0 0 6px ${warna.utama}) drop-shadow(0 0 12px ${warna.kuat})`,
-      }}
-    />
+    <div style={s.logoKotak}>
+      <div
+        style={{
+          ...s.cahaya,
+          background: `radial-gradient(circle, ${warna.utama}99 0%, ${warna.kuat}44 42%, transparent 70%)`,
+        }}
+      />
+      <img src={src} alt="" draggable={false} style={s.logoGambar} />
+    </div>
   )
 }
 
@@ -60,7 +58,31 @@ export default function DemoWelcomePopup() {
   const [terbuka, setTerbuka] = useState(() => Boolean(isDemo && uid && !sudahDitutup(uid)))
   const [jumlah, setJumlah] = useState(0)
   const [petaSiap, setPetaSiap] = useState(false)
+  const [logoSiap, setLogoSiap] = useState(false)
   const [menutup, setMenutup] = useState(false)
+  const { ikonAhyan } = useProfilIkon()
+  const { warnaAhyan } = useWarnaGlow()
+  const warna = ambilWarnaGlow(warnaAhyan)
+  const srcLogo = `/icons/${ikonAhyan}`
+
+  // Muat dan decode gambar logo dari awal (jauh sebelum pop up tampil), jadi
+  // begitu pop up muncul gambarnya sudah siap, gak muncul kotak kosong dulu.
+  // Kalau gagal atau lama, pop up tetap tampil (batas 3 detik).
+  useEffect(() => {
+    let batal = false
+    const img = new Image()
+    const siap = () => {
+      if (!batal) setLogoSiap(true)
+    }
+    img.src = srcLogo
+    if (img.decode) img.decode().then(siap, siap)
+    else img.onload = img.onerror = siap
+    const batas = setTimeout(siap, 3000)
+    return () => {
+      batal = true
+      clearTimeout(batas)
+    }
+  }, [srcLogo])
 
   // Akun demo bisa baru kebaca setelah komponen dipasang.
   useEffect(() => {
@@ -93,7 +115,7 @@ export default function DemoWelcomePopup() {
     }
   }, [terbuka, petaSiap])
 
-  const tampil = terbuka && petaSiap
+  const tampil = terbuka && petaSiap && logoSiap
 
   useEffect(() => {
     if (!tampil) return
@@ -141,7 +163,7 @@ export default function DemoWelcomePopup() {
     >
       <div className={menutup ? 'demo-kartu-keluar' : 'demo-kartu-masuk'} style={s.kartu}>
         <div className="demo-logo-masuk" style={s.logo}>
-          <LogoSpiderman />
+          <LogoSpiderman src={srcLogo} warna={warna} />
         </div>
         <h2 style={s.judul}>{t.demoSelamatDatangJudul}</h2>
         {/* Teks rata kiri-kanan. Bagian yang belum diketik tetap dirender (tapi
@@ -192,6 +214,26 @@ const s = {
     gap: 12,
   },
   logo: { display: 'flex', alignItems: 'center', justifyContent: 'center' },
+  logoKotak: { position: 'relative', width: 64, height: 64 },
+  cahaya: {
+    position: 'absolute',
+    left: '50%',
+    top: '50%',
+    width: 132,
+    height: 132,
+    transform: 'translate(-50%, -50%)',
+    borderRadius: '50%',
+    pointerEvents: 'none',
+  },
+  logoGambar: {
+    position: 'relative',
+    width: 64,
+    height: 64,
+    display: 'block',
+    imageRendering: 'pixelated',
+    pointerEvents: 'none',
+    WebkitUserDrag: 'none',
+  },
   judul: {
     fontFamily: 'var(--font-judul)',
     fontSize: 24,
