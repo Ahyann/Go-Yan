@@ -266,7 +266,7 @@ export async function playMissionSuccess() {
 // satunya tetap main.
 const JEDA_SEBELUM_LABA_LABA_MS = 150
 
-async function mainkanSuaraAiLaluLabaLaba(kunci, namaAntrian) {
+async function mainkanSuaraAiLaluLabaLaba(kunci, namaAntrian, tundaAwalMs = 0) {
   const ctx = getAudioCtx()
 
   if (!bufferSuaraAi[kunci]) await muatSuaraAi(kunci)
@@ -280,6 +280,9 @@ async function mainkanSuaraAiLaluLabaLaba(kunci, namaAntrian) {
     antrikanSuara(namaAntrian)
     return false
   }
+
+  // Jeda sebelum suara pertama (suara AI) mulai, dihitung dari tombol dipencet.
+  if (tundaAwalMs > 0) await new Promise((r) => setTimeout(r, tundaAwalMs))
 
   const mainkanLabaLaba = () => {
     if (spiderBuffer) setTimeout(() => putarBuffer(spiderBuffer), JEDA_SEBELUM_LABA_LABA_MS)
@@ -298,8 +301,11 @@ async function mainkanSuaraAiLaluLabaLaba(kunci, namaAntrian) {
 // Ahyan menerima misi.
 export const playMisiDiterima = () => mainkanSuaraAiLaluLabaLaba('terima', 'playMisiDiterima')
 
-// Fajri selesai mengirim pesanan (GO).
-export const playPesanTerkirim = () => mainkanSuaraAiLaluLabaLaba('pesan', 'playPesanTerkirim')
+// Fajri selesai mengirim pesanan (GO). Suara baru mulai setengah detik setelah
+// tombol dipencet.
+const JEDA_SETELAH_GO_MS = 500
+export const playPesanTerkirim = () =>
+  mainkanSuaraAiLaluLabaLaba('pesan', 'playPesanTerkirim', JEDA_SETELAH_GO_MS)
 
 const PETA_FUNGSI_SUARA = {
   playSpiderSound,
