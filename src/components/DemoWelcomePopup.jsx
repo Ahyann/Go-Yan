@@ -7,6 +7,9 @@ import { useLanguage } from '../context/LanguageContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 
 const KECEPATAN_KETIK_MS = 22
+const CEK_PETA_MS = 250
+const JEDA_SETELAH_PETA_MS = 500
+const BATAS_TUNGGU_PETA_MS = 8000 // kalau peta gak kunjung selesai (koneksi jelek), tetap muncul
 
 // Sekali per sesi demo (per akun anonim demo), disimpan di sessionStorage:
 // pindah tab atau muat ulang gak munculin lagi, tapi sesi demo baru munculin lagi.
@@ -54,6 +57,7 @@ export default function DemoWelcomePopup() {
   const uid = user?.uid
   const [terbuka, setTerbuka] = useState(() => Boolean(isDemo && uid && !sudahDitutup(uid)))
   const [jumlah, setJumlah] = useState(0)
+  const [petaSiap, setPetaSiap] = useState(false)
 
   // Akun demo bisa baru kebaca setelah komponen dipasang.
   useEffect(() => {
@@ -62,8 +66,34 @@ export default function DemoWelcomePopup() {
 
   const isi = t.demoSelamatDatangIsi
 
+  // Pop up baru muncul setelah petanya selesai dimuat (semua ubin kelihatan),
+  // bukan langsung pas masuk. Dicek langsung dari elemen peta di layar: ada
+  // ubin, dan semuanya sudah selesai dimuat, dua pengecekan berturut-turut.
   useEffect(() => {
-    if (!terbuka) return
+    if (!terbuka || petaSiap) return
+    let aman = 0
+    let tundaId = null
+    const cek = setInterval(() => {
+      const ubin = document.querySelectorAll('.leaflet-tile')
+      const semuaSelesai = ubin.length > 0 && document.querySelectorAll('.leaflet-tile:not(.leaflet-tile-loaded)').length === 0
+      aman = semuaSelesai ? aman + 1 : 0
+      if (aman >= 2) {
+        clearInterval(cek)
+        tundaId = setTimeout(() => setPetaSiap(true), JEDA_SETELAH_PETA_MS)
+      }
+    }, CEK_PETA_MS)
+    const batas = setTimeout(() => setPetaSiap(true), BATAS_TUNGGU_PETA_MS)
+    return () => {
+      clearInterval(cek)
+      clearTimeout(batas)
+      clearTimeout(tundaId)
+    }
+  }, [terbuka, petaSiap])
+
+  const tampil = terbuka && petaSiap
+
+  useEffect(() => {
+    if (!tampil) return
     setJumlah(0)
     const id = setInterval(() => {
       setJumlah((n) => {
@@ -75,7 +105,7 @@ export default function DemoWelcomePopup() {
       })
     }, KECEPATAN_KETIK_MS)
     return () => clearInterval(id)
-  }, [terbuka, isi])
+  }, [tampil, isi])
 
   function tutup() {
     try {
@@ -86,7 +116,7 @@ export default function DemoWelcomePopup() {
     setTerbuka(false)
   }
 
-  if (!terbuka) return null
+  if (!tampil) return null
 
   const selesaiKetik = jumlah >= isi.length
 
