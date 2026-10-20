@@ -262,66 +262,101 @@ export async function playMissionSuccess() {
   return true
 }
 
-// Dua suara berurutan: suara asisten AI (voice line) dan suara laba-laba (efek
-// suara). Yang kedua baru mulai setelah yang pertama selesai, jadi gak numpuk.
+// ---------- Antrean suara asisten AI ----------
+// Tiap rangkaian suara (misal suara laba-laba lalu suara AI) masuk antrean dan
+// baru mulai setelah rangkaian sebelumnya SELESAI. Jadi kalau Fajri kirim
+// pesanan lalu langsung batal, suara "Request sent..." selesai dulu, baru
+// "Request cancelled." berbunyi. Gak numpuk.
+const BATAS_ANTREAN = 3 // kalau lebih dari ini lagi nunggu, yang baru dibuang
+let ekorAntrean = Promise.resolve()
+let sedangMenunggu = 0
+
+function masukAntrean(kerja) {
+  if (sedangMenunggu >= BATAS_ANTREAN) return Promise.resolve(false)
+  sedangMenunggu++
+  const hasil = ekorAntrean
+    .then(kerja)
+    .catch((err) => {
+      console.error('Gagal putar suara:', err)
+      return false
+    })
+    .finally(() => {
+      sedangMenunggu--
+    })
+  ekorAntrean = hasil.then(() => {})
+  return hasil
+}
+
+const tunggu = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+
+// Putar satu suara dan selesai (resolve) begitu suaranya habis. Ada batas
+// waktu cadangan, jaga-jaga kalau event 'ended' gak pernah datang.
+function putarSampaiSelesai(buffer, denganEfekAi) {
+  return new Promise((resolve) => {
+    const sumber = denganEfekAi ? putarBufferDenganEfekAi(buffer) : putarBuffer(buffer)
+    let selesai = false
+    const akhiri = () => {
+      if (selesai) return
+      selesai = true
+      resolve()
+    }
+    sumber.onended = akhiri
+    setTimeout(akhiri, buffer.duration * 1000 + 1000)
+  })
+}
+
+// Suara asisten AI (voice line) dan suara laba-laba (efek suara), berurutan.
 // Kalau salah satu gagal dimuat, yang satunya tetap main.
 const JEDA_ANTAR_SUARA_MS = 150
 
-async function mainkanDuaSuara(kunci, namaAntrian, labaLabaDulu) {
-  const ctx = getAudioCtx()
+function mainkanDuaSuara(kunci, namaAntrian, labaLabaDulu) {
+  return masukAntrean(async () => {
+    const ctx = getAudioCtx()
 
-  if (!bufferSuaraAi[kunci]) await muatSuaraAi(kunci)
-  if (!spiderBuffer) await muatSpiderBuffer()
+    if (!bufferSuaraAi[kunci]) await muatSuaraAi(kunci)
+    if (!spiderBuffer) await muatSpiderBuffer()
 
-  if (ctx.state === 'suspended') {
-    await ctx.resume()
-  }
+    if (ctx.state === 'suspended') {
+      await ctx.resume()
+    }
 
-  if (ctx.state !== 'running') {
-    antrikanSuara(namaAntrian)
-    return false
-  }
+    if (ctx.state !== 'running') {
+      antrikanSuara(namaAntrian)
+      return false
+    }
 
-  const suaraAi = () => putarBufferDenganEfekAi(bufferSuaraAi[kunci])
-  const labaLaba = () => putarBuffer(spiderBuffer)
-  const adaAi = Boolean(bufferSuaraAi[kunci])
-  const adaLabaLaba = Boolean(spiderBuffer)
+    const suaraAi = bufferSuaraAi[kunci] && { buffer: bufferSuaraAi[kunci], efek: true }
+    const labaLaba = spiderBuffer && { buffer: spiderBuffer, efek: false }
+    const urutan = (labaLabaDulu ? [labaLaba, suaraAi] : [suaraAi, labaLaba]).filter(Boolean)
 
-  const [pertama, kedua, adaPertama, adaKedua] = labaLabaDulu
-    ? [labaLaba, suaraAi, adaLabaLaba, adaAi]
-    : [suaraAi, labaLaba, adaAi, adaLabaLaba]
-
-  const mainkanKedua = () => {
-    if (adaKedua) setTimeout(kedua, JEDA_ANTAR_SUARA_MS)
-  }
-
-  if (!adaPertama) {
-    mainkanKedua()
+    for (let i = 0; i < urutan.length; i++) {
+      if (i > 0) await tunggu(JEDA_ANTAR_SUARA_MS)
+      await putarSampaiSelesai(urutan[i].buffer, urutan[i].efek)
+    }
     return true
-  }
-
-  pertama().onended = mainkanKedua
-  return true
+  })
 }
 
 // Suara AI saja, tanpa efek suara laba-laba.
-async function mainkanSuaraAiSaja(kunci, namaAntrian) {
-  const ctx = getAudioCtx()
+function mainkanSuaraAiSaja(kunci, namaAntrian) {
+  return masukAntrean(async () => {
+    const ctx = getAudioCtx()
 
-  if (!bufferSuaraAi[kunci]) await muatSuaraAi(kunci)
-  if (!bufferSuaraAi[kunci]) return false
+    if (!bufferSuaraAi[kunci]) await muatSuaraAi(kunci)
+    if (!bufferSuaraAi[kunci]) return false
 
-  if (ctx.state === 'suspended') {
-    await ctx.resume()
-  }
+    if (ctx.state === 'suspended') {
+      await ctx.resume()
+    }
 
-  if (ctx.state !== 'running') {
-    antrikanSuara(namaAntrian)
-    return false
-  }
+    if (ctx.state !== 'running') {
+      antrikanSuara(namaAntrian)
+      return false
+    }
 
-  putarBufferDenganEfekAi(bufferSuaraAi[kunci])
-  return true
+    await putarSampaiSelesai(bufferSuaraAi[kunci], true)
+    return true
+  })
 }
 
 // Ahyan menerima misi: suara AI dulu, baru suara laba-laba.
