@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { STATUS_PERMINTAAN, AKSI } from '../lib/constants'
-import { playSpiderSound } from '../lib/sound'
+import { playMisiDiterima } from '../lib/sound'
 import { useLokasiPenumpang, hapusLokasiPenumpangSekarang } from '../lib/useLokasiPenumpang'
 import { usePesanOjek } from '../lib/usePesanOjek'
 import { useLanguage } from '../context/LanguageContext.jsx'
@@ -39,7 +39,7 @@ export default function OjekHomeTab({
   }
 
   async function handleTerima() {
-    playSpiderSound()
+    playMisiDiterima()
     try {
       await onTerima()
     } catch (err) {

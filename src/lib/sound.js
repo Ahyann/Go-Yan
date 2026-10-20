@@ -10,6 +10,7 @@ let notifSelesaiBuffer = null
 let chatBuffer = null
 let reminderBuffer = null
 let missionSuccessBuffer = null
+let jarvisTerimaBuffer = null
 
 async function muatBuffer(url) {
   try {
@@ -43,12 +44,17 @@ async function muatMissionSuccessBuffer() {
   missionSuccessBuffer = await muatBuffer('/sounds/missionsuccess.mp3')
 }
 
+async function muatJarvisTerimaBuffer() {
+  jarvisTerimaBuffer = await muatBuffer('/sounds/jarvis_terima.mp3')
+}
+
 function putarBuffer(buffer) {
   const ctx = getAudioCtx()
   const source = ctx.createBufferSource()
   source.buffer = buffer
   source.connect(ctx.destination)
   source.start(0)
+  return source
 }
 
 let suaraTertunda = null
@@ -70,6 +76,7 @@ if (typeof window !== 'undefined') {
   muatChatBuffer()
   muatReminderBuffer()
   muatMissionSuccessBuffer()
+  muatJarvisTerimaBuffer()
 
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible' && audioCtx?.state === 'suspended') {
@@ -196,10 +203,68 @@ export async function playMissionSuccess() {
   return true
 }
 
+// Suara asisten AI: "Mission accepted. Proceeding to pickup." (Ahyan terima misi)
+export async function playJarvisTerima() {
+  const ctx = getAudioCtx()
+
+  if (!jarvisTerimaBuffer) {
+    await muatJarvisTerimaBuffer()
+  }
+  if (!jarvisTerimaBuffer) return false
+
+  if (ctx.state === 'suspended') {
+    await ctx.resume()
+  }
+
+  if (ctx.state !== 'running') {
+    antrikanSuara('playJarvisTerima')
+    return false
+  }
+
+  putarBuffer(jarvisTerimaBuffer)
+  return true
+}
+
+// Ahyan menerima misi: suara laba-laba dulu sampai selesai, baru suara asisten
+// AI ngomong (jadi gak numpuk). Kalau salah satu suara gagal dimuat, yang
+// satunya tetap main.
+const JEDA_SEBELUM_AI_MS = 250
+
+export async function playMisiDiterima() {
+  const ctx = getAudioCtx()
+
+  if (!spiderBuffer) await muatSpiderBuffer()
+  if (!jarvisTerimaBuffer) await muatJarvisTerimaBuffer()
+
+  if (ctx.state === 'suspended') {
+    await ctx.resume()
+  }
+
+  if (ctx.state !== 'running') {
+    antrikanSuara('playMisiDiterima')
+    return false
+  }
+
+  const mainkanAi = () => {
+    if (jarvisTerimaBuffer) setTimeout(() => putarBuffer(jarvisTerimaBuffer), JEDA_SEBELUM_AI_MS)
+  }
+
+  if (!spiderBuffer) {
+    mainkanAi()
+    return true
+  }
+
+  const sumber = putarBuffer(spiderBuffer)
+  sumber.onended = mainkanAi
+  return true
+}
+
 const PETA_FUNGSI_SUARA = {
   playSpiderSound,
   playNotifSelesai,
   playChatSound,
   playReminderSound,
   playMissionSuccess,
+  playJarvisTerima,
+  playMisiDiterima,
 }
