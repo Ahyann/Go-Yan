@@ -24,9 +24,13 @@ Ini bukan proyek "clone Gojek" generik, ini beneran dipakai buat koordinasi jemp
 - **Jadwal mingguan**: Penumpang atur jadwal antar-jemput per hari, otomatis reset tiap Sabtu jam 12, Ojek bisa lihat & tandai selesai
 - **Riwayat & tagihan**: pencatatan tiap perjalanan, status lunas/belum, filter per bulan, dan **swipe-to-delete** buat hapus entri
 - **Status peta yang hidup**: badge status (siap jalan, ditolak, diterima) pake animasi ketik dan icon profil yang bisa diganti-ganti
+- **Chat di peta**: pesan muncul sebagai bubble pixel-art di atas karakter masing-masing, bisa teks atau **foto** (diambil langsung dari kamera di dalam app, dikompres di HP, tampil 4:3 di dalam bingkai bubble)
+- **Quick chat**: tahan karakter sendiri di peta, geser ke pesan yang mau dikirim di roda, lepas buat kirim
+- **Suara asisten AI**: voice line bergaya radio di momen penting (terima misi, kirim pesanan, batal), diputar bergiliran dengan efek suara lewat Web Audio API, dan ada **mode suara** (normal, tanpa voice over, senyap) di halaman Akun
 - **Sound effect & animasi custom**: efek suara & animasi kustom (Web Audio API) di momen-momen penting (kirim GO, terima permintaan, chat)
 - **PWA installable**: bisa di-"Add to Home Screen" di iPhone/Android, jalan full-screen kayak app native
-- **Dwibahasa**: full Indonesia/English lewat toggle di halaman Akun
+- **Dwibahasa**: full Indonesia/English lewat toggle di halaman Akun, dan juga di halaman login
+- **Mode demo**: bisa dicoba tanpa akun (masuk sebagai Driver atau Penumpang), datanya terpisah dari akun asli, dengan pop up sambutan yang ngejelasin cara nyobainnya
 - **Tema visual custom**: desain gelap terinspirasi Spider-Man (bukan reproduksi logo/karakter berlisensi), font custom, efek glow
 
 ## Tech Stack
@@ -77,9 +81,11 @@ npm run dev
 
 - [ ] **Level up akun Ojek**: naik level tiap total pendapatan nambah Rp500.000
 - [ ] **Level up akun Penumpang**: dapet reward kosmetik, kemungkinan juga diskon (mekanisme naik level dan bentuk rewardnya belum ditentuin)
-- [ ] **Quick chat dengan slide hold**: kirim pesan cepat lewat gestur tahan dan geser
 - [ ] **History chat**: riwayat percakapan Ojek dan Penumpang
-- [ ] **Upload foto di chat**, dengan tampilan bertema Spider-Man
+- [ ] **Deteksi spam GO/batal**: kalau terlalu sering (3 aksi dalam 10 detik), ada suara peringatan dan tombol GO ditahan sebentar
+- [ ] **Efek suara di tiap tombol** ala game
+- [ ] **Posisi bubble otomatis**: bubble pindah sisi kalau nutupin karakter lawan atau mepet tepi layar
+- [ ] Voice line tambahan: pesanan diterima, ditolak, live location nyala, perjalanan selesai
 - [ ] **Tema kedua "Pixel Modern (Spider-Man)"** dan pilihan ganti tema di halaman Settings (desain dibuat dulu; warna sebagian besar udah lewat CSS variables dan `--font-pixel` udah disiapin)
 - [ ] **Marker lokasi custom** (kantor/kampus/rumah) tambahan di peta (draft datanya ada di `src/lib/lokasiPOI.js`, belum dipakai)
 - [ ] Eksplorasi pakai komponen UI dari library berbasis TSX (perlu dikonversi ke JSX, dan dicek apakah butuh Tailwind)
@@ -87,7 +93,7 @@ npm run dev
 ### Perbaikan teknis
 
 - [ ] Konfirmasi final security rules Firestore dan Realtime Database (disetting di Firebase Console, bukan di repo)
-- [ ] Hapus dependency `react-router-dom` yang udah gak dipakai
+- [ ] Suara pengingat keberangkatan masih pakai bunyi chat sementara (belum ada file khusus)
 - [ ] Pantau rilis `firebase-admin` buat nutup 10 vulnerability level moderate dari `uuid` (`npm audit`)
 
 ### Selesai
@@ -97,6 +103,11 @@ npm run dev
 - [x] Mode demo terisolasi dari data akun utama
 - [x] Ganti icon profil dan warna glow buat Ojek dan Penumpang
 - [x] Atur jadwal sendiri dari akun Ojek
+- [x] Quick chat dengan tahan karakter di peta
+- [x] Kirim foto di chat, tampil sebagai bubble 4:3 bertema pixel-art
+- [x] Suara asisten AI dan pengaturan mode suara
+- [x] Pop up sambutan di mode demo dan pilihan bahasa di halaman login
+- [x] Hapus dependency `react-router-dom` yang udah gak dipakai
 
 ## Dibuat oleh
 

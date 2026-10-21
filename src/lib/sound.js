@@ -51,7 +51,6 @@ function getAudioCtx() {
 let spiderBuffer = null
 let notifSelesaiBuffer = null
 let chatBuffer = null
-let reminderBuffer = null
 let missionSuccessBuffer = null
 // Suara asisten AI (voice line). Satu entri per kalimat.
 const URL_SUARA_AI = {
@@ -83,10 +82,6 @@ async function muatNotifSelesaiBuffer() {
 
 async function muatChatBuffer() {
   chatBuffer = await muatBuffer('/sounds/chat.mp3')
-}
-
-async function muatReminderBuffer() {
-  reminderBuffer = await muatBuffer('/sounds/reminder.mp3')
 }
 
 async function muatMissionSuccessBuffer() {
@@ -176,7 +171,6 @@ if (typeof window !== 'undefined') {
   muatSpiderBuffer()
   muatNotifSelesaiBuffer()
   muatChatBuffer()
-  muatReminderBuffer()
   muatMissionSuccessBuffer()
   Object.keys(URL_SUARA_AI).forEach(muatSuaraAi)
 
@@ -266,26 +260,11 @@ export async function playChatSound() {
   return true
 }
 
-export async function playReminderSound() {
-  if (!efekBoleh()) return false
-  const ctx = getAudioCtx()
-
-  if (!reminderBuffer) {
-    await muatReminderBuffer()
-  }
-  if (!reminderBuffer) return false
-
-  if (ctx.state === 'suspended') {
-    await ctx.resume()
-  }
-
-  if (ctx.state !== 'running') {
-    antrikanSuara('playReminderSound')
-    return false
-  }
-
-  putarBuffer(reminderBuffer)
-  return true
+// Pengingat keberangkatan. Belum punya file suara sendiri (reminder.mp3 gak
+// pernah ada), jadi sementara pakai bunyi chat. Kalau nanti ada file khusus,
+// tambahin lagi buffer-nya di sini.
+export function playReminderSound() {
+  return playChatSound()
 }
 
 export async function playMissionSuccess() {
@@ -424,7 +403,6 @@ const PETA_FUNGSI_SUARA = {
   playSpiderSound,
   playNotifSelesai,
   playChatSound,
-  playReminderSound,
   playMissionSuccess,
   playMisiDiterima,
   playPesanTerkirim,
