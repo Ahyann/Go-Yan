@@ -98,7 +98,7 @@ const s = {
   baris: { display: 'flex', alignItems: 'center', gap: 8 },
   loncengMati: {
     ...dasar,
-    color: '#8B96B4',
+    color: 'var(--text-dim)',
     background: 'rgba(255,255,255,0.06)',
     border: '1px solid var(--blue-border)',
   },
