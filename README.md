@@ -1,6 +1,6 @@
 # Go-Yan 
 
-**Aplikasi ojek pribadi** yang dibangun buat kebutuhan nyata sehari-hari: nganter-jemput sepupu ke kampus/kantor. Dua peran (Ojek & Penumpang), data real-time, live GPS 2 arah, dan tema visual terinspirasi Spider-Man. Dibangun dari nol sebagai proyek belajar frontend development.
+**Aplikasi ojek pribadi** buat nganter-jemput sepupu saya ke kampus dan kantor. Ada dua peran (Ojek dan Penumpang), GPS live dua arah, dan tema gelap bergaya Spider-Man. Saya bangun dari nol buat belajar frontend.
 
 🔗 **Live demo:** [go-yan.vercel.app](https://go-yan.vercel.app)
 
@@ -13,25 +13,24 @@
 
 ## Kenapa proyek ini dibuat
 
-Ini bukan proyek "clone Gojek" generik, ini beneran dipakai buat koordinasi jemput-antar antara saya (Ojek) dan sepupu saya (Penumpang) tiap minggu. Karena cuma 2 pengguna, saya bisa fokus ke detail pengalaman yang biasanya dikorbankan di proyek besar: animasi halus, feedback real-time, dan UI yang kerasa "hidup".
+Ini bukan clone Gojek. Saya dan sepupu saya beneran pakai app ini tiap minggu buat atur jemput-antar. Penggunanya cuma dua orang, jadi saya sempat ngerjain detail yang biasanya dilewat di proyek besar, misalnya animasi, bubble chat di peta, dan suara asisten.
 
 ## Fitur
 
-- **Autentikasi berbasis peran**: 1 akun Ojek, 1 akun Penumpang, tampilan & kemampuan beda total
+- **Login berbasis peran**: satu akun Ojek dan satu akun Penumpang, tampilan dan kemampuannya beda
 - **Permintaan perjalanan real-time**: Penumpang kirim "GO" (jemput/antar + lokasi + jam), Ojek terima/tolak, status ke-sync otomatis di kedua sisi tanpa refresh (Firestore listener)
 - **GPS live 2 arah**: Ojek bisa share lokasi ke Penumpang saat otw, dan sebaliknya Penumpang bisa share lokasi ke Ojek, ditampilin di peta interaktif (Leaflet + MapTiler)
 - **Push notification**: notifikasi tetap masuk walau app ketutup (Firebase Cloud Messaging), plus popup in-app kalau lagi buka app di tab lain
 - **Jadwal mingguan**: Penumpang atur jadwal antar-jemput per hari, otomatis reset tiap Sabtu jam 12, Ojek bisa lihat & tandai selesai
-- **Riwayat & tagihan**: pencatatan tiap perjalanan, status lunas/belum, filter per bulan, dan **swipe-to-delete** buat hapus entri
-- **Status peta yang hidup**: badge status (siap jalan, ditolak, diterima) pake animasi ketik dan icon profil yang bisa diganti-ganti
+- **Riwayat & tagihan**: tiap perjalanan tercatat dengan status lunas atau belum, bisa difilter per bulan. Ojek geser kartu ke kiri buat edit atau hapus
+- **Status di peta**: badge status (siap jalan, ditolak, diterima) muncul dengan animasi ketik, dan icon profil bisa diganti
 - **Chat di peta**: pesan muncul sebagai bubble pixel-art di atas karakter masing-masing, bisa teks atau **foto** (diambil langsung dari kamera di dalam app, dikompres di HP, tampil 4:3 di dalam bingkai bubble)
 - **Quick chat**: tahan karakter sendiri di peta, geser ke pesan yang mau dikirim di roda, lepas buat kirim
 - **Suara asisten AI**: voice line bergaya radio di momen penting (terima misi, kirim pesanan, batal), diputar bergiliran dengan efek suara lewat Web Audio API, dan ada **mode suara** (normal, tanpa voice over, senyap) di halaman Akun
-- **Sound effect & animasi custom**: efek suara & animasi kustom (Web Audio API) di momen-momen penting (kirim GO, terima permintaan, chat)
 - **PWA installable**: bisa di-"Add to Home Screen" di iPhone/Android, jalan full-screen kayak app native
 - **Dwibahasa**: full Indonesia/English lewat toggle di halaman Akun, dan juga di halaman login
 - **Mode demo**: bisa dicoba tanpa akun (masuk sebagai Driver atau Penumpang), datanya terpisah dari akun asli, dengan pop up sambutan yang ngejelasin cara nyobainnya
-- **Tema visual custom**: desain gelap terinspirasi Spider-Man (bukan reproduksi logo/karakter berlisensi), font custom, efek glow
+- **Tema visual sendiri**: desain gelap dengan font custom dan efek glow, terinspirasi Spider-Man tapi bukan reproduksi logo atau karakter berlisensi
 
 ## Tech Stack
 
@@ -113,4 +112,4 @@ npm run dev
 
 **Ahyan Nubaid**, Mahasiswa S1 Informatika, UPN Veteran Jakarta. Frontend Developer, KSM Veteran Tech.
 
-Proyek ini dibangun step-by-step dengan bimbingan AI (Claude) sebagai bagian dari proses belajar, dari fondasi React sampai deployment production, termasuk debugging masalah nyata (CSS layout, iOS Safari quirks, integrasi API pihak ketiga).
+Saya bangun proyek ini bertahap dengan bantuan AI (Claude) sebagai bagian dari belajar, dari dasar React sampai deploy. Di jalan saya ketemu masalah nyata: layout CSS, keanehan iOS Safari, dan integrasi API pihak ketiga.
