@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { debugAktif, gantiDebug } from '../lib/debugLog'
 import PengaturanSuara from '../components/PengaturanSuara.jsx'
+import PilihBahasa from '../components/PilihBahasa.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { ROLE } from '../lib/constants'
@@ -27,7 +28,7 @@ function ketukBuild() {
 
 export default function AccountTab() {
   const { user, logout, isDemo } = useAuth()
-  const { lang, setLang, t } = useLanguage()
+  const { t } = useLanguage()
   const [status, setStatus] = useState('') // '', 'loading', 'ok', 'gagal'
   const [pesanError, setPesanError] = useState('')
   const { ikonFajri, pilihIkonFajri } = useProfilIkon()
@@ -81,6 +82,7 @@ export default function AccountTab() {
 
   return (
     <main style={s.wrap}>
+      <PilihBahasa style={s.bahasa} />
       <header style={s.header}>
         <div style={s.eyebrow}>{t.akunEyebrow}</div>
         <h1 style={s.title}>{t.akunTitle}</h1>
@@ -126,24 +128,6 @@ export default function AccountTab() {
           {status === 'ok' ? t.notifikasiAktif : status === 'loading' ? t.memproses : t.aktifkanNotifikasi}
         </button>
         {status === 'gagal' && <div style={s.notifError}>{pesanError}</div>}
-      </section>
-
-      <section style={s.card}>
-        <div style={s.label}>{t.bahasaLabel}</div>
-        <div style={s.bahasaRow}>
-          <button
-            style={lang === 'id' ? s.bahasaBtnAktif : s.bahasaBtn}
-            onClick={() => setLang('id')}
-          >
-            Indonesia
-          </button>
-          <button
-            style={lang === 'en' ? s.bahasaBtnAktif : s.bahasaBtn}
-            onClick={() => setLang('en')}
-          >
-            English
-          </button>
-        </div>
       </section>
 
       <PengaturanSuara />
@@ -311,6 +295,7 @@ function CarouselIkon({ pilihan, ikonAktif, onHalamanChange }) {
 
 const s = {
   wrap: {
+    position: 'relative',
     minHeight: '100%',
     padding: 'calc(var(--safe-top) + 24px) 20px 110px',
     maxWidth: 480,
@@ -402,26 +387,11 @@ const s = {
     border: '1px solid var(--signal)',
   },
   notifError: { fontSize: 12, color: 'var(--web-red)', marginTop: 8, textAlign: 'center' },
-  bahasaRow: { display: 'flex', gap: 10 },
-  bahasaBtn: {
-    flex: 1,
-    background: 'rgba(255,255,255,0.06)',
-    color: '#8FB4DC',
-    fontSize: 14,
-    fontWeight: 600,
-    padding: '12px',
-    borderRadius: 999,
-    border: '1px solid var(--blue-border)',
-  },
-  bahasaBtnAktif: {
-    flex: 1,
-    background: 'rgba(94,208,255,0.15)',
-    color: 'var(--glow-blue)',
-    fontSize: 14,
-    fontWeight: 600,
-    padding: '12px',
-    borderRadius: 999,
-    border: '1px solid var(--glow-blue-mid)',
+  // Pilihan bahasa di pojok kanan atas, sejajar dengan judul halaman.
+  bahasa: {
+    position: 'absolute',
+    top: 'calc(var(--safe-top) + 24px)',
+    right: 20,
   },
   idBuild: {
     textAlign: 'center',
