@@ -1,11 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { debugAktif, gantiDebug } from '../lib/debugLog'
 import PengaturanSuara from '../components/PengaturanSuara.jsx'
-import PilihBahasa from '../components/PilihBahasa.jsx'
+import PojokPengaturan from '../components/PojokPengaturan.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { ROLE } from '../lib/constants'
-import { mintaIzinDanSimpanToken, matikanNotifikasi, cekStatusNotifikasi } from '../lib/notifikasi'
 import { useProfilIkon } from '../lib/useProfilIkon'
 import { useWarnaGlow } from '../lib/useWarnaGlow'
 import { WARNA_GLOW_PRESET, ambilWarnaGlow } from '../lib/warnaGlow'
@@ -29,8 +28,6 @@ function ketukBuild() {
 export default function OjekAccountTab() {
   const { user, logout, isDemo } = useAuth()
   const { t } = useLanguage()
-  const [status, setStatus] = useState('')
-  const [pesanError, setPesanError] = useState('')
   const { ikonAhyan, pilihIkonAhyan } = useProfilIkon()
   const { warnaAhyan, pilihWarnaAhyan } = useWarnaGlow()
   const warnaAktif = ambilWarnaGlow(warnaAhyan)
@@ -41,48 +38,9 @@ export default function OjekAccountTab() {
     if (showPilihIkon) setPilihanSementara(ikonAhyan)
   }, [showPilihIkon, ikonAhyan])
 
-  useEffect(() => {
-    if (!user) return
-    cekStatusNotifikasi(user.uid).then((aktif) => {
-      if (aktif) setStatus('ok')
-    })
-  }, [user])
-
-  async function handleAktifkanNotif() {
-    setStatus('loading')
-    setPesanError('')
-    const hasil = await mintaIzinDanSimpanToken(user.uid, ROLE.OJEK)
-    if (hasil.berhasil) {
-      setStatus('ok')
-    } else {
-      setStatus('gagal')
-      setPesanError(hasil.alasan)
-    }
-  }
-
-  async function handleMatikanNotif() {
-    setStatus('loading')
-    setPesanError('')
-    const hasil = await matikanNotifikasi(user.uid)
-    if (hasil.berhasil) {
-      setStatus('')
-    } else {
-      setStatus('ok')
-      setPesanError(hasil.alasan)
-    }
-  }
-
-  function handleToggleNotif() {
-    if (status === 'ok') {
-      handleMatikanNotif()
-    } else {
-      handleAktifkanNotif()
-    }
-  }
-
   return (
     <main style={s.wrap}>
-      <PilihBahasa style={s.bahasa} />
+      <PojokPengaturan role={ROLE.OJEK} />
       <header style={s.header}>
         <div style={s.eyebrow}>{t.akunEyebrow}</div>
         <h1 style={s.title}>{t.akunTitle}</h1>
@@ -116,19 +74,6 @@ export default function OjekAccountTab() {
             <div style={s.email}>{isDemo ? t.namaDemo : 'Ahyan'}</div>
           </div>
         </div>
-      </section>
-
-      <section style={s.card}>
-        <div style={s.label}>{t.notifikasiLabel}</div>
-        <div style={s.notifDesc}>{t.notifikasiDesc}</div>
-        <button
-          style={status === 'ok' ? s.notifBtnOk : s.notifBtn}
-          onClick={handleToggleNotif}
-          disabled={status === 'loading'}
-        >
-          {status === 'ok' ? t.notifikasiAktif : status === 'loading' ? t.memproses : t.aktifkanNotifikasi}
-        </button>
-        {status === 'gagal' && <div style={s.notifError}>{pesanError}</div>}
       </section>
 
       <PengaturanSuara />
@@ -365,33 +310,7 @@ const s = {
   },
   label: { fontSize: 12.5, color: '#9FC3E8', marginBottom: 6 },
   email: { fontSize: 15, color: 'var(--text)', fontWeight: 600 },
-  notifDesc: { fontSize: 13, color: '#8FB4DC', marginBottom: 14, lineHeight: 1.4 },
-  notifBtn: {
-    width: '100%',
-    background: 'var(--glow-blue-mid)',
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: 600,
-    padding: '13px',
-    borderRadius: 999,
-  },
-  notifBtnOk: {
-    width: '100%',
-    background: 'rgba(74,222,128,0.15)',
-    color: 'var(--signal)',
-    fontSize: 14,
-    fontWeight: 600,
-    padding: '13px',
-    borderRadius: 999,
-    border: '1px solid var(--signal)',
-  },
-  notifError: { fontSize: 12, color: 'var(--web-red)', marginTop: 8, textAlign: 'center' },
-  // Pilihan bahasa di pojok kanan atas, sejajar dengan judul halaman.
-  bahasa: {
-    position: 'absolute',
-    top: 'calc(var(--safe-top) + 24px)',
-    right: 20,
-  },
+
   idBuild: {
     textAlign: 'center',
     fontSize: 10,
