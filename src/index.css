@@ -487,9 +487,7 @@ button {
 .sp-kartu::after {
   content: '';
   position: absolute;
-  /* Di layar penuh, bingkai mulai di bawah area poni/status bar supaya sudut layar iPhone yang membulat tidak memotong garis neonnya;
-     sudut bawah tertutup dock. Di perangkat tanpa poni nilainya 0, jadi tampilannya tidak berubah. */
-  inset: var(--bingkai-atas, 0px) 0 0 0;
+  inset: 0;
   pointer-events: none;
   box-shadow: inset 0 0 0 2px rgb(var(--neon)), inset 0 0 14px 2px rgba(var(--neon), 0.65), inset 0 0 40px rgba(var(--neon), 0.25);
   animation: sp-neon 2.4s ease-in-out infinite;

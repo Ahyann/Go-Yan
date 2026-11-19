@@ -288,7 +288,7 @@ const REAKSI = [
   { nama: 'getar', gelembung: 'titik', durasi: 550, easing: 'linear', kf: [{ transform: 'rotate(0)' }, { transform: 'rotate(-1.6deg)', offset: 0.12 }, { transform: 'rotate(1.6deg)', offset: 0.3 }, { transform: 'rotate(-1.6deg)', offset: 0.48 }, { transform: 'rotate(1.3deg)', offset: 0.66 }, { transform: 'rotate(-0.6deg)', offset: 0.85 }, { transform: 'rotate(0)' }] },
 ]
 
-export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalkan = false, menyusut = false, isDemo = false, teks = null, gayaTolak = false, tepiLayar = true }) {
+export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalkan = false, menyusut = false, isDemo = false, teks = null, gayaTolak = false }) {
   const { t } = useLanguage()
   const [sekarang, setSekarang] = useState(() => Date.now())
 
@@ -390,7 +390,7 @@ export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalka
     <div
       ref={refKartu}
       className={`sp-kartu${diterima ? ' sp-diterima' : ''}${dibatalkan ? ' sp-batal' : ''}${dibatalkan && gayaTolak ? ' sp-tolak' : ''}${menyusut ? ' sp-susut' : ''}`}
-      style={{ ...s.kartu, height: menyusut ? 0 : tinggiPenuh, bottom: -bawahDock, '--bingkai-atas': tepiLayar ? 'var(--safe-top)' : '0px' }}
+      style={{ ...s.kartu, height: menyusut ? 0 : tinggiPenuh, bottom: -bawahDock }}
       role="status"
     >
       {/* Logo laba-laba dari layar pembuka sebagai latar. Masuk: kotak meledak dari tengah. Diterima: menyala
