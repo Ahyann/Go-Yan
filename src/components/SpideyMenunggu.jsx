@@ -44,7 +44,7 @@ function LogoLatar({ sk, lebar, tinggi, mode }) {
   useEffect(() => {
     const kanvas = refKanvas.current
     if (!kanvas) return undefined
-    const dpr = Math.min(window.devicePixelRatio || 1, 2)
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5)
     kanvas.width = Math.round(lebar * dpr)
     kanvas.height = Math.round(tinggi * dpr)
     const ctx = kanvas.getContext('2d')
@@ -54,7 +54,11 @@ function LogoLatar({ sk, lebar, tinggi, mode }) {
     const ox = lebar / 2 - (KOLOM * sk) / 2
     const oy = tinggi * 0.47 - (BARIS_LABA * sk) / 2
     let id = 0
+    let terakhir = 0
     const gambar = (now) => {
+      // saat menunggu (pita cahaya saja) cukup 30 gambar per detik supaya HP tidak bekerja berlebihan
+      if (mode === 'masuk' && now - mulai > 2400 && now - terakhir < 33) { id = requestAnimationFrame(gambar); return }
+      terakhir = now
       const t = kurangGerak ? 99 : (now - mulai) / 1000
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
       ctx.clearRect(0, 0, lebar, tinggi)

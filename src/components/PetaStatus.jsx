@@ -655,7 +655,7 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
         <PenunjukKarakter posisi={posisiSayaMarker} ikon={{ file: ikonFajri, w: 16, h: 24 }} label={t.ariaKembaliKarakterSaya} bawah={bawahTertutup} />
         {adaPosisiOjek && <PenunjukKarakter posisi={posisiOjekMarker} ikon={{ file: ikonAhyan, w: 24, h: 24 }} label={t.ariaKembaliLokasiDriver} bawah={bawahTertutup} />}
 
-        <TileLayer updateWhenIdle={false} keepBuffer={3}
+        <TileLayer
           maxNativeZoom={20}
           maxZoom={22}
           url={`https://api.maptiler.com/maps/streets-v4-dark/{z}/{x}/{y}.png?key=${import.meta.env.VITE_MAPTILER_KEY}`}

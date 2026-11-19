@@ -225,7 +225,7 @@ export default function PetaLokasiPenumpang({
         <PusatkanKeSaya sinyal={sinyalLive} posisi={posisiSayaMarker} />
         <PantauUkuran />
 
-        <TileLayer updateWhenIdle={false} keepBuffer={3}
+        <TileLayer
           maxNativeZoom={20}
           maxZoom={22}
           url={`https://api.maptiler.com/maps/streets-v4-dark/{z}/{x}/{y}.png?key=${import.meta.env.VITE_MAPTILER_KEY}`}
