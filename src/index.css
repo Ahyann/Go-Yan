@@ -38,6 +38,11 @@
 
 html, body, #root { height: 100%; }
 
+/* iPhone otomatis memperbesar halaman saat input berukuran huruf < 16px difokus, dan zoom itu tidak kembali
+   setelah keyboard tertutup (layar jadi terpotong). 16px mencegah zoom itu. */
+input, textarea, select { font-size: 16px !important; }
+input::placeholder, textarea::placeholder { font-size: 16px; }
+
 html {
   background: var(--bg);
 }
@@ -397,7 +402,7 @@ button {
 .gelembung-mendarat { animation: gelembung-mendarat 0.32s cubic-bezier(0.34, 1.45, 0.64, 1) both; }
 
 /* Huruf kolom ketik tetap 16px (supaya iPhone tidak memperbesar halaman), tapi teks petunjuknya lebih kecil. */
-.input-pesan::placeholder { font-size: 13px; color: #7C8AA8; opacity: 1; }
+.input-pesan::placeholder { font-size: 14px; color: #7C8AA8; opacity: 1; }
 
 /* Kapsul notifikasi chat masuk: turun dari atas layar, tetap di tengah. */
 @keyframes notif-turun {

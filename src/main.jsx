@@ -27,11 +27,18 @@ document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible') setTinggiLagi()
 })
 // Setelah keyboard/pop up input tertutup, kembalikan halaman ke posisi semula dan hitung ulang tinggi.
+// Keyboard iPhone butuh ~0,4 detik untuk turun, jadi posisi dikembalikan beberapa kali.
 document.addEventListener('focusout', () => {
-  setTimeout(() => {
-    window.scrollTo(0, 0)
-    setTinggiLagi()
-  }, 100)
+  ;[100, 350, 700].forEach((ms) =>
+    setTimeout(() => {
+      const el = document.activeElement
+      if (el && /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName)) return
+      window.scrollTo(0, 0)
+      document.documentElement.scrollTop = 0
+      document.body.scrollTop = 0
+      setTinggiApp()
+    }, ms)
+  )
 })
 
 pantauVersiBaru()
