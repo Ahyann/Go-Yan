@@ -158,10 +158,13 @@ export default function PenumpangView({
 
   async function handleKirimGo({ aksi, where, waktu }) {
     playPesanTerkirim()
+    // Popup langsung ditutup tanpa menunggu Firebase: saat app baru dibuka koneksinya masih dingin dan kiriman bisa
+    // makan beberapa detik. Kalau gagal, popup dibuka lagi dengan pesan error.
+    setShowGo(false)
     try {
       await kirimGo({ aksi, where, waktu })
-      setShowGo(false)
     } catch (err) {
+      setShowGo(true)
       console.error('Gagal kirim GO:', err)
       alert('Gagal kirim permintaan: ' + err.message)
     }

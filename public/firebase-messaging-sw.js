@@ -45,3 +45,41 @@ messaging.onBackgroundMessage(async (payload) => {
   }
   self.registration.showNotification(judul, opsi)
 })
+
+// ---- Cache gambar peta (MapTiler) ----
+// Kotak peta yang sudah pernah dibuka disimpan di perangkat, jadi buka app berikutnya tidak perlu mengunduh
+// ulang lewat internet HP. Cache-first; diminta ulang dengan mode CORS supaya hasilnya bisa disimpan tanpa
+// memakan kuota berlebih (respons "opaque" dihitung jauh lebih besar oleh browser).
+const CACHE_PETA = 'go-yan-peta-v1'
+const BATAS_KOTAK = 900
+
+self.addEventListener('install', () => self.skipWaiting())
+self.addEventListener('activate', (event) => event.waitUntil(self.clients.claim()))
+
+async function ambilKotak(request) {
+  const cache = await caches.open(CACHE_PETA)
+  const tersimpan = await cache.match(request.url)
+  if (tersimpan) return tersimpan
+  try {
+    const respons = await fetch(request.url, { mode: 'cors', credentials: 'omit' })
+    if (respons.ok) {
+      cache.put(request.url, respons.clone())
+      // jaga ukuran cache: buang yang paling lama kalau kebanyakan
+      cache.keys().then((kunci) => {
+        if (kunci.length > BATAS_KOTAK) kunci.slice(0, kunci.length - BATAS_KOTAK).forEach((k) => cache.delete(k))
+      })
+    }
+    return respons
+  } catch {
+    return fetch(request)
+  }
+}
+
+self.addEventListener('fetch', (event) => {
+  const { request } = event
+  if (request.method !== 'GET') return
+  const url = new URL(request.url)
+  if (url.hostname === 'api.maptiler.com' && url.pathname.includes('/maps/')) {
+    event.respondWith(ambilKotak(request))
+  }
+})

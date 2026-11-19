@@ -418,8 +418,8 @@ button {
 .sp-napas { animation: sp-napas 4.4s ease-in-out infinite; }
 .sp-diterima .sp-napas, .sp-batal .sp-napas { animation: none; }
 /* benang satu batang: ujung atasnya diam di jangkar, ujung bawahnya ikut turun-naik bersama badan */
-@keyframes sp-napas-tali { 0%, 100% { height: 2088px; } 50% { height: 2100px; } }
-.sp-benang { animation: sp-napas-tali 4.4s ease-in-out infinite; }
+@keyframes sp-napas-tali { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(1.0058); } }
+.sp-benang { transform-origin: 50% 0; animation: sp-napas-tali 4.4s ease-in-out infinite; }
 .sp-diterima .sp-benang, .sp-batal .sp-benang { animation: none; }
 /* hanya kepala yang menengok (berbalik kiri-kanan), badan diam */
 @keyframes sp-tengok { 0%, 30% { transform: scaleX(1); } 33%, 62% { transform: scaleX(-1); } 65%, 100% { transform: scaleX(1); } }

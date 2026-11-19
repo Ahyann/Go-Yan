@@ -23,6 +23,13 @@ document.addEventListener('visibilitychange', () => {
 
 pantauVersiBaru()
 
+// Service worker yang sama dengan notifikasi; di dalamnya ada cache gambar peta supaya peta cepat terbuka di kunjungan berikutnya.
+if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/firebase-messaging-sw.js').catch(() => {})
+  })
+}
+
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <App />

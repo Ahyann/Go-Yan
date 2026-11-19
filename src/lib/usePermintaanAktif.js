@@ -57,7 +57,9 @@ export function usePermintaanAktif() {
   }, [permintaan, REF])
 
   async function kirimGo({ aksi, where, waktu }) {
-    await bersihkanSemuaPesan(isDemo)
+    // Pembersihan chat lama jalan bersamaan dengan pembuatan permintaan (bukan satu per satu), supaya kartu
+    // Spiderman langsung muncul dan tidak menunggu dua penghapusan lewat jaringan dulu.
+    const bersih = bersihkanSemuaPesan(isDemo).catch(() => {})
     await setDoc(REF, {
       aksi,
       where,
@@ -65,6 +67,7 @@ export function usePermintaanAktif() {
       status: STATUS_PERMINTAAN.MENUNGGU,
       dibuatPada: Date.now(),
     })
+    await bersih
     if (!isDemo) {
       kirimNotifikasi(
         'ojek',

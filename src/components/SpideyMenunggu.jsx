@@ -12,20 +12,134 @@ function acak(i, k = 1) {
   return x - Math.floor(x)
 }
 
-// Gaya tiap kotak logo (satuan = 1 kotak): arah meledak dari tengah saat masuk, arah melayang naik saat
+// Parameter gerak tiap kotak logo (satuan = 1 kotak): arah meledak dari tengah saat masuk, arah melayang naik saat
 // diterima, dan arah jatuh berputar saat dibatalkan, beserta jeda masing-masing supaya tidak serempak.
-const GAYA_KOTAK = KOTAK_LABA.map(({ r, c }, n) => ({
-  '--x': `${((c - 8.5) * -0.75).toFixed(2)}px`,
-  '--y': `${((r - 11) * -0.75).toFixed(2)}px`,
-  '--d-masuk': `${(0.3 + Math.hypot(r - 11, c - 8.5) * 0.05).toFixed(2)}s`,
-  '--naik': `${(-14 - acak(n) * 11).toFixed(1)}px`,
-  '--geser': `${((acak(n, 3) - 0.5) * 5).toFixed(1)}px`,
-  '--d-ok': `${((22 - r) * 0.02).toFixed(2)}s`,
-  '--jatuh': `${(22 + acak(n, 2) * 10).toFixed(1)}px`,
-  '--putar': `${Math.round((acak(n, 7) - 0.5) * 240)}deg`,
-  '--sisi': `${((acak(n, 8) - 0.5) * 6).toFixed(1)}px`,
-  '--d-gagal': `${(acak(n, 5) * 0.5 + r * 0.01).toFixed(2)}s`,
+const PARAM_KOTAK = KOTAK_LABA.map(({ r, c }, n) => ({
+  r,
+  c,
+  x: (c - 8.5) * -0.75,
+  y: (r - 11) * -0.75,
+  dMasuk: 0.3 + Math.hypot(r - 11, c - 8.5) * 0.05,
+  naik: -14 - acak(n) * 11,
+  geser: (acak(n, 3) - 0.5) * 5,
+  dOk: (22 - r) * 0.02,
+  jatuh: 22 + acak(n, 2) * 10,
+  putar: ((acak(n, 7) - 0.5) * 240 * Math.PI) / 180,
+  sisi: (acak(n, 8) - 0.5) * 6,
+  dGagal: acak(n, 5) * 0.5 + r * 0.01,
 }))
+
+const biru = [158, 230, 255]
+const putih = [255, 255, 255]
+const hijau = [74, 222, 128]
+const merah = [255, 90, 90]
+const campur = (a, b, u) => `rgb(${Math.round(a[0] + (b[0] - a[0]) * u)},${Math.round(a[1] + (b[1] - a[1]) * u)},${Math.round(a[2] + (b[2] - a[2]) * u)})`
+
+// Logo laba-laba latar digambar di SATU kanvas (bukan ratusan elemen SVG yang masing-masing dianimasikan, yang
+// berat sekali di HP). Tiga keadaan: masuk (kotak meledak dari tengah lalu pita cahaya menyapu), diterima (menyala
+// hijau lalu melayang naik), dibatalkan (memerah, bergetar, lalu berjatuhan).
+function LogoLatar({ sk, lebar, tinggi, mode }) {
+  const refKanvas = useRef(null)
+  const refMulai = useRef({ mode: null, t: 0 })
+  useEffect(() => {
+    const kanvas = refKanvas.current
+    if (!kanvas) return undefined
+    const dpr = Math.min(window.devicePixelRatio || 1, 2)
+    kanvas.width = Math.round(lebar * dpr)
+    kanvas.height = Math.round(tinggi * dpr)
+    const ctx = kanvas.getContext('2d')
+    const kurangGerak = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    if (refMulai.current.mode !== mode) refMulai.current = { mode, t: performance.now() }
+    const mulai = refMulai.current.t
+    const ox = lebar / 2 - (KOLOM * sk) / 2
+    const oy = tinggi * 0.47 - (BARIS_LABA * sk) / 2
+    let id = 0
+    const gambar = (now) => {
+      const t = kurangGerak ? 99 : (now - mulai) / 1000
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+      ctx.clearRect(0, 0, lebar, tinggi)
+      let hidup = false
+      // posisi pita cahaya (baris) saat menunggu
+      let yPita = null
+      if (mode === 'masuk' && t >= 1.7) {
+        const fase = ((t - 1.7) % 4.2) / 4.2
+        const k = Math.min(fase / 0.7, 1)
+        yPita = -10 + 33 * ((1 - Math.cos(Math.PI * k)) / 2)
+      }
+      for (const g of PARAM_KOTAK) {
+        let tx = 0, ty = 0, skala = 1, rot = 0, alfa = 1, warna = campur(biru, biru, 0)
+        if (mode === 'masuk') {
+          const p = (t - g.dMasuk) / 1.1
+          if (p < 0) { hidup = true; continue }
+          if (p < 0.4) { const u = p / 0.4; tx = g.x * (1 - u); ty = g.y * (1 - u); skala = 1.4 * u }
+          else if (p < 0.6) skala = 1.4 - 0.4 * ((p - 0.4) / 0.2)
+        } else if (mode === 'diterima') {
+          const p = (t - g.dOk) / 1.8
+          if (p >= 1) continue
+          hidup = true
+          const q = Math.max(p, 0)
+          if (q < 0.15) warna = campur(biru, putih, q / 0.15)
+          else if (q < 0.3) warna = campur(putih, hijau, (q - 0.15) / 0.15)
+          else warna = campur(hijau, hijau, 0)
+          if (q < 0.3) skala = 1 + 0.25 * (q / 0.3)
+          else if (q < 0.45) skala = 1.25 - 0.25 * ((q - 0.3) / 0.15)
+          else { const u = (q - 0.45) / 0.55; alfa = 1 - u; tx = g.geser * u; ty = g.naik * u }
+        } else {
+          const p = (t - g.dGagal) / 2.4
+          if (p >= 1) continue
+          hidup = true
+          const q = Math.max(p, 0)
+          if (q < 0.12) { warna = campur(biru, merah, q / 0.12); tx = -0.25 * (q / 0.12); ty = 0.12 * (q / 0.12) }
+          else if (q < 0.36) {
+            warna = campur(merah, merah, 0)
+            const geser = [[0.12, -0.25, 0.12], [0.18, 0.25, -0.12], [0.24, -0.25, 0], [0.3, 0.25, 0.12], [0.36, 0, 0]]
+            const i = geser.findIndex((k) => q < k[0])
+            const dari = geser[i - 1] || geser[0]
+            const ke = geser[i]
+            const u = (q - dari[0]) / (ke[0] - dari[0])
+            tx = dari[1] + (ke[1] - dari[1]) * u
+            ty = dari[2] + (ke[2] - dari[2]) * u
+          } else {
+            warna = campur(merah, merah, 0)
+            const u = (q - 0.36) / 0.64
+            alfa = 1 - u
+            tx = g.sisi * u
+            ty = g.jatuh * u
+            rot = g.putar * u
+          }
+        }
+        const cx = ox + (g.c + 0.5 + tx) * sk
+        const cy = oy + (g.r + 0.5 + ty) * sk
+        const ukuran = 1.04 * sk * skala
+        ctx.globalAlpha = alfa
+        ctx.fillStyle = warna
+        if (rot) {
+          ctx.save()
+          ctx.translate(cx, cy)
+          ctx.rotate(rot)
+          ctx.fillRect(-ukuran / 2, -ukuran / 2, ukuran, ukuran)
+          ctx.restore()
+        } else {
+          ctx.fillRect(cx - ukuran / 2, cy - ukuran / 2, ukuran, ukuran)
+        }
+        if (yPita !== null) {
+          const v = (g.r + 0.5 - yPita) / 10
+          if (v > 0 && v < 1) {
+            ctx.globalAlpha = 1 - Math.abs(2 * v - 1)
+            ctx.fillStyle = '#FFFFFF'
+            ctx.fillRect(cx - ukuran / 2, cy - ukuran / 2, ukuran, ukuran)
+          }
+        }
+      }
+      ctx.globalAlpha = 1
+      if (mode === 'masuk' && !kurangGerak) id = requestAnimationFrame(gambar)
+      else if (hidup) id = requestAnimationFrame(gambar)
+    }
+    id = requestAnimationFrame(gambar)
+    return () => cancelAnimationFrame(id)
+  }, [sk, lebar, tinggi, mode])
+  return <canvas ref={refKanvas} style={{ ...s.logoLatar, width: lebar, height: tinggi }} aria-hidden="true" />
+}
 
 // Kartu "menunggu driver": Spiderman piksel (dari desain Figma) turun dari atas, menggantung
 // sambil kepalanya menengok pelan dan gelembung titik-titik di sampingnya, di atas latar panel setengah
@@ -277,44 +391,7 @@ export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalka
     >
       {/* Logo laba-laba dari layar pembuka sebagai latar. Masuk: kotak meledak dari tengah. Diterima: menyala
           hijau lalu kotaknya melayang naik. Dibatalkan: memerah, bergetar, lalu kotaknya berjatuhan. */}
-      <svg
-        style={s.logoLatar}
-        width={KOLOM * sk}
-        height={BARIS_LABA * sk}
-        viewBox={`0 0 ${KOLOM} ${BARIS_LABA}`}
-        shapeRendering="crispEdges"
-        aria-hidden="true"
-      >
-        <defs>
-          {/* Pita cahaya bertepi lembut yang menyapu logo dari atas ke bawah (satu gradasi mulus, bukan per baris) */}
-          <linearGradient id="sp-grad-pita" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="#000" />
-            <stop offset="0.5" stopColor="#FFF" />
-            <stop offset="1" stopColor="#000" />
-          </linearGradient>
-          <mask id="sp-mask-pita" maskUnits="userSpaceOnUse" x="0" y="-12" width={KOLOM} height={BARIS_LABA + 24}>
-            <rect className="sp-pita" x="0" y="0" width={KOLOM} height="10" fill="url(#sp-grad-pita)" />
-          </mask>
-        </defs>
-        {/* Kotak dibuat sedikit melebar (1,04) supaya tidak ada celah anti-alias berbentuk garis grid di antara kotak yang berdempetan. */}
-        {KOTAK_LABA.map(({ r, c }, n) => (
-          <rect
-            key={`${r}-${c}`}
-            className={diterima ? 'sp-laba-ok' : dibatalkan ? 'sp-laba-gagal' : 'sp-laba-masuk'}
-            style={GAYA_KOTAK[n]}
-            x={c - 0.02}
-            y={r - 0.02}
-            width="1.04"
-            height="1.04"
-            fill="#9EE6FF"
-          />
-        ))}
-        {!diterima && !dibatalkan && (
-          <g mask="url(#sp-mask-pita)" style={{ pointerEvents: 'none' }}>
-            {KOTAK_LABA.map(({ r, c }) => <rect key={`p${r}-${c}`} x={c - 0.02} y={r - 0.02} width="1.04" height="1.04" fill="#FFFFFF" />)}
-          </g>
-        )}
-      </svg>
+      <LogoLatar sk={sk} lebar={lebarPenuh} tinggi={tinggiPenuh} mode={diterima ? 'diterima' : dibatalkan ? 'batal' : 'masuk'} />
 
       <div className="sp-kilau" style={{ opacity: diterima || dibatalkan ? 0 : 1 }} aria-hidden="true" />
 
@@ -439,8 +516,8 @@ export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalka
 const s = {
   jangkar: { position: 'absolute', left: '50%', top: 0, transform: 'translateX(-50%)', filter: 'drop-shadow(0 0 3px rgba(255, 255, 255, 0.6))' },
   pembungkus: { position: 'absolute', inset: 0, pointerEvents: 'none' },
-  kartu: { position: 'absolute', bottom: 0, left: -14, right: -14, boxSizing: 'border-box', overflow: 'hidden', background: 'rgba(1, 42, 64, 0.58)', backdropFilter: 'blur(9px) saturate(1.2)', WebkitBackdropFilter: 'blur(9px) saturate(1.2)', transition: 'height 0.5s cubic-bezier(0.6, 0, 0.2, 1), bottom 0.5s cubic-bezier(0.6, 0, 0.2, 1), left 0.5s cubic-bezier(0.6, 0, 0.2, 1), right 0.5s cubic-bezier(0.6, 0, 0.2, 1)' },
-  logoLatar: { overflow: 'visible', position: 'absolute', left: '50%', top: '47%', transform: 'translate(-50%, -50%)', opacity: 0.3 },
+  kartu: { position: 'absolute', bottom: 0, left: -14, right: -14, boxSizing: 'border-box', overflow: 'hidden', background: 'rgba(1, 42, 64, 0.8)', transition: 'height 0.5s cubic-bezier(0.6, 0, 0.2, 1), bottom 0.5s cubic-bezier(0.6, 0, 0.2, 1), left 0.5s cubic-bezier(0.6, 0, 0.2, 1), right 0.5s cubic-bezier(0.6, 0, 0.2, 1)' },
+  logoLatar: { position: 'absolute', left: 0, top: 0, opacity: 0.3, pointerEvents: 'none' },
   // Poros (benang dan tengah badan) di kolom PAD + 9.5 sprite, diletakkan tepat di tengah kartu.
   spidey: { position: 'absolute', left: `calc(50% - ${(PAD + 9.5) * SKALA}px)`, top: 0 },
   // Benang dibuat sangat panjang ke atas (kartu yang memotongnya di tepi atas), jadi saat Spiderman
