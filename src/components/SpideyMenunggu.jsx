@@ -263,26 +263,24 @@ const SENSE = (() => {
   return hasil
 })()
 
-// Spider sense yang sama (garis patah merah-biru berkedip) di sekeliling BADAN, di luar tepi kain, kecuali tepat di
-// atas tempat benang menempel. Berpusat di tengah badan.
-const PUSAT_BADAN_Y = 13.5
-const SENSE_BADAN = (() => {
-  const hasil = []
-  for (let n = 0; n < 12; n++) {
-    const sudut = (n * 30 + 15) * (Math.PI / 180)
-    const dx = Math.cos(sudut)
-    const dy = Math.sin(sudut)
-    if (dy < -0.8) continue // tepat di atas (benang) dilewati
-    const titik = []
-    for (let k = 0; k <= 4; k++) {
-      const jarak = 11 + k
-      const geser = (k % 2 ? 1 : -1) * 0.85 * (k === 0 || k === 4 ? 0.4 : 1)
-      titik.push(`${(PAD + 9.5 + dx * jarak - dy * geser).toFixed(2)} ${(PUSAT_BADAN_Y + dy * jarak * 0.95 + dx * geser).toFixed(2)}`)
+// Kontur spider sense: garis tepi berwarna (merah muda di dalam, biru di luar, berkedip bergantian) yang mengelilingi
+// seluruh siluet karakter, badan dan kepala. Dibuat dari baris-baris kotak sprite, digambar di bawah sprite.
+function jalurKontur(r0, r1) {
+  let d = ''
+  for (let r = r0; r < r1; r++) {
+    let c = 0
+    while (c < LEBAR) {
+      if (SPRITE[r][c] === '.') { c++; continue }
+      let akhir = c
+      while (akhir < LEBAR && SPRITE[r][akhir] !== '.') akhir++
+      d += `M${c + PAD} ${r}h${akhir - c}v1h${c - akhir}z`
+      c = akhir
     }
-    hasil.push({ d: `M${titik.join(' L')}`, grup: n % 2 })
   }
-  return hasil
-})()
+  return d
+}
+const KONTUR_SILUET = jalurKontur(0, TINGGI)
+
 
 // Gelembung bertulisan saat disentuh: teks, ukuran huruf, dan tinggi garis dasar di dalam gelembung.
 const TEKS_GEL = {
@@ -403,6 +401,7 @@ export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalka
     if (diterima) playSpideySentuh('sense')
   }, [diterima])
 
+  const menyalaSense = gelembungSentuh === 'sense' || diterima
   const lama = dibuatPada ? formatLama(sekarang - dibuatPada) : '00:00'
   // Latar kartu setengah transparan, jadi peta kelihatan di baliknya; bayangan teks menjaga tulisan tetap terbaca.
   const bayang = { textShadow: '0 1px 3px rgba(0, 0, 0, 0.9), 0 0 2px rgba(0, 0, 0, 0.9)' }
@@ -435,6 +434,12 @@ export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalka
         {/* Area sentuh tak kasatmata yang lebih luas dari gambar badan (sekitar 28px di tiap sisi), supaya mudah diketuk jari. */}
         <span style={{ position: 'absolute', left: PAD * SKALA - 28, top: 0, width: LEBAR * SKALA + 56, height: 22 + TINGGI * SKALA + 28 }} aria-hidden="true" />
         <svg className="sp-napas" width={(LEBAR + PAD) * SKALA} height={TINGGI * SKALA} viewBox={`0 0 ${LEBAR + PAD} ${TINGGI}`} shapeRendering="crispEdges" style={{ display: 'block', overflow: 'visible' }}>
+          {menyalaSense && (
+            <g className="sp-kontur" fill="none" strokeLinejoin="miter" aria-hidden="true">
+              <path d={KONTUR_SILUET} stroke="#4B5BFF" strokeWidth="1.7" className="sp-sense-b" />
+              <path d={KONTUR_SILUET} stroke="#E8245C" strokeWidth="0.9" className="sp-sense-a" />
+            </g>
+          )}
           {bagian(0, BARIS_KEPALA)}
           {/* Benang menembus badan dari kaki turun 11 baris piksel ke badan (digambar di atas sprite, ikut bernapas bersama badan). */}
           
@@ -496,16 +501,6 @@ export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalka
           {(gelembungSentuh === 'sense' || diterima) && (
             <g className="sp-sense-g" fill="none" strokeLinecap="square" strokeLinejoin="miter">
               {SENSE.map((g, n) => (
-                <g key={n} className={g.grup ? 'sp-sense-b' : 'sp-sense-a'}>
-                  <path d={g.d} stroke="#4B5BFF" strokeWidth="0.6" transform="translate(0.5 0.35)" />
-                  <path d={g.d} stroke="#E8245C" strokeWidth="0.6" />
-                </g>
-              ))}
-            </g>
-          )}
-          {(gelembungSentuh === 'sense' || diterima) && (
-            <g className="sp-sense-gb" fill="none" strokeLinecap="square" strokeLinejoin="miter">
-              {SENSE_BADAN.map((g, n) => (
                 <g key={n} className={g.grup ? 'sp-sense-b' : 'sp-sense-a'}>
                   <path d={g.d} stroke="#4B5BFF" strokeWidth="0.6" transform="translate(0.5 0.35)" />
                   <path d={g.d} stroke="#E8245C" strokeWidth="0.6" />
