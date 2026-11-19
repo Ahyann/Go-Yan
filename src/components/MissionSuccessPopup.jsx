@@ -77,7 +77,7 @@ const s = {
     maxWidth: 340,
     background: `linear-gradient(160deg, var(--card-blue-grad-a), var(--card-blue-grad-b))`,
     border: '2px solid var(--glow-blue-mid)',
-    borderRadius: 20,
+    borderRadius: 0,
     padding: '28px 20px 22px',
     textAlign: 'center',
     boxShadow: '0 10px 30px rgba(0,0,0,0.6), 0 0 30px rgba(94,208,255,0.35)',
@@ -94,7 +94,7 @@ const s = {
   checkWrap: {
     width: 58,
     height: 58,
-    borderRadius: '50%',
+    borderRadius: 0,
     background: 'rgba(74,222,128,0.15)',
     border: '2px solid var(--signal)',
     display: 'flex',

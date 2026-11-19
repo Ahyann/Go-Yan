@@ -111,7 +111,7 @@ const s = {
     maxWidth: 360,
     background: `linear-gradient(160deg, var(--card-blue-grad-a), var(--card-blue-grad-b))`,
     border: '1px solid var(--blue-border)',
-    borderRadius: 16,
+    borderRadius: 0,
     padding: 20,
     display: 'flex',
     flexDirection: 'column',
@@ -133,7 +133,7 @@ const s = {
   input: {
     background: 'rgba(255,255,255,0.06)',
     border: '1px solid var(--blue-border)',
-    borderRadius: 10,
+    borderRadius: 0,
     padding: '10px 12px',
     color: 'var(--text)',
     fontSize: 14,
@@ -147,7 +147,7 @@ const s = {
   btnBatal: {
     flex: 1,
     padding: '12px 0',
-    borderRadius: 10,
+    borderRadius: 0,
     background: 'rgba(255,255,255,0.06)',
     color: 'var(--text)',
     fontSize: 14,
@@ -156,7 +156,7 @@ const s = {
   btnSimpan: {
     flex: 1,
     padding: '12px 0',
-    borderRadius: 10,
+    borderRadius: 0,
     background: 'var(--nav-red)',
     color: '#fff',
     fontSize: 14,
@@ -169,7 +169,7 @@ const s = {
   statusBtn: {
     flex: 1,
     padding: '10px 0',
-    borderRadius: 10,
+    borderRadius: 0,
     background: 'rgba(255,255,255,0.06)',
     border: '1px solid var(--blue-border)',
     color: 'var(--text)',
@@ -178,7 +178,7 @@ const s = {
   statusBtnAktifBelum: {
     flex: 1,
     padding: '10px 0',
-    borderRadius: 10,
+    borderRadius: 0,
     background: 'rgba(255,180,60,0.18)',
     border: '1px solid #FFB43C',
     color: '#FFB43C',
@@ -188,7 +188,7 @@ const s = {
   statusBtnAktifLunas: {
     flex: 1,
     padding: '10px 0',
-    borderRadius: 10,
+    borderRadius: 0,
     background: 'rgba(60,200,120,0.18)',
     border: '1px solid #3CC878',
     color: '#3CC878',

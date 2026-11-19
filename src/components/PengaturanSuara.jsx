@@ -8,31 +8,38 @@ export default function PengaturanSuara() {
   const [mode, setMode] = useModeSuara()
 
   const pilihan = [
-    { mode: MODE_SUARA.NORMAL, nama: t.suaraNormal, desc: t.suaraNormalDesc },
     { mode: MODE_SUARA.TANPA_VOICE, nama: t.suaraTanpaVoice, desc: t.suaraTanpaVoiceDesc },
+    { mode: MODE_SUARA.NORMAL, nama: t.suaraNormal, desc: t.suaraNormalDesc },
     { mode: MODE_SUARA.SENYAP, nama: t.suaraSenyap, desc: t.suaraSenyapDesc },
   ]
-  const terpilih = pilihan.find((p) => p.mode === mode) ?? pilihan[0]
+  const indeks = Math.max(0, pilihan.findIndex((p) => p.mode === mode))
+  const terpilih = pilihan[indeks]
+  // Panah kiri kanan berputar: setelah pilihan terakhir kembali ke yang pertama.
+  const geser = (arah) => setMode(pilihan[(indeks + arah + pilihan.length) % pilihan.length].mode)
 
   return (
     <section style={s.card}>
       <div style={s.label}>{t.suaraLabel}</div>
-      <div style={s.desc}>{terpilih.desc}</div>
-      <div style={s.kolom} role="radiogroup" aria-label={t.suaraLabel}>
-        {pilihan.map((p) => (
-          <button
-            key={p.mode}
-            type="button"
-            role="radio"
-            aria-checked={p.mode === mode}
-            style={p.mode === mode ? s.btnAktif : s.btn}
-            onClick={() => setMode(p.mode)}
-          >
-            {p.nama}
-          </button>
-        ))}
+      <div style={s.pemilih} role="group" aria-label={t.suaraLabel}>
+        <button type="button" className="tekan" style={s.panah} onClick={() => geser(-1)} aria-label={t.suaraSebelumnya}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="square" aria-hidden="true">
+            <path d="M15 5l-7 7 7 7" />
+          </svg>
+        </button>
+        <div style={s.nilai} aria-live="polite">
+          <span>{terpilih.nama}</span>
+          <div style={s.titikBaris} aria-hidden="true">
+            {pilihan.map((p, i) => (
+              <span key={p.mode} style={{ ...s.titik, width: i === indeks ? 14 : 8, background: i === indeks ? 'var(--glow-blue)' : 'var(--blue-border)' }} />
+            ))}
+          </div>
+        </div>
+        <button type="button" className="tekan" style={s.panah} onClick={() => geser(1)} aria-label={t.suaraBerikutnya}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="square" aria-hidden="true">
+            <path d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
       </div>
-      <div style={s.catatan}>{t.suaraCatatan}</div>
     </section>
   )
 }
@@ -41,31 +48,36 @@ const s = {
   card: {
     background: 'var(--card-blue)',
     border: '1px solid var(--blue-border)',
-    borderRadius: 12,
-    padding: 18,
+    borderRadius: 0,
+    padding: 14,
   },
-  label: { fontSize: 12.5, color: '#9FC3E8', marginBottom: 6 },
-  desc: { fontSize: 13, color: '#8FB4DC', marginBottom: 14, lineHeight: 1.4 },
-  kolom: { display: 'flex', flexDirection: 'column', gap: 10 },
-  btn: {
-    width: '100%',
-    background: 'rgba(255,255,255,0.06)',
-    color: '#8FB4DC',
-    fontSize: 14,
-    fontWeight: 600,
-    padding: '12px',
-    borderRadius: 999,
+  label: { fontFamily: 'var(--font-data)', fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', color: 'var(--glow-blue)', textTransform: 'uppercase', marginBottom: 10 },
+  pemilih: { display: 'flex', alignItems: 'stretch', gap: 6, height: 48 },
+  panah: {
+    width: 44,
+    flexShrink: 0,
+    background: 'rgba(1,42,64,0.6)',
     border: '1px solid var(--blue-border)',
-  },
-  btnAktif: {
-    width: '100%',
-    background: 'rgba(94,208,255,0.15)',
     color: 'var(--glow-blue)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  nilai: {
+    flex: 1,
+    minWidth: 0,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    background: 'rgba(94,208,255,0.1)',
+    border: '1px solid var(--glow-blue-mid)',
+    color: 'var(--text)',
     fontSize: 14,
     fontWeight: 600,
-    padding: '12px',
-    borderRadius: 999,
-    border: '1px solid var(--glow-blue-mid)',
+    textAlign: 'center',
   },
-  catatan: { fontSize: 11.5, color: 'var(--text-dim)', marginTop: 12, lineHeight: 1.4 },
+  titikBaris: { display: 'flex', gap: 3 },
+  titik: { height: 4, display: 'block' },
 }

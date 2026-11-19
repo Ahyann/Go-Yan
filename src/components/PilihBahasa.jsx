@@ -27,7 +27,7 @@ const s = {
     display: 'flex',
     background: 'rgba(255,255,255,0.06)',
     border: '1px solid var(--blue-border)',
-    borderRadius: 999,
+    borderRadius: 0,
     padding: 2,
   },
   btn: {
@@ -37,7 +37,7 @@ const s = {
     letterSpacing: '0.04em',
     color: '#8FB4DC',
     padding: '5px 9px',
-    borderRadius: 999,
+    borderRadius: 0,
   },
   btnAktif: {
     minWidth: 34,
@@ -48,6 +48,6 @@ const s = {
     background: 'rgba(94,208,255,0.18)',
     boxShadow: '0 0 6px rgba(94,208,255,0.35)',
     padding: '5px 9px',
-    borderRadius: 999,
+    borderRadius: 0,
   },
 }

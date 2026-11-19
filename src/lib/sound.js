@@ -8,9 +8,9 @@ const KUNCI_MODE_SUARA = 'goyan-mode-suara'
 function bacaModeSuara() {
   try {
     const tersimpan = localStorage.getItem(KUNCI_MODE_SUARA)
-    return Object.values(MODE_SUARA).includes(tersimpan) ? tersimpan : MODE_SUARA.NORMAL
+    return Object.values(MODE_SUARA).includes(tersimpan) ? tersimpan : MODE_SUARA.TANPA_VOICE
   } catch {
-    return MODE_SUARA.NORMAL
+    return MODE_SUARA.TANPA_VOICE
   }
 }
 
@@ -289,6 +289,129 @@ export async function playMissionSuccess() {
   return true
 }
 
+// Bip piksel pendek tiap kali jari pindah ke pesan lain di roda quick chat. Dibuat langsung
+// dengan oscillator (tanpa file suara), nadanya naik per arah supaya posisi jari terasa.
+// Kalau audio belum terbuka kuncinya, bunyinya dilewati saja (tidak diantrekan).
+export function playPilihRoda(indeks = 0) {
+  if (!efekBoleh()) return
+  const ctx = getAudioCtx()
+  if (ctx.state !== 'running') {
+    ctx.resume?.()
+    return
+  }
+  const mulai = ctx.currentTime
+  const osc = ctx.createOscillator()
+  const gain = ctx.createGain()
+  osc.type = 'square'
+  osc.frequency.setValueAtTime(520 + indeks * 130, mulai)
+  gain.gain.setValueAtTime(0.12, mulai)
+  gain.gain.exponentialRampToValueAtTime(0.0001, mulai + 0.05)
+  osc.connect(gain)
+  gain.connect(ctx.destination)
+  osc.start(mulai)
+  osc.stop(mulai + 0.07)
+}
+
+// Nada pendek dengan oscillator, dijadwalkan `t` detik dari sekarang. Dipakai efek suara Spiderman di bawah.
+function nadaPendek(ctx, tipe, f0, f1, dur, vol, t) {
+  const w = ctx.currentTime + t
+  const osc = ctx.createOscillator()
+  const gain = ctx.createGain()
+  osc.type = tipe
+  osc.frequency.setValueAtTime(f0, w)
+  if (f1 !== f0) osc.frequency.exponentialRampToValueAtTime(f1, w + dur)
+  gain.gain.setValueAtTime(0.0001, w)
+  gain.gain.exponentialRampToValueAtTime(vol, w + 0.005)
+  gain.gain.exponentialRampToValueAtTime(0.0001, w + dur)
+  osc.connect(gain)
+  gain.connect(ctx.destination)
+  osc.start(w)
+  osc.stop(w + dur + 0.03)
+}
+
+function ctxSiapEfek() {
+  if (!efekBoleh()) return null
+  const ctx = getAudioCtx()
+  if (ctx.state !== 'running') {
+    ctx.resume?.()
+    return null
+  }
+  return ctx
+}
+
+// "Whoosh" tembakan jaring saat Spiderman masuk: desis angin yang menyapu naik disertai satu nada tinggi
+// yang ikut naik, sekitar 0,5 detik. Dibuat dengan oscillator dan derau (tanpa file suara). Dipanggil
+// oleh kartu Spiderman tepat saat badannya mulai terlihat masuk ke kartu.
+export function playWhooshMasuk() {
+  const ctx = ctxSiapEfek()
+  if (!ctx) return
+  const n = Math.floor(ctx.sampleRate * 0.5)
+  const buf = ctx.createBuffer(1, n, ctx.sampleRate)
+  const d = buf.getChannelData(0)
+  for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / n)
+  const sumber = ctx.createBufferSource()
+  sumber.buffer = buf
+  const saring = ctx.createBiquadFilter()
+  saring.type = 'highpass'
+  saring.frequency.setValueAtTime(600, ctx.currentTime)
+  saring.frequency.exponentialRampToValueAtTime(5500, ctx.currentTime + 0.5)
+  const gain = ctx.createGain()
+  gain.gain.value = 0.14
+  sumber.connect(saring)
+  saring.connect(gain)
+  gain.connect(ctx.destination)
+  sumber.start()
+  nadaPendek(ctx, 'sine', 700, 2200, 0.42, 0.12, 0.02)
+}
+
+// Pesanan dibatalkan: gaya "kalah" game 8-bit. Empat bip kotak menurun lalu satu nada kotak merosot
+// ke bawah. Mulai 0,3 detik setelah pembatalan (saat kepala Spiderman tertunduk), selesai sekitar 1,3 detik.
+export function playPesananBatal() {
+  const ctx = ctxSiapEfek()
+  if (!ctx) return
+  ;[784, 659, 523, 392].forEach((f, i) => nadaPendek(ctx, 'square', f, f, 0.14, 0.09, 0.3 + i * 0.14))
+  nadaPendek(ctx, 'square', 330, 90, 0.6, 0.09, 0.3 + 0.6)
+}
+
+// Pindah tab dock: letupan derau kecil lalu dua denting tinggi, pas dengan siku cyan yang "menjepit" tab.
+export function playTabPindah() {
+  const ctx = ctxSiapEfek()
+  if (!ctx) return
+  const n = Math.floor(ctx.sampleRate * 0.04)
+  const buf = ctx.createBuffer(1, n, ctx.sampleRate)
+  const d = buf.getChannelData(0)
+  for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / n)
+  const sumber = ctx.createBufferSource()
+  sumber.buffer = buf
+  const saring = ctx.createBiquadFilter()
+  saring.type = 'bandpass'
+  saring.frequency.setValueAtTime(3500, ctx.currentTime)
+  saring.frequency.exponentialRampToValueAtTime(2000, ctx.currentTime + 0.04)
+  const gain = ctx.createGain()
+  gain.gain.value = 0.14
+  sumber.connect(saring)
+  saring.connect(gain)
+  gain.connect(ctx.destination)
+  sumber.start()
+  nadaPendek(ctx, 'sine', 1320, 1320, 0.08, 0.1, 0.02)
+  nadaPendek(ctx, 'sine', 1760, 1760, 0.1, 0.07, 0.07)
+}
+
+// Kursor menyorot tab dock (hanya di perangkat dengan mouse): satu bip kotak mini, sangat pelan.
+export function playTabSorot() {
+  const ctx = ctxSiapEfek()
+  if (!ctx) return
+  nadaPendek(ctx, 'square', 1200, 1200, 0.025, 0.035, 0)
+}
+
+// Ketukan lembut tiap angka jam/menit yang lewat di tengah roda pemilih waktu (nada segitiga pendek, tidak tajam).
+export function playJamTik() {
+  const ctx = ctxSiapEfek()
+  if (!ctx) return
+  nadaPendek(ctx, 'triangle', 660, 600, 0.075, 0.09, 0)
+  nadaPendek(ctx, 'sine', 1320, 1200, 0.05, 0.03, 0)
+}
+
 // ---------- Antrean suara asisten AI ----------
 // Tiap rangkaian suara (misal suara laba-laba lalu suara AI) masuk antrean dan
 // baru mulai setelah rangkaian sebelumnya SELESAI. Jadi kalau Fajri kirim
@@ -407,4 +530,52 @@ const PETA_FUNGSI_SUARA = {
   playMisiDiterima,
   playPesanTerkirim,
   playBatalDipencet,
+}
+
+// Spiderman disentuh: satu bunyi pendek untuk tiap jenis reaksi (kaget, senang, kenyal, getar, bersin, ngantuk, angguk, glitch, joget, bungee, intip, sense).
+export function playSpideySentuh(jenis) {
+  const ctx = ctxSiapEfek()
+  if (!ctx) return
+  if (jenis === 'kaget') {
+    nadaPendek(ctx, 'triangle', 880, 1320, 0.07, 0.1, 0)
+    nadaPendek(ctx, 'triangle', 1100, 1650, 0.09, 0.08, 0.08)
+  } else if (jenis === 'senang') {
+    ;[523, 659, 784].forEach((f, i) => nadaPendek(ctx, 'triangle', f, f, 0.08, 0.09, i * 0.08))
+  } else if (jenis === 'kenyal') {
+    nadaPendek(ctx, 'sine', 260, 640, 0.12, 0.11, 0)
+    nadaPendek(ctx, 'sine', 640, 200, 0.2, 0.09, 0.1)
+  } else if (jenis === 'bersin') {
+    // "ha...": nada naik menahan, lalu "chi!" letupan pendek di saat badan menghentak
+    nadaPendek(ctx, 'sine', 380, 900, 0.3, 0.07, 0)
+    nadaPendek(ctx, 'square', 1500, 350, 0.09, 0.09, 0.62)
+    nadaPendek(ctx, 'triangle', 220, 110, 0.14, 0.1, 0.64)
+  } else if (jenis === 'ngantuk') {
+    // dengkuran: dua nada rendah yang bergoyang turun
+    nadaPendek(ctx, 'sine', 230, 150, 0.55, 0.07, 0.1)
+    nadaPendek(ctx, 'triangle', 220, 140, 0.5, 0.05, 0.1)
+    nadaPendek(ctx, 'sine', 200, 140, 0.5, 0.06, 1.1)
+  } else if (jenis === 'angguk') {
+    ;[0, 0.2, 0.4].forEach((t) => nadaPendek(ctx, 'triangle', 520, 480, 0.06, 0.09, t))
+    nadaPendek(ctx, 'triangle', 784, 784, 0.12, 0.09, 0.62)
+  } else if (jenis === 'glitch') {
+    ;[900, 300, 1400, 200, 1100, 400, 1700, 250].forEach((f, i) => nadaPendek(ctx, 'square', f, f, 0.03, 0.05, i * 0.045))
+  } else if (jenis === 'joget') {
+    ;[392, 523, 392, 659].forEach((f, i) => nadaPendek(ctx, 'triangle', f, f, 0.09, 0.09, i * 0.2))
+  } else if (jenis === 'bungee') {
+    nadaPendek(ctx, 'sine', 700, 180, 0.3, 0.08, 0)
+    nadaPendek(ctx, 'sine', 200, 520, 0.12, 0.1, 0.32)
+    nadaPendek(ctx, 'sine', 400, 250, 0.12, 0.08, 0.66)
+    nadaPendek(ctx, 'sine', 330, 280, 0.1, 0.06, 0.98)
+  } else if (jenis === 'intip') {
+    nadaPendek(ctx, 'sine', 300, 1100, 0.2, 0.08, 0)
+    nadaPendek(ctx, 'triangle', 700, 700, 0.05, 0.06, 1.0)
+    nadaPendek(ctx, 'triangle', 760, 760, 0.05, 0.06, 1.7)
+    nadaPendek(ctx, 'sine', 500, 400, 0.15, 0.06, 2.1)
+  } else if (jenis === 'sense') {
+    // dengung bawah yang membesar ditambah kelip nada tinggi, seperti firasat bahaya
+    nadaPendek(ctx, 'sine', 110, 170, 0.7, 0.09, 0)
+    ;[1500, 1900, 1550, 2000, 1600, 2100, 1700].forEach((f, i) => nadaPendek(ctx, 'triangle', f, f * 1.05, 0.05, 0.05, 0.05 + i * 0.07))
+  } else if (jenis === 'getar') {
+    for (let i = 0; i < 7; i++) nadaPendek(ctx, 'square', i % 2 ? 760 : 700, i % 2 ? 760 : 700, 0.03, 0.035, i * 0.045)
+  }
 }

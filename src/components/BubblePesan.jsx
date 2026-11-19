@@ -1,3 +1,4 @@
+import PemutarSuara from './PemutarSuara.jsx'
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 
@@ -173,7 +174,7 @@ export const geserPopupFoto = [GESER_KANAN_FOTO, GESER_BAWAH_FOTO_AHYAN]
 const TENGAH_TEKS_CERMIN = -44
 export const geserPopupTeksCermin = (anchorX) => [TENGAH_TEKS_CERMIN - anchorX, 0]
 
-export default function BubblePesan({ teks, foto, onTutup, cermin = false, geser = [0, 0], geserTeks = [0, 0] }) {
+export default function BubblePesan({ teks, foto, suara, durasi, onTutup, cermin = false, geser = [0, 0], geserTeks = [0, 0] }) {
   // besar: null (tutup) | { dx, dy, menutup } — dx/dy = jarak bubble dari
   // tengah layar, titik awal foto "muncul maju" dan titik tujuan pas nutup.
   const [besar, setBesar] = useState(null)
@@ -190,6 +191,23 @@ export default function BubblePesan({ teks, foto, onTutup, cermin = false, geser
     setTimeout(() => setBesar(null), 200)
   }
   const fotoPiksel = useFotoPiksel(foto || '', cermin)
+
+  // Pesan suara: bubble teks yang sama, isinya tombol putar dan durasi; X kecil di pojok untuk menutup.
+  if (suara && typeof suara === 'string') {
+    return (
+      <div style={{ ...s.bubbleWrap, transform: `translate(${geserTeks[0]}px, ${geserTeks[1]}px)` }} onContextMenu={(e) => e.preventDefault()}>
+        <div style={{ ...s.bubbleLatar, transform: cermin ? 'scaleX(-1)' : undefined }} />
+        <span style={{ position: 'relative', zIndex: 1 }}>
+          <PemutarSuara src={suara} durasi={durasi} kecil />
+        </span>
+        <button type="button" style={{ ...s.tutup, pointerEvents: 'auto', top: -4, left: cermin ? -4 : 'auto', right: cermin ? 'auto' : -4 }} onClick={onTutup} aria-label="Tutup">
+          <svg width="8" height="8" viewBox="0 0 7 7" fill="#fff" shapeRendering="crispEdges" aria-hidden="true" style={{ display: 'block' }}>
+            <path d="M0 0h1v1H0zM1 1h1v1H1zM2 2h1v1H2zM3 3h1v1H3zM4 4h1v1H4zM5 5h1v1H5zM6 6h1v1H6zM6 0h1v1H6zM5 1h1v1H5zM4 2h1v1H4zM2 4h1v1H2zM1 5h1v1H1zM0 6h1v1H0z" />
+          </svg>
+        </button>
+      </div>
+    )
+  }
 
   if (foto) {
     return (
@@ -209,7 +227,11 @@ export default function BubblePesan({ teks, foto, onTutup, cermin = false, geser
           </>
         )}
         <div style={s.fotoTap} onClick={bukaBesar} />
-        <button type="button" style={{ ...s.tutup, ...(cermin ? { left: -6 } : null) }} onClick={onTutup} aria-label="Tutup">×</button>
+        <button type="button" style={{ ...s.tutup, ...(cermin ? { left: -6 } : null) }} onClick={onTutup} aria-label="Tutup">
+          <svg width="8" height="8" viewBox="0 0 7 7" fill="#fff" shapeRendering="crispEdges" aria-hidden="true" style={{ display: 'block' }}>
+            <path d="M0 0h1v1H0zM1 1h1v1H1zM2 2h1v1H2zM3 3h1v1H3zM4 4h1v1H4zM5 5h1v1H5zM6 6h1v1H6zM6 0h1v1H6zM5 1h1v1H5zM4 2h1v1H4zM2 4h1v1H2zM1 5h1v1H1zM0 6h1v1H0z" />
+          </svg>
+        </button>
         {besar && createPortal(
           <div
             className={besar.menutup ? 'foto-latar-keluar' : 'foto-latar-masuk'}
@@ -321,13 +343,15 @@ const s = {
     left: GESER_X + LEBAR_PNG * SKALA - 10,
     width: 18,
     height: 18,
-    borderRadius: '50%',
-    background: '#B8242F',
-    color: '#fff',
-    fontSize: 13,
-    lineHeight: '16px',
-    fontWeight: 700,
-    boxShadow: '0 1px 4px rgba(0,0,0,0.5)',
+    boxSizing: 'border-box',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 0,
+    borderRadius: 0,
+    background: 'var(--nav-red)',
+    border: '2px solid var(--panel)',
+    boxShadow: '1px 1px 0 rgba(0,0,0,0.5)',
   },
   overlay: {
     position: 'fixed',

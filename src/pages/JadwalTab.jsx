@@ -13,7 +13,7 @@ export default function JadwalTab({ jadwalMingguan, simpanJadwal }) {
           <div style={s.eyebrow}>{t.jadwalEyebrow}</div>
           <h1 style={s.title}>{t.jadwalTitlePenumpang}</h1>
         </div>
-        <button style={s.resetBtn} onClick={() => jadwalRef.current?.reset()}>
+        <button className="tekan" style={s.resetBtn} onClick={() => jadwalRef.current?.reset()}>
           {t.resetJadwal}
         </button>
       </header>
@@ -49,13 +49,11 @@ const s = {
     lineHeight: 1.3,
   },
   resetBtn: {
-    fontSize: 12.5,
+    fontSize: 14,
     fontWeight: 600,
-    color: '#8FB4DC',
-    padding: '6px 14px',
-    borderRadius: 999,
-    border: '1px solid var(--blue-border)',
-    background: 'var(--card-blue)',
+    color: 'var(--glow-blue)',
+    padding: '0 2px',
+    minHeight: 44,
     flexShrink: 0,
   },
   catatan: { fontSize: 12.5, color: 'var(--text-dim)', lineHeight: 1.5, textAlign: 'center' },

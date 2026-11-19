@@ -3,6 +3,9 @@ import { STATUS_PERMINTAAN } from '../lib/constants'
 import { playPesanTerkirim, playBatalDipencet, playChatSound } from '../lib/sound'
 import { useLokasiSayaPenumpang } from '../lib/useLokasiSayaPenumpang'
 import { usePesanOjek } from '../lib/usePesanOjek'
+import { useRiwayatChat } from '../lib/useRiwayatChat'
+import { useLanguage } from '../context/LanguageContext.jsx'
+import { useAuth } from '../context/AuthContext.jsx'
 import GoPopup from '../components/GoPopup.jsx'
 import SelesaiPopup from '../components/SelesaiPopup.jsx'
 import BottomNav from '../components/BottomNav.jsx'
@@ -58,7 +61,18 @@ export default function PenumpangView({
     berhenti: berhentiLokasi,
   } = useLokasiSayaPenumpang()
 
+  const { t } = useLanguage()
+  const { isDemo } = useAuth()
   const { pesan: pesanMasuk, siap: pesanSiap } = usePesanOjek()
+  // Catat pesan masuk ke riwayat chat walau sedang di tab lain (kotak chat di Home belum terpasang saat itu).
+  useRiwayatChat(pesanMasuk, null)
+  // Kapsul notifikasi di atas layar saat ada chat masuk ketika sedang di tab selain Home.
+  const [notifChat, setNotifChat] = useState(null)
+  useEffect(() => {
+    if (!notifChat) return undefined
+    const id = setTimeout(() => setNotifChat(null), 4500)
+    return () => clearTimeout(id)
+  }, [notifChat])
   const pesanTerakhirRef = useRef(undefined)
 
   useEffect(() => {
@@ -72,7 +86,10 @@ export default function PenumpangView({
     if (pesanBaru) {
       pesanTerakhirRef.current = pesanMasuk.dibuatPada
       playChatSound()
-      if (tabAktifRef.current !== 'home') setAdaChatBaru(true)
+      if (tabAktifRef.current !== 'home') {
+        setAdaChatBaru(true)
+        setNotifChat({ id: pesanMasuk.dibuatPada, teks: pesanMasuk.suara ? t.chatSuara : pesanMasuk.foto ? t.chatFoto : pesanMasuk.teks })
+      }
     }
   }, [pesanMasuk, pesanSiap])
 
@@ -102,7 +119,10 @@ export default function PenumpangView({
 
   function handleTabChange(tab) {
     setTabAktif(tab)
-    if (tab === 'home') setAdaChatBaru(false)
+    if (tab === 'home') {
+      setAdaChatBaru(false)
+      setNotifChat(null)
+    }
     if (tab === 'riwayat') {
       setAdaRiwayatBaru(false)
       const maxWaktu = riwayat.reduce((max, r) => Math.max(max, r.dibuatPada || 0), Date.now())
@@ -132,7 +152,7 @@ export default function PenumpangView({
       playBatalDipencet()
       onBatal()
       setBaruDibatalkan(true)
-      setTimeout(() => setBaruDibatalkan(false), 5000)
+      setTimeout(() => setBaruDibatalkan(false), 9000) // 3,4 detik animasi Spiderman + sisanya untuk tulisan "dibatalkan"
     }
   }
 
@@ -176,6 +196,24 @@ export default function PenumpangView({
         adaRiwayatBaru={adaRiwayatBaru}
       />
 
+      {notifChat && tabAktif !== 'home' && (
+        <button
+          type="button"
+          key={notifChat.id}
+          className="notif-turun"
+          style={s.notifChat}
+          onClick={() => handleTabChange('home')}
+          aria-live="polite"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="square" aria-hidden="true" style={{ flexShrink: 0, color: 'var(--glow-blue)' }}>
+            <path d="M4 5h16v11H9l-5 4z" />
+          </svg>
+          <span style={s.notifTeks}>
+            <b style={s.notifNama}>{isDemo ? 'Driver' : 'Ahyan'}</b>: {notifChat.teks}
+          </span>
+        </button>
+      )}
+
       {showGo && <GoPopup onClose={() => setShowGo(false)} onSubmit={handleKirimGo} />}
 
       {notifSelesaiData && (
@@ -186,6 +224,25 @@ export default function PenumpangView({
 }
 
 const s = {
+  notifChat: {
+    position: 'fixed',
+    top: 'calc(var(--safe-top) + 10px)',
+    left: '50%',
+    zIndex: 2000,
+    display: 'flex',
+    alignItems: 'center',
+    gap: 8,
+    maxWidth: 'min(86vw, 340px)',
+    background: 'var(--panel)',
+    border: '1px solid var(--glow-blue)',
+    boxShadow: '3px 3px 0 rgba(0,0,0,0.4)',
+    padding: '7px 11px',
+    color: 'var(--text)',
+    fontSize: 12.5,
+    textAlign: 'left',
+  },
+  notifTeks: { minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' },
+  notifNama: { color: 'var(--merah-teks)' },
   stageMap: { height: 'var(--app-height, 100dvh)', overflow: 'hidden' },
   stageScroll: { minHeight: 'var(--app-height, 100dvh)', overflowY: 'auto' },
 }

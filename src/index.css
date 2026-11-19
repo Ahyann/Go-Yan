@@ -1,5 +1,8 @@
 :root {
-  --bg:          #0B0E1A;
+  --bg:          #023854;
+  --panel:       #012A40;
+  --garis:       rgba(96, 192, 240, 0.28);
+  --merah-teks:  #FF7070;
   --surface:     #141A2E;
   --surface-2:   #1E2740;
   --line:        #2A3552;
@@ -18,11 +21,11 @@
   --safe-top:    env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 
-  --nav-red:        #B8242F;
-  --card-blue:       #123A60;
-  --card-blue-grad-a:#1B4A78;
-  --card-blue-grad-b:#123A60;
-  --blue-border:     #1E5590;
+  --nav-red:        #BC1E2F;
+  --card-blue:       #012A40;
+  --card-blue-grad-a:#012A40;
+  --card-blue-grad-b:#012A40;
+  --blue-border:     #2C6E94;
   --glow-blue:       #5ED0FF;
   --glow-blue-mid:   #2B9EE8;
   --glow-blue-dark:  #1B6FB8;
@@ -51,7 +54,82 @@ body {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
+    animation-delay: 0s !important;
   }
+}
+
+/* Animasi bergaya game: geraknya patah-patah (steps) biar kerasa pixel. */
+.tekan { transition: transform 0.08s ease-out; }
+.tekan:active { transform: translateY(3px) scale(0.96); }
+
+/* Isi halaman naik satu per satu. Urutannya dari --i. */
+@keyframes naik-masuk {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+.naik-masuk {
+  animation: naik-masuk 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(var(--i, 0) * 55ms);
+}
+
+/* Kotak perjalanan muncul satu per satu. */
+@keyframes kotak-pop {
+  0% { opacity: 0; transform: scale(0); }
+  70% { opacity: 1; transform: scale(1.35); }
+  100% { opacity: 1; transform: scale(1); }
+}
+.kotak-pop {
+  animation: kotak-pop 0.26s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  animation-delay: calc(280ms + var(--i, 0) * 70ms);
+}
+
+/* Siku panel datang dari luar lalu "mengunci" di sudutnya. */
+@keyframes siku-kunci {
+  from { opacity: 0; transform: translate(var(--sx, 0), var(--sy, 0)); }
+  to { opacity: 1; transform: none; }
+}
+.siku-kunci { animation: siku-kunci 0.34s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both; }
+
+/* Bottom bar: ikon tab yang dipilih lompat, titiknya nyala berurutan. */
+@keyframes ikon-lompat {
+  0% { transform: translateY(0); }
+  40% { transform: translateY(-7px); }
+  100% { transform: translateY(0); }
+}
+.ikon-lompat { animation: ikon-lompat 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+
+@keyframes titik-nav {
+  from { opacity: 0; transform: scale(0); }
+  to { opacity: 1; transform: scale(1); }
+}
+.titik-nav {
+  animation: titik-nav 0.14s ease-out both;
+  animation-delay: calc(var(--i, 0) * 60ms);
+}
+
+/* Tombol tengah ganti wujud (GO jadi batal dan sebaliknya). */
+@keyframes go-muncul {
+  0% { transform: scale(0.6) rotate(-12deg); }
+  60% { transform: scale(1.12) rotate(0deg); }
+  100% { transform: scale(1); }
+}
+.go-muncul { animation: go-muncul 0.32s cubic-bezier(0.34, 1.56, 0.64, 1); }
+
+/* Tab dock bawah: redup, naik penuh saat aktif atau disorot kursor. */
+.tab-dock { opacity: 0.72; transition: opacity 0.12s ease-out, background-color 0.12s ease-out; }
+.tab-dock[aria-current] { opacity: 1; }
+.tab-dock svg { transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.3, 1); }
+.go-dock > span { transition: filter 0.12s ease-out, transform 0.12s ease-out; }
+@media (hover: hover) {
+  .tab-dock:hover { opacity: 1; }
+  .tab-dock:hover svg { transform: translateY(-2px) scale(1.08); }
+  .go-dock:hover > span { filter: brightness(1.18); transform: skewX(-8deg) translate(-1px, -1px) !important; }
+}
+
+/* Tombol OK di popup perjalanan selesai: terisi cyan saat disorot kursor. */
+.tombol-oke { transition: background-color 0.14s ease-out, color 0.14s ease-out, box-shadow 0.14s ease-out, transform 0.08s ease-out; }
+@media (hover: hover) {
+  .tombol-oke:hover { background-color: var(--glow-blue) !important; color: var(--panel) !important; box-shadow: 0 0 10px rgba(94, 208, 255, 0.55); }
 }
 
 button {
@@ -81,7 +159,7 @@ button {
 }
 
 .leaflet-top.leaflet-right {
-  margin-top: calc(var(--safe-top) + 6px) !important;
+  margin-top: calc(var(--safe-top) + 70px) !important;
 }
 
 .peta-embed .leaflet-top.leaflet-right {
@@ -216,3 +294,248 @@ button {
 .demo-kartu-masuk { animation: demo-kartu-masuk 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
 .demo-kartu-keluar { animation: demo-kartu-keluar 0.22s ease-in both; }
 .demo-logo-masuk { animation: demo-logo-masuk 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.25s both; }
+
+/* Kontrol bawaan peta juga siku 90 derajat. */
+.leaflet-bar,
+.leaflet-bar a,
+.leaflet-touch .leaflet-bar,
+.leaflet-touch .leaflet-bar a {
+  border-radius: 0 !important;
+}
+
+/* Layar pembuka laba-laba: kotak abu-abu menyala lalu menghitam satu per satu. */
+@keyframes splash-kotak {
+  0% { opacity: 0; transform: scale(0.2); background: #6A6D70; }
+  45% { opacity: 1; transform: scale(1.15); background: #6A6D70; }
+  70% { transform: scale(1); background: #3A3C3E; }
+  100% { opacity: 1; transform: scale(1); background: #000; }
+}
+.splash-kotak {
+  opacity: 0;
+  animation: splash-kotak 0.28s cubic-bezier(0.34, 1.56, 0.64, 1) var(--d, 0ms) forwards;
+}
+@keyframes splash-panel-masuk {
+  from { opacity: 0; transform: scale(0.94); }
+  to { opacity: 1; transform: scale(1); }
+}
+.splash-panel { animation: splash-panel-masuk 0.3s ease-out both; }
+@keyframes splash-keluar {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+@keyframes splash-panel-keluar {
+  from { transform: scale(1); }
+  to { transform: scale(1.35); }
+}
+.splash-keluar { animation: splash-keluar 0.38s ease-in forwards; pointer-events: none; }
+.splash-keluar .splash-panel { animation: splash-panel-keluar 0.38s ease-in forwards; }
+
+/* Garis layar bergeser pelan, dan satu pita cahaya menyapu dari atas ke bawah. */
+@keyframes splash-garis {
+  from { background-position: 0 0, 0 0; }
+  to { background-position: 0 5px, 0 0; }
+}
+.splash { animation: splash-garis 0.5s linear infinite; }
+.splash.splash-keluar { animation: splash-keluar 0.38s ease-in forwards; }
+@keyframes splash-sapu {
+  from { transform: translateY(-140px); }
+  to { transform: translateY(110vh); }
+}
+.splash-sapu {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 140px;
+  background: linear-gradient(180deg, transparent, rgba(96, 192, 240, 0.22) 70%, rgba(255, 255, 255, 0.35) 96%, transparent);
+  animation: splash-sapu 1.1s cubic-bezier(0.4, 0, 0.6, 1) 0.05s both;
+  pointer-events: none;
+}
+
+/* Chat di peta: kotak membesar dari pojok kanan atas (tempat ikon gelembung) dan
+   mengecil ke sana lagi. Ikon membal saat muncul, lencana berdenyut saat angkanya naik. */
+@keyframes chat-buka {
+  from { opacity: 0; transform: scale(0.25); }
+  60% { opacity: 1; transform: scale(1.04); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes chat-tutup {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+.chat-buka { transform-origin: top right; animation: chat-buka 0.3s cubic-bezier(0.34, 1.4, 0.64, 1) both; }
+.chat-tutup { animation: chat-tutup 0.19s ease-out both; pointer-events: none; }
+@keyframes gelembung-masuk {
+  0% { opacity: 0; transform: scale(0.4); }
+  65% { opacity: 1; transform: scale(1.15); }
+  100% { opacity: 1; transform: scale(1); }
+}
+.gelembung-masuk { animation: gelembung-masuk 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+@keyframes lencana-pop {
+  0% { transform: scale(0); }
+  60% { transform: scale(1.45); }
+  100% { transform: scale(1); }
+}
+.lencana-pop { animation: lencana-pop 0.28s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+
+/* Label live location: menyapu masuk dari kiri, titik penandanya berkedip pelan. */
+@keyframes live-masuk {
+  0% { opacity: 0; transform: translate3d(-14px, 0, 0); }
+  100% { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+@keyframes live-kedip {
+  0%, 60% { opacity: 1; }
+  80%, 100% { opacity: 0.2; }
+}
+.live-masuk { animation: live-masuk 0.3s cubic-bezier(0.2, 0.9, 0.3, 1) both; will-change: transform, opacity; }
+.live-kedip { animation: live-kedip 1.6s steps(1, end) infinite; will-change: opacity; }
+/* Ikon chat meluncur dari tempat dilepas ke pojok tujuan, lalu sedikit membal. */
+@keyframes gelembung-mendarat {
+  0% { transform: translate3d(var(--dx, 0), var(--dy, 0), 0) scale(1.15); }
+  100% { transform: translate3d(0, 0, 0) scale(1); }
+}
+.gelembung-mendarat { animation: gelembung-mendarat 0.32s cubic-bezier(0.34, 1.45, 0.64, 1) both; }
+
+/* Huruf kolom ketik tetap 16px (supaya iPhone tidak memperbesar halaman), tapi teks petunjuknya lebih kecil. */
+.input-pesan::placeholder { font-size: 13px; color: #7C8AA8; opacity: 1; }
+
+/* Kapsul notifikasi chat masuk: turun dari atas layar, tetap di tengah. */
+@keyframes notif-turun {
+  0% { opacity: 0; transform: translate3d(-50%, -16px, 0); }
+  100% { opacity: 1; transform: translate3d(-50%, 0, 0); }
+}
+.notif-turun { animation: notif-turun 0.3s cubic-bezier(0.2, 0.9, 0.3, 1) both; }
+
+/* Titik merah perekam suara berkedip. */
+@keyframes rekam-kedip { 0%, 55% { opacity: 1; } 56%, 100% { opacity: 0.25; } }
+.rekam-kedip { animation: rekam-kedip 1s steps(1, end) infinite; }
+
+/* ---------- Kartu Spiderman menunggu driver (SpideyMenunggu) ---------- */
+@keyframes sp-masuk { 0% { transform: translateY(var(--awal, -260px)); } 70% { transform: translateY(8px); } 85% { transform: translateY(-4px); } 100% { transform: translateY(0); } }
+.sp-masuk { animation: sp-masuk 1.1s cubic-bezier(0.3, 0.7, 0.4, 1) 0.55s both; }
+/* naik-turun pelan di sepanjang benang; berhenti saat diterima atau dibatalkan supaya tidak bentrok dengan gerak keluarnya */
+@keyframes sp-napas { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(12px); } }
+.sp-napas { animation: sp-napas 4.4s ease-in-out infinite; }
+.sp-diterima .sp-napas, .sp-batal .sp-napas { animation: none; }
+/* benang satu batang: ujung atasnya diam di jangkar, ujung bawahnya ikut turun-naik bersama badan */
+@keyframes sp-napas-tali { 0%, 100% { height: 2088px; } 50% { height: 2100px; } }
+.sp-benang { animation: sp-napas-tali 4.4s ease-in-out infinite; }
+.sp-diterima .sp-benang, .sp-batal .sp-benang { animation: none; }
+/* hanya kepala yang menengok (berbalik kiri-kanan), badan diam */
+@keyframes sp-tengok { 0%, 30% { transform: scaleX(1); } 33%, 62% { transform: scaleX(-1); } 65%, 100% { transform: scaleX(1); } }
+.sp-kepala { transform-box: view-box; transform-origin: 21.5px 19px; animation: sp-tengok 9s steps(1, end) 1.4s infinite; }
+/* Kedipan: seluruh mata (putih + garis hitamnya) mengecil tingginya saja (panjang tetap) jadi celah tipis, lalu kembali. */
+@keyframes sp-mata-kecil { 0%, 8% { transform: scaleY(1); } 11%, 13% { transform: scaleY(0.2); } 18%, 100% { transform: scaleY(1); } }
+.sp-mata-kecil { transform-box: fill-box; transform-origin: center; animation: sp-mata-kecil 3.4s ease-in-out infinite; }
+/* Titik-titik "mengetik": satu siklus bersama. Titik muncul satu per satu (kiri ke kanan), bertahan, lalu
+   ketiganya hilang serentak sebelum siklus berikutnya (bukan hilang bergantian, yang terlihat seperti dobel). */
+@keyframes sp-titik1 { 0%, 14% { opacity: 0; } 15%, 90% { opacity: 1; } 91%, 100% { opacity: 0; } }
+@keyframes sp-titik2 { 0%, 39% { opacity: 0; } 40%, 90% { opacity: 1; } 91%, 100% { opacity: 0; } }
+@keyframes sp-titik3 { 0%, 64% { opacity: 0; } 65%, 90% { opacity: 1; } 91%, 100% { opacity: 0; } }
+.sp-t1 { animation: sp-titik1 2.7s steps(1, end) infinite; }
+.sp-t2 { animation: sp-titik2 2.7s steps(1, end) infinite; }
+.sp-t3 { animation: sp-titik3 2.7s steps(1, end) infinite; }
+/* diterima: menekuk sebentar lalu tertarik ke atas keluar kartu (HP ikut) */
+@keyframes sp-tarik { 0% { transform: translateY(0); } 25% { transform: translateY(10px); } 100% { transform: translateY(var(--awal, -300px)); } }
+.sp-diterima .sp-masuk { animation: sp-tarik 0.8s cubic-bezier(0.6, 0, 0.4, 1) 0.45s both; }
+/* dibatalkan: kepala tertunduk, warna memudar abu-abu, turun pelan lalu hilang; HP terlepas jatuh */
+@keyframes sp-tunduk { to { transform: rotate(14deg); } }
+@keyframes sp-sedih { 0% { filter: none; transform: translateY(0); opacity: 1; } 30% { filter: grayscale(1) brightness(0.75); transform: translateY(6px); opacity: 1; } 60% { filter: grayscale(1) brightness(0.75); transform: translateY(6px); opacity: 1; } 100% { filter: grayscale(1) brightness(0.75); transform: translateY(40px); opacity: 0; } }
+/* Tetes keringat dingin di sisi kepala saat dibatalkan: muncul membesar, lalu naik dan memudar (arah naik karena Spiderman menggantung terbalik). */
+@keyframes sp-air { 0% { opacity: 0; transform: translateY(0) scale(0.3); } 18% { opacity: 1; transform: translateY(0) scale(1); } 60% { opacity: 1; transform: translateY(-4px) scale(1); } 100% { opacity: 0; transform: translateY(-30px) scale(1); } }
+.sp-air { animation: sp-air 1.3s ease-out 0.5s 1 both; }
+@keyframes sp-air-w { 0%, 62% { opacity: 1; } 100% { opacity: 0; } }
+.sp-air-w { animation: sp-air-w 2.2s linear 0.2s both; }
+/* diterima: spider sense berdenyut terus di sekitar kepala sampai Spiderman tertarik naik */
+.sp-diterima .sp-sense-g { animation: sp-sense 0.9s ease-out 0.1s infinite; }
+.sp-batal .sp-masuk { animation: sp-sedih 2.2s ease-in-out 0.2s both; }
+/* ditolak driver (sisi ojek): badan mengangkat bahu (berayun miring dari jangkar), lalu tertarik naik lewat tali */
+@keyframes sp-bahu { 0% { filter: none; transform: rotate(0); } 10% { filter: grayscale(1) brightness(0.75); transform: rotate(0); } 24% { transform: rotate(12deg); } 40% { transform: rotate(-12deg); } 54% { transform: rotate(8deg); } 66% { transform: rotate(0); filter: grayscale(1) brightness(0.75); } 100% { filter: grayscale(1) brightness(0.75); transform: translateY(var(--awal, -300px)); } }
+.sp-batal.sp-tolak .sp-masuk { animation: sp-bahu 2.4s ease-in-out 0.2s both; }
+
+/* Koin emas di popup perjalanan selesai: berputar (menyempit lalu melebar). */
+@keyframes koin-putar { 0%, 40% { transform: scaleX(1); } 50% { transform: scaleX(0.2); } 60%, 100% { transform: scaleX(1); } }
+.koin-putar { animation: koin-putar 2s steps(6, end) infinite; }
+
+/* Setelah dibatalkan: isi kartu memudar sementara kartunya menyusut setinggi lencana teks. */
+.sp-kartu > * { transition: opacity 0.25s ease; }
+.sp-susut > * { opacity: 0; }
+
+/* Kartu baru muncul: tumbuh dulu dari setinggi lencana teks ke tinggi penuh, baru isinya (Spiderman jatuh, tulisan) muncul. */
+@keyframes sp-kartu-buka { from { height: 0; } }
+.sp-kartu { animation: sp-kartu-buka 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
+@keyframes sp-isi-muncul { from { opacity: 0; } to { opacity: 1; } }
+.sp-teks-muncul { animation: sp-isi-muncul 0.25s ease 0.3s backwards; }
+
+/* Logo laba-laba latar kartu Spiderman: tiga keadaan. Satuan translasi = 1 kotak logo (9 px). */
+/* Masuk: kotak meledak dari tengah. Saat menunggu logo tetap utuh; kilau pita cahaya (sp-pita) menyapu dari atas ke bawah. */
+.sp-laba-masuk { transform-box: fill-box; transform-origin: center; opacity: 0; animation: sp-laba-masuk 1.1s cubic-bezier(0.2, 1.2, 0.4, 1) var(--d-masuk, 0.3s) both; }
+@keyframes sp-laba-masuk { 0% { opacity: 1; transform: translate(var(--x), var(--y)) scale(0); } 40% { opacity: 1; transform: translate(0, 0) scale(1.4); } 60%, 100% { opacity: 1; transform: none; } }
+.sp-laba-ok { transform-box: fill-box; transform-origin: center; animation: sp-laba-ok 1.8s ease-in var(--d-ok, 0s) both; }
+@keyframes sp-laba-ok { 0% { fill: #9EE6FF; opacity: 1; transform: none; } 15% { fill: #FFFFFF; } 30% { fill: #4ADE80; transform: scale(1.25); } 45% { fill: #4ADE80; opacity: 1; transform: scale(1); } 100% { fill: #4ADE80; opacity: 0; transform: translate(var(--geser), var(--naik)); } }
+.sp-laba-gagal { transform-box: fill-box; transform-origin: center; animation: sp-laba-gagal 2.4s ease-in var(--d-gagal, 0s) both; }
+@keyframes sp-laba-gagal { 0% { fill: #9EE6FF; opacity: 1; transform: none; } 12% { fill: #FF5A5A; transform: translate(-0.25px, 0.12px); } 18% { transform: translate(0.25px, -0.12px); } 24% { transform: translate(-0.25px, 0); } 30% { transform: translate(0.25px, 0.12px); } 36% { fill: #FF5A5A; opacity: 1; transform: translate(0, 0); } 100% { fill: #FF5A5A; opacity: 0; transform: translate(var(--sisi), var(--jatuh)) rotate(var(--putar)); } }
+
+/* Pita cahaya yang menyapu logo latar, berhenti sejenak di bawah sebelum mengulang. */
+@keyframes sp-pita { 0% { transform: translateY(-10px); } 70%, 100% { transform: translateY(23px); } }
+.sp-pita { animation: sp-pita 4.2s cubic-bezier(0.45, 0, 0.55, 1) 1.7s infinite; transform: translateY(-10px); }
+
+/* Bingkai neon di tepi kartu Spiderman: biru saat menunggu, hijau saat diterima, merah saat dibatalkan. */
+.sp-kartu { --neon: 94, 208, 255; }
+.sp-diterima { --neon: 74, 222, 128; }
+.sp-batal { --neon: 255, 90, 90; }
+.sp-kartu::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 2px rgb(var(--neon)), inset 0 0 14px 2px rgba(var(--neon), 0.65), inset 0 0 40px rgba(var(--neon), 0.25);
+  animation: sp-neon 2.4s ease-in-out infinite;
+  transition: opacity 0.25s ease;
+}
+.sp-susut::after { opacity: 0; }
+@keyframes sp-neon { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
+
+/* Status tab map di atas dock: keluar naik dari balik dock. */
+@keyframes tab-status-naik { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.tab-status-naik { animation: tab-status-naik 0.34s cubic-bezier(0.3, 0.9, 0.3, 1) both; }
+
+/* Sudut cyan 2px di keempat pojok, penanda pilihan aktif (sama dengan tab dock). Warna latar diatur lewat background-color. */
+.sudut-cyan {
+  background-image: linear-gradient(var(--glow-blue), var(--glow-blue)), linear-gradient(var(--glow-blue), var(--glow-blue)), linear-gradient(var(--glow-blue), var(--glow-blue)), linear-gradient(var(--glow-blue), var(--glow-blue)), linear-gradient(var(--glow-blue), var(--glow-blue)), linear-gradient(var(--glow-blue), var(--glow-blue)), linear-gradient(var(--glow-blue), var(--glow-blue)), linear-gradient(var(--glow-blue), var(--glow-blue));
+  background-repeat: no-repeat;
+  background-position: left top, left top, right top, right top, left bottom, left bottom, right bottom, right bottom;
+  background-size: 10px 2px, 2px 10px, 10px 2px, 2px 10px, 10px 2px, 2px 10px, 10px 2px, 2px 10px;
+}
+
+/* Kilau kaca: satu pita cahaya diagonal lembut menyapu kartu menunggu dari kiri ke kanan, lalu diam sebentar. */
+.sp-kilau { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(115deg, transparent 35%, rgba(255, 255, 255, 0.2) 45%, rgba(255, 255, 255, 0.05) 55%, transparent 65%); animation: sp-kilau 5s ease-in-out infinite; transition: opacity 0.6s ease; }
+@keyframes sp-kilau { 0%, 55% { transform: translateX(-120%); } 100% { transform: translateX(120%); } }
+
+/* Popup kirim ke driver: latar meredup, kartu naik dari arah tombol GO sambil membesar, lalu garis ketiganya menyala sekilas. */
+.go-overlay-buka { animation: go-overlay-buka 0.25s ease-out both; }
+@keyframes go-overlay-buka { from { opacity: 0; } to { opacity: 1; } }
+.go-sheet-buka { animation: go-sheet-buka 0.38s cubic-bezier(0.2, 0.9, 0.3, 1) both; }
+@keyframes go-sheet-buka { 0% { opacity: 0; transform: translateY(60px) scale(0.92); } 60% { opacity: 1; } 100% { opacity: 1; transform: none; } }
+
+/* Pola peta ala game: garis horizontal penuh tiap 112px, dan garis vertikal yang lebih rapat (tiap 48px)
+   berupa titik-titik. Berada di atas panel peta tapi di bawah tombol zoom, tidak menangkap sentuhan. */
+.leaflet-container::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 401;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(94, 208, 255, 0.2) 1px, transparent 1px),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='3'%3E%3Crect width='1' height='1' fill='%235ED0FF' fill-opacity='.13'/%3E%3C/svg%3E");
+  background-size: 100% 112px, 48px 3px;
+}
+
+/* Spider sense: garis bergelombang di sekeliling kepala muncul membesar, berkedip bergantian dua kelompok, lalu memudar. */
+@keyframes sp-sense { 0% { opacity: 0; transform: scale(0.6); } 12% { opacity: 1; transform: scale(1.08); } 80% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(1.2); } }
+.sp-sense-g { transform-box: view-box; transform-origin: 21.5px 24.5px; animation: sp-sense 1.3s ease-out both; }
+@keyframes sp-sense-a { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0.35; } }
+@keyframes sp-sense-b { 0%, 49% { opacity: 0.35; } 50%, 100% { opacity: 1; } }
+.sp-sense-a { animation: sp-sense-a 0.18s steps(1, end) infinite; }
+.sp-sense-b { animation: sp-sense-b 0.18s steps(1, end) infinite; }

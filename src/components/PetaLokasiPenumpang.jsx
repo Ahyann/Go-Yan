@@ -1,4 +1,4 @@
-import { MapContainer, TileLayer, Marker, Popup, ZoomControl, useMap, useMapEvents } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
@@ -20,8 +20,7 @@ import { LOKASI_OFFICE, LOKASI_UPN } from '../lib/constants'
 const PUSAT_DEFAULT = [-6.2088, 106.8456]
 // Ukuran dan jarak tombol kontrol, hampir sama dengan peta di akun Fajri tapi sedikit lebih kecil.
 const JARAK_TOMBOL = 10
-const JARAK_DARI_ZOOM = 8
-const UKURAN_TOMBOL = 32
+const UKURAN_TOMBOL = 44
 const KEY_PETA_TERAKHIR = 'go-yan-peta-terakhir-ojek'
 
 const BATAS_PETA = [
@@ -177,29 +176,9 @@ export default function PetaLokasiPenumpang({
   const wrapRef = useRef(null)
   const bubblePenumpang = useBubblePesan(pesan, hapusPesan, 'peta-ahyan:bubble-fajri')
   const bubbleSaya = useBubblePesan(pesanSaya, hapusPesanSaya, 'peta-ahyan:bubble-ahyan')
-  const [posisiBar, setPosisiBar] = useState(null)
   const [sinyalLive, setSinyalLive] = useState(0)
   const markerOfficeRef = useRef(null)
   const markerKampusRef = useRef(null)
-
-  // Tombol kontrol tambahan ditaruh di bawah tombol +/- dengan jarak seperti di akun Fajri,
-  // posisinya diukur dari kontrol zoom Leaflet supaya selalu sejajar.
-  useEffect(() => {
-    function ukur() {
-      const wrap = wrapRef.current
-      const zoom = wrap?.querySelector('.leaflet-control-zoom')
-      if (!wrap || !zoom) return
-      const w = wrap.getBoundingClientRect()
-      const z = zoom.getBoundingClientRect()
-      setPosisiBar({ top: z.bottom - w.top + JARAK_DARI_ZOOM, right: w.right - z.right })
-    }
-    const id = requestAnimationFrame(ukur)
-    window.addEventListener('resize', ukur)
-    return () => {
-      cancelAnimationFrame(id)
-      window.removeEventListener('resize', ukur)
-    }
-  }, [])
 
   // Teks & foto sama-sama diturunkan langsung dari pesan (bukan state terpisah)
   // supaya popup gak sempat dirender kosong sesaat saat pesan berganti, karena
@@ -208,6 +187,8 @@ export default function PetaLokasiPenumpang({
   const teksBubbleSaya = pesanSaya?.teks ?? ''
   const fotoBubble = pesan?.foto ?? ''
   const fotoBubbleSaya = pesanSaya?.foto ?? ''
+  const suaraBubble = pesan?.suara ?? ''
+  const suaraBubbleSaya = pesanSaya?.suara ?? ''
 
   function handleRecenter() {
     if (posisiValid && mapRef.current) {
@@ -243,7 +224,6 @@ export default function PetaLokasiPenumpang({
         <TandaiGeserUser />
         <PusatkanKeSaya sinyal={sinyalLive} posisi={posisiSayaMarker} />
         <PantauUkuran />
-        <ZoomControl position="topright" />
 
         <TileLayer
           maxNativeZoom={20}
@@ -261,9 +241,9 @@ export default function PetaLokasiPenumpang({
               zIndexOffset={500}
               eventHandlers={bubblePenumpang.eventHandlers}
             >
-              {(teksBubble || fotoBubble) && (
+              {(teksBubble || fotoBubble || suaraBubble) && (
 <Popup closeButton={false} autoClose={false} closeOnClick={false} autoPan={false}>
-<BubblePesan teks={teksBubble} foto={fotoBubble} cermin onTutup={bubblePenumpang.tutup} geser={geserPopupCermin(37)} geserTeks={geserPopupTeksCermin(37)} />
+<BubblePesan teks={teksBubble} foto={fotoBubble} suara={suaraBubble} durasi={pesan?.durasiSuara} cermin onTutup={bubblePenumpang.tutup} geser={geserPopupCermin(37)} geserTeks={geserPopupTeksCermin(37)} />
 </Popup>
 )}
             </Marker>
@@ -280,9 +260,9 @@ export default function PetaLokasiPenumpang({
               zIndexOffset={1000}
               eventHandlers={bubbleSaya.eventHandlers}
             >
-              {(teksBubbleSaya || fotoBubbleSaya) && (
+              {(teksBubbleSaya || fotoBubbleSaya || suaraBubbleSaya) && (
 <Popup closeButton={false} autoClose={false} closeOnClick={false} autoPan={false}>
-<BubblePesan teks={teksBubbleSaya} foto={fotoBubbleSaya} onTutup={bubbleSaya.tutup} geser={geserPopupFoto} />
+<BubblePesan teks={teksBubbleSaya} foto={fotoBubbleSaya} suara={suaraBubbleSaya} durasi={pesanSaya?.durasiSuara} onTutup={bubbleSaya.tutup} geser={geserPopupFoto} />
 </Popup>
 )}
             </Marker>
@@ -341,15 +321,13 @@ export default function PetaLokasiPenumpang({
       {(tampilkanTombolLokasi || posisiValid || posisiSayaValid) && (
         <div
           className="peta-bar-tambahan"
-          style={{
-            ...s.barTambahan,
-            ...(posisiBar ?? { visibility: 'hidden' }),
-          }}
+          style={s.barTambahan}
         >
           {tampilkanTombolLokasi && (
             <button
               className="btn-map-control"
-              style={lokasiAktif ? s.lokasiIconAktif : s.kotakKontrol}
+              style={lokasiAktif ? s.liveAktif : s.liveMati}
+              aria-pressed={lokasiAktif}
               onClick={() => {
                 // Baru dinyalakan (bukan dimatikan): peta pindah ke karakter sendiri.
                 if (!lokasiAktif) setSinyalLive((n) => n + 1)
@@ -361,8 +339,10 @@ export default function PetaLokasiPenumpang({
                 <path d="M12 2C8 2 5 5 5 9c0 5.5 7 13 7 13s7-7.5 7-13c0-4-3-7-7-7z" />
                 <circle cx="12" cy="9" r="2.5" />
               </svg>
+              {lokasiAktif ? t.tombolLiveNyala : t.tombolLiveMati}
             </button>
           )}
+          <div style={s.grupLokasi}>
           {posisiValid && (
             <button
               className="btn-map-control"
@@ -389,6 +369,7 @@ export default function PetaLokasiPenumpang({
               </svg>
             </button>
           )}
+          </div>
         </div>
       )}
 
@@ -404,7 +385,7 @@ const s = {
   wrap: {
     position: 'relative',
     height: 420,
-    borderRadius: 12,
+    borderRadius: 0,
     overflow: 'hidden',
     border: '1px solid var(--blue-border)',
   },
@@ -434,45 +415,75 @@ const s = {
     textAlign: 'center',
     lineHeight: 1.2,
   },
+  // Baris tombol di tepi atas peta: LIVE di kiri, tombol lokasi di kanan.
   barTambahan: {
     position: 'absolute',
+    top: 10,
+    left: 10,
+    right: 10,
     zIndex: 1000,
     display: 'flex',
-    flexDirection: 'column',
+    alignItems: 'flex-start',
     gap: JARAK_TOMBOL,
+    pointerEvents: 'none',
+  },
+  grupLokasi: { marginLeft: 'auto', display: 'flex', background: 'var(--panel)', pointerEvents: 'auto' },
+  liveMati: {
+    pointerEvents: 'auto',
+    height: UKURAN_TOMBOL,
+    padding: '0 12px',
+    background: 'var(--panel)',
+    color: 'var(--text)',
+    display: 'flex',
+    alignItems: 'center',
+    gap: 8,
+    fontSize: 12,
+    fontWeight: 700,
+    letterSpacing: '0.06em',
+  },
+  liveAktif: {
+    pointerEvents: 'auto',
+    height: UKURAN_TOMBOL,
+    padding: '0 12px',
+    background: 'var(--nav-red)',
+    color: '#fff',
+    display: 'flex',
+    alignItems: 'center',
+    gap: 8,
+    fontSize: 12,
+    fontWeight: 700,
+    letterSpacing: '0.06em',
   },
   kotakKontrol: {
     width: UKURAN_TOMBOL,
     height: UKURAN_TOMBOL,
-    borderRadius: 8,
-    background: '#fff',
-    color: '#333',
+    borderRadius: 0,
+    background: 'var(--panel)',
+    color: 'var(--text)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    boxShadow: '0 1px 5px rgba(0,0,0,0.4)',
   },
   lokasiIconAktif: {
     width: UKURAN_TOMBOL,
     height: UKURAN_TOMBOL,
-    borderRadius: 8,
-    background: '#B8242F',
+    borderRadius: 0,
+    background: 'var(--nav-red)',
     color: '#fff',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    boxShadow: '0 0 10px #B8242F, 0 1px 5px rgba(0,0,0,0.4)',
   },
   badge: {
     position: 'absolute',
     left: 10,
     bottom: 10,
-    background: 'rgba(11,14,26,0.9)',
+    background: 'var(--panel)',
     color: 'var(--text)',
     fontSize: 12,
     fontWeight: 600,
     padding: '6px 10px',
-    borderRadius: 999,
+    borderRadius: 0,
     display: 'flex',
     alignItems: 'center',
     gap: 6,

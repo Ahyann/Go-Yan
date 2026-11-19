@@ -228,7 +228,7 @@ const s = {
     maxWidth: 360,
     background: 'linear-gradient(160deg, var(--card-blue-grad-a), var(--card-blue-grad-b))',
     border: '1px solid var(--blue-border)',
-    borderRadius: 16,
+    borderRadius: 0,
     padding: '22px 20px 20px',
     boxShadow: '0 0 24px rgba(43,158,232,0.35)',
     display: 'flex',
@@ -279,6 +279,6 @@ const s = {
     fontSize: 15,
     fontWeight: 700,
     padding: '13px',
-    borderRadius: 999,
+    borderRadius: 0,
   },
 }

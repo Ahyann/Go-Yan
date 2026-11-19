@@ -1,13 +1,16 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { STATUS_PERMINTAAN, AKSI } from '../lib/constants'
-import { playMisiDiterima } from '../lib/sound'
+import { playMisiDiterima, playPesananBatal } from '../lib/sound'
 import { useLokasiPenumpang, hapusLokasiPenumpangSekarang } from '../lib/useLokasiPenumpang'
 import { usePesanOjek } from '../lib/usePesanOjek'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import PetaLokasiPenumpang from '../components/PetaLokasiPenumpang.jsx'
+import SplashLabaLaba from '../components/SplashLabaLaba.jsx'
+import SpideyMenunggu from '../components/SpideyMenunggu.jsx'
 import MissionSuccessPopup from '../components/MissionSuccessPopup.jsx'
 import TombolFoto from '../components/TombolFoto.jsx'
+import TombolSuara from '../components/TombolSuara.jsx'
 import SwipeToFinish from '../components/SwipeToFinish.jsx'
 import DemoWelcomePopup from '../components/DemoWelcomePopup.jsx'
 
@@ -26,9 +29,69 @@ export default function OjekHomeTab({
   const adaPermintaanMasuk = permintaan?.status === STATUS_PERMINTAAN.MENUNGGU
   const sedangJalan = permintaan?.status === STATUS_PERMINTAAN.DITERIMA
   const lokasiPenumpang = useLokasiPenumpang()
-  const { kirimPesan, kirimFoto, hapusPesan } = usePesanOjek()
+  const { kirimPesan, kirimFoto, kirimSuara, hapusPesan } = usePesanOjek()
   const [teksPesan, setTeksPesan] = useState('')
   const [showMissionSuccess, setShowMissionSuccess] = useState(false)
+
+  // Layar pembuka abu-abu dilewati kalau halaman di-refresh saat ada misi yang menunggu jawaban.
+  const [lewatiSplash] = useState(() => {
+    try {
+      const waktu = Number(localStorage.getItem('goyan:menunggu-ojek'))
+      return waktu > 0 && Date.now() - waktu < 30 * 60 * 1000
+    } catch { return false }
+  })
+  const pernahMenunggu = useRef(false)
+  useEffect(() => {
+    try {
+      if (adaPermintaanMasuk) {
+        pernahMenunggu.current = true
+        localStorage.setItem('goyan:menunggu-ojek', String(Date.now()))
+      } else if (permintaan || pernahMenunggu.current) {
+        pernahMenunggu.current = false
+        localStorage.removeItem('goyan:menunggu-ojek')
+      }
+    } catch { /* abaikan */ }
+  }, [adaPermintaanMasuk, permintaan])
+
+  // Kartu Spiderman yang sama dengan sisi penumpang. Perubahan status dideteksi saat render supaya kartunya
+  // langsung berlanjut ke animasi "diterima" atau "dibatalkan" tanpa dipasang ulang.
+  const [transisiDiterima, setTransisiDiterima] = useState(false)
+  const [transisiBatal, setTransisiBatal] = useState(null) // 'tolak' | 'batal'
+  const [susutBatal, setSusutBatal] = useState(false)
+  const [statusLalu, setStatusLalu] = useState(permintaan?.status)
+  const dibuatPadaRef = useRef(permintaan?.dibuatPada)
+  if (permintaan?.dibuatPada) dibuatPadaRef.current = permintaan.dibuatPada
+  if (statusLalu !== permintaan?.status) {
+    setStatusLalu(permintaan?.status)
+    if (statusLalu === STATUS_PERMINTAAN.MENUNGGU) {
+      if (permintaan?.status === STATUS_PERMINTAAN.DITERIMA) setTransisiDiterima(true)
+      else if (permintaan?.status === STATUS_PERMINTAAN.DITOLAK || !permintaan?.status) {
+        setTransisiBatal(permintaan?.status === STATUS_PERMINTAAN.DITOLAK ? 'tolak' : 'batal')
+        setSusutBatal(false)
+      }
+    }
+  }
+  useEffect(() => {
+    if (!transisiDiterima) return undefined
+    const id = setTimeout(() => setTransisiDiterima(false), 1900)
+    return () => clearTimeout(id)
+  }, [transisiDiterima])
+  useEffect(() => {
+    if (!transisiBatal) return undefined
+    playPesananBatal()
+    const mulaiSusut = setTimeout(() => setSusutBatal(true), 2600)
+    const selesai = setTimeout(() => { setTransisiBatal(null); setSusutBatal(false) }, 3200)
+    return () => { clearTimeout(mulaiSusut); clearTimeout(selesai) }
+  }, [transisiBatal])
+  const tampilSpidey = adaPermintaanMasuk || transisiDiterima || !!transisiBatal
+  const teksSpidey = {
+    menunggu: t.ojekSpMasuk,
+    menungguSub: t.ojekSpMenungguSub,
+    diterima: t.ojekSpDiterima,
+    diterimaSub: t.ojekSpMenuju,
+    batal: transisiBatal === 'tolak' ? t.ojekSpTolak : t.ojekSpBatal,
+    batalSub: transisiBatal === 'tolak' ? t.ojekSpTolakSub : t.ojekSpBatalSub,
+  }
 
   function handleKirimPesan() {
     if (!teksPesan.trim()) return
@@ -87,20 +150,17 @@ export default function OjekHomeTab({
             lokasiAktif={sedangJalan ? lokasiAktif : undefined}
             onToggleLokasi={sedangJalan ? (lokasiAktif ? berhentiLokasi : mulaiLokasi) : undefined}
           />
+          {!lewatiSplash && <SplashLabaLaba ukuran={10} />}
+          {tampilSpidey && (
+            <div style={{ position: 'absolute', top: 0, bottom: 0, left: 14, right: 14, zIndex: 1100 }}>
+              <SpideyMenunggu dibuatPada={dibuatPadaRef.current} diterima={transisiDiterima} dibatalkan={!!transisiBatal} menyusut={susutBatal} isDemo={isDemo} teks={teksSpidey} gayaTolak />
+            </div>
+          )}
         </div>
 
         {adaPermintaanMasuk && (
           <div style={s.bawahCard}>
             <div style={s.misiBaruRow}>
-              <div style={s.spiderDangle}>
-                <div style={s.webThread} />
-                <svg className="spider-swing" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--glow-blue)" strokeWidth="1.7" strokeLinecap="round" style={{ filter: 'drop-shadow(0 0 4px var(--glow-blue-mid))' }}>
-                  <circle cx="12" cy="9.5" r="2.6" />
-                  <circle cx="12" cy="15" r="3.6" />
-                  <path d="M9 7.5 L4.5 5 M9 8.8 L3.5 8.8 M9 10.5 L4.5 12.5 M9 12.5 L5 15.5" />
-                  <path d="M15 7.5 L19.5 5 M15 8.8 L20.5 8.8 M15 10.5 L19.5 12.5 M15 12.5 L19 15.5" />
-                </svg>
-              </div>
               <div style={s.misiBaruLabel}>{isDemo ? t.misiBaruDemo : t.misiBaru}</div>
             </div>
             <div style={s.permintaanAksi}>
@@ -114,15 +174,20 @@ export default function OjekHomeTab({
           </div>
         )}
 
-        {sedangJalan && (
+        {sedangJalan && !transisiDiterima && (
           <div style={s.bawahCard}>
+            <div style={s.pita}>
+              <span>{t.misiBerjalan}</span>
+              <span style={s.pitaJam}>{permintaan.waktu}</span>
+            </div>
             <div style={s.jalanRow}>
               <span style={s.dotHijau} />
-              {permintaan.aksi === AKSI.JEMPUT ? t.sedangMenjemput : t.sedangMengantar} {isDemo ? t.namaDemo : 'Fajri'} · {permintaan.where} · {permintaan.waktu}
+              {permintaan.aksi === AKSI.JEMPUT ? t.sedangMenjemput : t.sedangMengantar} {isDemo ? t.namaDemo : 'Fajri'} · {permintaan.where}
             </div>
 
             <div style={{ ...s.pesanRow, opacity: lokasiAktif || isDemo ? 1 : 0.5 }}>
               <TombolFoto onKirimFoto={kirimFoto} disabled={!lokasiAktif && !isDemo} />
+              <TombolSuara onKirimSuara={kirimSuara} disabled={!lokasiAktif && !isDemo} />
               <input
                 style={s.pesanInput}
                 value={teksPesan}
@@ -182,9 +247,9 @@ const s = {
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
-    background: 'var(--card-blue)',
-    border: '1px solid var(--blue-border)',
-    borderRadius: 12,
+    background: 'var(--panel)',
+    border: '1px solid var(--garis)',
+    borderRadius: 0,
     overflow: 'hidden',
     minHeight: 0,
   },
@@ -199,7 +264,7 @@ const s = {
     display: 'flex',
     flexDirection: 'column',
     gap: 12,
-    borderTop: '1px solid var(--blue-border)',
+    borderTop: '1px solid var(--garis)',
   },
 
   permintaanLabel: { fontSize: 13, color: '#9FC3E8' },
@@ -238,13 +303,13 @@ const s = {
   tombolRow: { display: 'flex', gap: 10 },
   tolakBtn: {
     flex: 1,
-    background: 'rgba(255,255,255,0.06)',
-    color: '#8FB4DC',
+    background: 'transparent',
+    color: 'var(--text)',
     fontSize: 15,
     fontWeight: 600,
     padding: '13px',
-    borderRadius: 999,
-    border: '1px solid var(--blue-border)',
+    borderRadius: 0,
+    border: '1px solid var(--garis)',
   },
   terimaBtn: {
     flex: 1,
@@ -253,31 +318,45 @@ const s = {
     fontSize: 15,
     fontWeight: 600,
     padding: '13px',
-    borderRadius: 999,
+    borderRadius: 0,
   },
 
+  // Pita merah selebar kartu, menempel di tepi atas panel (padding panel 16).
+  pita: {
+    margin: '-16px -16px 0',
+    background: 'var(--nav-red)',
+    color: '#fff',
+    padding: '8px 16px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    fontSize: 12,
+    fontWeight: 700,
+    letterSpacing: '0.06em',
+  },
+  pitaJam: { fontFamily: 'var(--font-data)' },
   jalanRow: { display: 'flex', alignItems: 'center', fontSize: 14.5, fontWeight: 600, color: 'var(--text)' },
   dotHijau: {
-    width: 7, height: 7, borderRadius: '50%', background: 'var(--signal)',
-    display: 'inline-block', marginRight: 8, boxShadow: '0 0 5px var(--signal)',
+    width: 8, height: 8, borderRadius: '50%', background: 'var(--signal)',
+    display: 'inline-block', marginRight: 8,
   },
-  pesanRow: { display: 'flex', gap: 8 },
+  pesanRow: { display: 'flex', gap: 8, position: 'relative' },
   pesanInput: {
     flex: 1,
-    background: 'rgba(255,255,255,0.06)',
-    border: '1px solid var(--blue-border)',
-    borderRadius: 10,
+    background: 'var(--bg)',
+    border: '1px solid var(--garis)',
+    borderRadius: 0,
     padding: '10px 12px',
     fontSize: 14,
     color: 'var(--text)',
   },
   pesanBtn: {
-    background: 'var(--glow-blue-mid)',
+    background: 'var(--nav-red)',
     color: '#fff',
     fontSize: 13.5,
     fontWeight: 600,
     padding: '10px 16px',
-    borderRadius: 10,
+    borderRadius: 0,
   },
   pesanHint: {
     fontSize: 11.5,
@@ -292,6 +371,6 @@ const s = {
     fontSize: 15,
     fontWeight: 700,
     padding: '13px',
-    borderRadius: 999,
+    borderRadius: 0,
   },
 }

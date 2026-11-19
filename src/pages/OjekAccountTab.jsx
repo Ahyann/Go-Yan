@@ -261,7 +261,7 @@ const s = {
   card: {
     background: 'var(--card-blue)',
     border: '1px solid var(--blue-border)',
-    borderRadius: 12,
+    borderRadius: 0,
     padding: 18,
   },
   profilRow: {
@@ -325,7 +325,7 @@ const s = {
     fontSize: 15,
     fontWeight: 600,
     padding: '14px',
-    borderRadius: 999,
+    borderRadius: 0,
   },
   overlay: {
     position: 'fixed',
@@ -342,7 +342,7 @@ const s = {
     maxWidth: 360,
     background: `linear-gradient(160deg, var(--card-blue-grad-a), var(--card-blue-grad-b))`,
     border: '1px solid var(--blue-border)',
-    borderRadius: 16,
+    borderRadius: 0,
     padding: 20,
     display: 'flex',
     flexDirection: 'column',
@@ -435,7 +435,7 @@ const s = {
     fontSize: 14,
     fontWeight: 600,
     padding: '12px',
-    borderRadius: 999,
+    borderRadius: 0,
     border: '1px solid var(--blue-border)',
   },
   gantiBtn: {
@@ -445,6 +445,6 @@ const s = {
     fontSize: 14,
     fontWeight: 600,
     padding: '12px',
-    borderRadius: 999,
+    borderRadius: 0,
   },
 }

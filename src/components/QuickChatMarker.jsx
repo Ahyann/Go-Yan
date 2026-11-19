@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import RodaPesan, { indeksDariArah } from './RodaPesan.jsx'
+import { playPilihRoda } from '../lib/sound'
 
 const DURASI_TAHAN = 250
 
@@ -94,7 +95,10 @@ export default function QuickChatMarker({ marker, siap, ikon, aktif, onKirim, pe
       if (baru !== idx) {
         idx = baru
         setTerpilih(baru)
-        if (baru !== null) navigator.vibrate?.(8)
+        if (baru !== null) {
+          navigator.vibrate?.(8)
+          playPilihRoda(baru)
+        }
       }
     }
 

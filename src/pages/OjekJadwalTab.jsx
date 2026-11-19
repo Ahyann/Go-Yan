@@ -62,7 +62,7 @@ const s = {
     fontWeight: 600,
     color: '#8FB4DC',
     padding: '6px 14px',
-    borderRadius: 999,
+    borderRadius: 0,
     border: '1px solid var(--blue-border)',
     background: 'var(--card-blue)',
     flexShrink: 0,

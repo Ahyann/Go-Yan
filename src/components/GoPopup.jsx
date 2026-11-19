@@ -32,16 +32,18 @@ export default function GoPopup({ onClose, onSubmit }) {
   }
 
   return createPortal(
-    <div style={s.overlay} onClick={onClose}>
-      <div style={s.sheet} onClick={(e) => e.stopPropagation()}>
+    <div className="go-overlay-buka" style={s.overlay} onClick={onClose}>
+      <div className="go-sheet-buka" style={s.sheet} onClick={(e) => e.stopPropagation()}>
         <div style={s.toggleRow}>
           <button
+            className={aksi === AKSI.JEMPUT ? 'tekan sudut-cyan' : 'tekan'}
             style={aksi === AKSI.JEMPUT ? s.toggleActive : s.toggle}
             onClick={() => setAksi(AKSI.JEMPUT)}
           >
             {t.jemput}
           </button>
           <button
+            className={aksi === AKSI.ANTAR ? 'tekan sudut-cyan' : 'tekan'}
             style={aksi === AKSI.ANTAR ? s.toggleActive : s.toggle}
             onClick={() => setAksi(AKSI.ANTAR)}
           >
@@ -102,14 +104,16 @@ export default function GoPopup({ onClose, onSubmit }) {
           <TimeWheelPicker value={waktu} onChange={setWaktu} />
         </div>
 
-        <button style={s.kirim} onClick={handleKirim}>
-          {isDemo ? t.kirimKeDriver : t.kirimKeAhyan}
+        <button className="tekan" style={s.kirim} onClick={handleKirim}>
+          <span style={s.kirimTeks}>{isDemo ? t.kirimKeDriver : t.kirimKeAhyan}</span>
         </button>
       </div>
     </div>,
     document.body
   )
 }
+
+const MONO = 'var(--font-data)'
 
 const s = {
   overlay: {
@@ -125,40 +129,50 @@ const s = {
   sheet: {
     width: '100%',
     maxWidth: 400,
-    background: `linear-gradient(160deg, var(--card-blue-grad-a), var(--card-blue-grad-b))`,
-    border: '1px solid var(--blue-border)',
-    borderRadius: 16,
-    padding: '24px 20px',
+    boxSizing: 'border-box',
+    background: 'var(--panel)',
+    border: '1px solid rgba(96, 192, 240, 0.4)',
+    borderRadius: 0,
+    padding: '20px 18px',
     display: 'flex',
     flexDirection: 'column',
     gap: 16,
   },
-  toggleRow: { display: 'flex', gap: 8 },
+  toggleRow: { display: 'flex', gap: 4, background: '#011A29', border: '1px solid rgba(96, 192, 240, 0.4)', padding: 4 },
   toggle: {
     flex: 1,
-    padding: '11px',
-    borderRadius: 999,
-    background: 'rgba(255,255,255,0.06)',
-    color: '#8FB4DC',
-    fontSize: 14.5,
-    fontWeight: 600,
-    border: '1px solid var(--blue-border)',
+    height: 40,
+    borderRadius: 0,
+    backgroundColor: 'transparent',
+    color: '#B0BAD6',
+    opacity: 0.7,
+    fontFamily: MONO,
+    fontSize: 12,
+    fontWeight: 700,
+    letterSpacing: '0.14em',
+    textTransform: 'uppercase',
   },
   toggleActive: {
     flex: 1,
-    padding: '11px',
-    borderRadius: 999,
-    background: 'var(--nav-red)',
-    color: '#fff',
-    fontSize: 14.5,
-    fontWeight: 600,
+    height: 40,
+    borderRadius: 0,
+    backgroundColor: 'rgba(94, 208, 255, 0.14)',
+    color: 'var(--glow-blue)',
+    fontFamily: MONO,
+    fontSize: 12,
+    fontWeight: 700,
+    letterSpacing: '0.14em',
+    textTransform: 'uppercase',
   },
   label: {
     display: 'flex',
     flexDirection: 'column',
     gap: 6,
-    fontSize: 13,
-    color: '#9FC3E8',
+    fontFamily: MONO,
+    fontSize: 10,
+    letterSpacing: '0.14em',
+    textTransform: 'uppercase',
+    color: '#B0BAD6',
   },
   inputWrap: { position: 'relative' },
   dropdownBtn: {
@@ -171,17 +185,17 @@ const s = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    color: '#8FB4DC',
-    borderRadius: 8,
+    color: 'var(--glow-blue)',
+    borderRadius: 0,
   },
   dropdownList: {
     position: 'absolute',
     top: 'calc(100% + 6px)',
     left: 0,
     right: 0,
-    background: 'var(--card-blue)',
-    border: '1px solid var(--blue-border)',
-    borderRadius: 10,
+    background: '#011A29',
+    border: '1px solid rgba(96, 192, 240, 0.4)',
+    borderRadius: 0,
     overflow: 'hidden',
     zIndex: 10,
   },
@@ -190,27 +204,43 @@ const s = {
     width: '100%',
     textAlign: 'left',
     padding: '11px 14px',
+    fontFamily: MONO,
     fontSize: 14,
+    fontWeight: 700,
     color: 'var(--text)',
     background: 'transparent',
   },
   input: {
     width: '100%',
     boxSizing: 'border-box',
-    background: 'rgba(255,255,255,0.06)',
-    border: '1px solid var(--blue-border)',
-    borderRadius: 10,
-    padding: '12px 40px 12px 14px',
-    fontSize: 15,
+    height: 46,
+    background: '#011A29',
+    border: '1px solid rgba(96, 192, 240, 0.4)',
+    borderRadius: 0,
+    padding: '0 40px 0 14px',
+    fontFamily: MONO,
+    fontSize: 14,
+    fontWeight: 700,
+    textTransform: 'none',
+    letterSpacing: 'normal',
     color: 'var(--text)',
   },
   kirim: {
+    height: 54,
     background: 'var(--nav-red)',
+    borderRadius: 0,
+    marginTop: 4,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  kirimTeks: {
+    display: 'block',
+    transform: 'skewX(-8deg)',
+    fontFamily: 'var(--font-judul)',
+    fontSize: 26,
+    letterSpacing: '0.06em',
     color: '#fff',
-    fontSize: 15,
-    fontWeight: 600,
-    padding: '14px',
-    borderRadius: 999,
-    marginTop: 6,
+    textTransform: 'uppercase',
   },
 }

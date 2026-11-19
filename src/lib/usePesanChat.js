@@ -13,14 +13,14 @@ import { catat } from './debugLog'
 // dikirim ulang sekali supaya gak ilang.
 const JENDELA_PULIH_MS = 1500
 
-// Format pesan di database: { v: 2, t: teks, f: foto (opsional), d: waktu }.
+// Format pesan di database: { v: 2, t: teks, f: foto (opsional), s: suara (opsional, data URL), u: durasi suara (detik), d: waktu }.
 // Sengaja beda nama field dari versi lama (teks/foto/dibuatPada): perangkat
 // yang masih menjalankan app versi lama gak ngenalin field baru, jadi gak
 // nampilin bubble dan gak ikut-ikutan ngehapus pesan (versi lama pernah
 // punya bug yang ngehapus pesan pas isinya ganti dari teks ke foto).
 function bacaPesan(v) {
   if (!v) return null
-  if (v.v === 2) return { teks: v.t ?? '', foto: v.f, dibuatPada: v.d }
+  if (v.v === 2) return { teks: v.t ?? '', foto: v.f, suara: v.s, durasiSuara: v.u, dibuatPada: v.d }
   return { teks: v.teks ?? '', foto: v.foto, dibuatPada: v.dibuatPada } // format lama
 }
 
@@ -41,7 +41,7 @@ export function usePesanChat({ nama, path, tujuanNotif, judulNotif }) {
 
     const berhentiDengar = onValue(PESAN_REF, (snap) => {
       const nilai = snap.exists() ? bacaPesan(snap.val()) : null
-      catat(`[${nama}] data masuk:`, nilai ? (nilai.foto ? 'FOTO' : `teks "${nilai.teks}"`) : 'KOSONG')
+      catat(`[${nama}] data masuk:`, nilai ? (nilai.foto ? 'FOTO' : nilai.suara ? 'SUARA' : `teks "${nilai.teks}"`) : 'KOSONG')
 
       const k = terakhirKirimRef.current
       if (!nilai && k?.konfirmasiPada && !k.sudahDipulihkan && Date.now() - k.konfirmasiPada < JENDELA_PULIH_MS) {
@@ -78,11 +78,18 @@ export function usePesanChat({ nama, path, tujuanNotif, judulNotif }) {
     if (!isDemo) kirimNotifikasi(tujuanNotif, judulNotif, '📷 Foto', 'pesan')
   }
 
+  async function kirimSuara(suara, durasi) {
+    if (!suara) return
+    catat(`[${nama}] kirim suara`, `${durasi}s`)
+    await tulis({ v: 2, t: '', s: suara, u: durasi, d: Date.now() })
+    if (!isDemo) kirimNotifikasi(tujuanNotif, judulNotif, '🎤 Pesan suara', 'pesan')
+  }
+
   async function hapusPesan() {
     catat(`[${nama}] HAPUS dipanggil dari:`, (new Error().stack || '').split(String.fromCharCode(10)).slice(2, 5).join(' < '))
     terakhirKirimRef.current = null // hapus sengaja, jangan dipulihkan
     await remove(PESAN_REF)
   }
 
-  return { pesan, siap, kirimPesan, kirimFoto, hapusPesan }
+  return { pesan, siap, kirimPesan, kirimFoto, kirimSuara, hapusPesan }
 }

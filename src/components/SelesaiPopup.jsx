@@ -40,26 +40,27 @@ export default function SelesaiPopup({ data, onDismiss }) {
     }, DURASI_ANIMASI)
   }
 
-  const tanggalFormatted = new Date(data.tanggal).toLocaleDateString(
-    lang === 'id' ? 'id-ID' : 'en-US',
-    { day: 'numeric', month: 'long', year: 'numeric' }
-  )
+  const tanggalFormatted = new Date(data.tanggal)
+    .toLocaleDateString(lang === 'id' ? 'id-ID' : 'en-US', { day: 'numeric', month: 'short', year: 'numeric' })
+    .replace(/\./g, '')
 
   return createPortal(
     <div style={s.wrapLuar}>
       <div style={{ ...s.card, ...(tampil ? s.cardTampil : s.cardSembunyi) }}>
-        <div style={s.ikonWrap}>
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--signal)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="10" />
-            <path d="M8 12l3 3 5-6" />
-          </svg>
-        </div>
+        <svg className="koin-putar" width="40" height="40" viewBox="0 0 10 10" shapeRendering="crispEdges" style={s.koin} aria-hidden="true">
+          <path d="M3 0h4v1h2v2h1v4H9v2H7v1H3V9H1V7H0V3h1V1h2z" fill="#FACC15" />
+          <path d="M3 1h4v1h1v1h1v4H8v1H7v1H3V8H2V7H1V3h1V2h1z" fill="#FDE68A" />
+          <rect x="4" y="2" width="2" height="6" fill="#CA8A04" />
+          <rect x="3" y="3" width="4" height="1" fill="#CA8A04" />
+          <rect x="3" y="6" width="4" height="1" fill="#CA8A04" />
+        </svg>
         <div style={s.isi}>
-          <div style={s.judul}>{t.selesaiJudul}</div>
-          <div style={s.tanggal}>{tanggalFormatted}</div>
+          <div style={s.judul}>
+            {t.selesaiJudul} <span style={s.tanggal}>&middot; {tanggalFormatted}</span>
+          </div>
           <div style={s.tarif}>{formatRupiah(data.tarif)}</div>
         </div>
-        <button style={s.okeBtn} onClick={handleOkeDitekan}>{t.selesaiOke}</button>
+        <button className="tekan tombol-oke" style={s.okeBtn} onClick={handleOkeDitekan}>{t.selesaiOke}</button>
       </div>
     </div>,
     document.body
@@ -79,18 +80,19 @@ const s = {
     zIndex: 9999999,
     pointerEvents: 'none',
   },
+  // Koin emas berputar di kiri, tarif besar berwarna emas, tombol OK kecil bergaris di kanan.
   card: {
     pointerEvents: 'auto',
     width: '100%',
     maxWidth: 420,
-    background: `linear-gradient(160deg, var(--card-blue-grad-a), var(--card-blue-grad-b))`,
-    border: '1px solid var(--glow-blue-mid)',
-    borderRadius: 16,
-    padding: '16px 18px',
+    boxSizing: 'border-box',
     display: 'flex',
     alignItems: 'center',
-    gap: 12,
-    boxShadow: '0 8px 24px rgba(0,0,0,0.5), 0 0 20px rgba(94,208,255,0.25)',
+    gap: 14,
+    background: 'var(--panel)',
+    borderTop: '3px solid #FACC15',
+    padding: '12px 14px',
+    boxShadow: '4px 4px 0 rgba(0, 0, 0, 0.4)',
     transition: `transform ${DURASI_ANIMASI}ms ease, opacity ${DURASI_ANIMASI}ms ease`,
   },
   cardSembunyi: {
@@ -101,35 +103,21 @@ const s = {
     transform: 'translateY(0)',
     opacity: 1,
   },
-  ikonWrap: {
-    flexShrink: 0,
-    width: 44,
-    height: 44,
-    borderRadius: '50%',
-    background: 'rgba(74,222,128,0.15)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  koin: { flexShrink: 0, display: 'block' },
   isi: { flex: 1, minWidth: 0 },
-  judul: { fontSize: 14, fontWeight: 700, color: 'var(--text)' },
-  tanggal: { fontSize: 12, color: '#9FC3E8', marginTop: 2 },
-  tarif: {
-    fontFamily: 'var(--font-data)',
-    fontWeight: 700,
-    fontSize: 17,
-    color: 'var(--glow-blue)',
-    textShadow: '0 0 6px var(--glow-blue-mid)',
-    marginTop: 4,
-  },
+  judul: { fontSize: 12, color: 'var(--text-dim)' },
+  tanggal: { fontFamily: 'var(--font-data)', fontSize: 10, letterSpacing: '0.06em', textTransform: 'uppercase' },
+  tarif: { fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 26, color: '#FDE68A', lineHeight: 1.1, marginTop: 2 },
   okeBtn: {
     flexShrink: 0,
-    background: 'rgba(94,208,255,0.15)',
+    height: 32,
+    padding: '0 14px',
+    background: 'transparent',
     color: 'var(--glow-blue)',
-    fontSize: 13,
-    fontWeight: 600,
-    padding: '9px 16px',
-    borderRadius: 999,
-    border: '1px solid var(--glow-blue-mid)',
+    fontSize: 12,
+    fontWeight: 700,
+    letterSpacing: '0.08em',
+    border: '1px solid var(--glow-blue)',
+    borderRadius: 0,
   },
 }

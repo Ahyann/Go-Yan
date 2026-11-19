@@ -77,7 +77,7 @@ export default function PojokPengaturan({ role }) {
 const dasar = {
   width: 32,
   height: 32,
-  borderRadius: '50%',
+  borderRadius: 0,
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',

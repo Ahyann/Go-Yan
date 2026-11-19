@@ -99,7 +99,10 @@ const JadwalMingguan = forwardRef(function JadwalMingguan(
                 </svg>
               </span>
             )}
-            <div style={s.hariLabel}>{label}</div>
+            <div style={adaJadwal ? s.hariLabel : s.hariLabelRedup}>
+              <span style={adaJadwal ? s.penanda : s.penandaKosong} />
+              {label}
+            </div>
 
             <div style={s.aksiGrid}>
               <AksiChip
@@ -126,17 +129,19 @@ const JadwalMingguan = forwardRef(function JadwalMingguan(
 
         if (bisaTandaiSelesai && adaJadwal) {
           return (
-            <SwipeableCheck key={key} selesai={selesai} onToggle={(v) => handleToggleSelesai(key, v)}>
-              {isiHari}
-            </SwipeableCheck>
+            <div key={key} className="naik-masuk" style={{ '--i': i + 1 }}>
+              <SwipeableCheck selesai={selesai} onToggle={(v) => handleToggleSelesai(key, v)}>
+                {isiHari}
+              </SwipeableCheck>
+            </div>
           )
         }
 
-        return <div key={key}>{isiHari}</div>
+        return <div key={key} className="naik-masuk" style={{ '--i': i + 1 }}>{isiHari}</div>
       })}
 
       {bisaEdit && (
-        <button style={s.simpanBtn} onClick={handleSimpan} disabled={menyimpan}>
+        <button className="tekan naik-masuk" style={{ ...s.simpanBtn, '--i': 7 }} onClick={handleSimpan} disabled={menyimpan}>
           {menyimpan ? t.menyimpan : tersimpan ? t.tersimpan : t.simpanJadwal}
         </button>
       )}
@@ -149,8 +154,8 @@ const JadwalMingguan = forwardRef(function JadwalMingguan(
             </div>
             <TimeWheelPicker value={tempJam} onChange={setTempJam} />
             <div style={s.tombolRow}>
-              <button style={s.cancelBtn} onClick={handleCancelJam}>{t.batal}</button>
-              <button style={s.selesaiBtn} onClick={handleSelesaiJam}>{t.selesai}</button>
+              <button className="tekan" style={s.cancelBtn} onClick={handleCancelJam}>{t.batal}</button>
+              <button className="tekan" style={s.selesaiBtn} onClick={handleSelesaiJam}>{t.selesai}</button>
             </div>
           </div>
         </div>,
@@ -163,168 +168,167 @@ const JadwalMingguan = forwardRef(function JadwalMingguan(
 export default JadwalMingguan
 
 function AksiChip({ label, aktif, jam, bisaEdit, onToggle, onBukaJam, placeholderJam }) {
-  return (
-    <div style={s.aksiItem}>
-      {bisaEdit ? (
-        <button style={aktif ? s.chipAktif : s.chip} onClick={onToggle}>
-          {label}
-        </button>
-      ) : (
-        <span style={aktif ? s.chipBacaAktif : s.chipBacaRedup}>{label}</span>
-      )}
-
-      <div style={s.jamSlot}>
-        {aktif && bisaEdit && (
-          <button style={jam ? s.jamBtn : s.jamBtnKosong} onClick={onBukaJam}>
-            {jam || placeholderJam}
-          </button>
-        )}
-        {aktif && !bisaEdit && (
-          <span style={s.jamBacaTeks}>{jam || placeholderJam}</span>
-        )}
+  // Mode baca (akun Ojek): cuma teks, nggak ada tombol.
+  if (!bisaEdit) {
+    if (!aktif) return <span style={s.bacaRedup}>{label}</span>
+    return (
+      <div style={s.slotAktif}>
+        <span style={s.bacaAktif}>{label}</span>
+        <span style={s.bacaJam}>{jam || placeholderJam}</span>
       </div>
+    )
+  }
+
+  if (!aktif) {
+    return (
+      <button className="tekan" style={s.chip} onClick={onToggle} aria-pressed={false}>
+        {label}
+      </button>
+    )
+  }
+
+  return (
+    <div style={s.slotAktif}>
+      <button className="tekan" style={s.chipAktif} onClick={onToggle} aria-pressed>
+        {label}
+      </button>
+      <button className="tekan" style={jam ? s.jamBtn : s.jamBtnKosong} onClick={onBukaJam}>
+        {jam || placeholderJam}
+      </button>
     </div>
   )
 }
 
 const s = {
-  wrap: { display: 'flex', flexDirection: 'column', gap: 10 },
+  wrap: { display: 'flex', flexDirection: 'column' },
   hariBlok: {
     position: 'relative',
     width: '100%',
     boxSizing: 'border-box',
-    background: 'var(--card-blue)',
-    border: '1px solid var(--blue-border)',
-    borderRadius: 10,
-    padding: '12px 14px',
+    background: 'var(--bg)',
+    borderBottom: '1px solid var(--garis)',
+    padding: '8px 0',
     display: 'grid',
-    gridTemplateColumns: '78px 1fr',
+    gridTemplateColumns: '98px 1fr',
     alignItems: 'center',
     gap: 8,
-    transition: 'border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease',
+    transition: 'box-shadow 0.25s ease, background 0.25s ease',
   },
   hariBlokSelesai: {
-    border: '1px solid var(--glow-blue)',
-    boxShadow: '0 0 10px rgba(94,208,255,0.55)',
-    background: 'var(--card-blue)',
+    background: 'var(--panel)',
+    boxShadow: 'inset 0 0 0 1px var(--glow-blue)',
+    padding: '10px 8px',
   },
   hariLabel: {
-    fontSize: 13,
-    fontWeight: 700,
+    display: 'flex',
+    alignItems: 'center',
+    gap: 8,
+    fontSize: 13.5,
+    fontWeight: 600,
     lineHeight: 1.3,
     color: 'var(--text)',
   },
+  hariLabelRedup: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 8,
+    fontSize: 13.5,
+    fontWeight: 600,
+    lineHeight: 1.3,
+    color: 'var(--text-dim)',
+  },
+  penanda: { width: 8, height: 8, borderRadius: 0, background: 'var(--glow-blue)', flexShrink: 0 },
+  penandaKosong: { width: 8, height: 8, borderRadius: 0, boxSizing: 'border-box', border: '2px solid #7FA3BC', flexShrink: 0 },
   badgeSelesai: {
     position: 'absolute',
     top: 5,
     right: 5,
     width: 10,
     height: 10,
-    borderRadius: '50%',
     background: 'var(--glow-blue)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    boxShadow: '0 0 5px rgba(94,208,255,0.7)',
     zIndex: 1,
   },
   aksiGrid: {
     display: 'grid',
     gridTemplateColumns: '1fr 1fr',
-    gap: 10,
-  },
-  aksiItem: {
-    display: 'grid',
-    gridTemplateColumns: '62px 1fr',
-    alignItems: 'center',
     gap: 8,
   },
-  chip: {
-    fontSize: 12.5,
-    fontWeight: 600,
-    padding: '7px 0',
-    width: '100%',
-    boxSizing: 'border-box',
-    textAlign: 'center',
-    borderRadius: 999,
-    background: 'rgba(255,255,255,0.06)',
-    color: '#8FB4DC',
-    border: '1px solid var(--blue-border)',
-  },
-  chipAktif: {
-    fontSize: 12.5,
-    fontWeight: 600,
-    padding: '7px 0',
-    width: '100%',
-    boxSizing: 'border-box',
-    textAlign: 'center',
-    borderRadius: 999,
-    background: 'rgba(94,208,255,0.18)',
-    color: 'var(--glow-blue)',
-    border: '1px solid var(--glow-blue-mid)',
-    textShadow: '0 0 4px var(--glow-blue-mid)',
-  },
-  chipBacaAktif: {
-    display: 'block',
-    width: '100%',
-    boxSizing: 'border-box',
-    fontSize: 12.5,
-    fontWeight: 600,
-    lineHeight: 1.3,
-    color: 'var(--glow-blue)',
-    textShadow: '0 0 4px var(--glow-blue-mid)',
-  },
-  chipBacaRedup: {
-    display: 'block',
-    width: '100%',
-    boxSizing: 'border-box',
-    fontSize: 12.5,
-    fontWeight: 600,
-    lineHeight: 1.3,
-    color: 'var(--text-dim)',
-    opacity: 0.5,
-  },
-  jamSlot: {
+  // Slot yang nyala: label di kiri, jam di kanan, satu blok gelap.
+  slotAktif: {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr',
+    alignItems: 'center',
+    background: 'var(--panel)',
+    borderRadius: 0,
     minWidth: 0,
   },
-  jamBtn: {
-    fontFamily: 'var(--font-data)',
-    fontSize: 12.5,
-    background: 'rgba(255,255,255,0.06)',
-    border: '1px solid var(--blue-border)',
-    borderRadius: 8,
-    padding: '6px 4px',
-    color: 'var(--text)',
+  chip: {
+    height: 40,
     width: '100%',
     boxSizing: 'border-box',
+    fontSize: 12,
+    fontWeight: 600,
     textAlign: 'center',
+    color: 'var(--text-dim)',
+    border: '1px solid var(--garis)',
+    borderRadius: 0,
+  },
+  chipAktif: {
+    height: 40,
+    fontSize: 12,
+    fontWeight: 600,
+    textAlign: 'center',
+    color: 'var(--glow-blue)',
+  },
+  jamBtn: {
+    height: 40,
+    fontFamily: 'var(--font-data)',
+    fontSize: 13,
+    textAlign: 'center',
+    color: 'var(--text)',
+    borderLeft: '1px solid var(--garis)',
   },
   jamBtnKosong: {
-    fontFamily: 'var(--font-data)',
-    fontSize: 12.5,
-    background: 'rgba(255,255,255,0.06)',
-    border: '1px dashed var(--blue-border)',
-    borderRadius: 8,
-    padding: '6px 4px',
-    color: 'var(--text-dim)',
-    width: '100%',
-    boxSizing: 'border-box',
+    height: 40,
+    fontSize: 12,
     textAlign: 'center',
+    color: 'var(--text-dim)',
+    borderLeft: '1px solid var(--garis)',
   },
-  jamBacaTeks: {
-    display: 'block',
-    fontFamily: 'var(--font-data)', fontSize: 12.5,
-    lineHeight: 1.3,
-    color: 'var(--glow-blue)', textShadow: '0 0 4px var(--glow-blue-mid)',
+  bacaAktif: {
+    fontSize: 12,
+    fontWeight: 600,
+    lineHeight: '40px',
+    textAlign: 'center',
+    color: 'var(--glow-blue)',
+  },
+  bacaJam: {
+    fontFamily: 'var(--font-data)',
+    fontSize: 13,
+    lineHeight: '40px',
+    textAlign: 'center',
+    color: 'var(--text)',
+    borderLeft: '1px solid var(--garis)',
+  },
+  bacaRedup: {
+    fontSize: 12,
+    fontWeight: 600,
+    lineHeight: '40px',
+    textAlign: 'center',
+    color: 'var(--text-dim)',
+    opacity: 0.6,
   },
   simpanBtn: {
-    marginTop: 6,
+    marginTop: 20,
+    height: 48,
     background: 'var(--nav-red)',
     color: '#fff',
     fontSize: 15,
     fontWeight: 600,
-    padding: '13px',
-    borderRadius: 999,
+    borderRadius: 0,
   },
 
   overlay: {
@@ -340,9 +344,8 @@ const s = {
   sheet: {
     width: '100%',
     maxWidth: 360,
-    background: `linear-gradient(160deg, var(--card-blue-grad-a), var(--card-blue-grad-b))`,
-    border: '1px solid var(--blue-border)',
-    borderRadius: 16,
+    background: 'var(--panel)',
+    border: '2px solid var(--glow-blue)',
     padding: '20px',
     display: 'flex',
     flexDirection: 'column',
@@ -352,21 +355,20 @@ const s = {
   tombolRow: { display: 'flex', gap: 10 },
   cancelBtn: {
     flex: 1,
-    background: 'rgba(255,255,255,0.06)',
-    color: '#8FB4DC',
+    height: 48,
+    color: 'var(--text)',
     fontSize: 15,
     fontWeight: 600,
-    padding: '13px',
-    borderRadius: 999,
-    border: '1px solid var(--blue-border)',
+    border: '1px solid var(--garis)',
+    borderRadius: 0,
   },
   selesaiBtn: {
     flex: 1,
+    height: 48,
     background: 'var(--nav-red)',
     color: '#fff',
     fontSize: 15,
     fontWeight: 600,
-    padding: '13px',
-    borderRadius: 999,
+    borderRadius: 0,
   },
 }

@@ -173,7 +173,7 @@ const s = {
   input: {
     background: 'var(--card-blue)',
     border: '1px solid var(--blue-border)',
-    borderRadius: 10,
+    borderRadius: 0,
     padding: '13px 14px',
     fontSize: 15,
     color: 'var(--text)',
@@ -184,7 +184,7 @@ const s = {
     boxSizing: 'border-box',
     background: 'var(--card-blue)',
     border: '1px solid var(--blue-border)',
-    borderRadius: 10,
+    borderRadius: 0,
     padding: '13px 44px 13px 14px',
     fontSize: 15,
     color: 'var(--text)',
@@ -200,14 +200,14 @@ const s = {
     alignItems: 'center',
     justifyContent: 'center',
     color: '#8FB4DC',
-    borderRadius: 8,
+    borderRadius: 0,
   },
   error: {
     fontSize: 13,
     color: 'var(--web-red)',
     background: 'var(--card-blue)',
     border: '1px solid var(--web-red)',
-    borderRadius: 10,
+    borderRadius: 0,
     padding: '10px 14px',
   },
   submit: {
@@ -216,7 +216,7 @@ const s = {
     fontSize: 15,
     fontWeight: 600,
     padding: '14px',
-    borderRadius: 999,
+    borderRadius: 0,
     marginTop: 6,
   },
   demoWrap: {
@@ -255,7 +255,7 @@ const s = {
     fontSize: 13.5,
     fontWeight: 600,
     padding: '13px 8px',
-    borderRadius: 999,
+    borderRadius: 0,
     border: '1px solid var(--glow-blue-mid)',
   },
 }

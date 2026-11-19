@@ -1,8 +1,12 @@
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import { STATUS_BAYAR, formatRupiah } from '../lib/constants'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
+import { useHitungNaik } from '../lib/useHitungNaik'
 import MonthPickerPopup from '../components/MonthPickerPopup.jsx'
+
+// Paling banyak segini kotak yang digambar di panel tagihan, sisanya ditulis "+N".
+const MAKS_KOTAK = 20
 
 export default function RiwayatTab({ riwayat }) {
   const { t } = useLanguage()
@@ -33,6 +37,18 @@ export default function RiwayatTab({ riwayat }) {
   const riwayatLunasSemua = riwayat.filter((r) => r.statusBayar === STATUS_BAYAR.LUNAS)
   const totalSemua = riwayatLunasSemua.reduce((jumlah, r) => jumlah + r.tarif, 0)
 
+  // Satu kotak per perjalanan di bulan yang dipilih: yang lunas dulu, baru yang belum.
+  const jumlahLunas = riwayatLunasBulanIni.length
+  const jumlahBelum = riwayatTerfilter.length - jumlahLunas
+  const kotak = [
+    ...Array(jumlahLunas).fill(true),
+    ...Array(jumlahBelum).fill(false),
+  ]
+  const kotakTampil = kotak.slice(0, MAKS_KOTAK)
+  const kotakSisa = kotak.length - kotakTampil.length
+
+  const angkaBelum = useHitungNaik(totalBelumBayar)
+
   function handlePilihBulan(bulan, tahun) {
     setBulanAktif(bulan)
     setTahunAktif(tahun)
@@ -41,61 +57,95 @@ export default function RiwayatTab({ riwayat }) {
 
   return (
     <main style={s.wrap}>
-      <div style={s.sectionHead}>
+      <div className="naik-masuk" style={{ ...s.sectionHead, '--i': 0 }}>
         <div>
           <div style={s.eyebrow}>{t.riwayatEyebrow}</div>
           <h1 style={s.title}>{t.riwayatTitlePenumpang}</h1>
         </div>
-        <button style={s.bulanBtn} onClick={() => setShowBulan(true)}>
-          {t.namaBulanPanjang[bulanAktif]} {tahunAktif} ▾
+        <button className="tekan" style={s.bulanBtn} onClick={() => setShowBulan(true)}>
+          <span style={s.bulanTeks}>
+            {t.namaBulanPendek[bulanAktif]} {tahunAktif}
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="var(--glow-blue)" shapeRendering="crispEdges" aria-hidden="true">
+              <path d="M2 4h8v2H8v2H7v2H5V8H4V6H2z" />
+            </svg>
+          </span>
+          <span style={s.garisPutus} />
         </button>
       </div>
 
-      <div style={s.ringkasanRow}>
-        <section style={s.cardBiruScroll}>
-          <div style={s.scrollPage}>
-            <div style={s.tagihanLabel}>{t.belumDitransfer}</div>
-            <div style={s.angkaBelum}>{formatRupiah(totalBelumBayar)}</div>
-            <div style={s.tagihanSub}>{belumBayar.length} {t.satuanPerjalanan}</div>
-          </div>
-          <div style={{ ...s.dotsRow, visibility: 'hidden' }}>
-            <span style={s.dot} />
-            <span style={s.dot} />
-          </div>
-        </section>
+      <section className="naik-masuk" style={{ ...s.panel, '--i': 1 }}>
 
-        <TotalSpendCarousel
-          totalSemua={totalSemua}
-          jumlahSemua={riwayatLunasSemua.length}
-          totalBulanIni={totalBulanIni}
-          jumlahBulanIni={riwayatLunasBulanIni.length}
-          labelBulan={t.namaBulanPendek[bulanAktif]}
-          t={t}
-        />
-      </div>
+        <div>
+          <div style={s.panelLabel}>{t.belumDitransfer}</div>
+          <div style={s.angkaBelum}>{formatRupiah(angkaBelum)}</div>
+          <div style={s.panelSub}>{belumBayar.length} {t.satuanPerjalanan}</div>
+        </div>
+
+        {kotak.length > 0 && (
+          <div style={s.kotakBaris}>
+            <div
+              style={s.kotakRow}
+              role="img"
+              aria-label={`${jumlahLunas} ${t.lunas}, ${jumlahBelum} ${t.belum}`}
+            >
+              {kotakTampil.map((lunas, i) => (
+                <span
+                  key={i}
+                  className="kotak-pop"
+                  style={{ ...s.kotak, background: lunas ? 'var(--glow-blue)' : '#FF4C4C', '--i': i }}
+                />
+              ))}
+              {kotakSisa > 0 && <span style={s.kotakSisa}>+{kotakSisa}</span>}
+            </div>
+            <div style={s.kotakKet}>
+              {jumlahLunas} {t.lunas.toLowerCase()} · {jumlahBelum} {t.belum.toLowerCase()}
+            </div>
+          </div>
+        )}
+
+        <div style={s.garis} />
+
+        <div style={s.totalBaris}>
+          <div style={s.panelLabel}>{t.totalSpend} {t.namaBulanPendek[bulanAktif]}</div>
+          <div style={s.angkaTotal}>{formatRupiah(totalBulanIni)}</div>
+        </div>
+        <div style={s.totalBaris}>
+          <div style={s.panelLabel}>{t.totalSpend}</div>
+          <div style={s.angkaTotalRedup}>{formatRupiah(totalSemua)}</div>
+        </div>
+      </section>
 
       <section>
-        <h2 style={s.sectionTitle}>{t.riwayatPerjalananTitle}</h2>
-        <div style={s.list}>
+        <h2 className="naik-masuk" style={{ ...s.sectionTitle, '--i': 2 }}>{t.riwayatPerjalananTitle}</h2>
+        <div>
           {riwayatTerfilter.length === 0 ? (
-            <div style={s.kosong}>{t.belumAdaPerjalananBulanIni}</div>
+            <div className="naik-masuk" style={{ ...s.kosong, '--i': 3 }}>{t.belumAdaPerjalananBulanIni}</div>
           ) : (
-            riwayatTerfilter.map((r) => (
-              <div key={r.id} style={s.item}>
-                <div>
-                  <div style={s.itemJam}>{r.jam} · {r.tanggal.split('-')[2]}</div>
-                  <div style={s.itemDesc}>
-                    {r.aksi === 'jemput' ? t.jemput : t.antar} · {r.where}
+            riwayatTerfilter.map((r, i) => {
+              const lunas = r.statusBayar === STATUS_BAYAR.LUNAS
+              const terakhir = i === riwayatTerfilter.length - 1
+              return (
+                <div
+                  key={r.id}
+                  className="naik-masuk"
+                  style={{ ...s.item, borderBottom: terakhir ? 'none' : '1px solid var(--garis)', '--i': Math.min(i, 8) + 3 }}
+                >
+                  <span style={{ ...s.itemKotak, background: lunas ? 'var(--glow-blue)' : '#FF4C4C' }} />
+                  <div style={s.itemTengah}>
+                    <div style={s.itemDesc}>
+                      {r.aksi === 'jemput' ? t.jemput : t.antar} · {r.where}
+                    </div>
+                    <div style={s.itemJam}>
+                      {r.tanggal.split('-')[2]} {t.namaBulanPendek[bulanAktif]} · {r.jam}
+                    </div>
+                  </div>
+                  <div style={s.itemKanan}>
+                    <div style={s.itemTarif}>{formatRupiah(r.tarif)}</div>
+                    <div style={lunas ? s.statusLunas : s.statusBelum}>{lunas ? t.lunas : t.belum}</div>
                   </div>
                 </div>
-                <div style={s.itemKanan}>
-                  <div style={s.itemTarif}>{formatRupiah(r.tarif)}</div>
-                  <div style={r.statusBayar === STATUS_BAYAR.LUNAS ? s.badgeLunas : s.badgeBelum}>
-                    {r.statusBayar === STATUS_BAYAR.LUNAS ? t.lunas : t.belum}
-                  </div>
-                </div>
-              </div>
-            ))
+              )
+            })
           )}
         </div>
       </section>
@@ -114,144 +164,82 @@ export default function RiwayatTab({ riwayat }) {
   )
 }
 
-function TotalSpendCarousel({ totalSemua, jumlahSemua, totalBulanIni, jumlahBulanIni, labelBulan, t }) {
-  const scrollRef = useRef(null)
-  const [halaman, setHalaman] = useState(0)
-
-  function handleScroll() {
-    const el = scrollRef.current
-    if (!el) return
-    const posisi = Math.round(el.scrollLeft / el.clientWidth)
-    setHalaman(posisi)
-  }
-
-  return (
-    <div style={s.cardBiruScroll}>
-      <div
-        ref={scrollRef}
-        className="no-scrollbar"
-        style={s.scrollInner}
-        onScroll={handleScroll}
-      >
-        <div style={s.scrollPage}>
-          <div style={s.tagihanLabel}>{t.totalSpend} {labelBulan}</div>
-          <div style={s.angkaTotal}>{formatRupiah(totalBulanIni)}</div>
-          <div style={s.tagihanSub}>{jumlahBulanIni} {t.satuanPerjalanan}</div>
-        </div>
-        <div style={s.scrollPage}>
-          <div style={s.tagihanLabel}>{t.totalSpend}</div>
-          <div style={s.angkaTotal}>{formatRupiah(totalSemua)}</div>
-          <div style={s.tagihanSub}>{jumlahSemua} {t.satuanPerjalanan}</div>
-        </div>
-      </div>
-      <div style={s.dotsRow}>
-        <span style={halaman === 0 ? s.dotAktif : s.dot} />
-        <span style={halaman === 1 ? s.dotAktif : s.dot} />
-      </div>
-    </div>
-  )
-}
-
 const s = {
   wrap: {
     minHeight: '100%',
-    padding: 'calc(var(--safe-top) + 24px) 20px 110px',
+    padding: 'calc(var(--safe-top) + 24px) 20px 120px',
     maxWidth: 480,
     margin: '0 auto',
     display: 'flex',
     flexDirection: 'column',
-    gap: 24,
+    gap: 18,
   },
-  sectionHead: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' },
-  eyebrow: { fontSize: 11, letterSpacing: '0.12em', color: 'var(--text-dim)', marginBottom: 4 },
+  sectionHead: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: 12 },
+  eyebrow: {
+    fontFamily: 'var(--font-data)', fontSize: 11, letterSpacing: '0.12em',
+    color: 'var(--text-dim)', marginBottom: 4,
+  },
   title: {
     fontFamily: 'var(--font-judul)',
-    fontSize: 22,
+    fontWeight: 400,
+    fontSize: 24,
     color: 'var(--text)',
     letterSpacing: '1px',
-    lineHeight: 1.3,
-    marginTop: 2,
+    lineHeight: 1.2,
     whiteSpace: 'nowrap',
   },
   bulanBtn: {
-    fontSize: 13, fontWeight: 600, color: 'var(--text)',
-    background: 'var(--card-blue)', border: '1px solid var(--blue-border)',
-    borderRadius: 999, padding: '6px 12px',
-  },
-  ringkasanRow: { display: 'flex', gap: 10 },
-  cardBiruScroll: {
-    flex: 1,
-    background: `linear-gradient(160deg, var(--card-blue-grad-a), var(--card-blue-grad-b))`,
-    border: '1px solid var(--blue-border)',
-    borderRadius: 12,
-    overflow: 'hidden',
-  },
-  scrollInner: {
+    minHeight: 44,
     display: 'flex',
-    overflowX: 'auto',
-    scrollSnapType: 'x mandatory',
-    WebkitOverflowScrolling: 'touch',
-  },
-  scrollPage: {
-    minWidth: '100%',
-    flexShrink: 0,
-    scrollSnapAlign: 'start',
-    padding: 16,
-    boxSizing: 'border-box',
-  },
-  dotsRow: {
-    display: 'flex',
+    flexDirection: 'column',
     justifyContent: 'center',
     gap: 5,
-    paddingBottom: 10,
+    color: 'var(--text)',
+    flexShrink: 0,
   },
-  dot: {
-    width: 5,
-    height: 5,
-    borderRadius: '50%',
-    background: 'rgba(255,255,255,0.25)',
-  },
-  dotAktif: {
-    width: 5,
-    height: 5,
-    borderRadius: '50%',
+  bulanTeks: { display: 'flex', alignItems: 'center', gap: 6, fontSize: 14, fontWeight: 600, whiteSpace: 'nowrap' },
+  garisPutus: {
+    height: 2,
     background: 'var(--glow-blue)',
-    boxShadow: '0 0 4px var(--glow-blue-mid)',
+    borderRadius: 0,
   },
-  tagihanLabel: { fontSize: 12.5, color: '#9FC3E8', marginBottom: 6 },
+
+  panel: {
+    position: 'relative',
+    background: 'var(--panel)',
+    border: '1px solid var(--garis)',
+    borderRadius: 0,
+    padding: '16px 16px',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 10,
+  },
+  panelLabel: { fontSize: 13, color: 'var(--text-dim)' },
+  panelSub: { fontSize: 12, color: 'var(--text-dim)', marginTop: 2 },
   angkaBelum: {
-    fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 19,
-    color: '#FF4C4C', textShadow: '0 0 6px rgba(255,76,76,0.6)',
+    fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 28, lineHeight: 1.2,
+    color: 'var(--merah-teks)', marginTop: 4,
   },
-  angkaTotal: {
-    fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 19,
-    color: 'var(--glow-blue)', textShadow: '0 0 6px var(--glow-blue-mid)',
-  },
-  tagihanSub: { fontSize: 12, color: '#8FB4DC', marginTop: 4 },
-  sectionTitle: { fontSize: 14, color: 'var(--text-dim)', marginBottom: 10 },
-  list: { display: 'flex', flexDirection: 'column', gap: 10 },
+  kotakBaris: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
+  kotakRow: { display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 4, minWidth: 0 },
+  kotak: { width: 12, height: 12, borderRadius: 0 },
+  kotakSisa: { fontFamily: 'var(--font-data)', fontSize: 12, color: 'var(--text-dim)', marginLeft: 2 },
+  kotakKet: { fontFamily: 'var(--font-data)', fontSize: 12, color: 'var(--text-dim)', whiteSpace: 'nowrap' },
+  garis: { height: 1, background: 'var(--garis)' },
+  totalBaris: { display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 12 },
+  angkaTotal: { fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 15, color: 'var(--glow-blue)' },
+  angkaTotalRedup: { fontFamily: 'var(--font-data)', fontSize: 14, color: 'var(--text)' },
+
+  sectionTitle: { fontSize: 13, fontWeight: 600, color: 'var(--text-dim)', marginBottom: 4 },
   catatanDemo: { fontSize: 11, color: 'var(--text-dim)', textAlign: 'center', lineHeight: 1.4 },
   kosong: { fontSize: 13.5, color: 'var(--text-dim)', textAlign: 'center', padding: '20px 0' },
-  item: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    background: 'var(--card-blue)',
-    border: '1px solid var(--blue-border)',
-    borderRadius: 10,
-    padding: '12px 14px',
-    gap: 12,
-  },
-  itemJam: { fontFamily: 'var(--font-data)', fontSize: 13, color: 'var(--text)' },
-  itemDesc: { fontSize: 11.5, color: '#8FB4DC', marginTop: 2 },
-  itemKanan: { display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 },
-  itemTarif: { fontFamily: 'var(--font-data)', fontSize: 13, color: 'var(--text)' },
-  badgeLunas: {
-    fontFamily: 'var(--font-data)', fontSize: 11.5,
-    color: 'var(--glow-blue)', textShadow: '0 0 5px var(--glow-blue-mid)',
-  },
-  badgeBelum: {
-    fontFamily: 'var(--font-data)', fontSize: 11.5,
-    color: '#FF4C4C', textShadow: '0 0 6px rgba(255,76,76,0.6)',
-  },
+  item: { display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0' },
+  itemKotak: { width: 8, height: 8, borderRadius: 0, flexShrink: 0 },
+  itemTengah: { flex: 1, minWidth: 0 },
+  itemDesc: { fontSize: 14, fontWeight: 600, color: 'var(--text)' },
+  itemJam: { fontFamily: 'var(--font-data)', fontSize: 12, color: 'var(--text-dim)', marginTop: 3 },
+  itemKanan: { textAlign: 'right' },
+  itemTarif: { fontFamily: 'var(--font-data)', fontSize: 14, color: 'var(--text)' },
+  statusLunas: { fontSize: 12, fontWeight: 600, color: 'var(--glow-blue)', marginTop: 3 },
+  statusBelum: { fontSize: 12, fontWeight: 600, color: 'var(--merah-teks)', marginTop: 3 },
 }

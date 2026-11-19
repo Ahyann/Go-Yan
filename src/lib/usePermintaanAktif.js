@@ -35,7 +35,7 @@ export function usePermintaanAktif() {
     return berhentiDengar
   }, [user, REF])
 
-  // Badge "ditolak" otomatis ilang 5 detik setelah ditolak — itungan
+  // Badge "ditolak" otomatis ilang 8 detik setelah ditolak (3,2 detik pertama dipakai animasi Spiderman) — itungan
   // waktunya nempel di data (ditolakPada), bukan timer lokal doang,
   // jadi kalau app-nya sempet ketutup terus dibuka lagi di tengah
   // jalan, sisa waktunya tetep bener (bukan mulai ulang dari 5 detik).
@@ -44,7 +44,7 @@ export function usePermintaanAktif() {
 
     // Data lama (dari sebelum fitur ini ada) gak punya ditolakPada —
     // anggap aja udah kadaluarsa daripada nyangkut selamanya.
-    const sisaWaktu = permintaan.ditolakPada ? 5000 - (Date.now() - permintaan.ditolakPada) : 0
+    const sisaWaktu = permintaan.ditolakPada ? 8000 - (Date.now() - permintaan.ditolakPada) : 0
     if (sisaWaktu <= 0) {
       deleteDoc(REF).catch(() => {})
       return

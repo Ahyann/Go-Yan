@@ -121,7 +121,7 @@ const s = {
   wrap: {
     position: 'relative',
     overflow: 'hidden',
-    borderRadius: 10,
+    borderRadius: 0,
   },
   aksiRow: {
     position: 'absolute',
@@ -137,7 +137,7 @@ const s = {
     width: LEBAR_TOMBOL,
     height: 'calc(100% - 16px)',
     background: 'var(--warn)',
-    borderRadius: 10,
+    borderRadius: 0,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -148,7 +148,7 @@ const s = {
     width: LEBAR_TOMBOL,
     height: 'calc(100% - 16px)',
     background: 'var(--web-red)',
-    borderRadius: 10,
+    borderRadius: 0,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',

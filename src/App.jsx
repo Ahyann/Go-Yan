@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect } from 'react'
+import { lazy, Suspense, useEffect, useRef } from 'react'
 import { AuthProvider, useAuth } from './context/AuthContext.jsx'
 import { LanguageProvider } from './context/LanguageContext.jsx'
 import { usePermintaanAktif } from './lib/usePermintaanAktif'
@@ -8,7 +8,8 @@ import { dengarkanNotifForeground, kirimNotifikasi } from './lib/notifikasi'
 import { usePresence } from './lib/usePresence'
 import { usePesananSelesai } from './lib/usePesananSelesai'
 import LoginPage from './pages/LoginPage.jsx'
-import { ROLE, TARIF_PER_RIDE, STATUS_BAYAR } from './lib/constants'
+import { ROLE, TARIF_PER_RIDE, STATUS_BAYAR, STATUS_PERMINTAAN } from './lib/constants'
+import { kosongkanRiwayatChat } from './lib/useRiwayatChat'
 
 // Lazy-load: Ojek & Penumpang gak pernah kepake bareng dalam satu sesi
 // (dipilih berdasarkan role sekali login), jadi gak perlu ikut kebawa
@@ -42,6 +43,16 @@ function AppIsi() {
   const { jadwal: jadwalMingguan, simpanJadwal, tandaiSelesai: tandaiSelesaiJadwal } = useJadwalMingguan()
   const { data: notifSelesaiData, tandaiSelesai, hapusNotifSelesai } = usePesananSelesai()
   usePresence(role)
+
+  // Riwayat chat dikosongkan begitu perjalanan yang tadinya berjalan berakhir (selesai atau batal).
+  const statusSebelumnya = useRef(null)
+  useEffect(() => {
+    const status = permintaan?.status ?? null
+    if (statusSebelumnya.current === STATUS_PERMINTAAN.DITERIMA && status !== STATUS_PERMINTAAN.DITERIMA) {
+      kosongkanRiwayatChat()
+    }
+    statusSebelumnya.current = status
+  }, [permintaan?.status])
 
   useEffect(() => {
     dengarkanNotifForeground((payload) => {
@@ -168,7 +179,7 @@ const s = {
   eqBar: {
     width: 6,
     height: 26,
-    borderRadius: 3,
+    borderRadius: 0,
     background: 'var(--glow-blue)',
     boxShadow: '0 0 6px var(--glow-blue-mid)',
   },
@@ -178,14 +189,14 @@ const s = {
     color: 'var(--text-dim)',
     background: 'var(--surface)',
     border: '1px solid var(--line)',
-    borderRadius: 8,
+    borderRadius: 0,
     padding: '8px 12px',
     userSelect: 'all',
   },
   logoutBtn: {
     background: 'var(--surface)',
     border: '1px solid var(--line)',
-    borderRadius: 999,
+    borderRadius: 0,
     padding: '10px 18px',
     color: 'var(--text)',
     fontSize: 13.5,
