@@ -11,23 +11,24 @@ export default function ProfilAkun({ nama, peran, ikon, pilihanIkon, onPilihIkon
   const a = warna.utama
   return (
     <>
-      <section style={s.kartu}>
-        <div style={s.profil}>
-          <button type="button" className="tekan" style={{ ...s.foto, border: `1px solid ${a}`, boxShadow: `0 0 14px ${a}55` }} onClick={() => setBuka(true)} aria-label={t.gantiFoto}>
+      <section style={{ ...s.kartu, background: `linear-gradient(100deg, ${a}33, var(--card-blue) 62%)` }}>
+        <button type="button" className="tekan" style={s.tombolFoto} onClick={() => setBuka(true)} aria-label={t.gantiFoto}>
+          <span style={s.potong}>
             <img src={`/icons/${ikon}`} style={s.fotoImg} alt="" />
-            <Siku warna={a} />
-            <span style={{ ...s.pensil, background: a }}>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#05202F" strokeWidth="2.6" strokeLinecap="square" aria-hidden="true">
-                <path d="M17 3l4 4L7.5 20.5 2 22l1.5-5.5z" />
-              </svg>
-            </span>
-          </button>
-          <div style={{ minWidth: 0 }}>
-            <div style={s.masuk}>{t.masukSebagai}</div>
-            <div style={s.nama}>{nama}</div>
-            {peran && <div style={{ ...s.peran, color: a }}>{peran}</div>}
-          </div>
+          </span>
+        </button>
+        <div style={s.teksBlok}>
+          <div style={s.masuk}>{t.masukSebagai}</div>
+          <div style={s.nama}>{nama}</div>
+          {peran && <div style={{ ...s.peran, color: a }}>{peran}</div>}
         </div>
+        <button type="button" className="tekan" style={{ ...s.ubah, color: a, borderColor: a }} onClick={() => setBuka(true)}>
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="square" aria-hidden="true">
+            <path d="M17 3l4 4L7.5 20.5 2 22l1.5-5.5z" />
+          </svg>
+          {t.akunUbah}
+        </button>
+        <span style={{ ...s.garis, background: a, boxShadow: `0 0 10px ${a}` }} />
       </section>
 
       {buka && (
@@ -164,11 +165,13 @@ function Siku({ warna, besar = false }) {
 }
 
 const s = {
-  kartu: { background: 'var(--card-blue)', border: '1px solid var(--blue-border)', borderRadius: 0, padding: 18 },
-  profil: { display: 'flex', alignItems: 'center', gap: 16 },
-  foto: { position: 'relative', flexShrink: 0, width: 92, height: 92, padding: 0, background: '#011A29', borderRadius: 0, overflow: 'hidden' },
-  fotoImg: { width: '100%', height: '100%', objectFit: 'contain', objectPosition: '50% 20%', transform: 'scale(1.1) translateY(10px)', imageRendering: 'pixelated', pointerEvents: 'none' },
-  pensil: { position: 'absolute', right: 0, bottom: 0, width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center' },
+  kartu: { position: 'relative', marginTop: 46, minHeight: 100, border: '1px solid var(--blue-border)', borderRadius: 0, padding: '0 14px 0 140px', display: 'flex', alignItems: 'center' },
+  tombolFoto: { position: 'absolute', left: 10, bottom: 0, width: 116, height: 146, padding: 0, background: 'transparent', border: 'none', borderRadius: 0 },
+  potong: { position: 'absolute', inset: 0, overflow: 'hidden', clipPath: 'inset(0 0 2px 0)' },
+  fotoImg: { position: 'absolute', left: -14, top: 0, width: 150, height: 150, objectFit: 'contain', objectPosition: '50% 0%', imageRendering: 'pixelated', pointerEvents: 'none' },
+  teksBlok: { minWidth: 0, padding: '14px 0' },
+  ubah: { position: 'absolute', right: 10, top: 10, display: 'inline-flex', alignItems: 'center', gap: 5, padding: '5px 8px', background: 'rgba(1,26,41,0.7)', border: '1px solid', borderRadius: 0, fontFamily: 'var(--font-data)', fontSize: 9.5, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase' },
+  garis: { position: 'absolute', left: 0, right: 0, bottom: 0, height: 2, pointerEvents: 'none' },
   masuk: { fontFamily: 'var(--font-data)', fontSize: 10, letterSpacing: '0.14em', color: '#9FC3E8', textTransform: 'uppercase' },
   nama: { fontFamily: 'var(--font-judul)', fontSize: 28, letterSpacing: 1, color: '#fff', lineHeight: 1.1 },
   peran: { fontFamily: 'var(--font-data)', fontSize: 10, letterSpacing: '0.12em', marginTop: 2, textTransform: 'uppercase' },
