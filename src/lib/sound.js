@@ -63,7 +63,7 @@ const bufferSuaraAi = {}
 async function muatBuffer(url) {
   try {
     const ctx = getAudioCtx()
-    const res = await fetch(url, { cache: 'no-store' })
+    const res = await fetch(url)
     const arrayBuffer = await res.arrayBuffer()
     return await ctx.decodeAudioData(arrayBuffer)
   } catch (err) {
@@ -168,11 +168,19 @@ function putarSuaraTertundaJikaAda() {
 }
 
 if (typeof window !== 'undefined') {
-  muatSpiderBuffer()
-  muatNotifSelesaiBuffer()
-  muatChatBuffer()
-  muatMissionSuccessBuffer()
-  Object.keys(URL_SUARA_AI).forEach(muatSuaraAi)
+  // Delapan file suara (sekitar 500 KB) TIDAK diunduh saat app dibuka: itu berebut sinyal dan CPU dengan hal yang lebih
+  // penting (JavaScript, login, peta). Dimuat setelah app tenang; kalau ada suara diputar lebih dulu, fungsi pemutarnya
+  // memuat file yang dibutuhkan sendiri.
+  const muatSemuaSuara = () => {
+    muatSpiderBuffer()
+    muatNotifSelesaiBuffer()
+    muatChatBuffer()
+    muatMissionSuccessBuffer()
+    Object.keys(URL_SUARA_AI).forEach(muatSuaraAi)
+  }
+  const jadwalkanMuatSuara = () => setTimeout(() => ('requestIdleCallback' in window ? window.requestIdleCallback(muatSemuaSuara, { timeout: 8000 }) : muatSemuaSuara()), 4000)
+  if (document.readyState === 'complete') jadwalkanMuatSuara()
+  else window.addEventListener('load', jadwalkanMuatSuara, { once: true })
 
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible' && audioCtx?.state === 'suspended') {

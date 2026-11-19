@@ -18,6 +18,28 @@ function bersihkanSemuaPesan(isDemo) {
   ]).catch(() => {})
 }
 
+// Status terakhir (hanya "menunggu" dan "diterima") disimpan ringan di localStorage. Setelah app ditutup paksa lalu dibuka lagi,
+// kartunya langsung tampil dari sini tanpa menunggu koneksi Firestore tersambung; begitu server menjawab, datanya diganti.
+const KUNCI_CACHE = 'goyan:permintaan-terakhir'
+const BATAS_CACHE_MS = 2 * 60 * 60 * 1000
+
+function bacaCache(uid) {
+  try {
+    const mentah = JSON.parse(localStorage.getItem(KUNCI_CACHE))
+    const status = mentah?.data?.status
+    if (mentah?.uid === uid && Date.now() - mentah.simpanPada < BATAS_CACHE_MS && (status === STATUS_PERMINTAAN.MENUNGGU || status === STATUS_PERMINTAAN.DITERIMA)) return mentah.data
+  } catch { /* abaikan */ }
+  return undefined
+}
+
+function simpanCache(uid, data) {
+  try {
+    const status = data?.status
+    if (status === STATUS_PERMINTAAN.MENUNGGU || status === STATUS_PERMINTAAN.DITERIMA) localStorage.setItem(KUNCI_CACHE, JSON.stringify({ uid, data, simpanPada: Date.now() }))
+    else localStorage.removeItem(KUNCI_CACHE)
+  } catch { /* abaikan */ }
+}
+
 export function usePermintaanAktif() {
   const { user, isDemo } = useAuth()
   const [permintaan, setPermintaan] = useState(undefined)
@@ -29,8 +51,13 @@ export function usePermintaanAktif() {
   useEffect(() => {
     if (!user) return
 
+    const dariCache = bacaCache(user.uid)
+    if (dariCache) setPermintaan((sekarang) => (sekarang === undefined ? dariCache : sekarang))
+
     const berhentiDengar = onSnapshot(REF, (snap) => {
-      setPermintaan(snap.exists() ? snap.data() : null)
+      const data = snap.exists() ? snap.data() : null
+      simpanCache(user.uid, data)
+      setPermintaan(data)
     })
     return berhentiDengar
   }, [user, REF])
