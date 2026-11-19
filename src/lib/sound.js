@@ -403,28 +403,11 @@ export function playPesananBatal() {
   nadaPendek(ctx, 'square', 330, 90, 0.6, 0.09, 0.3 + 0.6)
 }
 
-// Pindah tab dock: letupan derau kecil lalu dua denting tinggi, pas dengan siku cyan yang "menjepit" tab.
+// Pindah tab dock: satu denting tinggi yang pendek.
 export function playTabPindah() {
   const ctx = ctxSiapEfek()
   if (!ctx) return
-  const n = Math.floor(ctx.sampleRate * 0.04)
-  const buf = ctx.createBuffer(1, n, ctx.sampleRate)
-  const d = buf.getChannelData(0)
-  for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / n)
-  const sumber = ctx.createBufferSource()
-  sumber.buffer = buf
-  const saring = ctx.createBiquadFilter()
-  saring.type = 'bandpass'
-  saring.frequency.setValueAtTime(3500, ctx.currentTime)
-  saring.frequency.exponentialRampToValueAtTime(2000, ctx.currentTime + 0.04)
-  const gain = ctx.createGain()
-  gain.gain.value = 0.14
-  sumber.connect(saring)
-  saring.connect(gain)
-  gain.connect(ctx.destination)
-  sumber.start()
-  nadaPendek(ctx, 'sine', 1320, 1320, 0.08, 0.1, 0.02)
-  nadaPendek(ctx, 'sine', 1760, 1760, 0.1, 0.07, 0.07)
+  nadaPendek(ctx, 'sine', 1320, 1320, 0.09, 0.11, 0)
 }
 
 // Kursor menyorot tab dock (hanya di perangkat dengan mouse): satu bip kotak mini, sangat pelan.
