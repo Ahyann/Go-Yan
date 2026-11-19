@@ -73,7 +73,7 @@ export default function OjekHomeTab({
   }
   useEffect(() => {
     if (!transisiDiterima) return undefined
-    const id = setTimeout(() => setTransisiDiterima(false), 1900)
+    const id = setTimeout(() => setTransisiDiterima(false), 2500)
     return () => clearTimeout(id)
   }, [transisiDiterima])
   useEffect(() => {

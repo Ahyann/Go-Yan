@@ -364,7 +364,7 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
   useEffect(() => {
     if (!transisiDiterima) return undefined
     simpanAnimDitonton(dibuatPadaRef.current)
-    const id = setTimeout(() => setTransisiDiterima(false), 1900)
+    const id = setTimeout(() => setTransisiDiterima(false), 2500)
     return () => clearTimeout(id)
   }, [transisiDiterima])
   useEffect(() => {

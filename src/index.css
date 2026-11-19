@@ -437,7 +437,7 @@ button {
 .sp-t3 { animation: sp-titik3 2.7s steps(1, end) infinite; }
 /* diterima: menekuk sebentar lalu tertarik ke atas keluar kartu (HP ikut) */
 @keyframes sp-tarik { 0% { transform: translateY(0); } 25% { transform: translateY(10px); } 100% { transform: translateY(var(--awal, -300px)); } }
-.sp-diterima .sp-masuk { animation: sp-tarik 0.8s cubic-bezier(0.6, 0, 0.4, 1) 0.45s both; }
+.sp-diterima .sp-masuk { animation: sp-tarik 0.8s cubic-bezier(0.6, 0, 0.4, 1) 1.15s both; }
 /* dibatalkan: kepala tertunduk, warna memudar abu-abu, turun pelan lalu hilang; HP terlepas jatuh */
 @keyframes sp-tunduk { to { transform: rotate(14deg); } }
 @keyframes sp-sedih { 0% { filter: none; transform: translateY(0); opacity: 1; } 30% { filter: grayscale(1) brightness(0.75); transform: translateY(6px); opacity: 1; } 60% { filter: grayscale(1) brightness(0.75); transform: translateY(6px); opacity: 1; } 100% { filter: grayscale(1) brightness(0.75); transform: translateY(40px); opacity: 0; } }
@@ -447,7 +447,7 @@ button {
 @keyframes sp-air-w { 0%, 62% { opacity: 1; } 100% { opacity: 0; } }
 .sp-air-w { animation: sp-air-w 2.2s linear 0.2s both; }
 /* diterima: spider sense berdenyut terus di sekitar kepala sampai Spiderman tertarik naik */
-.sp-diterima .sp-sense-g { animation: sp-sense 0.9s ease-out 0.1s infinite; }
+.sp-diterima .sp-sense-g { animation: sp-sense 0.65s ease-out 0.05s infinite; }
 .sp-batal .sp-masuk { animation: sp-sedih 2.2s ease-in-out 0.2s both; }
 /* ditolak driver (sisi ojek): badan mengangkat bahu (berayun miring dari jangkar), lalu tertarik naik lewat tali */
 @keyframes sp-bahu { 0% { filter: none; transform: rotate(0); } 10% { filter: grayscale(1) brightness(0.75); transform: rotate(0); } 24% { transform: rotate(12deg); } 40% { transform: rotate(-12deg); } 54% { transform: rotate(8deg); } 66% { transform: rotate(0); filter: grayscale(1) brightness(0.75); } 100% { filter: grayscale(1) brightness(0.75); transform: translateY(var(--awal, -300px)); } }

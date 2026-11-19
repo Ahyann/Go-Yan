@@ -251,14 +251,16 @@ const SENSE = (() => {
     const sudut = (n * 40 + 10) * (Math.PI / 180)
     const dx = Math.cos(sudut)
     const dy = Math.sin(sudut)
-    if (dy < -0.5) continue // yang mengarah ke badan dilewati, tertutup merah
+    // yang mengarah ke badan (di atas kepala) tetap digambar, tapi putih supaya terlihat di atas kain merah
+    const atas = dy < -0.5
     const titik = []
-    for (let k = 0; k <= 4; k++) {
-      const jarak = 7.5 + k
-      const geser = (k % 2 ? 1 : -1) * 0.85 * (k === 0 || k === 4 ? 0.4 : 1)
+    // petir: patahan lebih tajam dan lebih panjang supaya terbaca sebagai sengatan listrik
+    for (let k = 0; k <= 5; k++) {
+      const jarak = 7.5 + k * 0.9
+      const geser = (k % 2 ? 1 : -1) * 1.25 * (k === 0 || k === 5 ? 0.4 : 1)
       titik.push(`${(PAD + 9.5 + dx * jarak - dy * geser).toFixed(2)} ${(24.5 + dy * jarak + dx * geser).toFixed(2)}`)
     }
-    hasil.push({ d: `M${titik.join(' L')}`, grup: n % 2 })
+    hasil.push({ d: `M${titik.join(' L')}`, grup: n % 2, atas })
   }
   return hasil
 })()
@@ -477,7 +479,7 @@ export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalka
               {SENSE.map((g, n) => (
                 <g key={n} className={g.grup ? 'sp-sense-b' : 'sp-sense-a'}>
                   <path d={g.d} stroke="#4B5BFF" strokeWidth="0.6" transform="translate(0.5 0.35)" />
-                  <path d={g.d} stroke="#E8245C" strokeWidth="0.6" />
+                  <path d={g.d} stroke={g.atas ? '#FFFFFF' : '#E8245C'} strokeWidth="0.6" />
                 </g>
               ))}
             </g>
