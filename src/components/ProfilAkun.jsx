@@ -166,9 +166,9 @@ function Siku({ warna, besar = false }) {
 const s = {
   kartu: { background: 'var(--card-blue)', border: '1px solid var(--blue-border)', borderRadius: 0, padding: 18 },
   profil: { display: 'flex', alignItems: 'center', gap: 16 },
-  foto: { position: 'relative', flexShrink: 0, width: 92, height: 92, padding: 0, background: '#011A29', borderRadius: 0 },
+  foto: { position: 'relative', flexShrink: 0, width: 92, height: 92, padding: 0, background: '#011A29', borderRadius: 0, overflow: 'hidden' },
   fotoImg: { width: '100%', height: '100%', objectFit: 'contain', objectPosition: '50% 20%', transform: 'scale(1.1) translateY(10px)', imageRendering: 'pixelated', pointerEvents: 'none' },
-  pensil: { position: 'absolute', right: -8, bottom: -8, width: 26, height: 26, display: 'flex', alignItems: 'center', justifyContent: 'center' },
+  pensil: { position: 'absolute', right: 0, bottom: 0, width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center' },
   masuk: { fontFamily: 'var(--font-data)', fontSize: 10, letterSpacing: '0.14em', color: '#9FC3E8', textTransform: 'uppercase' },
   nama: { fontFamily: 'var(--font-judul)', fontSize: 28, letterSpacing: 1, color: '#fff', lineHeight: 1.1 },
   peran: { fontFamily: 'var(--font-data)', fontSize: 10, letterSpacing: '0.12em', marginTop: 2, textTransform: 'uppercase' },
