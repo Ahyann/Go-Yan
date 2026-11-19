@@ -31,7 +31,11 @@ export function getar(pola = 20) {
     const daftar = Array.isArray(pola) ? pola : [pola]
     let waktu = 0
     daftar.forEach((ms, i) => {
-      if (i % 2 === 0) setTimeout(() => siapkanHaptic().click(), waktu)
+      if (i % 2 === 0) {
+        // ketukan pertama harus langsung (sinkron) di dalam sentuhan, kalau ditunda iOS menolak memberi haptic
+        if (waktu === 0) siapkanHaptic().click()
+        else setTimeout(() => siapkanHaptic().click(), waktu)
+      }
       waktu += ms
     })
   } catch {
