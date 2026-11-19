@@ -364,12 +364,12 @@ export function playWhooshMasuk() {
   saring.frequency.setValueAtTime(600, ctx.currentTime)
   saring.frequency.exponentialRampToValueAtTime(5500, ctx.currentTime + 0.5)
   const gain = ctx.createGain()
-  gain.gain.value = 0.27
+  gain.gain.value = 0.5
   sumber.connect(saring)
   saring.connect(gain)
   gain.connect(ctx.destination)
   sumber.start()
-  nadaPendek(ctx, 'sine', 700, 2200, 0.42, 0.22, 0.02)
+  nadaPendek(ctx, 'sine', 700, 2200, 0.42, 0.4, 0.02)
 }
 
 // Pesanan dibatalkan: gaya "kalah" game 8-bit. Empat bip kotak menurun lalu satu nada kotak merosot
@@ -545,8 +545,8 @@ const nadaAsli = nadaPendek
 export function playSpideySentuh(jenis) {
   const ctx = ctxSiapEfek()
   if (!ctx) return
-  // Bunyi reaksi Spiderman dibuat sekitar 1,9x lebih keras supaya terdengar jelas di hape.
-  const nadaPendek = (c, tipe, f0, f1, dur, vol, tunda) => nadaAsli(c, tipe, f0, f1, dur, Math.min(vol * 1.9, 0.3), tunda)
+  // Bunyi reaksi Spiderman dibuat sekitar 3,6x lebih keras dari semula supaya terdengar jelas di hape.
+  const nadaPendek = (c, tipe, f0, f1, dur, vol, tunda) => nadaAsli(c, tipe, f0, f1, dur, Math.min(vol * 3.6, 0.55), tunda)
   if (jenis === 'kaget') {
     nadaPendek(ctx, 'triangle', 880, 1320, 0.07, 0.1, 0)
     nadaPendek(ctx, 'triangle', 1100, 1650, 0.09, 0.08, 0.08)
