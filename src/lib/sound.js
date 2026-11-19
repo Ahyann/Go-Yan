@@ -663,16 +663,22 @@ function playKlikTombol(jenis) {
 }
 
 if (typeof document !== 'undefined') {
+  // Fase capture: popup yang memakai stopPropagation (misalnya pop up GO) tidak bisa memutus pendengar ini.
+  // Karena capture berjalan sebelum handler tombol, keputusan ditunda sesaat (setTimeout 0): kalau sampai saat itu
+  // ada bunyi lain yang diputar oleh tombolnya, bunyi umum dilewati.
   document.addEventListener(
     'click',
     (e) => {
       const el = e.target?.closest?.(PILIHAN_KLIK)
       if (!el || el.disabled || el.getAttribute('aria-disabled') === 'true' || el.hasAttribute('data-tanpa-suara')) return
       if (el.closest('[data-tanpa-suara]')) return
-      if (performance.now() - suaraTerakhir < 150) return
+      const tKlik = performance.now()
       const pilihan = el.matches('[role="radio"], [role="switch"], input[type="checkbox"], input[type="radio"]') || el.hasAttribute('aria-pressed') || el.hasAttribute('aria-checked')
-      playKlikTombol(pilihan ? 'pilih' : 'tap')
+      setTimeout(() => {
+        if (suaraTerakhir >= tKlik) return
+        playKlikTombol(pilihan ? 'pilih' : 'tap')
+      }, 0)
     },
-    { passive: true }
+    { passive: true, capture: true }
   )
 }
