@@ -251,16 +251,35 @@ const SENSE = (() => {
     const sudut = (n * 40 + 10) * (Math.PI / 180)
     const dx = Math.cos(sudut)
     const dy = Math.sin(sudut)
-    // yang mengarah ke badan (di atas kepala) tetap digambar, tapi putih supaya terlihat di atas kain merah
-    const atas = dy < -0.5
+    if (dy < -0.5) continue // yang mengarah ke badan dilewati, tertutup merah
     const titik = []
-    // petir: patahan lebih tajam dan lebih panjang supaya terbaca sebagai sengatan listrik
-    for (let k = 0; k <= 5; k++) {
-      const jarak = 7.5 + k * 0.9
-      const geser = (k % 2 ? 1 : -1) * 1.25 * (k === 0 || k === 5 ? 0.4 : 1)
+    for (let k = 0; k <= 4; k++) {
+      const jarak = 7.5 + k
+      const geser = (k % 2 ? 1 : -1) * 0.85 * (k === 0 || k === 4 ? 0.4 : 1)
       titik.push(`${(PAD + 9.5 + dx * jarak - dy * geser).toFixed(2)} ${(24.5 + dy * jarak + dx * geser).toFixed(2)}`)
     }
-    hasil.push({ d: `M${titik.join(' L')}`, grup: n % 2, atas })
+    hasil.push({ d: `M${titik.join(' L')}`, grup: n % 2 })
+  }
+  return hasil
+})()
+
+// Spider sense yang sama (garis patah merah-biru berkedip) di sekeliling BADAN, di luar tepi kain, kecuali tepat di
+// atas tempat benang menempel. Berpusat di tengah badan.
+const PUSAT_BADAN_Y = 13.5
+const SENSE_BADAN = (() => {
+  const hasil = []
+  for (let n = 0; n < 12; n++) {
+    const sudut = (n * 30 + 15) * (Math.PI / 180)
+    const dx = Math.cos(sudut)
+    const dy = Math.sin(sudut)
+    if (dy < -0.8) continue // tepat di atas (benang) dilewati
+    const titik = []
+    for (let k = 0; k <= 4; k++) {
+      const jarak = 11 + k
+      const geser = (k % 2 ? 1 : -1) * 0.85 * (k === 0 || k === 4 ? 0.4 : 1)
+      titik.push(`${(PAD + 9.5 + dx * jarak - dy * geser).toFixed(2)} ${(PUSAT_BADAN_Y + dy * jarak * 0.95 + dx * geser).toFixed(2)}`)
+    }
+    hasil.push({ d: `M${titik.join(' L')}`, grup: n % 2 })
   }
   return hasil
 })()
@@ -479,7 +498,17 @@ export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalka
               {SENSE.map((g, n) => (
                 <g key={n} className={g.grup ? 'sp-sense-b' : 'sp-sense-a'}>
                   <path d={g.d} stroke="#4B5BFF" strokeWidth="0.6" transform="translate(0.5 0.35)" />
-                  <path d={g.d} stroke={g.atas ? '#FFFFFF' : '#E8245C'} strokeWidth="0.6" />
+                  <path d={g.d} stroke="#E8245C" strokeWidth="0.6" />
+                </g>
+              ))}
+            </g>
+          )}
+          {(gelembungSentuh === 'sense' || diterima) && (
+            <g className="sp-sense-gb" fill="none" strokeLinecap="square" strokeLinejoin="miter">
+              {SENSE_BADAN.map((g, n) => (
+                <g key={n} className={g.grup ? 'sp-sense-b' : 'sp-sense-a'}>
+                  <path d={g.d} stroke="#4B5BFF" strokeWidth="0.6" transform="translate(0.5 0.35)" />
+                  <path d={g.d} stroke="#E8245C" strokeWidth="0.6" />
                 </g>
               ))}
             </g>
