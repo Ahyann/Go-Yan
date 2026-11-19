@@ -417,8 +417,9 @@ export function playWhooshMasuk() {
 export function playPesananBatal() {
   const ctx = ctxSiapEfek()
   if (!ctx) return
-  ;[784, 659, 523, 392].forEach((f, i) => nadaPendek(ctx, 'square', f, f, 0.14, 0.09, 0.3 + i * 0.14))
-  nadaPendek(ctx, 'square', 330, 90, 0.6, 0.09, 0.3 + 0.6)
+  // Volume dinaikkan dari 0,09 ke 0,24 (sekitar 8 dB lebih keras) karena bunyi batal terdengar terlalu pelan.
+  ;[784, 659, 523, 392].forEach((f, i) => nadaPendek(ctx, 'square', f, f, 0.14, 0.24, 0.3 + i * 0.14))
+  nadaPendek(ctx, 'square', 330, 90, 0.6, 0.24, 0.3 + 0.6)
 }
 
 // Pindah tab dock: satu denting tinggi yang pendek.

@@ -881,7 +881,7 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
           )}
 
           {(permintaan?.status === STATUS_PERMINTAAN.MENUNGGU || animDiterima || transisiBatal) && (
-            <SpideyMenunggu dibuatPada={dibuatPadaRef.current} diterima={animDiterima}dibatalkan={transisiBatal} menyusut={susutBatal} isDemo={isDemo} gayaTolak={transisiTolak} info={permintaan ? { aksi: permintaan.aksi === AKSI.JEMPUT ? t.jemput : t.antar, waktu: permintaan.waktu, where: permintaan.where } : null} teks={transisiTolak ? { batal: t.spideyTolak, batalSub: isDemo ? t.spideyTolakSubDemo : t.spideyTolakSub } : null} />
+            <SpideyMenunggu tanpaWhoosh={baruDibatalkan} dibuatPada={dibuatPadaRef.current} diterima={animDiterima}dibatalkan={transisiBatal} menyusut={susutBatal} isDemo={isDemo} gayaTolak={transisiTolak} info={permintaan ? { aksi: permintaan.aksi === AKSI.JEMPUT ? t.jemput : t.antar, waktu: permintaan.waktu, where: permintaan.where } : null} teks={transisiTolak ? { batal: t.spideyTolak, batalSub: isDemo ? t.spideyTolakSubDemo : t.spideyTolakSub } : null} />
           )}
 
           {permintaan?.status === STATUS_PERMINTAAN.DITOLAK && !transisiBatal && (

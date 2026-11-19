@@ -308,7 +308,9 @@ const REAKSI = [
   { nama: 'getar', gelembung: 'titik', durasi: 550, easing: 'linear', kf: [{ transform: 'rotate(0)' }, { transform: 'rotate(-1.6deg)', offset: 0.12 }, { transform: 'rotate(1.6deg)', offset: 0.3 }, { transform: 'rotate(-1.6deg)', offset: 0.48 }, { transform: 'rotate(1.3deg)', offset: 0.66 }, { transform: 'rotate(-0.6deg)', offset: 0.85 }, { transform: 'rotate(0)' }] },
 ]
 
-export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalkan = false, menyusut = false, isDemo = false, teks = null, gayaTolak = false, info = null }) {
+const SUDAH_WHOOSH = new Set()
+
+export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalkan = false, menyusut = false, isDemo = false, teks = null, gayaTolak = false, info = null, tanpaWhoosh = false }) {
   const { t } = useLanguage()
   const [sekarang, setSekarang] = useState(() => Date.now())
 
@@ -377,13 +379,17 @@ export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalka
   const topSpidey = Math.round(tinggiPenuh * 0.2)
   const awalJatuh = -(topSpidey + 22 + TINGGI * SKALA + 40)
   useEffect(() => {
-    if (!dibuatPada || Date.now() - dibuatPada > 8000) return undefined
+    // Jaring hanya berbunyi sekali untuk tiap pesanan, dan tidak untuk kartu yang baru terpasang karena pindah tab
+    // atau saat pesanan sedang dibatalkan (sebelumnya bunyi jaring ikut muncul saat batal lalu pindah ke Home).
+    if (!dibuatPada || Date.now() - dibuatPada > 8000 || tanpaWhoosh || dibatalkan || diterima) return undefined
+    if (SUDAH_WHOOSH.has(dibuatPada)) return undefined
     const mulai = performance.now()
     let frame = 0
     const pantau = () => {
       const gambar = refSpidey.current?.querySelector('svg')
       const kartu = refKartu.current
       if (gambar && kartu && gambar.getBoundingClientRect().bottom > kartu.getBoundingClientRect().top + 8) {
+        SUDAH_WHOOSH.add(dibuatPada)
         playWhooshMasuk()
         return
       }
