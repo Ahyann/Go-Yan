@@ -1,4 +1,3 @@
-import { useEffect, useRef, useState } from 'react'
 import { debugAktif, gantiDebug } from '../lib/debugLog'
 import PengaturanSuara from '../components/PengaturanSuara.jsx'
 import PojokPengaturan from '../components/PojokPengaturan.jsx'
@@ -7,8 +6,7 @@ import { useLanguage } from '../context/LanguageContext.jsx'
 import { ROLE } from '../lib/constants'
 import { useProfilIkon } from '../lib/useProfilIkon'
 import { useWarnaGlow } from '../lib/useWarnaGlow'
-import { WARNA_GLOW_PRESET, ambilWarnaGlow } from '../lib/warnaGlow'
-import { useLockBodyScroll } from '../lib/useLockBodyScroll'
+import ProfilAkun from '../components/ProfilAkun.jsx'
 
 const PILIHAN_IKON = ['spidericon.png', 'preset_biru.png', 'preset_merah.png', 'preset_hijau.png']
 
@@ -30,14 +28,6 @@ export default function OjekAccountTab() {
   const { t } = useLanguage()
   const { ikonAhyan, pilihIkonAhyan } = useProfilIkon()
   const { warnaAhyan, pilihWarnaAhyan } = useWarnaGlow()
-  const warnaAktif = ambilWarnaGlow(warnaAhyan)
-  const [showPilihIkon, setShowPilihIkon] = useState(false)
-  const [pilihanSementara, setPilihanSementara] = useState(ikonAhyan)
-
-  useEffect(() => {
-    if (showPilihIkon) setPilihanSementara(ikonAhyan)
-  }, [showPilihIkon, ikonAhyan])
-
   return (
     <main style={s.wrap}>
       <PojokPengaturan role={ROLE.OJEK} />
@@ -46,35 +36,16 @@ export default function OjekAccountTab() {
         <h1 style={s.title}>{t.akunTitle}</h1>
       </header>
 
-      <section style={s.card}>
-        <div style={s.profilRow}>
-          <button
-            style={s.avatarWrap}
-            onClick={() => setShowPilihIkon(true)}
-            aria-label={t.gantiFoto}
-          >
-            <div
-              style={{
-                ...s.avatarLingkaran,
-                background: `${warnaAktif.utama}1F`,
-                border: `2px solid ${warnaAktif.kuat}`,
-                boxShadow: `0 0 8px ${warnaAktif.utama}66`,
-              }}
-            >
-              <img src={`/icons/${ikonAhyan}`} style={s.avatarImg} alt="" />
-            </div>
-            <div style={{ ...s.avatarBadge, background: warnaAktif.kuat }}>
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
-              </svg>
-            </div>
-          </button>
-          <div>
-            <div style={s.label}>{t.masukSebagai}</div>
-            <div style={s.email}>{isDemo ? t.namaDemo : 'Ahyan'}</div>
-          </div>
-        </div>
-      </section>
+      <ProfilAkun
+        nama={isDemo ? t.namaDemo : 'Ahyan'}
+        peran={t.peranDriver}
+        ikon={ikonAhyan}
+        pilihanIkon={PILIHAN_IKON}
+        onPilihIkon={pilihIkonAhyan}
+        warnaKey={warnaAhyan}
+        onPilihWarna={pilihWarnaAhyan}
+        t={t}
+      />
 
       <PengaturanSuara />
 
@@ -86,156 +57,7 @@ export default function OjekAccountTab() {
         build {__ID_BUILD__}{debugAktif ? ' · debug ON' : ''}
       </div>
 
-      {showPilihIkon && (
-        <ModalPilihIkon
-          ikonAhyan={ikonAhyan}
-          pilihanSementara={pilihanSementara}
-          setPilihanSementara={setPilihanSementara}
-          warnaAhyan={warnaAhyan}
-          pilihWarnaAhyan={pilihWarnaAhyan}
-          onBatal={() => setShowPilihIkon(false)}
-          onKonfirmasi={async () => {
-            await pilihIkonAhyan(pilihanSementara)
-            setShowPilihIkon(false)
-          }}
-          t={t}
-        />
-      )}
     </main>
-  )
-}
-
-function ModalPilihIkon({
-  ikonAhyan,
-  pilihanSementara,
-  setPilihanSementara,
-  warnaAhyan,
-  pilihWarnaAhyan,
-  onBatal,
-  onKonfirmasi,
-  t,
-}) {
-  useLockBodyScroll()
-
-  return (
-    <div style={s.overlay} onClick={onBatal}>
-      <div style={s.sheet} onClick={(e) => e.stopPropagation()}>
-        <div style={s.sheetTitle}>{t.gantiFoto}</div>
-        <CarouselIkon
-          pilihan={PILIHAN_IKON}
-          ikonAktif={ikonAhyan}
-          onHalamanChange={setPilihanSementara}
-        />
-
-        <div style={s.warnaLabel}>Warna glow</div>
-        <div style={s.warnaRow}>
-          {Object.entries(WARNA_GLOW_PRESET).map(([key, warna]) => (
-            <button
-              key={key}
-              style={{
-                ...s.warnaSwatch,
-                background: `linear-gradient(160deg, ${warna.utama}, ${warna.kuat})`,
-                ...(key === warnaAhyan ? s.warnaSwatchAktif : {}),
-              }}
-              onClick={() => pilihWarnaAhyan(key)}
-              aria-label={warna.nama}
-            >
-              {key === warnaAhyan && (
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M20 6L9 17l-5-5" />
-                </svg>
-              )}
-            </button>
-          ))}
-        </div>
-
-        <div style={s.tombolRow}>
-          <button style={s.cancelBtn} onClick={onBatal}>
-            {t.batal}
-          </button>
-          <button style={s.gantiBtn} onClick={onKonfirmasi}>
-            Confirm
-          </button>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function CarouselIkon({ pilihan, ikonAktif, onHalamanChange }) {
-  const [halaman, setHalaman] = useState(() => {
-    const idx = pilihan.indexOf(ikonAktif)
-    return idx >= 0 ? idx : 0
-  })
-  const sentuhAwal = useRef(null)
-
-  useEffect(() => {
-    onHalamanChange?.(pilihan[halaman])
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [halaman])
-
-  function geser(delta) {
-    setHalaman((h) => Math.max(0, Math.min(h + delta, pilihan.length - 1)))
-  }
-
-  function handleTouchStart(e) {
-    sentuhAwal.current = e.touches[0].clientX
-  }
-
-  function handleTouchEnd(e) {
-    if (sentuhAwal.current === null) return
-    const selisih = sentuhAwal.current - e.changedTouches[0].clientX
-    if (selisih > 40) geser(1)
-    else if (selisih < -40) geser(-1)
-    sentuhAwal.current = null
-  }
-
-  return (
-    <div style={s.carouselWrap}>
-      <button
-        style={{ ...s.arrowBtn, ...s.arrowKiri, ...(halaman === 0 ? s.arrowNonaktif : {}) }}
-        onClick={() => geser(-1)}
-        disabled={halaman === 0}
-        aria-label="Sebelumnya"
-      >
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M15 18l-6-6 6-6" />
-        </svg>
-      </button>
-
-      <div
-        style={s.carouselViewport}
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-      >
-        <div
-          style={{
-            ...s.carouselTrack,
-            width: `${pilihan.length * 100}%`,
-            transform: `translateX(-${halaman * (100 / pilihan.length)}%)`,
-          }}
-        >
-          {pilihan.map((namaFile) => (
-            <div key={namaFile} style={{ ...s.carouselSlot, width: `${100 / pilihan.length}%` }}>
-              <div style={s.carouselIkonBtn}>
-                <img src={`/icons/${namaFile}`} style={s.carouselIkonImg} alt="" />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <button
-        style={{ ...s.arrowBtn, ...s.arrowKanan, ...(halaman === pilihan.length - 1 ? s.arrowNonaktif : {}) }}
-        onClick={() => geser(1)}
-        disabled={halaman === pilihan.length - 1}
-        aria-label="Berikutnya"
-      >
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M9 18l6-6-6-6" />
-        </svg>
-      </button>
-    </div>
   )
 }
 
