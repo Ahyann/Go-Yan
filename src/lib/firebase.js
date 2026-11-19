@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
-import { getFirestore } from 'firebase/firestore'
+import { getFirestore, initializeFirestore, persistentLocalCache, persistentMultipleTabManager } from 'firebase/firestore'
 import { getDatabase } from 'firebase/database'
 
 const firebaseConfig = {
@@ -18,7 +18,17 @@ export const isFirebaseConfigured = Boolean(firebaseConfig.apiKey)
 const app = isFirebaseConfigured ? initializeApp(firebaseConfig) : null
 
 export const auth = app ? getAuth(app) : null
-export const db = app ? getFirestore(app) : null
+// Data disimpan juga di perangkat (IndexedDB). Setelah app ditutup paksa lalu dibuka lagi, status terakhir (misalnya
+// "menunggu driver") langsung terbaca dari penyimpanan, tidak menunggu koneksi ke server tersambung dulu; begitu server
+// menjawab, data diperbarui. Kalau penyimpanan tidak bisa dipakai (mode privat, dll.), kembali ke cache memori biasa.
+function buatFirestore() {
+  try {
+    return initializeFirestore(app, { localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }) })
+  } catch {
+    return getFirestore(app)
+  }
+}
+export const db = app ? buatFirestore() : null
 export const rtdb = app ? getDatabase(app) : null
 
 export async function getMessagingInstance() {
