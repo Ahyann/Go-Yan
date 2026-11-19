@@ -350,7 +350,7 @@ function jalurSpidey(ctx) {
     kompresor.attack.value = 0.003
     kompresor.release.value = 0.15
     const penguat = ctx.createGain()
-    penguat.gain.value = 3
+    penguat.gain.value = 4.5
     kompresor.connect(penguat)
     penguat.connect(ctx.destination)
     bus = kompresor
