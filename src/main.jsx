@@ -33,11 +33,29 @@ document.addEventListener('visibilitychange', () => {
 function pulihkanLayar() {
   const el = document.activeElement
   if (el && /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName)) return
+  const html = document.documentElement
+  const vv = window.visualViewport
+  const melenceng = vv && (Math.abs(vv.offsetTop) > 0.5 || Math.abs(vv.pageTop) > 0.5 || vv.height < window.innerHeight - 1)
+  // Halaman di iPhone tidak bisa dikembalikan lewat scrollTo kalau isinya tidak bisa discroll. Jadi dibuat
+  // sebentar bisa discroll (2px lebih tinggi), dikembalikan ke atas, lalu dikunci lagi.
+  html.style.minHeight = `${window.innerHeight + 2}px`
+  document.body.style.minHeight = `${window.innerHeight + 2}px`
   window.scrollTo(0, 1)
   window.scrollTo(0, 0)
-  document.documentElement.scrollTop = 0
+  html.scrollTop = 0
   document.body.scrollTop = 0
+  html.style.minHeight = ''
+  document.body.style.minHeight = ''
   setTinggiApp()
+  if (melenceng) resetViewportMeta()
+}
+// Memaksa Safari menghitung ulang area pandang dengan mengganti pengaturan meta viewport sesaat.
+function resetViewportMeta() {
+  const meta = document.querySelector('meta[name="viewport"]')
+  if (!meta) return
+  const asli = meta.getAttribute('content')
+  meta.setAttribute('content', asli.replace('maximum-scale=1.0', 'maximum-scale=1.01'))
+  requestAnimationFrame(() => requestAnimationFrame(() => meta.setAttribute('content', asli)))
 }
 if (window.visualViewport) {
   let tunda
