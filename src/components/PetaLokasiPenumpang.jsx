@@ -228,7 +228,12 @@ export default function PetaLokasiPenumpang({
         <TileLayer
           maxNativeZoom={22}
           maxZoom={22}
-          url={`https://api.maptiler.com/maps/streets-v4-dark/{z}/{x}/{y}.png?key=${import.meta.env.VITE_MAPTILER_KEY}`}
+          // Alamat tanpa "256/" mengirim kotak 512 px (sekitar 4x lebih berat, 100-130 KB per kotak di zoom jauh), padahal
+          // ditampilkan 256 px. Di zoom 15 ke bawah dipakai kotak 256 px (sekitar 30 KB) supaya peta cepat terisi;
+          // di zoom dekat (16+) isi kotaknya sedikit, jadi tetap pakai yang 512 px supaya tajam di layar HP.
+          ukuran={(d) => (d.z <= 15 ? '256/' : '')}
+          updateWhenZooming={false}
+          url={`https://api.maptiler.com/maps/streets-v4-dark/{ukuran}{z}/{x}/{y}.png?key=${import.meta.env.VITE_MAPTILER_KEY}`}
         />
 
         {posisiValid && (
