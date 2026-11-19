@@ -226,7 +226,7 @@ export default function PetaLokasiPenumpang({
         <PantauUkuran />
 
         <TileLayer
-          maxNativeZoom={20}
+          maxNativeZoom={22}
           maxZoom={22}
           url={`https://api.maptiler.com/maps/streets-v4-dark/{z}/{x}/{y}.png?key=${import.meta.env.VITE_MAPTILER_KEY}`}
         />

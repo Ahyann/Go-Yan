@@ -518,6 +518,9 @@ button {
 .go-sheet-buka { animation: go-sheet-buka 0.38s cubic-bezier(0.2, 0.9, 0.3, 1) both; }
 @keyframes go-sheet-buka { 0% { opacity: 0; transform: translateY(60px) scale(0.92); } 60% { opacity: 1; } 100% { opacity: 1; transform: none; } }
 
+/* Latar peta saat gambarnya belum selesai dimuat (waktu zoom jauh, dll.): gelap seperti petanya, bukan abu-abu terang bawaan Leaflet. */
+.leaflet-container { background: #0B1D2C; }
+
 /* Pola peta ala game: garis horizontal penuh tiap 112px, dan garis vertikal yang lebih rapat (tiap 48px)
    berupa titik-titik. Berada di atas panel peta tapi di bawah tombol zoom, tidak menangkap sentuhan. */
 .leaflet-container::after {
