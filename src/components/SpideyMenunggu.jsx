@@ -484,7 +484,7 @@ export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalka
                 <rect x="4" y="3.8" width="1.2" height="1" fill="#BC1E2F" />
               </>
             ) : gelembungSentuh === 'hati' ? (
-              <path d="M2 1h2v1h1v-1h2v2h-1v1h-1v1h-1v-1h-1v-1h-1z" fill="#E20101" />
+              <path d="M2 1h2v1h1v-1h2v2h-1v1h-1v1h-1v-1h-1v-1h-1z" fill="#E20101" transform="translate(4.5 2.5) scale(0.78) translate(-4.5 -3)" />
             ) : TEKS_GEL[gelembungSentuh] ? (
               <text x="4.5" y={TEKS_GEL[gelembungSentuh].y} fontSize={TEKS_GEL[gelembungSentuh].ukuran} fontWeight="700" textAnchor="middle" fill="#0A0A0A" style={{ fontFamily: 'var(--font-data)' }}>{TEKS_GEL[gelembungSentuh].teks}</text>
             ) : gelembungSentuh === 'titik' ? (
