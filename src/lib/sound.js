@@ -38,8 +38,17 @@ export function aturModeSuara(mode) {
   pendengarMode.forEach((fungsi) => fungsi())
 }
 
-const efekBoleh = () => modeSuara !== MODE_SUARA.SENYAP
-const voiceBoleh = () => modeSuara === MODE_SUARA.NORMAL
+// Setiap fungsi suara memeriksa efekBoleh atau voiceBoleh paling dulu. Waktunya dicatat supaya bunyi klik umum
+// (di bawah) tahu kalau tombol yang baru ditekan sudah punya bunyi sendiri, lalu tidak ikut berbunyi dua kali.
+let suaraTerakhir = -1e9
+const efekBoleh = () => {
+  suaraTerakhir = performance.now()
+  return modeSuara !== MODE_SUARA.SENYAP
+}
+const voiceBoleh = () => {
+  suaraTerakhir = performance.now()
+  return modeSuara === MODE_SUARA.NORMAL
+}
 
 let audioCtx
 
@@ -635,4 +644,35 @@ export function playGantiBatal() {
   if (!ctx) return
   nadaPendek(ctx, 'triangle', 520, 400, 0.1, 0.1, 0)
   nadaPendek(ctx, 'triangle', 400, 300, 0.14, 0.1, 0.08)
+}
+
+// Bunyi klik umum untuk semua tombol. Tombol yang sudah punya bunyi sendiri tidak diganti: kalau ada bunyi lain
+// yang baru saja diputar (handler tombolnya jalan lebih dulu dari pendengar ini), bunyi umum dilewati.
+// Tombol bisa menolak dengan atribut data-tanpa-suara.
+const PILIHAN_KLIK = 'button, a, summary, [role="button"], [role="radio"], [role="tab"], [role="switch"], input[type="checkbox"], input[type="radio"], input[type="submit"]'
+
+function playKlikTombol(jenis) {
+  const ctx = ctxSiapEfek()
+  if (!ctx) return
+  if (jenis === 'pilih') {
+    nadaPendek(ctx, 'triangle', 660, 660, 0.05, 0.09, 0)
+    nadaPendek(ctx, 'triangle', 880, 880, 0.07, 0.09, 0.045)
+  } else {
+    nadaPendek(ctx, 'triangle', 900, 700, 0.06, 0.09, 0)
+  }
+}
+
+if (typeof document !== 'undefined') {
+  document.addEventListener(
+    'click',
+    (e) => {
+      const el = e.target?.closest?.(PILIHAN_KLIK)
+      if (!el || el.disabled || el.getAttribute('aria-disabled') === 'true' || el.hasAttribute('data-tanpa-suara')) return
+      if (el.closest('[data-tanpa-suara]')) return
+      if (performance.now() - suaraTerakhir < 150) return
+      const pilihan = el.matches('[role="radio"], [role="switch"], input[type="checkbox"], input[type="radio"]') || el.hasAttribute('aria-pressed') || el.hasAttribute('aria-checked')
+      playKlikTombol(pilihan ? 'pilih' : 'tap')
+    },
+    { passive: true }
+  )
 }

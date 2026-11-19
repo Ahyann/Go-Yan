@@ -14,7 +14,7 @@ export default function ProfilAkun({ nama, peran, ikon, pilihanIkon, onPilihIkon
   return (
     <>
       <section style={{ ...s.kartu, background: `linear-gradient(100deg, ${a}33, var(--card-blue) 62%)` }}>
-        <button type="button" className="tekan" style={s.tombolFoto} onClick={() => setBuka(true)} aria-label={t.gantiFoto}>
+        <button type="button" data-tanpa-suara className="tekan" style={s.tombolFoto} onClick={() => setBuka(true)} aria-label={t.gantiFoto}>
           <span key={ikon} className="foto-lompat" style={s.potong}>
             <img src={`/icons/${ikon}`} style={s.fotoImg} alt="" />
           </span>
@@ -24,7 +24,7 @@ export default function ProfilAkun({ nama, peran, ikon, pilihanIkon, onPilihIkon
           <div style={s.nama}>{nama}</div>
           {peran && <div style={{ ...s.peran, color: a }}>{peran}</div>}
         </div>
-        <button type="button" className="tekan" style={{ ...s.ubah, color: a, borderColor: a }} onClick={() => setBuka(true)}>
+        <button type="button" data-tanpa-suara className="tekan" style={{ ...s.ubah, color: a, borderColor: a }} onClick={() => setBuka(true)}>
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="square" aria-hidden="true">
             <path d="M17 3l4 4L7.5 20.5 2 22l1.5-5.5z" />
           </svg>
