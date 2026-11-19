@@ -337,23 +337,23 @@ function nadaPendek(ctx, tipe, f0, f1, dur, vol, t, tujuan = ctx.destination) {
   osc.stop(w + dur + 0.03)
 }
 
-// Jalur penguat untuk bunyi Spiderman: kompresor merapatkan puncak bunyi, lalu penguat menaikkan volumenya.
-// Hasilnya jauh lebih keras dari volume oscillator biasa tanpa pecah di speaker hape.
+// Jalur penguat untuk bunyi Spiderman: penguat 6x lebih dulu, lalu pembatas (kompresor keras) di ujung supaya
+// bunyi bisa naik sampai batas maksimum speaker tanpa pecah.
 const busSpidey = new WeakMap()
 function jalurSpidey(ctx) {
   let bus = busSpidey.get(ctx)
   if (!bus) {
-    const kompresor = ctx.createDynamicsCompressor()
-    kompresor.threshold.value = -20
-    kompresor.knee.value = 12
-    kompresor.ratio.value = 8
-    kompresor.attack.value = 0.003
-    kompresor.release.value = 0.15
     const penguat = ctx.createGain()
-    penguat.gain.value = 4.5
-    kompresor.connect(penguat)
-    penguat.connect(ctx.destination)
-    bus = kompresor
+    penguat.gain.value = 6
+    const pembatas = ctx.createDynamicsCompressor()
+    pembatas.threshold.value = -3
+    pembatas.knee.value = 0
+    pembatas.ratio.value = 20
+    pembatas.attack.value = 0.001
+    pembatas.release.value = 0.1
+    penguat.connect(pembatas)
+    pembatas.connect(ctx.destination)
+    bus = penguat
     busSpidey.set(ctx, bus)
   }
   return bus
@@ -568,7 +568,7 @@ export function playSpideySentuh(jenis) {
   const ctx = ctxSiapEfek()
   if (!ctx) return
   // Bunyi reaksi Spiderman dibuat sekitar 3,6x lebih keras dari semula supaya terdengar jelas di hape.
-  const nadaPendek = (c, tipe, f0, f1, dur, vol, tunda) => nadaAsli(c, tipe, f0, f1, dur, Math.min(vol * 3.6, 0.55), tunda, jalurSpidey(c))
+  const nadaPendek = (c, tipe, f0, f1, dur, vol, tunda) => nadaAsli(c, tipe, f0, f1, dur, Math.min(vol * 5, 0.9), tunda, jalurSpidey(c))
   if (jenis === 'kaget') {
     nadaPendek(ctx, 'triangle', 880, 1320, 0.07, 0.1, 0)
     nadaPendek(ctx, 'triangle', 1100, 1650, 0.09, 0.08, 0.08)
