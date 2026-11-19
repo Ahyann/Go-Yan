@@ -401,6 +401,8 @@ export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalka
 
       {/* Spiderman. Pembungkus diam; di dalamnya ada jangkar benang yang menempel di tepi atas kartu. */}
       <div style={s.pembungkus}>
+        {/* Area sentuh seluas logo laba-laba di belakang (di bawah Spiderman, jadi badannya tetap menangkap sentuhan sendiri). */}
+        {!diterima && !dibatalkan && (<div onPointerDown={sentuh} style={{ position: 'absolute', left: '50%', top: '47%', width: KOLOM * sk, height: BARIS_LABA * sk, transform: 'translate(-50%, -50%)', pointerEvents: 'auto', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent', cursor: 'pointer' }} aria-hidden="true" />)}
       <div ref={refSpidey} className="sp-masuk" style={{ ...s.spidey, top: topSpidey, ...(dibatalkan && gayaTolak ? { transformOrigin: `${(PAD + 9.5) * SKALA}px ${-topSpidey}px` } : null), left: `calc(50% - ${(PAD + 9.5) * SKALA}px)`, '--awal': `${awalJatuh}px` }} aria-hidden="true">
         <div
           ref={refReaksi}
