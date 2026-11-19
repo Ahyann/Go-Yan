@@ -612,3 +612,44 @@ export function playSpideySentuh(jenis) {
     for (let i = 0; i < 7; i++) nadaPendek(ctx, 'square', i % 2 ? 760 : 700, i % 2 ? 760 : 700, 0.03, 0.035, i * 0.045)
   }
 }
+
+// Pop up ganti karakter dan warna profil. Semua bunyi pendek dan ringan (oscillator, tanpa file suara).
+// Dibuka: dua nada naik cepat. Digeser: ketukan kecil, nadanya naik ke kanan dan turun ke kiri.
+// Warna: denting yang nadanya mengikuti urutan warna. Disimpan: tiga nada naik. Dibatalkan: dua nada turun.
+export function playGantiBuka() {
+  const ctx = ctxSiapEfek()
+  if (!ctx) return
+  nadaPendek(ctx, 'triangle', 440, 660, 0.09, 0.12, 0)
+  nadaPendek(ctx, 'triangle', 660, 990, 0.12, 0.12, 0.08)
+}
+
+export function playGantiGeser(arah = 1) {
+  const ctx = ctxSiapEfek()
+  if (!ctx) return
+  const f = arah > 0 ? 620 : 520
+  nadaPendek(ctx, 'square', f, f * 1.35, 0.06, 0.07, 0)
+  nadaPendek(ctx, 'triangle', f * 2, f * 2.4, 0.08, 0.06, 0.03)
+}
+
+const NADA_WARNA = [523, 587, 659, 784, 880, 988]
+export function playGantiWarna(indeks = 0) {
+  const ctx = ctxSiapEfek()
+  if (!ctx) return
+  const f = NADA_WARNA[indeks % NADA_WARNA.length]
+  nadaPendek(ctx, 'sine', f, f, 0.22, 0.16, 0)
+  nadaPendek(ctx, 'triangle', f * 2, f * 2, 0.14, 0.07, 0.02)
+}
+
+export function playGantiSimpan() {
+  const ctx = ctxSiapEfek()
+  if (!ctx) return
+  ;[523, 659, 784].forEach((f, i) => nadaPendek(ctx, 'triangle', f, f, 0.12, 0.14, i * 0.08))
+  nadaPendek(ctx, 'sine', 1047, 1047, 0.3, 0.1, 0.26)
+}
+
+export function playGantiBatal() {
+  const ctx = ctxSiapEfek()
+  if (!ctx) return
+  nadaPendek(ctx, 'triangle', 520, 400, 0.1, 0.1, 0)
+  nadaPendek(ctx, 'triangle', 400, 300, 0.14, 0.1, 0.08)
+}

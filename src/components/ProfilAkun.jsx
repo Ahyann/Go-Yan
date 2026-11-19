@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { WARNA_GLOW_PRESET, ambilWarnaGlow } from '../lib/warnaGlow'
 import { useLockBodyScroll } from '../lib/useLockBodyScroll'
+import { playGantiBuka, playGantiGeser, playGantiWarna, playGantiSimpan, playGantiBatal } from '../lib/sound'
+import { getar } from '../lib/getar'
 
 // Kartu profil di tab Akun (penumpang dan ojek): foto besar dengan sudut siku warna glow dan nama.
 // Ketuk foto untuk membuka pop up ganti karakter (digeser kiri-kanan) dan warna glow.
@@ -13,7 +15,7 @@ export default function ProfilAkun({ nama, peran, ikon, pilihanIkon, onPilihIkon
     <>
       <section style={{ ...s.kartu, background: `linear-gradient(100deg, ${a}33, var(--card-blue) 62%)` }}>
         <button type="button" className="tekan" style={s.tombolFoto} onClick={() => setBuka(true)} aria-label={t.gantiFoto}>
-          <span style={s.potong}>
+          <span key={ikon} className="foto-lompat" style={s.potong}>
             <img src={`/icons/${ikon}`} style={s.fotoImg} alt="" />
           </span>
         </button>
@@ -57,13 +59,40 @@ function PopupGanti({ ikon, pilihanIkon, warnaKey, onPilihWarna, onBatal, onSimp
   const a = ambilWarnaGlow(warnaKey).utama
   const jumlah = pilihanIkon.length
 
-  useEffect(() => {
-    const tutup = (e) => { if (e.key === 'Escape') onBatal() }
-    window.addEventListener('keydown', tutup)
-    return () => window.removeEventListener('keydown', tutup)
-  }, [onBatal])
+  const [tutup, setTutup] = useState(null)
+  const [denyut, setDenyut] = useState(0)
 
-  const geser = (d) => setHalaman((h) => Math.max(0, Math.min(h + d, jumlah - 1)))
+  useEffect(() => { playGantiBuka() }, [])
+
+  // Pop up menutup dengan animasi dan bunyi sebelum benar-benar dilepas.
+  function tutupDengan(jenis, aksi) {
+    if (tutup) return
+    setTutup(jenis)
+    if (jenis === 'simpan') { playGantiSimpan(); getar([20, 50, 30]) } else playGantiBatal()
+    setTimeout(aksi, 240)
+  }
+  const batalkan = () => tutupDengan('batal', onBatal)
+
+  useEffect(() => {
+    const tekan = (e) => { if (e.key === 'Escape') batalkan() }
+    window.addEventListener('keydown', tekan)
+    return () => window.removeEventListener('keydown', tekan)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tutup])
+
+  const geser = (d) => {
+    const baru = Math.max(0, Math.min(halaman + d, jumlah - 1))
+    if (baru === halaman) return
+    setHalaman(baru)
+    playGantiGeser(d)
+    getar(10)
+  }
+  const pilihWarna = (key, indeks) => {
+    onPilihWarna(key)
+    setDenyut((n) => n + 1)
+    playGantiWarna(indeks)
+    getar(12)
+  }
   const sentuhMulai = (e) => { sentuhAwal.current = e.touches[0].clientX }
   const sentuhSelesai = (e) => {
     if (sentuhAwal.current === null) return
@@ -74,8 +103,8 @@ function PopupGanti({ ikon, pilihanIkon, warnaKey, onPilihWarna, onBatal, onSimp
   }
 
   return createPortal(
-    <div style={s.overlay} onClick={onBatal}>
-      <div style={{ ...s.sheet, borderTop: `2px solid ${a}` }} onClick={(e) => e.stopPropagation()} role="dialog" aria-label={t.gantiFoto}>
+    <div className={tutup ? 'go-overlay-tutup' : 'go-overlay-buka'} style={s.overlay} onClick={batalkan}>
+      <div className={tutup ? 'go-sheet-tutup' : 'go-sheet-buka'} style={{ ...s.sheet, borderTop: `2px solid ${a}` }} onClick={(e) => e.stopPropagation()} role="dialog" aria-label={t.gantiFoto}>
         <div style={s.sheetJudul}>{t.gantiFoto}</div>
 
         <div style={s.karusel}>
@@ -84,9 +113,9 @@ function PopupGanti({ ikon, pilihanIkon, warnaKey, onPilihWarna, onBatal, onSimp
           </button>
           <div style={s.viewport} onTouchStart={sentuhMulai} onTouchEnd={sentuhSelesai}>
             <div style={{ ...s.track, width: `${jumlah * 100}%`, transform: `translateX(-${halaman * (100 / jumlah)}%)` }}>
-              {pilihanIkon.map((nm) => (
+              {pilihanIkon.map((nm, i) => (
                 <div key={nm} style={{ ...s.slot, width: `${100 / jumlah}%` }}>
-                  <div style={s.kartuTegak}>
+                  <div key={i === halaman ? `aktif-${halaman}-${denyut}` : 'diam'} className={i === halaman ? 'kartu-pop' : undefined} style={s.kartuTegak}>
                     <div style={{ filter: `drop-shadow(0 0 12px ${a}66)`, position: 'absolute', inset: 0 }}>
                       <span style={{ ...s.lapis, background: a, clipPath: POTONG }} />
                       <span style={{ ...s.lapis, inset: 2, background: 'linear-gradient(180deg, ' + a + '33, #011A29)', clipPath: POTONG }} />
@@ -116,7 +145,7 @@ function PopupGanti({ ikon, pilihanIkon, warnaKey, onPilihWarna, onBatal, onSimp
           {t.akunWarna} <span style={{ color: '#E8EDF9', marginLeft: 8 }}>{ambilWarnaGlow(warnaKey).nama.toUpperCase()}</span>
         </div>
         <div style={s.warnaRow} role="radiogroup" aria-label={t.akunWarna}>
-          {Object.entries(WARNA_GLOW_PRESET).map(([key, w]) => {
+          {Object.entries(WARNA_GLOW_PRESET).map(([key, w], indeks) => {
             const aktif = key === warnaKey
             return (
               <button
@@ -127,9 +156,9 @@ function PopupGanti({ ikon, pilihanIkon, warnaKey, onPilihWarna, onBatal, onSimp
                 aria-label={w.nama}
                 className="tekan"
                 style={s.pilihWarna}
-                onClick={() => onPilihWarna(key)}
+                onClick={() => pilihWarna(key, indeks)}
               >
-                <span style={{ ...s.miniKartu, border: `1px solid ${aktif ? w.utama : w.utama + '66'}`, background: `linear-gradient(180deg, ${w.utama}33, #011A29)`, boxShadow: aktif ? `0 0 14px ${w.utama}88` : 'none' }}>
+                <span key={aktif ? `aktif-${denyut}` : 'diam'} className={aktif ? 'swatch-pop' : undefined} style={{ ...s.miniKartu, border: `1px solid ${aktif ? w.utama : w.utama + '66'}`, background: `linear-gradient(180deg, ${w.utama}33, #011A29)`, boxShadow: aktif ? `0 0 14px ${w.utama}88` : 'none' }}>
                   <Siku warna={w.utama} mini />
                   <span style={{ ...s.miniGaris, background: w.utama }} />
                 </span>
@@ -140,8 +169,8 @@ function PopupGanti({ ikon, pilihanIkon, warnaKey, onPilihWarna, onBatal, onSimp
         </div>
 
         <div style={s.tombolRow}>
-          <button type="button" className="tekan" style={s.batalBtn} onClick={onBatal}>{t.batal}</button>
-          <button type="button" className="tekan" style={{ ...s.simpanBtn, background: a }} onClick={() => onSimpan(pilihanIkon[halaman])}>{t.akunSimpan}</button>
+          <button type="button" className="tekan" style={s.batalBtn} onClick={batalkan}>{t.batal}</button>
+          <button type="button" className="tekan" style={{ ...s.simpanBtn, background: a }} onClick={() => tutupDengan('simpan', () => onSimpan(pilihanIkon[halaman]))}>{t.akunSimpan}</button>
         </div>
       </div>
     </div>,
