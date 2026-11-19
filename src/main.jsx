@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import DebugPanel from './components/DebugPanel.jsx'
 import { pantauVersiBaru } from './lib/pantauVersiBaru'
+import { muatPetaLebihAwal } from './lib/prapeta'
 import './index.css'
 
 function setTinggiApp() {
@@ -22,6 +23,7 @@ document.addEventListener('visibilitychange', () => {
 })
 
 pantauVersiBaru()
+muatPetaLebihAwal()
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
