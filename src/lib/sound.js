@@ -682,3 +682,18 @@ if (typeof document !== 'undefined') {
     { passive: true, capture: true }
   )
 }
+
+// Pop up GO: dibuka dengan dua nada naik seperti sinyal radio, ditutup dengan satu nada turun.
+export function playGoBuka() {
+  const ctx = ctxSiapEfek()
+  if (!ctx) return
+  nadaPendek(ctx, 'square', 520, 780, 0.07, 0.07, 0)
+  nadaPendek(ctx, 'triangle', 780, 1170, 0.1, 0.1, 0.07)
+}
+
+export function playGoTutup() {
+  const ctx = ctxSiapEfek()
+  if (!ctx) return
+  nadaPendek(ctx, 'triangle', 780, 520, 0.08, 0.09, 0)
+  nadaPendek(ctx, 'square', 520, 340, 0.1, 0.06, 0.06)
+}

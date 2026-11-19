@@ -1,10 +1,11 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { AKSI } from '../lib/constants'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useLockBodyScroll } from '../lib/useLockBodyScroll'
 import TimeWheelPicker from './TimeWheelPicker.jsx'
+import { playGoBuka, playGoTutup } from '../lib/sound'
 
 const PRESET_LOKASI = ['Office']
 
@@ -12,6 +13,9 @@ export default function GoPopup({ onClose, onSubmit }) {
   const { t } = useLanguage()
   const { isDemo } = useAuth()
   useLockBodyScroll()
+  useEffect(() => { playGoBuka() }, [])
+  // Menutup dengan mengetuk di luar pop up. Mengirim GO punya bunyinya sendiri (pesan terkirim).
+  const tutup = () => { playGoTutup(); onClose() }
   const jamSekarang = new Date().toTimeString().slice(0, 2) + ':00'
 
   const [aksi, setAksi] = useState(AKSI.JEMPUT)
@@ -32,7 +36,7 @@ export default function GoPopup({ onClose, onSubmit }) {
   }
 
   return createPortal(
-    <div className="go-overlay-buka" style={s.overlay} onClick={onClose}>
+    <div className="go-overlay-buka" style={s.overlay} onClick={tutup}>
       <div className="go-sheet-buka" style={s.sheet} onClick={(e) => e.stopPropagation()}>
         <div style={s.toggleRow}>
           <button
