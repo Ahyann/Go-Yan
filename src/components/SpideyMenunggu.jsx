@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { playWhooshMasuk, playSpideySentuh } from '../lib/sound'
+import { getar, POLA_GETAR } from '../lib/getar'
 import { bentukKotak, KOLOM } from './SplashLabaLaba.jsx'
 
 const KOTAK_LABA = bentukKotak()
@@ -345,6 +346,7 @@ export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalka
     el.style.transformOrigin = r.asal === 'badan' || r.nama === 'kenyal' ? `${(PAD + 9.5) * SKALA}px 26px` : `${(PAD + 9.5) * SKALA}px ${-topSpidey}px`
     el.animate(r.kf, { duration: r.durasi, easing: r.easing })
     playSpideySentuh(r.nama)
+    getar(POLA_GETAR[r.nama] || 20)
     clearTimeout(timerGelembung.current)
     setGelembungSentuh(r.gelembung)
     if (r.gelembung) timerGelembung.current = setTimeout(() => setGelembungSentuh(null), r.durasi + 500)

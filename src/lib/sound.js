@@ -321,7 +321,7 @@ export function playPilihRoda(indeks = 0) {
 }
 
 // Nada pendek dengan oscillator, dijadwalkan `t` detik dari sekarang. Dipakai efek suara Spiderman di bawah.
-function nadaPendek(ctx, tipe, f0, f1, dur, vol, t) {
+function nadaPendek(ctx, tipe, f0, f1, dur, vol, t, tujuan = ctx.destination) {
   const w = ctx.currentTime + t
   const osc = ctx.createOscillator()
   const gain = ctx.createGain()
@@ -332,9 +332,31 @@ function nadaPendek(ctx, tipe, f0, f1, dur, vol, t) {
   gain.gain.exponentialRampToValueAtTime(vol, w + 0.005)
   gain.gain.exponentialRampToValueAtTime(0.0001, w + dur)
   osc.connect(gain)
-  gain.connect(ctx.destination)
+  gain.connect(tujuan)
   osc.start(w)
   osc.stop(w + dur + 0.03)
+}
+
+// Jalur penguat untuk bunyi Spiderman: kompresor merapatkan puncak bunyi, lalu penguat menaikkan volumenya.
+// Hasilnya jauh lebih keras dari volume oscillator biasa tanpa pecah di speaker hape.
+const busSpidey = new WeakMap()
+function jalurSpidey(ctx) {
+  let bus = busSpidey.get(ctx)
+  if (!bus) {
+    const kompresor = ctx.createDynamicsCompressor()
+    kompresor.threshold.value = -20
+    kompresor.knee.value = 12
+    kompresor.ratio.value = 8
+    kompresor.attack.value = 0.003
+    kompresor.release.value = 0.15
+    const penguat = ctx.createGain()
+    penguat.gain.value = 3
+    kompresor.connect(penguat)
+    penguat.connect(ctx.destination)
+    bus = kompresor
+    busSpidey.set(ctx, bus)
+  }
+  return bus
 }
 
 function ctxSiapEfek() {
@@ -364,12 +386,12 @@ export function playWhooshMasuk() {
   saring.frequency.setValueAtTime(600, ctx.currentTime)
   saring.frequency.exponentialRampToValueAtTime(5500, ctx.currentTime + 0.5)
   const gain = ctx.createGain()
-  gain.gain.value = 0.5
+  gain.gain.value = 0.4
   sumber.connect(saring)
   saring.connect(gain)
-  gain.connect(ctx.destination)
+  gain.connect(jalurSpidey(ctx))
   sumber.start()
-  nadaPendek(ctx, 'sine', 700, 2200, 0.42, 0.4, 0.02)
+  nadaPendek(ctx, 'sine', 700, 2200, 0.42, 0.4, 0.02, jalurSpidey(ctx))
 }
 
 // Pesanan dibatalkan: gaya "kalah" game 8-bit. Empat bip kotak menurun lalu satu nada kotak merosot
@@ -546,7 +568,7 @@ export function playSpideySentuh(jenis) {
   const ctx = ctxSiapEfek()
   if (!ctx) return
   // Bunyi reaksi Spiderman dibuat sekitar 3,6x lebih keras dari semula supaya terdengar jelas di hape.
-  const nadaPendek = (c, tipe, f0, f1, dur, vol, tunda) => nadaAsli(c, tipe, f0, f1, dur, Math.min(vol * 3.6, 0.55), tunda)
+  const nadaPendek = (c, tipe, f0, f1, dur, vol, tunda) => nadaAsli(c, tipe, f0, f1, dur, Math.min(vol * 3.6, 0.55), tunda, jalurSpidey(c))
   if (jenis === 'kaget') {
     nadaPendek(ctx, 'triangle', 880, 1320, 0.07, 0.1, 0)
     nadaPendek(ctx, 'triangle', 1100, 1650, 0.09, 0.08, 0.08)
