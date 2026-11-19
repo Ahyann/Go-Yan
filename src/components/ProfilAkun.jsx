@@ -86,12 +86,15 @@ function PopupGanti({ ikon, pilihanIkon, warnaKey, onPilihWarna, onBatal, onSimp
             <div style={{ ...s.track, width: `${jumlah * 100}%`, transform: `translateX(-${halaman * (100 / jumlah)}%)` }}>
               {pilihanIkon.map((nm) => (
                 <div key={nm} style={{ ...s.slot, width: `${100 / jumlah}%` }}>
-                  <div style={{ ...s.kartuTegak, border: `1px solid ${a}`, background: `linear-gradient(180deg, ${a}33, #011A29)`, boxShadow: `0 0 22px ${a}55` }}>
+                  <div style={s.kartuTegak}>
+                    <div style={{ filter: `drop-shadow(0 0 12px ${a}66)`, position: 'absolute', inset: 0 }}>
+                      <span style={{ ...s.lapis, background: a, clipPath: POTONG }} />
+                      <span style={{ ...s.lapis, inset: 2, background: 'linear-gradient(180deg, ' + a + '33, #011A29)', clipPath: POTONG }} />
+                    </div>
                     <span style={s.potongTegak}>
                       <img src={`/icons/${nm}`} style={s.tegakImg} alt="" />
                     </span>
                     <span style={{ ...s.garisTegak, background: a }} />
-                    <Siku warna={a} besar />
                   </div>
                 </div>
               ))}
@@ -123,14 +126,14 @@ function PopupGanti({ ikon, pilihanIkon, warnaKey, onPilihWarna, onBatal, onSimp
                 aria-checked={aktif}
                 aria-label={w.nama}
                 className="tekan"
-                style={{ ...s.swatch, background: `linear-gradient(160deg, ${w.utama}, ${w.kuat})`, outline: aktif ? '2px solid #fff' : 'none', outlineOffset: 2 }}
+                style={s.pilihWarna}
                 onClick={() => onPilihWarna(key)}
               >
-                {aktif && (
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#05202F" strokeWidth="3.2" strokeLinecap="square" aria-hidden="true">
-                    <path d="M20 6L9 17l-5-5" />
-                  </svg>
-                )}
+                <span style={{ ...s.miniKartu, border: `1px solid ${aktif ? w.utama : w.utama + '66'}`, background: `linear-gradient(180deg, ${w.utama}33, #011A29)`, boxShadow: aktif ? `0 0 14px ${w.utama}88` : 'none' }}>
+                  <Siku warna={w.utama} mini />
+                  <span style={{ ...s.miniGaris, background: w.utama }} />
+                </span>
+                <span style={{ ...s.miniTanda, width: aktif ? 18 : 6, background: aktif ? w.utama : '#3F566E' }} />
               </button>
             )
           })}
@@ -146,6 +149,8 @@ function PopupGanti({ ikon, pilihanIkon, warnaKey, onPilihWarna, onBatal, onSimp
   )
 }
 
+const POTONG = 'polygon(16px 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%, 0 16px)'
+
 function Panah({ arah }) {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="square" aria-hidden="true">
@@ -154,8 +159,8 @@ function Panah({ arah }) {
   )
 }
 
-function Siku({ warna, besar = false }) {
-  const uk = besar ? 14 : 10
+function Siku({ warna, besar = false, mini = false }) {
+  const uk = mini ? 8 : besar ? 14 : 10
   const b = `2px solid ${warna}`
   const dasar = { position: 'absolute', width: uk, height: uk, pointerEvents: 'none' }
   return (
@@ -210,15 +215,20 @@ const s = {
   viewport: { flex: 1, overflow: 'hidden', touchAction: 'pan-y', paddingTop: 52 },
   track: { display: 'flex', transition: 'transform 0.3s cubic-bezier(0.34, 1.2, 0.64, 1)' },
   slot: { flexShrink: 0, display: 'flex', justifyContent: 'center', padding: '0 0 8px', boxSizing: 'border-box' },
-  kartuTegak: { position: 'relative', width: 150, height: 190, borderRadius: 0 },
+  kartuTegak: { position: 'relative', width: 150, height: 190 },
   potongTegak: { position: 'absolute', left: -14, right: -14, bottom: 0, top: -52, overflow: 'hidden', clipPath: 'inset(0 0 2px 0)' },
   tegakImg: { position: 'absolute', left: '50%', marginLeft: -120, bottom: -14, width: 240, height: 240, objectFit: 'contain', imageRendering: 'pixelated', pointerEvents: 'none' },
-  garisTegak: { position: 'absolute', left: 0, right: 0, bottom: 0, height: 2 },
+  garisTegak: { position: 'absolute', left: 0, right: 0, bottom: 0, height: 2, clipPath: 'polygon(0 0, 100% 0, calc(100% - 16px) 100%, 0 100%)' },
+  lapis: { position: 'absolute', inset: 0, display: 'block' },
   namaKarakter: { fontFamily: 'var(--font-judul)', fontSize: 22, letterSpacing: 1, color: '#fff', textAlign: 'center', textTransform: 'uppercase', marginTop: -2 },
   titikRow: { display: 'flex', justifyContent: 'center', gap: 6, marginTop: -4 },
   titik: { height: 6, transition: 'width 0.2s, background 0.2s' },
   warnaJudul: { fontFamily: 'var(--font-data)', fontSize: 10.5, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', textAlign: 'center', marginTop: 4 },
-  warnaRow: { display: 'flex', justifyContent: 'center', gap: 10, flexWrap: 'wrap' },
+  warnaRow: { display: 'flex', justifyContent: 'center', gap: 12, flexWrap: 'wrap' },
+  pilihWarna: { display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, padding: 0, background: 'transparent', border: 'none', borderRadius: 0 },
+  miniKartu: { position: 'relative', display: 'block', width: 40, height: 50 },
+  miniGaris: { position: 'absolute', left: 0, right: 0, bottom: 0, height: 2 },
+  miniTanda: { display: 'block', height: 3, transition: 'width 0.2s, background 0.2s' },
   swatch: { width: 38, height: 38, padding: 0, border: 'none', borderRadius: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' },
   tombolRow: { display: 'flex', gap: 10, marginTop: 6 },
   batalBtn: { flex: 1, padding: 13, background: 'transparent', border: '1px solid rgba(96,192,240,0.45)', borderRadius: 0, color: '#B0BAD6', fontFamily: 'var(--font-data)', fontSize: 12, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase' },
