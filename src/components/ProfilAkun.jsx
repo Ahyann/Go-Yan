@@ -86,8 +86,11 @@ function PopupGanti({ ikon, pilihanIkon, warnaKey, onPilihWarna, onBatal, onSimp
             <div style={{ ...s.track, width: `${jumlah * 100}%`, transform: `translateX(-${halaman * (100 / jumlah)}%)` }}>
               {pilihanIkon.map((nm) => (
                 <div key={nm} style={{ ...s.slot, width: `${100 / jumlah}%` }}>
-                  <div style={{ ...s.bingkai, border: `1px solid ${a}`, boxShadow: `0 0 22px ${a}66` }}>
-                    <img src={`/icons/${nm}`} style={s.bingkaiImg} alt="" />
+                  <div style={{ ...s.kartuTegak, border: `1px solid ${a}`, background: `linear-gradient(180deg, ${a}33, #011A29)`, boxShadow: `0 0 22px ${a}55` }}>
+                    <span style={s.potongTegak}>
+                      <img src={`/icons/${nm}`} style={s.tegakImg} alt="" />
+                    </span>
+                    <span style={{ ...s.garisTegak, background: a }} />
                     <Siku warna={a} besar />
                   </div>
                 </div>
@@ -99,6 +102,7 @@ function PopupGanti({ ikon, pilihanIkon, warnaKey, onPilihWarna, onBatal, onSimp
           </button>
         </div>
 
+        <div style={s.namaKarakter}>{t.akunKarakter} {halaman + 1}</div>
         <div style={s.titikRow} aria-hidden="true">
           {pilihanIkon.map((nm, i) => (
             <span key={nm} style={{ ...s.titik, width: i === halaman ? 18 : 6, background: i === halaman ? a : '#3F566E' }} />
@@ -203,11 +207,14 @@ const s = {
   sheetJudul: { fontFamily: 'var(--font-judul)', fontSize: 24, letterSpacing: 1, color: '#fff', textAlign: 'center' },
   karusel: { display: 'flex', alignItems: 'center', gap: 6 },
   panah: { flexShrink: 0, width: 38, height: 38, background: 'transparent', border: '1px solid rgba(96,192,240,0.45)', borderRadius: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' },
-  viewport: { flex: 1, overflow: 'hidden', touchAction: 'pan-y' },
+  viewport: { flex: 1, overflow: 'hidden', touchAction: 'pan-y', paddingTop: 52 },
   track: { display: 'flex', transition: 'transform 0.3s cubic-bezier(0.34, 1.2, 0.64, 1)' },
-  slot: { flexShrink: 0, display: 'flex', justifyContent: 'center', padding: '14px 0', boxSizing: 'border-box' },
-  bingkai: { position: 'relative', width: 128, height: 128, background: '#011A29', borderRadius: 0 },
-  bingkaiImg: { width: '100%', height: '100%', objectFit: 'contain', objectPosition: '50% 20%', transform: 'scale(1.1) translateY(12px)', imageRendering: 'pixelated' },
+  slot: { flexShrink: 0, display: 'flex', justifyContent: 'center', padding: '0 0 8px', boxSizing: 'border-box' },
+  kartuTegak: { position: 'relative', width: 150, height: 190, borderRadius: 0 },
+  potongTegak: { position: 'absolute', left: -14, right: -14, bottom: 0, top: -52, overflow: 'hidden', clipPath: 'inset(0 0 2px 0)' },
+  tegakImg: { position: 'absolute', left: '50%', marginLeft: -120, bottom: -14, width: 240, height: 240, objectFit: 'contain', imageRendering: 'pixelated', pointerEvents: 'none' },
+  garisTegak: { position: 'absolute', left: 0, right: 0, bottom: 0, height: 2 },
+  namaKarakter: { fontFamily: 'var(--font-judul)', fontSize: 22, letterSpacing: 1, color: '#fff', textAlign: 'center', textTransform: 'uppercase', marginTop: -2 },
   titikRow: { display: 'flex', justifyContent: 'center', gap: 6, marginTop: -4 },
   titik: { height: 6, transition: 'width 0.2s, background 0.2s' },
   warnaJudul: { fontFamily: 'var(--font-data)', fontSize: 10.5, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', textAlign: 'center', marginTop: 4 },
