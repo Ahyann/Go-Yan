@@ -308,7 +308,7 @@ const REAKSI = [
   { nama: 'getar', gelembung: 'titik', durasi: 550, easing: 'linear', kf: [{ transform: 'rotate(0)' }, { transform: 'rotate(-1.6deg)', offset: 0.12 }, { transform: 'rotate(1.6deg)', offset: 0.3 }, { transform: 'rotate(-1.6deg)', offset: 0.48 }, { transform: 'rotate(1.3deg)', offset: 0.66 }, { transform: 'rotate(-0.6deg)', offset: 0.85 }, { transform: 'rotate(0)' }] },
 ]
 
-export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalkan = false, menyusut = false, isDemo = false, teks = null, gayaTolak = false }) {
+export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalkan = false, menyusut = false, isDemo = false, teks = null, gayaTolak = false, info = null }) {
   const { t } = useLanguage()
   const [sekarang, setSekarang] = useState(() => Date.now())
 
@@ -404,6 +404,7 @@ export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalka
   }, [diterima])
 
   const menyalaSense = gelembungSentuh === 'sense' || diterima
+  const tampilInfo = !!info && !diterima && !dibatalkan
   const lama = dibuatPada ? formatLama(sekarang - dibuatPada) : '00:00'
   // Latar kartu setengah transparan, jadi peta kelihatan di baliknya; bayangan teks menjaga tulisan tetap terbaca.
   const bayang = { textShadow: '0 1px 3px rgba(0, 0, 0, 0.9), 0 0 2px rgba(0, 0, 0, 0.9)' }
@@ -527,7 +528,7 @@ export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalka
       </svg>
       </div>
 
-      <div className="sp-teks-muncul" style={{ ...s.teks, bottom: 28 + bawahDock }}>
+      <div className="sp-teks-muncul" style={{ ...s.teks, bottom: 28 + bawahDock + (tampilInfo ? 46 : 0) }}>
         <div style={{ ...s.judul, ...bayang, color: diterima ? '#4ADE80' : dibatalkan ? 'var(--merah-teks)' : '#FFFFFF' }}>
           {diterima ? (teks?.diterima ?? t.spideyDiterima) : dibatalkan ? (teks?.batal ?? t.spideyBatal) : (teks?.menunggu ?? t.spideyMenunggu)}
         </div>
@@ -543,6 +544,25 @@ export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalka
           )}
         </div>
       </div>
+
+      {tampilInfo && (
+        <div className="sp-teks-muncul" style={{ ...s.infoBaris, bottom: 20 + bawahDock }}>
+          <span style={s.infoKapsul}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="square" aria-hidden="true" style={{ flexShrink: 0 }}>
+              <circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" />
+            </svg>
+            <b style={s.infoAksi}>{info.aksi}</b>
+            <span style={s.infoPisah} />
+            <span>{info.waktu}</span>
+          </span>
+          <span style={{ ...s.infoKapsul, minWidth: 0 }}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="square" aria-hidden="true" style={{ flexShrink: 0 }}>
+              <path d="M12 2C8 2 5 5 5 9c0 5.5 7 13 7 13s7-7.5 7-13c0-4-3-7-7-7z" /><circle cx="12" cy="9" r="2.5" />
+            </svg>
+            <span style={s.infoTempat}>{info.where}</span>
+          </span>
+        </div>
+      )}
     </div>
   )
 }
@@ -558,6 +578,11 @@ const s = {
   // memantul turun atau jatuh masuk, benangnya tidak pernah putus atau menggantung pendek.
   benang: { position: 'absolute', left: (PAD + 9.5) * SKALA - 2, top: -2000, width: 4, height: 2088, background: '#E8E8E8', boxShadow: '0 0 4px rgba(94, 208, 255, 0.9)' },
   teks: { position: 'absolute', left: 0, right: 0, bottom: 28, textAlign: 'center' },
+  infoBaris: { position: 'absolute', left: 12, right: 12, display: 'flex', justifyContent: 'center', alignItems: 'stretch', gap: 8, flexWrap: 'nowrap' },
+  infoKapsul: { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '7px 10px', background: 'rgba(1, 26, 41, 0.85)', border: '1px solid rgba(94, 208, 255, 0.55)', color: '#E8EDF9', fontFamily: 'var(--font-data)', fontSize: 12, letterSpacing: '0.06em', lineHeight: 1, textTransform: 'uppercase' },
+  infoAksi: { color: 'var(--glow-blue)', fontWeight: 700 },
+  infoPisah: { width: 1, height: 11, background: 'rgba(94, 208, 255, 0.5)' },
+  infoTempat: { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 150 },
   judul: { fontFamily: 'var(--font-judul)', fontSize: 32, letterSpacing: 1, lineHeight: 1 },
   sub: { fontFamily: 'var(--font-data)', fontSize: 12, letterSpacing: '0.08em', color: '#E8EDF9', marginTop: 8 },
 }

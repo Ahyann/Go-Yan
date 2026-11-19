@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom'
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-import { STATUS_PERMINTAAN, LOKASI_OFFICE, LOKASI_UPN } from '../lib/constants'
+import { STATUS_PERMINTAAN, AKSI, LOKASI_OFFICE, LOKASI_UPN } from '../lib/constants'
 import { useLokasiOjek } from '../lib/useLokasiOjek'
 import { useLokasiPenumpang } from '../lib/useLokasiPenumpang'
 import { usePesanOjek } from '../lib/usePesanOjek'
@@ -881,7 +881,7 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
           )}
 
           {(permintaan?.status === STATUS_PERMINTAAN.MENUNGGU || animDiterima || transisiBatal) && (
-            <SpideyMenunggu dibuatPada={dibuatPadaRef.current} diterima={animDiterima}dibatalkan={transisiBatal} menyusut={susutBatal} isDemo={isDemo} gayaTolak={transisiTolak} teks={transisiTolak ? { batal: t.spideyTolak, batalSub: isDemo ? t.spideyTolakSubDemo : t.spideyTolakSub } : null} />
+            <SpideyMenunggu dibuatPada={dibuatPadaRef.current} diterima={animDiterima}dibatalkan={transisiBatal} menyusut={susutBatal} isDemo={isDemo} gayaTolak={transisiTolak} info={permintaan ? { aksi: permintaan.aksi === AKSI.JEMPUT ? t.jemput : t.antar, waktu: permintaan.waktu, where: permintaan.where } : null} teks={transisiTolak ? { batal: t.spideyTolak, batalSub: isDemo ? t.spideyTolakSubDemo : t.spideyTolakSub } : null} />
           )}
 
           {permintaan?.status === STATUS_PERMINTAAN.DITOLAK && !transisiBatal && (
