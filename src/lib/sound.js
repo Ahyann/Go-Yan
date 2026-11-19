@@ -145,20 +145,29 @@ export function sambungkanEfekAi(ctx, sumber, tujuan = ctx.destination) {
   }
 }
 
-function putarBufferDenganEfekAi(buffer) {
+// Keluaran dengan pengatur volume. volume 1 = langsung ke speaker, kurang dari 1 = lebih pelan.
+function keluaranVolume(ctx, volume) {
+  if (volume === 1) return ctx.destination
+  const g = ctx.createGain()
+  g.gain.value = volume
+  g.connect(ctx.destination)
+  return g
+}
+
+function putarBufferDenganEfekAi(buffer, volume = 1) {
   const ctx = getAudioCtx()
   const source = ctx.createBufferSource()
   source.buffer = buffer
-  sambungkanEfekAi(ctx, source)
+  sambungkanEfekAi(ctx, source, keluaranVolume(ctx, volume))
   source.start(0)
   return source
 }
 
-function putarBuffer(buffer) {
+function putarBuffer(buffer, volume = 1) {
   const ctx = getAudioCtx()
   const source = ctx.createBufferSource()
   source.buffer = buffer
-  source.connect(ctx.destination)
+  source.connect(keluaranVolume(ctx, volume))
   source.start(0)
   return source
 }
@@ -463,9 +472,9 @@ const tunggu = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
 // Putar satu suara dan selesai (resolve) begitu suaranya habis. Ada batas
 // waktu cadangan, jaga-jaga kalau event 'ended' gak pernah datang.
-function putarSampaiSelesai(buffer, denganEfekAi) {
+function putarSampaiSelesai(buffer, denganEfekAi, volume = 1) {
   return new Promise((resolve) => {
-    const sumber = denganEfekAi ? putarBufferDenganEfekAi(buffer) : putarBuffer(buffer)
+    const sumber = denganEfekAi ? putarBufferDenganEfekAi(buffer, volume) : putarBuffer(buffer, volume)
     let selesai = false
     const akhiri = () => {
       if (selesai) return
@@ -481,7 +490,7 @@ function putarSampaiSelesai(buffer, denganEfekAi) {
 // Kalau salah satu gagal dimuat, yang satunya tetap main.
 const JEDA_ANTAR_SUARA_MS = 150
 
-function mainkanDuaSuara(kunci, namaAntrian, labaLabaDulu) {
+function mainkanDuaSuara(kunci, namaAntrian, labaLabaDulu, volume = 1) {
   if (!efekBoleh()) return Promise.resolve(false)
   return masukAntrean(async () => {
     const ctx = getAudioCtx()
@@ -506,7 +515,7 @@ function mainkanDuaSuara(kunci, namaAntrian, labaLabaDulu) {
 
     for (let i = 0; i < urutan.length; i++) {
       if (i > 0) await tunggu(JEDA_ANTAR_SUARA_MS)
-      await putarSampaiSelesai(urutan[i].buffer, urutan[i].efek)
+      await putarSampaiSelesai(urutan[i].buffer, urutan[i].efek, volume)
     }
     return true
   })
@@ -539,7 +548,8 @@ function mainkanSuaraAiSaja(kunci, namaAntrian) {
 export const playMisiDiterima = () => mainkanDuaSuara('terima', 'playMisiDiterima', false)
 
 // Fajri selesai mengirim pesanan (GO): suara laba-laba dulu, baru suara AI.
-export const playPesanTerkirim = () => mainkanDuaSuara('pesan', 'playPesanTerkirim', true)
+// Volume 0,45: bunyi GO terkirim (suara AI + suara laba-laba) terasa terlalu keras pada volume penuh.
+export const playPesanTerkirim = () => mainkanDuaSuara('pesan', 'playPesanTerkirim', true, 0.45)
 
 // Fajri membatalkan pesanan: suara AI saja.
 export const playBatalDipencet = () => mainkanSuaraAiSaja('batal', 'playBatalDipencet')
