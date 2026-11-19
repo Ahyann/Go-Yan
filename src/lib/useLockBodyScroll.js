@@ -1,29 +1,22 @@
 import { useEffect } from 'react'
 
-// Dipanggil di dalem komponen popup — selama komponen itu ke-render,
-// scroll di background (halaman di belakang popup) DIKUNCI, gak bisa
-// digeser/discroll walau jarinya nyentuh area di luar popup. Begitu
-// popup-nya ditutup (komponen unmount), scroll balik normal lagi.
+// Dipanggil di dalam komponen popup: selama popup tampil, halaman di belakangnya tidak bisa discroll.
+// Sengaja TIDAK memakai position:fixed di body. Di iPhone itu mengubah ukuran area halaman, jadi bagian bawah
+// layar terpotong dan menyisakan area kosong. Cukup overflow:hidden di html dan body; layar app memang tidak
+// discroll di level body (peta dan daftar punya scroll sendiri).
 export function useLockBodyScroll() {
   useEffect(() => {
-    const overflowSebelumnya = document.body.style.overflow
-    const posisiSebelumnya = document.body.style.position
-    const scrollYSebelumnya = window.scrollY
+    const html = document.documentElement
+    const body = document.body
+    const htmlSebelumnya = html.style.overflow
+    const bodySebelumnya = body.style.overflow
 
-    document.body.style.overflow = 'hidden'
-    // position:fixed di body itu yang bener-bener nge-block gesture
-    // scroll di iOS Safari — cuma overflow:hidden doang kadang masih
-    // "bocor" di beberapa versi iOS.
-    document.body.style.position = 'fixed'
-    document.body.style.top = `-${scrollYSebelumnya}px`
-    document.body.style.width = '100%'
+    html.style.overflow = 'hidden'
+    body.style.overflow = 'hidden'
 
     return () => {
-      document.body.style.overflow = overflowSebelumnya
-      document.body.style.position = posisiSebelumnya
-      document.body.style.top = ''
-      document.body.style.width = ''
-      window.scrollTo(0, scrollYSebelumnya)
+      html.style.overflow = htmlSebelumnya
+      body.style.overflow = bodySebelumnya
     }
   }, [])
 }
