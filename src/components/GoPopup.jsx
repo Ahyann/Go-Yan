@@ -15,13 +15,13 @@ export default function GoPopup({ onClose, onSubmit }) {
   useLockBodyScroll()
   useEffect(() => { playGoBuka() }, [])
   // Menutup dengan mengetuk di luar pop up. Mengirim GO punya bunyinya sendiri (pesan terkirim).
-  // Animasinya (meluncur turun dan memudar, 0,24 detik) diputar dulu sebelum pop up benar-benar dilepas.
+  // Animasinya (meluncur turun dan memudar, 0,14 detik) diputar dulu sebelum pop up benar-benar dilepas.
   const [menutup, setMenutup] = useState(false)
   const tutup = () => {
     if (menutup) return
     setMenutup(true)
     playGoTutup()
-    setTimeout(onClose, 240)
+    setTimeout(onClose, 140)
   }
   const jamSekarang = new Date().toTimeString().slice(0, 2) + ':00'
 
@@ -43,8 +43,8 @@ export default function GoPopup({ onClose, onSubmit }) {
   }
 
   return createPortal(
-    <div className={menutup ? 'go-overlay-tutup' : 'go-overlay-buka'} style={s.overlay} onClick={tutup}>
-      <div className={menutup ? 'go-sheet-tutup' : 'go-sheet-buka'} style={s.sheet} onClick={(e) => e.stopPropagation()}>
+    <div className={menutup ? 'go-overlay-tutup-cepat' : 'go-overlay-buka'} style={s.overlay} onClick={tutup}>
+      <div className={menutup ? 'go-sheet-tutup-cepat' : 'go-sheet-buka'} style={s.sheet} onClick={(e) => e.stopPropagation()}>
         <div style={s.toggleRow}>
           <button
             className={aksi === AKSI.JEMPUT ? 'tekan sudut-cyan' : 'tekan'}

@@ -563,3 +563,11 @@ button {
 @keyframes go-overlay-tutup { to { opacity: 0; } }
 .foto-lompat { animation: foto-lompat 0.55s ease-out; }
 @keyframes foto-lompat { 0% { transform: translateY(14px); filter: brightness(1.8); } 40% { transform: translateY(-10px); } 65% { transform: translateY(2px); } 100% { transform: none; filter: none; } }
+
+/* Pop up GO menutup lebih cepat (0,14 detik) supaya pas dengan bunyi tutupnya. */
+.go-sheet-tutup-cepat { animation: go-sheet-tutup 0.14s ease-in both; }
+.go-overlay-tutup-cepat { animation: go-overlay-tutup 0.14s ease-in both; }
+
+/* Pindah otomatis ke Home (misalnya setelah membatalkan pesanan dari tab lain): halaman masuk dari kiri. */
+.pindah-otomatis { animation: pindah-otomatis 0.4s cubic-bezier(0.22, 1, 0.36, 1) backwards; }
+@keyframes pindah-otomatis { from { opacity: 0; transform: translateX(-32px) scale(0.98); } to { opacity: 1; transform: none; } }

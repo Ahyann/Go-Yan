@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { STATUS_PERMINTAAN } from '../lib/constants'
-import { playPesanTerkirim, playBatalDipencet, playChatSound } from '../lib/sound'
+import { playPesanTerkirim, playBatalDipencet, playChatSound, playTabPindah } from '../lib/sound'
 import { useLokasiSayaPenumpang } from '../lib/useLokasiSayaPenumpang'
 import { usePesanOjek } from '../lib/usePesanOjek'
 import { useRiwayatChat } from '../lib/useRiwayatChat'
@@ -45,6 +45,7 @@ export default function PenumpangView({
 }) {
   const [tabAktif, setTabAktif] = useState('home')
   const [showGo, setShowGo] = useState(false)
+  const [pindahOtomatis, setPindahOtomatis] = useState(false)
   const [adaChatBaru, setAdaChatBaru] = useState(false)
   const [adaRiwayatBaru, setAdaRiwayatBaru] = useState(false)
   const [baruDibatalkan, setBaruDibatalkan] = useState(false)
@@ -118,6 +119,7 @@ export default function PenumpangView({
   }, [riwayat, riwayatSiap])
 
   function handleTabChange(tab) {
+    setPindahOtomatis(false)
     setTabAktif(tab)
     if (tab === 'home') {
       setAdaChatBaru(false)
@@ -147,10 +149,22 @@ export default function PenumpangView({
 
   function handleGoButtonClick() {
     if (modeGo === 'go') {
+      // GO ditekan dari tab lain: pindah ke Home dulu (dengan animasi) supaya animasi menunggu driver kelihatan setelah dikirim.
+      if (tabAktif !== 'home') {
+        handleTabChange('home')
+        setPindahOtomatis(true)
+        playTabPindah()
+      }
       setShowGo(true)
     } else if (modeGo === 'batal') {
       playBatalDipencet()
       onBatal()
+      // Dibatalkan dari tab lain: kembali ke Home otomatis (dengan animasi) supaya animasi batal terlihat.
+      if (tabAktif !== 'home') {
+        handleTabChange('home')
+        setPindahOtomatis(true)
+        playTabPindah()
+      }
       setBaruDibatalkan(true)
       setTimeout(() => setBaruDibatalkan(false), 9000) // 3,4 detik animasi Spiderman + sisanya untuk tulisan "dibatalkan"
     }
@@ -172,7 +186,7 @@ export default function PenumpangView({
 
   return (
     <>
-      <div style={tabAktif === 'home' ? s.stageMap : s.stageScroll}>
+      <div className={pindahOtomatis ? 'pindah-otomatis' : undefined} style={tabAktif === 'home' ? s.stageMap : s.stageScroll}>
         {tabAktif === 'home' && (
           <HomeTab
             permintaan={permintaanAktif}
