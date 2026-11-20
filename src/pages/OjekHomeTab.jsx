@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { STATUS_PERMINTAAN, AKSI } from '../lib/constants'
 import { playMisiDiterima, playPesananBatal } from '../lib/sound'
 import { useLokasiPenumpang, hapusLokasiPenumpangSekarang } from '../lib/useLokasiPenumpang'
@@ -14,7 +15,7 @@ import TombolSuara from '../components/TombolSuara.jsx'
 import SwipeToFinish from '../components/SwipeToFinish.jsx'
 import DemoWelcomePopup from '../components/DemoWelcomePopup.jsx'
 
-export default function OjekHomeTab({
+export default function OjekHomeTab({ slotKonsol,
   permintaan,
   onTerima,
   onTolak,
@@ -168,18 +169,16 @@ export default function OjekHomeTab({
 
         {/* Bingkai bawah yang lebih lebar. Saat ada misi masuk, tombolnya ada di sini; selain itu berisi slot gelap kosong.
             Info misi (aksi, jam, tempat) sudah tampil di bawah Spiderman. */}
-        {/* Layar serba guna (U3): monitor dua baris dengan label kecil di atas. Isinya ikut keadaan:
-            siaga, misi masuk (terima/tolak di sini), atau misi berjalan. Hanya biru dan merah. */}
-        <div style={s.bingkaiBawah}>
-          <div style={s.monitor}>
+        {/* Isi layar konsol di bawah (milik OjekView): label keadaan, info misi, dan tombol terima/tolak.
+            Dikirim lewat portal supaya konsol tetap satu dan tingginya tidak berubah. */}
+        {slotKonsol && createPortal(
+          <>
             <span style={{ ...s.labelMonitor, ...(adaPermintaanMasuk ? s.labelMerah : s.labelBiru) }}>
               {adaPermintaanMasuk ? t.monitorMisiBaru : sedangJalan ? t.monitorBerjalan : t.monitorStatus}
             </span>
-            <div aria-hidden="true" style={s.garisScan} />
             {adaPermintaanMasuk ? (
               <>
-                <div style={s.baris1}>{permintaan.aksi === AKSI.JEMPUT ? t.jemput : t.antar} · {permintaan.waktu}</div>
-                <div style={s.baris2}>{permintaan.where}</div>
+                <div style={s.baris1}>{permintaan.aksi === AKSI.JEMPUT ? t.jemput : t.antar} · {permintaan.waktu} · {permintaan.where}</div>
                 <div className="naik-masuk" style={s.tombolMelayang}>
                   <button className="tekan" style={s.tolakBtn} onClick={handleTolak}>{t.batalMisi}</button>
                   <button className="tekan" style={s.terimaBtn} onClick={handleTerima}>{t.mulaiMisi}</button>
@@ -198,8 +197,9 @@ export default function OjekHomeTab({
                 </div>
               </>
             )}
-          </div>
-        </div>
+          </>,
+          slotKonsol,
+        )}
 
         {sedangJalan && !transisiDiterima && (
           <div style={s.bawahCard}>
@@ -401,7 +401,7 @@ const s = {
     lineHeight: 1.2,
   },
   labelMonitor: {
-    position: 'absolute', left: 10, top: -12, zIndex: 2,
+    position: 'absolute', left: 10, top: -14, zIndex: 2,
     fontFamily: "'Silkscreen', monospace", fontSize: 10, letterSpacing: '0.06em',
     padding: '3px 7px 2px', border: '2px solid #04192A', textShadow: 'none',
   },
@@ -413,11 +413,11 @@ const s = {
   },
   baris1: { fontSize: 14, letterSpacing: '0.06em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', textTransform: 'uppercase' },
   baris2: { fontSize: 11, letterSpacing: '0.06em', opacity: 0.75, marginTop: 5, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', textTransform: 'uppercase' },
-  tombolMelayang: { display: 'flex', gap: 10, marginTop: 10, position: 'relative' },
+  tombolMelayang: { display: 'flex', gap: 8, marginTop: 8, position: 'relative' },
   // Tombol bergaya layar monitor: tolak bergaris biru, mulai merah
   tolakBtn: {
     flex: 1,
-    height: 40,
+    height: 32,
     background: 'transparent',
     color: '#5ED0FF',
     fontFamily: "'Silkscreen', monospace",
@@ -429,7 +429,7 @@ const s = {
   },
   terimaBtn: {
     flex: 1.3,
-    height: 40,
+    height: 32,
     background: '#BC1E2F',
     color: '#fff',
     fontFamily: "'Silkscreen', monospace",
