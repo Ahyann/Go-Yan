@@ -341,7 +341,7 @@ export const translations = {
     akunKarakter: 'Character',
     akunWarna: 'Glow color',
     akunSimpan: 'Save',
-    teksJalanOjek: 'GO-YAN TRACKER READY  ▪  WAITING FOR A MISSION FROM FAJRI  ▪  DON'T FORGET YOUR HELMET  ▪  RIDE SAFE  ▪  ',
+    teksJalanOjek: 'GO-YAN TRACKER READY  ▪  WAITING FOR A MISSION FROM FAJRI  ▪  WEAR YOUR HELMET  ▪  RIDE SAFE  ▪  ',
     akunUbah: 'Edit',
     peranPenumpang: 'Passenger',
     peranDriver: 'Driver',
