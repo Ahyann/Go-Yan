@@ -579,3 +579,17 @@ button {
 /* Pindah otomatis ke Home (misalnya setelah membatalkan pesanan dari tab lain): halaman masuk dari kiri. */
 .pindah-otomatis { animation: pindah-otomatis 0.4s cubic-bezier(0.22, 1, 0.36, 1) backwards; }
 @keyframes pindah-otomatis { from { opacity: 0; transform: translateX(-32px) scale(0.98); } to { opacity: 1; transform: none; } }
+
+/* Tulisan berjalan di bingkai bawah peta ojek. Isinya ditulis dua kali, jadi geser -50% kembali ke posisi awal tanpa lompatan. */
+@keyframes teks-jalan {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.teks-jalan {
+  display: inline-block;
+  white-space: nowrap;
+  animation: teks-jalan 22s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .teks-jalan { animation: none; }
+}

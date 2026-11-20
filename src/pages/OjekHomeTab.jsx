@@ -164,7 +164,9 @@ export default function OjekHomeTab({
               <button className="tekan" style={s.terimaBtn} onClick={handleTerima}>{t.mulaiMisi}</button>
             </div>
           ) : (
-            <div aria-hidden="true" style={s.slotKosong} />
+            <div aria-hidden="true" style={s.slotKosong}>
+              <span className="teks-jalan">{TEKS_JALAN}{TEKS_JALAN}</span>
+            </div>
           )}
         </div>
 
@@ -212,6 +214,8 @@ export default function OjekHomeTab({
     </>
   )
 }
+
+const TEKS_JALAN = 'GO-YAN TRACKER SIAP  ▪  MENUNGGU MISI DARI FAJRI  ▪  JANGAN LUPA PAKAI HELM  ▪  HATI-HATI DI JALAN  ▪  '
 
 const s = {
   wrap: {
@@ -266,7 +270,22 @@ const s = {
     padding: '2px 14px 1px',
   },
   bingkaiBawah: { flexShrink: 0, padding: '12px 0 14px' },
-  slotKosong: { height: 30, background: '#2A2C2E', border: '3px solid #04192A', boxShadow: 'inset 0 4px 0 #3E4042' },
+  slotKosong: {
+    height: 34,
+    boxSizing: 'border-box',
+    overflow: 'hidden',
+    display: 'flex',
+    alignItems: 'center',
+    background: '#2A2C2E',
+    border: '3px solid #04192A',
+    boxShadow: 'inset 0 4px 0 #3E4042',
+    fontFamily: "'Silkscreen', monospace",
+    fontSize: 14,
+    letterSpacing: '0.08em',
+    color: '#8FD8FF',
+    textShadow: '0 0 6px rgba(94, 208, 255, 0.6)',
+    paddingTop: 2,
+  },
   mapArea: {
     flex: 1,
     position: 'relative',
