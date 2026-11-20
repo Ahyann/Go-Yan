@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { STATUS_PERMINTAAN, AKSI } from '../lib/constants'
 import { playMisiDiterima, playPesananBatal } from '../lib/sound'
@@ -32,6 +32,19 @@ export default function OjekHomeTab({ slotKonsol,
   const lokasiPenumpang = useLokasiPenumpang()
   const { kirimPesan, kirimFoto, kirimSuara, hapusPesan } = usePesanOjek()
   const [teksPesan, setTeksPesan] = useState('')
+  // Papan GO-YAN digeser supaya titik tengah KEPALA (bukan titik tengah papan) tepat di tengah layar.
+  // "GO" lebih pendek dari "YAN", jadi tanpa ini kepala bergeser ke kiri; dengan ini tidak perlu ruang kosong di samping GO.
+  const papanRef = useRef(null)
+  const kepalaRef = useRef(null)
+  const [geserPapan, setGeserPapan] = useState(null)
+  useLayoutEffect(() => {
+    const ukur = () => {
+      if (!papanRef.current || !kepalaRef.current) return
+      setGeserPapan(papanRef.current.clientLeft + kepalaRef.current.offsetLeft + kepalaRef.current.offsetWidth / 2)
+    }
+    ukur()
+    document.fonts?.ready?.then(ukur)
+  }, [])
   const [showMissionSuccess, setShowMissionSuccess] = useState(false)
 
   // Layar pembuka abu-abu dilewati kalau halaman di-refresh saat ada misi yang menunggu jawaban.
@@ -139,16 +152,16 @@ export default function OjekHomeTab({ slotKonsol,
     <main style={s.wrap}>
       <section style={s.mainCard}>
         {/* Papan judul di bingkai atas, seperti layar pelacak retro */}
-        <div aria-hidden="true" style={s.papanJudul}>
-          <span className="glitch-teks" style={{ ...s.teksJudul, textAlign: 'right' }}>GO</span>
-          <span style={s.kepalaLingkar}>
+        <div ref={papanRef} aria-hidden="true" style={{ ...s.papanJudul, ...(geserPapan != null ? { transform: `translateX(-${geserPapan}px)` } : null) }}>
+          <span className="glitch-teks" style={s.teksJudul}>GO</span>
+          <span ref={kepalaRef} style={s.kepalaLingkar}>
             <span style={s.kepalaIsi}>
               <img src={`${import.meta.env.BASE_URL}icons/spidericon.png`} alt="" style={s.kepalaImg} />
               <span className="kelopak-spidey" style={{ left: '7%' }} />
               <span className="kelopak-spidey" style={{ left: '53%' }} />
             </span>
           </span>
-          <span className="glitch-teks" style={{ ...s.teksJudul, textAlign: 'left' }}>YAN</span>
+          <span className="glitch-teks" style={s.teksJudul}>YAN</span>
         </div>
         <div style={s.mapArea}>
           <PetaLokasiPenumpang
@@ -300,8 +313,7 @@ const s = {
     padding: '0 12px',
     pointerEvents: 'none',
   },
-  // Lebar GO dan YAN dibuat sama supaya kepala Spiderman tepat di tengah papan (segaris dengan benang laba-laba)
-  teksJudul: { width: 48, fontFamily: "'Silkscreen', monospace", fontSize: 15, letterSpacing: '0.08em', color: '#BFE9FF', lineHeight: 1 },
+  teksJudul: { fontFamily: "'Silkscreen', monospace", fontSize: 15, letterSpacing: '0.08em', color: '#BFE9FF', lineHeight: 1 },
   kepalaLingkar: {
     width: 36, height: 36, margin: '-6px 0', flexShrink: 0, borderRadius: '50%', background: '#fff',
     boxShadow: '0 0 0 2px #04192A', display: 'flex', alignItems: 'center', justifyContent: 'center',
