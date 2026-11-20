@@ -157,7 +157,7 @@ export default function KartuMisiOjek({ permintaan, lokasiAktif, mulaiLokasi, be
 const kotak36 = { width: 36, height: 36, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }
 
 const s = {
-  kartu: { position: 'absolute', left: 0, right: 0, bottom: 0, zIndex: 1100, background: 'var(--panel)', color: 'var(--text)' },
+  kartu: { position: 'absolute', left: 14, right: 14, bottom: 14, zIndex: 1100, background: 'var(--panel)', color: 'var(--text)' },
   kartuBuka: { borderTop: '3px solid var(--nav-red)' },
   strip: { width: '100%', minHeight: 40, padding: '0 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, fontSize: 13.5, fontWeight: 600, textAlign: 'left' },
   stripKiri: { display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 },
