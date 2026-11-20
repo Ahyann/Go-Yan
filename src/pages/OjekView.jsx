@@ -273,7 +273,8 @@ const s = {
     marginTop: 18,
     display: 'flex',
     flexDirection: 'column',
-    background: '#03121F',
+    // Abu-abu gelap seperti layar LED di referensi, dengan kilau tipis di atas
+    background: 'linear-gradient(180deg, #3A3C3F 0, #2A2C2E 6px, #232527 100%)',
     borderStyle: 'solid',
     borderWidth: 4,
     borderColor: '#1A5E8A #8FD8FF #8FD8FF #1A5E8A',
