@@ -140,7 +140,7 @@ export default function OjekHomeTab({ slotKonsol,
       <section style={s.mainCard}>
         {/* Papan judul di bingkai atas, seperti layar pelacak retro */}
         <div aria-hidden="true" style={s.papanJudul}>
-          <span className="glitch-teks" style={s.teksJudul}>GO</span>
+          <span className="glitch-teks" style={{ ...s.teksJudul, textAlign: 'right' }}>GO</span>
           <span style={s.kepalaLingkar}>
             <span style={s.kepalaIsi}>
               <img src={`${import.meta.env.BASE_URL}icons/spidericon.png`} alt="" style={s.kepalaImg} />
@@ -148,7 +148,7 @@ export default function OjekHomeTab({ slotKonsol,
               <span className="kelopak-spidey" style={{ left: '53%' }} />
             </span>
           </span>
-          <span className="glitch-teks" style={s.teksJudul}>YAN</span>
+          <span className="glitch-teks" style={{ ...s.teksJudul, textAlign: 'left' }}>YAN</span>
         </div>
         <div style={s.mapArea}>
           <PetaLokasiPenumpang
@@ -300,7 +300,8 @@ const s = {
     padding: '0 12px',
     pointerEvents: 'none',
   },
-  teksJudul: { fontFamily: "'Silkscreen', monospace", fontSize: 15, letterSpacing: '0.08em', color: '#BFE9FF', lineHeight: 1 },
+  // Lebar GO dan YAN dibuat sama supaya kepala Spiderman tepat di tengah papan (segaris dengan benang laba-laba)
+  teksJudul: { width: 48, fontFamily: "'Silkscreen', monospace", fontSize: 15, letterSpacing: '0.08em', color: '#BFE9FF', lineHeight: 1 },
   kepalaLingkar: {
     width: 36, height: 36, margin: '-6px 0', flexShrink: 0, borderRadius: '50%', background: '#fff',
     boxShadow: '0 0 0 2px #04192A', display: 'flex', alignItems: 'center', justifyContent: 'center',
