@@ -57,7 +57,6 @@ export default function OjekRiwayatTab({ riwayat, onTandaiLunas, onHapusRiwayat,
       {/* Dua kartu ringkasan bersiku piksel: kiri belum ditransfer (merah), kanan diterima (cyan) yang bisa digeser: total lalu bulan ini */}
       <div style={s.ringkasanRow}>
         <section style={s.kartuRingkas}>
-          <Siku warna="#FF5A66" />
           <div style={s.scrollPage}>
             <div style={s.tagihanLabel}>{t.belumDitransfer}</div>
             <div style={s.angkaBelum}>{formatRupiah(totalBelumBayar)}</div>
@@ -95,7 +94,9 @@ export default function OjekRiwayatTab({ riwayat, onTandaiLunas, onHapusRiwayat,
                     <span style={s.itemDesc}>{r.aksi === 'jemput' ? t.jemput : t.antar} · {r.where}</span>
                     {r.statusBayar === STATUS_BAYAR.BELUM ? (
                       <button className="tekan" style={s.lunasBtn} onClick={() => onTandaiLunas(r.id)}>
-                        <span style={s.kotakCentang} />
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                          <path d="M5 12l5 5L20 7" />
+                        </svg>
                         {t.tandaiLunas}
                       </button>
                     ) : (
@@ -134,19 +135,6 @@ export default function OjekRiwayatTab({ riwayat, onTandaiLunas, onHapusRiwayat,
   )
 }
 
-// Empat siku piksel di sudut kartu, seperti penanda tab aktif di konsol
-function Siku({ warna }) {
-  const dasar = { position: 'absolute', width: 8, height: 8, borderStyle: 'solid', borderColor: warna, borderWidth: 0, pointerEvents: 'none' }
-  return (
-    <>
-      <span style={{ ...dasar, top: 3, left: 3, borderTopWidth: 2, borderLeftWidth: 2 }} />
-      <span style={{ ...dasar, top: 3, right: 3, borderTopWidth: 2, borderRightWidth: 2 }} />
-      <span style={{ ...dasar, bottom: 3, left: 3, borderBottomWidth: 2, borderLeftWidth: 2 }} />
-      <span style={{ ...dasar, bottom: 3, right: 3, borderBottomWidth: 2, borderRightWidth: 2 }} />
-    </>
-  )
-}
-
 function DiterimaCarousel({ totalSemua, jumlahSemua, totalBulanIni, jumlahBulanIni, labelBulan, t }) {
   const scrollRef = useRef(null)
   const [halaman, setHalaman] = useState(0)
@@ -164,7 +152,6 @@ function DiterimaCarousel({ totalSemua, jumlahSemua, totalBulanIni, jumlahBulanI
 
   return (
     <div style={s.kartuRingkas}>
-      <Siku warna="#5ED0FF" />
       <div ref={scrollRef} className="no-scrollbar" style={s.scrollInner} onScroll={handleScroll}>
         {halamanList.map((h) => (
           <div key={h.label} style={s.scrollPage}>
@@ -210,12 +197,11 @@ const s = {
   ringkasanRow: { display: 'flex', gap: 8 },
   kartuRingkas: { position: 'relative', flex: 1, minWidth: 0, background: 'var(--card-blue)', border: '1px solid var(--blue-border)', overflow: 'hidden' },
   tiket: { display: 'flex', alignItems: 'stretch', background: 'var(--card-blue)', border: '1px solid var(--blue-border)' },
-  blokTanggal: { width: 46, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4, borderRight: '2px dashed #02121D' },
-  tanggalAngka: { fontFamily: "'Silkscreen', monospace", fontSize: 16, color: '#FFFFFF', lineHeight: 1 },
-  tanggalBulan: { fontFamily: "'Silkscreen', monospace", fontSize: 8, color: '#9FD6F0', textTransform: 'uppercase' },
+  blokTanggal: { width: 48, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3, borderRight: '1px dashed rgba(2,18,29,0.9)' },
+  tanggalAngka: { fontSize: 18, fontWeight: 700, color: '#FFFFFF', lineHeight: 1 },
+  tanggalBulan: { fontSize: 11, fontWeight: 600, color: '#9FD6F0' },
   tiketIsi: { flex: 1, minWidth: 0, padding: '11px 11px 11px 12px' },
   tiketBaris: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
-  kotakCentang: { width: 8, height: 8, boxSizing: 'border-box', border: '2px solid currentColor', flexShrink: 0 },
   cardBiru: {
     flex: 1,
     background: `linear-gradient(160deg, var(--card-blue-grad-a), var(--card-blue-grad-b))`,
@@ -288,29 +274,27 @@ const s = {
   itemJam: { fontFamily: 'var(--font-data)', fontSize: 15, fontWeight: 700, color: '#FFFFFF', lineHeight: 1.2 },
   itemDesc: { minWidth: 0, fontSize: 12, color: '#8FB4DC', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' },
   itemTarif: { flexShrink: 0, fontFamily: 'var(--font-data)', fontSize: 13, fontWeight: 700, color: 'var(--text)', whiteSpace: 'nowrap' },
-  // Tombol bergaya konsol: tepi cyan, huruf piksel, kotak centang kecil
+  // Tombol modern: latar cyan tipis, tulisan cyan, ikon centang
   lunasBtn: {
     flexShrink: 0,
     display: 'inline-flex',
     alignItems: 'center',
     gap: 6,
-    height: 26,
-    padding: '0 9px',
-    fontFamily: "'Silkscreen', monospace",
-    fontSize: 9,
-    color: '#94DDF4',
-    background: 'transparent',
-    border: '2px solid #5ED0FF',
+    height: 28,
+    padding: '0 10px',
+    fontSize: 12,
+    fontWeight: 600,
+    color: 'var(--glow-blue)',
+    background: 'rgba(94, 208, 255, 0.14)',
+    border: 'none',
     borderRadius: 0,
     whiteSpace: 'nowrap',
-    textTransform: 'uppercase',
   },
   lunasBadge: {
     flexShrink: 0,
-    fontFamily: "'Silkscreen', monospace",
-    fontSize: 9,
+    fontSize: 12,
+    fontWeight: 600,
     color: '#4ADE80',
-    textTransform: 'uppercase',
     whiteSpace: 'nowrap',
   },
 }
