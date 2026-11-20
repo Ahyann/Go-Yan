@@ -153,7 +153,7 @@ export default function OjekHomeTab({ slotKonsol,
       <section style={s.mainCard}>
         {/* Papan judul di bingkai atas, seperti layar pelacak retro */}
         <div ref={papanRef} aria-hidden="true" style={{ ...s.papanJudul, ...(geserPapan != null ? { transform: `translateX(-${geserPapan}px)` } : null) }}>
-          <span className="glitch-teks" style={s.teksJudul}>GO</span>
+          <span className="glitch-teks" style={s.teksJudul}>GO-</span>
           <span ref={kepalaRef} style={s.kepalaLingkar}>
             <span style={s.kepalaIsi}>
               <img src={`${import.meta.env.BASE_URL}icons/spidericon.png`} alt="" style={s.kepalaImg} />
