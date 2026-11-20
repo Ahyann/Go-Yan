@@ -753,12 +753,6 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
         </Marker>
       </MapContainer>
 
-      {/* Bingkai piksel di sekeliling peta: area di luar bingkai ditutup warna latar lewat bayangan raksasa,
-          jadi peta terlihat seperti layar di dalam bingkai. Tidak menangkap sentuhan. */}
-      <div aria-hidden="true" style={s.bingkai}>
-        {['tl', 'tr', 'bl', 'br'].map((k) => <span key={k} style={{ ...s.sudut, ...s['sudut_' + k] }} />)}
-      </div>
-
       {tampilkanOverlay && permintaan?.status === STATUS_PERMINTAAN.DITERIMA && (
         chatBuka && (riwayatChat.length > 0 || kosongDibuka) ? (
           <div className="chat-buka" style={{ ...s.kotakChat, ...gayaSlot(slotChat, bawahTertutup), transformOrigin: ASAL_TRANSFORM[slotChat] }}>
@@ -976,26 +970,11 @@ function TeksTab({ teks, ulangMs }) {
 const s = {
   wrap: { position: 'absolute', inset: 0 },
   map: { height: '100%', width: '100%' },
-  bingkai: {
-    position: 'absolute',
-    top: 'calc(var(--safe-top) + 84px)',
-    left: 10,
-    right: 10,
-    bottom: 'calc(var(--safe-bottom) + 96px)',
-    zIndex: 800,
-    pointerEvents: 'none',
-    boxShadow: 'inset 0 0 0 3px #04192A, inset 0 5px 0 #9BDDFF, inset 0 0 0 8px #4FB4F2, inset 0 0 0 10px #04192A, 0 0 0 100vmax #023854',
-  },
-  sudut: { position: 'absolute', width: 4, height: 4, background: '#023854' },
-  sudut_tl: { top: 0, left: 0 },
-  sudut_tr: { top: 0, right: 0 },
-  sudut_bl: { bottom: 0, left: 0 },
-  sudut_br: { bottom: 0, right: 0 },
   overlay: {
     position: 'absolute',
     left: 14,
     right: 14,
-    bottom: 'calc(var(--safe-bottom) + 124px)',
+    bottom: 'calc(var(--safe-bottom) + 86px)',
     zIndex: 1100,
     display: 'flex',
     flexDirection: 'column',

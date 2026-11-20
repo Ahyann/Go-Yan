@@ -142,6 +142,10 @@ export default function OjekHomeTab({
       </header>
 
       <section style={s.mainCard}>
+        {/* Bingkai piksel tebal di atas tepi kartu peta (tidak menangkap sentuhan) */}
+        <div aria-hidden="true" style={s.bingkai}>
+          {['tl', 'tr', 'bl', 'br'].map((k) => <span key={k} style={{ ...s.sudut, ...s['sudut_' + k] }} />)}
+        </div>
         <div style={s.mapArea}>
           <PetaLokasiPenumpang
             lokasi={lokasiPenumpang}
@@ -248,11 +252,24 @@ const s = {
     display: 'flex',
     flexDirection: 'column',
     background: 'var(--panel)',
-    border: '1px solid var(--garis)',
     borderRadius: 0,
     overflow: 'hidden',
     minHeight: 0,
+    position: 'relative',
+    padding: 10,
   },
+  bingkai: {
+    position: 'absolute',
+    inset: 0,
+    zIndex: 1050,
+    pointerEvents: 'none',
+    boxShadow: 'inset 0 0 0 3px #04192A, inset 0 5px 0 #9BDDFF, inset 0 0 0 8px #4FB4F2, inset 0 0 0 10px #04192A',
+  },
+  sudut: { position: 'absolute', width: 4, height: 4, background: 'var(--bg, #023854)' },
+  sudut_tl: { top: 0, left: 0 },
+  sudut_tr: { top: 0, right: 0 },
+  sudut_bl: { bottom: 0, left: 0 },
+  sudut_br: { bottom: 0, right: 0 },
   mapArea: {
     flex: 1,
     position: 'relative',
