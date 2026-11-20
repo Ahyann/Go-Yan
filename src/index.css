@@ -638,11 +638,14 @@ button {
 .konsol-denyut { animation: konsol-denyut 1.6s ease-in-out infinite; }
 /* Saat keduanya aktif, dua animasi harus digabung; kalau tidak, yang terakhir menimpa alarm */
 .konsol-alarm.konsol-denyut { animation: konsol-alarm 1.6s steps(1) 1, konsol-denyut 1.6s ease-in-out infinite; }
+/* Glitch berwarna: tiap sentakan memecah teks jadi bayangan merah dan cyan (RGB split), lalu kembali normal */
 @keyframes glitch-masuk {
-  0% { opacity: 0; transform: translateX(-8px); clip-path: inset(0 0 60% 0); }
-  8% { opacity: 1; transform: translateX(6px); clip-path: inset(40% 0 0 0); }
-  16% { transform: translateX(-3px); clip-path: inset(20% 0 30% 0); }
-  24%, 100% { transform: none; clip-path: inset(0); }
+  0% { opacity: 0; transform: translateX(-8px); clip-path: inset(0 0 60% 0); text-shadow: -3px 0 #FF4C4C, 3px 0 #5ED0FF; filter: hue-rotate(0deg); }
+  6% { opacity: 1; transform: translateX(6px); clip-path: inset(40% 0 0 0); text-shadow: 3px 0 #FF4C4C, -3px 0 #5ED0FF; filter: hue-rotate(90deg) saturate(2); }
+  11% { transform: translateX(-4px); clip-path: inset(10% 0 45% 0); text-shadow: -2px 0 #FF2BD6, 2px 0 #4ADE80; filter: hue-rotate(200deg) saturate(2); }
+  16% { transform: translateX(3px); clip-path: inset(20% 0 30% 0); text-shadow: 2px 0 #FF4C4C, -2px 0 #5ED0FF; filter: none; }
+  20% { transform: translateX(-1px); clip-path: inset(55% 0 5% 0); text-shadow: -1px 0 #FFD23F, 1px 0 #5ED0FF; }
+  24%, 100% { transform: none; clip-path: inset(0); filter: none; }
 }
 .glitch-masuk { animation: glitch-masuk 1.6s steps(1) 1 both; animation-delay: 0.9s; }
 @media (prefers-reduced-motion: reduce) {
