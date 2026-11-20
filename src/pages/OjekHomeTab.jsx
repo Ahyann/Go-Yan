@@ -318,12 +318,10 @@ const s = {
   // Setinggi huruf GO, ikut bergeser saat glitch karena berada di dalam span GO. Sudut berundak ala piksel.
   panahPlay: { display: 'inline-block', width: 9, height: 10, marginRight: 7, verticalAlign: 'baseline', background: 'currentColor', clipPath: 'polygon(0 0, 33% 0, 33% 20%, 67% 20%, 67% 40%, 100% 40%, 100% 60%, 67% 60%, 67% 80%, 33% 80%, 33% 100%, 0 100%)' },
   teksJudul: { fontFamily: "'Silkscreen', monospace", fontSize: 15, letterSpacing: '0.08em', color: '#BFE9FF', lineHeight: 1 },
-  kepalaLingkar: {
-    width: 36, height: 36, margin: '-6px 0', flexShrink: 0, borderRadius: '50%', background: '#fff',
-    boxShadow: '0 0 0 2px #04192A', display: 'flex', alignItems: 'center', justifyContent: 'center',
-  },
-  kepalaIsi: { position: 'relative', width: 34, height: 34 },
-  kepalaImg: { width: 34, height: 34, imageRendering: 'pixelated', display: 'block' },
+  // Kepala Spiderman saja, tanpa lingkaran putih; ukurannya setara lingkaran putih sebelumnya (36px + cincin 2px)
+  kepalaLingkar: { width: 40, height: 40, margin: '-8px 0', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' },
+  kepalaIsi: { position: 'relative', width: 40, height: 40 },
+  kepalaImg: { width: 40, height: 40, imageRendering: 'pixelated', display: 'block' },
   bingkaiBawah: { flexShrink: 0, padding: '12px 0 14px' },
   slotKosong: {
     // Layar serba guna di bawah peta: lebih tinggi supaya nanti bisa menampilkan info lain, sudut berundak
