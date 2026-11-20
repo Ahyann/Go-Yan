@@ -535,7 +535,7 @@ export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalka
       </svg>
       </div>
 
-      <div className="sp-teks-muncul" style={{ ...s.teks, bottom: 14 + bawahDock }}>
+      {!(kompak && dibatalkan) && <div className="sp-teks-muncul" style={{ ...s.teks, bottom: 14 + bawahDock }}>
         {!(kompak && !diterima && !dibatalkan) && <div style={{ ...s.judul, ...bayang, color: diterima ? '#4ADE80' : dibatalkan ? 'var(--merah-teks)' : '#FFFFFF' }}>
           {diterima ? (teks?.diterima ?? t.spideyDiterima) : dibatalkan ? (teks?.batal ?? t.spideyBatal) : (teks?.menunggu ?? t.spideyMenunggu)}
         </div>}
@@ -555,7 +555,7 @@ export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalka
             {info.aksi} · {info.waktu} · {info.where}
           </div>
         )}
-      </div>
+      </div>}
 
     </div>
   )
