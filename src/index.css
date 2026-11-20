@@ -38,6 +38,14 @@
 
 html, body, #root { height: 100%; }
 
+/* Tinggi layar app. Dulu dihitung lewat JavaScript (window.innerHeight) dan di iPhone nilainya kadang basi setelah app
+   dibangunkan dari background, sehingga bagian bawah layar kosong. Sekarang browser sendiri yang menghitungnya lewat
+   satuan dvh, yang selalu mengikuti ukuran layar yang sebenarnya dan tidak ikut mengecil saat keyboard muncul. */
+:root { --app-height: 100vh; }
+@supports (height: 100dvh) {
+  :root { --app-height: 100dvh; }
+}
+
 /* iPhone otomatis memperbesar halaman saat input berukuran huruf < 16px difokus, dan zoom itu tidak kembali
    setelah keyboard tertutup (layar jadi terpotong). 16px mencegah zoom itu. */
 input, textarea, select { font-size: 16px !important; }
