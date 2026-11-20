@@ -330,12 +330,12 @@ export function playPilihRoda(indeks = 0) {
   const gain = ctx.createGain()
   osc.type = 'square'
   osc.frequency.setValueAtTime(520 + indeks * 130, mulai)
-  gain.gain.setValueAtTime(0.12, mulai)
-  gain.gain.exponentialRampToValueAtTime(0.0001, mulai + 0.05)
+  gain.gain.setValueAtTime(0.45, mulai)
+  gain.gain.exponentialRampToValueAtTime(0.0001, mulai + 0.09)
   osc.connect(gain)
   gain.connect(ctx.destination)
   osc.start(mulai)
-  osc.stop(mulai + 0.07)
+  osc.stop(mulai + 0.11)
 }
 
 // Nada pendek dengan oscillator, dijadwalkan `t` detik dari sekarang. Dipakai efek suara Spiderman di bawah.
