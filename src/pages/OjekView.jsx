@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLokasiSaya } from '../lib/useLokasiSaya'
 import { usePesanPenumpang } from '../lib/usePesanPenumpang'
-import { playChatSound, playTabPindah, playKonsolMati } from '../lib/sound'
+import { playChatSound, playTabPindah, playKonsolAlarm, playKonsolMati } from '../lib/sound'
 import { getar } from '../lib/getar'
 import TeksJalan from '../components/TeksJalan.jsx'
 import { useLanguage } from '../context/LanguageContext.jsx'
@@ -71,6 +71,26 @@ export default function OjekView({
   useReminderKeberangkatan(permintaan)
 
   const permintaanTerakhirRef = useRef(undefined)
+  const alarmTertundaRef = useRef(false)
+  const statusMenungguRef = useRef(false)
+  statusMenungguRef.current = permintaan?.status === STATUS_PERMINTAAN.MENUNGGU
+
+  const putarAlarmTertunda = () => {
+    if (!alarmTertundaRef.current) return
+    alarmTertundaRef.current = false
+    if (!statusMenungguRef.current) return
+    setAlarmKonsol(true)
+    playKonsolAlarm()
+  }
+
+  useEffect(() => {
+    const saatTampil = () => {
+      if (!document.hidden && tabAktifRef.current === 'home') putarAlarmTertunda()
+    }
+    document.addEventListener('visibilitychange', saatTampil)
+    return () => document.removeEventListener('visibilitychange', saatTampil)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(() => {
     if (permintaan === undefined) return
@@ -87,8 +107,14 @@ export default function OjekView({
     permintaanTerakhirRef.current = permintaan?.dibuatPada ?? null
 
     if (permintaanBaru) {
-      // Konsol bawah: tepi berkedip merah tiga kali dengan bunyi alarm, dimainkan sekali per misi baru
-      setAlarmKonsol(true)
+      // Alarm konsol (kedip merah + bunyi) hanya diputar saat ojek benar-benar melihat Home.
+      // Kalau sedang di tab lain atau app di latar, ditunda sampai kembali ke Home / app dibuka lagi.
+      if (tabAktifRef.current === 'home' && !document.hidden) {
+        setAlarmKonsol(true)
+        playKonsolAlarm()
+      } else {
+        alarmTertundaRef.current = true
+      }
     }
 
     if (permintaanBaru && tabAktifRef.current !== 'home') {
@@ -163,6 +189,8 @@ export default function OjekView({
   function handleTabChange(tab) {
     setTabAktif(tab)
     if (tab === 'home') {
+      tabAktifRef.current = 'home'
+      if (!document.hidden) putarAlarmTertunda()
       setAdaChatBaru(false)
       setAdaPermintaanBaru(false)
     }
