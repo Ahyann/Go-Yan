@@ -3,6 +3,7 @@ import { useLokasiSaya } from '../lib/useLokasiSaya'
 import { usePesanPenumpang } from '../lib/usePesanPenumpang'
 import { playChatSound, playTabPindah } from '../lib/sound'
 import { getar } from '../lib/getar'
+import { gayaTeksJalan } from '../lib/teksJalan'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { useReminderKeberangkatan } from '../lib/useReminderKeberangkatan'
 import { STATUS_PERMINTAAN } from '../lib/constants'
@@ -210,7 +211,7 @@ export default function OjekView({
             <>
               <span style={s.labelStatus}>{t.monitorStatus}</span>
               <div style={s.barisInfo}>{permintaan?.status === STATUS_PERMINTAAN.MENUNGGU ? t.monitorMisiBaru : t.monitorSiap}</div>
-              <div aria-hidden="true" style={s.barisJalan}><span className="teks-jalan">{t.teksJalanOjek}{t.teksJalanOjek}</span></div>
+              <div aria-hidden="true" style={s.barisJalan}><span className="teks-jalan" style={gayaTeksJalan()}>{t.teksJalanOjek}{t.teksJalanOjek}</span></div>
             </>
           )}
         </div>

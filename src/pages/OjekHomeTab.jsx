@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
+import { gayaTeksJalan } from '../lib/teksJalan'
 import { STATUS_PERMINTAAN, AKSI } from '../lib/constants'
 import { playMisiDiterima, playPesananBatal } from '../lib/sound'
 import { useLokasiPenumpang, hapusLokasiPenumpangSekarang } from '../lib/useLokasiPenumpang'
@@ -206,7 +207,7 @@ export default function OjekHomeTab({ slotKonsol,
               <>
                 <div style={s.baris1}>{t.monitorSiap}</div>
                 <div aria-hidden="true" style={{ ...s.baris2, overflow: 'hidden' }}>
-                  <span className="teks-jalan">{t.teksJalanOjek}{t.teksJalanOjek}</span>
+                  <span className="teks-jalan" style={gayaTeksJalan()}>{t.teksJalanOjek}{t.teksJalanOjek}</span>
                 </div>
               </>
             )}
