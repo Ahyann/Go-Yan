@@ -6,8 +6,7 @@ export default function OjekNav({ tabAktif, onTabChange, adaChatBaru = false, ad
   const { t } = useLanguage()
   return (
     <div style={s.luar}>
-      <nav className="bingkai-piksel" style={s.nav}>
-        <div className="bingkai-piksel-dalam" style={s.dalam}>
+      <nav style={s.nav}>
         <DeretanTab
           aktif={tabAktif}
           onPilih={onTabChange}
@@ -26,7 +25,6 @@ export default function OjekNav({ tabAktif, onTabChange, adaChatBaru = false, ad
             ) },
           ]}
         />
-        </div>
       </nav>
     </div>
   )
@@ -40,8 +38,13 @@ const s = {
   },
   nav: {
     position: 'relative',
-    height: 72,
+    height: 60,
     boxSizing: 'border-box',
+    background: DOCK_GELAP,
+    border: '1px solid rgba(96, 192, 240, 0.4)',
+    display: 'flex',
+    alignItems: 'center',
+    gap: 2,
+    padding: '0 4px',
   },
-  dalam: { height: '100%', boxSizing: 'border-box', background: DOCK_GELAP, display: 'flex', alignItems: 'center', gap: 2 },
 }

@@ -8,8 +8,7 @@ export default function BottomNav({ tabAktif, onTabChange, onGoClick, modeGo = '
   const mati = modeGo === 'disabled'
 
   return (
-    <nav className="bingkai-piksel" style={s.nav}>
-      <div className="bingkai-piksel-dalam" style={s.dalam}>
+    <nav style={s.nav}>
       <DeretanTab
         aktif={tabAktif}
         onPilih={onTabChange}
@@ -53,7 +52,6 @@ export default function BottomNav({ tabAktif, onTabChange, onGoClick, modeGo = '
           )}
         </span>
       </button>
-      </div>
     </nav>
   )
 }
@@ -81,11 +79,16 @@ const s = {
     bottom: 'calc(var(--safe-bottom) + 14px)',
     maxWidth: 452,
     margin: '0 auto',
-    height: 72,
+    height: 60,
     boxSizing: 'border-box',
+    background: DOCK_GELAP,
+    border: '1px solid rgba(96, 192, 240, 0.4)',
+    padding: '0 4px',
+    display: 'flex',
+    alignItems: 'center',
+    gap: 2,
     zIndex: 1200,
   },
-  dalam: { height: '100%', boxSizing: 'border-box', background: DOCK_GELAP, display: 'flex', alignItems: 'center', gap: 2 },
   goLuar: { flexShrink: 0, width: 92, padding: '0 4px 0 6px', marginLeft: 2, display: 'flex', alignItems: 'center' },
   go: {
     ...goDasar,
