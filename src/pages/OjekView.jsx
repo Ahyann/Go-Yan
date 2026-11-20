@@ -50,6 +50,19 @@ export default function OjekView({
   const [tabAktif, setTabAktif] = useState('home')
   const [slotKonsol, setSlotKonsol] = useState(null)
   const [alarmKonsol, setAlarmKonsol] = useState(false)
+  // Glitch berkala di layar konsol: sekali tiap 9-16 detik (acak), sekitar setengah detik
+  const [glitchBerkala, setGlitchBerkala] = useState(false)
+  useEffect(() => {
+    let timer
+    const jadwal = () => {
+      timer = setTimeout(() => {
+        setGlitchBerkala(true)
+        timer = setTimeout(() => { setGlitchBerkala(false); jadwal() }, 500)
+      }, 9000 + Math.random() * 7000)
+    }
+    jadwal()
+    return () => clearTimeout(timer)
+  }, [])
   const statusKonsolLaluRef = useRef(undefined)
   const [adaChatBaru, setAdaChatBaru] = useState(false)
   const [adaRiwayatBaru, setAdaRiwayatBaru] = useState(false)
@@ -262,7 +275,7 @@ export default function OjekView({
         style={s.konsol}
       >
         <div aria-hidden="true" style={s.garisScan} />
-        <div ref={setSlotKonsol} style={s.areaInfo}>
+        <div ref={setSlotKonsol} className={glitchBerkala ? 'glitch-berkala' : undefined} style={s.areaInfo}>
           {tabAktif !== 'home' && (
             <>
               <span style={s.labelStatus}>{t.monitorStatus}</span>
