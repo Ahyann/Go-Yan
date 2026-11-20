@@ -168,17 +168,37 @@ export default function OjekHomeTab({
 
         {/* Bingkai bawah yang lebih lebar. Saat ada misi masuk, tombolnya ada di sini; selain itu berisi slot gelap kosong.
             Info misi (aksi, jam, tempat) sudah tampil di bawah Spiderman. */}
+        {/* Layar serba guna (U3): monitor dua baris dengan label kecil di atas. Isinya ikut keadaan:
+            siaga, misi masuk (terima/tolak di sini), atau misi berjalan. Hanya biru dan merah. */}
         <div style={s.bingkaiBawah}>
-          {adaPermintaanMasuk ? (
-            <div className="naik-masuk" style={s.tombolMelayang}>
-              <button className="tekan" style={s.tolakBtn} onClick={handleTolak}>{t.batalMisi}</button>
-              <button className="tekan" style={s.terimaBtn} onClick={handleTerima}>{t.mulaiMisi}</button>
-            </div>
-          ) : (
-            <div aria-hidden="true" style={s.slotKosong}>
-              <span className="teks-jalan">{t.teksJalanOjek}{t.teksJalanOjek}</span>
-            </div>
-          )}
+          <div style={s.monitor}>
+            <span style={{ ...s.labelMonitor, ...(adaPermintaanMasuk ? s.labelMerah : s.labelBiru) }}>
+              {adaPermintaanMasuk ? t.monitorMisiBaru : sedangJalan ? t.monitorBerjalan : t.monitorStatus}
+            </span>
+            <div aria-hidden="true" style={s.garisScan} />
+            {adaPermintaanMasuk ? (
+              <>
+                <div style={s.baris1}>{permintaan.aksi === AKSI.JEMPUT ? t.jemput : t.antar} · {permintaan.waktu}</div>
+                <div style={s.baris2}>{permintaan.where}</div>
+                <div className="naik-masuk" style={s.tombolMelayang}>
+                  <button className="tekan" style={s.tolakBtn} onClick={handleTolak}>{t.batalMisi}</button>
+                  <button className="tekan" style={s.terimaBtn} onClick={handleTerima}>{t.mulaiMisi}</button>
+                </div>
+              </>
+            ) : sedangJalan && permintaan ? (
+              <>
+                <div style={s.baris1}>{permintaan.aksi === AKSI.JEMPUT ? t.jemput : t.antar} · {permintaan.waktu}</div>
+                <div style={s.baris2}>{permintaan.where}</div>
+              </>
+            ) : (
+              <>
+                <div style={s.baris1}>{t.monitorSiap}</div>
+                <div aria-hidden="true" style={{ ...s.baris2, overflow: 'hidden' }}>
+                  <span className="teks-jalan">{t.teksJalanOjek}{t.teksJalanOjek}</span>
+                </div>
+              </>
+            )}
+          </div>
         </div>
 
         {sedangJalan && !transisiDiterima && (
@@ -366,30 +386,58 @@ const s = {
   },
   permintaanWhere: { fontSize: 14, color: '#8FB4DC' },
   tombolRow: { display: 'flex', gap: 10 },
-  tombolMelayang: { display: 'flex', gap: 10 },
+  monitor: {
+    position: 'relative',
+    marginTop: 8,
+    background: '#03121F',
+    borderStyle: 'solid',
+    borderWidth: 4,
+    borderColor: '#1A5E8A #8FD8FF #8FD8FF #1A5E8A',
+    boxShadow: 'inset 0 0 0 2px #04192A',
+    padding: '16px 12px 10px',
+    fontFamily: "'Silkscreen', monospace",
+    color: '#5ED0FF',
+    textShadow: '0 0 6px rgba(94, 208, 255, 0.55)',
+    lineHeight: 1.2,
+  },
+  labelMonitor: {
+    position: 'absolute', left: 10, top: -12, zIndex: 2,
+    fontFamily: "'Silkscreen', monospace", fontSize: 10, letterSpacing: '0.06em',
+    padding: '3px 7px 2px', border: '2px solid #04192A', textShadow: 'none',
+  },
+  labelBiru: { background: '#5ED0FF', color: '#04192A' },
+  labelMerah: { background: '#BC1E2F', color: '#fff' },
+  garisScan: {
+    position: 'absolute', inset: 0, pointerEvents: 'none',
+    background: 'repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.22) 0 1px, transparent 1px 3px)',
+  },
+  baris1: { fontSize: 14, letterSpacing: '0.06em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', textTransform: 'uppercase' },
+  baris2: { fontSize: 11, letterSpacing: '0.06em', opacity: 0.75, marginTop: 5, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', textTransform: 'uppercase' },
+  tombolMelayang: { display: 'flex', gap: 10, marginTop: 10, position: 'relative' },
+  // Tombol bergaya layar monitor: tolak bergaris biru, mulai merah
   tolakBtn: {
     flex: 1,
-    height: 52,
-    background: 'rgba(1, 26, 41, 0.92)',
-    color: '#fff',
-    fontFamily: 'var(--font-mono, monospace)',
-    fontSize: 13,
-    fontWeight: 700,
-    letterSpacing: '0.14em',
+    height: 40,
+    background: 'transparent',
+    color: '#5ED0FF',
+    fontFamily: "'Silkscreen', monospace",
+    fontSize: 12,
+    letterSpacing: '0.06em',
+    textShadow: '0 0 6px rgba(94, 208, 255, 0.55)',
     borderRadius: 0,
-    border: '3px solid #04192A',
+    border: '2px solid #5ED0FF',
   },
   terimaBtn: {
-    flex: 1.4,
-    height: 52,
-    background: 'var(--nav-red)',
+    flex: 1.3,
+    height: 40,
+    background: '#BC1E2F',
     color: '#fff',
-    fontFamily: 'var(--font-judul)',
-    fontSize: 22,
-    letterSpacing: '1px',
+    fontFamily: "'Silkscreen', monospace",
+    fontSize: 12,
+    letterSpacing: '0.06em',
     borderRadius: 0,
-    border: 'none',
-    boxShadow: '3px 3px 0 #000, inset 0 -4px 0 rgba(0, 0, 0, 0.28)',
+    border: '2px solid #FF6B78',
+    boxShadow: 'inset 0 -3px 0 rgba(0, 0, 0, 0.3)',
   },
 
   // Pita merah selebar kartu, menempel di tepi atas panel (padding panel 16).
