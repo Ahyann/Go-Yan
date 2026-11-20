@@ -149,7 +149,8 @@ export default function KartuMisiOjek({ permintaan, lokasiAktif, mulaiLokasi, be
     setKosongDibuka(true)
   }
 
-  const bisaPesan = lokasiAktif || isDemo
+  // Chat bisa dipakai tanpa menyalakan live location
+  const bisaPesan = true
   const labelShare = lokasiAktif ? t.ariaMatikanShare : (isDemo ? t.ariaNyalakanShareDemo : t.ariaNyalakanShare)
   const idTerakhir = riwayatChat[riwayatChat.length - 1]?.id
 
@@ -223,7 +224,6 @@ export default function KartuMisiOjek({ permintaan, lokasiAktif, mulaiLokasi, be
               </svg>
             </button>
           </div>
-          {!bisaPesan && <div style={s.hintKecil}>{t.pesanPerluLive}</div>}
         </div>
       ) : (
         <>

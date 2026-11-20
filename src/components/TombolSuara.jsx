@@ -22,7 +22,8 @@ function bacaDataUrl(blob) {
 // Tombol mikrofon di samping kamera. Ditekan: mulai merekam, dan bar perekam menutupi baris input
 // (batal, penghitung waktu, kirim). Maksimal 20 detik, lalu otomatis berhenti dan terkirim.
 // Baris induk harus position: relative supaya bar perekam bisa menutupinya.
-export default function TombolSuara({ onKirimSuara, disabled }) {
+// kecil: versi 24px untuk konsol ojek; bar rekaman hanya menampilkan titik merah dan durasi.
+export default function TombolSuara({ onKirimSuara, disabled, kecil = false }) {
   const { t } = useLanguage()
   const [merekam, setMerekam] = useState(false)
   const [detik, setDetik] = useState(0)
@@ -113,7 +114,7 @@ export default function TombolSuara({ onKirimSuara, disabled }) {
       <button
         type="button"
         className="tekan"
-        style={{ ...s.tombol, opacity: disabled ? 0.5 : 1 }}
+        style={{ ...s.tombol, ...(kecil ? { width: 24 } : null), opacity: disabled ? 0.5 : 1 }}
         onClick={mulai}
         disabled={disabled}
         aria-label={t.ariaRekamSuara}
@@ -125,17 +126,17 @@ export default function TombolSuara({ onKirimSuara, disabled }) {
       </button>
       {merekam && (
         <div style={s.bar} role="group" aria-label={t.suaraMerekam}>
-          <button type="button" className="tekan" style={s.batal} onClick={batal} aria-label={t.ariaBatalRekam}>
+          <button type="button" className="tekan" style={{ ...s.batal, ...(kecil ? { width: 24 } : null) }} onClick={batal} aria-label={t.ariaBatalRekam}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="square" aria-hidden="true">
               <path d="M6 6l12 12M18 6L6 18" />
             </svg>
           </button>
-          <div style={s.waktu}>
+          <div style={{ ...s.waktu, ...(kecil ? { padding: '0 6px', gap: 5 } : null) }}>
             <span className="rekam-kedip" style={s.titikRekam} />
-            <span style={s.label}>{t.suaraMerekam}</span>
-            <span style={s.angka}>{formatDurasi(detik)} / {formatDurasi(BATAS_DETIK)}</span>
+            {!kecil && <span style={s.label}>{t.suaraMerekam}</span>}
+            <span style={s.angka}>{kecil ? formatDurasi(detik) : `${formatDurasi(detik)} / ${formatDurasi(BATAS_DETIK)}`}</span>
           </div>
-          <button type="button" className="tekan" style={s.kirim} onClick={kirim} aria-label={t.ariaKirimSuara}>
+          <button type="button" className="tekan" style={{ ...s.kirim, ...(kecil ? { width: 24 } : null) }} onClick={kirim} aria-label={t.ariaKirimSuara}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="square" aria-hidden="true">
               <path d="M4 12h15M13 6l6 6-6 6" />
             </svg>

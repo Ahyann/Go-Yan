@@ -74,7 +74,7 @@ function KameraLangsung({ onAmbil, onBatal, onGagal }) {
   )
 }
 
-export default function TombolFoto({ onKirimFoto, disabled, onSelesai }) {
+export default function TombolFoto({ onKirimFoto, disabled, onSelesai, kecil = false }) {
   const { t } = useLanguage()
   const inputRef = useRef(null)
   const [pratinjau, setPratinjau] = useState(null)
@@ -113,7 +113,7 @@ export default function TombolFoto({ onKirimFoto, disabled, onSelesai }) {
       <input ref={inputRef} type="file" accept="image/*" hidden onChange={handlePilih} />
       <button
         type="button"
-        style={{ ...s.tombol, opacity: disabled || sibuk ? 0.5 : 1 }}
+        style={{ ...s.tombol, ...(kecil ? { width: 24 } : null), opacity: disabled || sibuk ? 0.5 : 1 }}
         onClick={() => setKameraAktif(true)}
         disabled={disabled || sibuk}
         aria-label={t.ariaKirimFoto}

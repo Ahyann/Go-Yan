@@ -198,8 +198,10 @@ export default function OjekHomeTab({ slotKonsol,
                       <span style={s.potong}>{permintaan.where}</span>
                     </span>
                   </span>
-                  <span className="ikon-konsol" style={s.ikonKonsol} onPointerDown={playTombolKamera}><TombolFoto onKirimFoto={kirimFoto} disabled={!lokasiAktif && !isDemo} /></span>
-                  <span className="ikon-konsol" style={s.ikonKonsol} onPointerDown={playTombolSuara}><TombolSuara onKirimSuara={kirimSuara} disabled={!lokasiAktif && !isDemo} /></span>
+                  {/* Kamera, suara, dan LIVE dikelompokkan: bar rekaman suara hanya menutupi kelompok ini, info jam dan tempat tetap terlihat */}
+                  <span style={s.grupAksi}>
+                  <span className="ikon-konsol" style={s.ikonKonsol} onPointerDown={playTombolKamera}><TombolFoto onKirimFoto={kirimFoto} kecil /></span>
+                  <span className="ikon-konsol" style={s.ikonKonsol} onPointerDown={playTombolSuara}><TombolSuara onKirimSuara={kirimSuara} kecil /></span>
                   <button
                     className="tekan"
                     style={{ ...s.tombolLive, ...(lokasiAktif ? s.tombolLiveNyala : null) }}
@@ -213,6 +215,7 @@ export default function OjekHomeTab({ slotKonsol,
                     </svg>
                     LIVE
                   </button>
+                  </span>
                 </div>
                 <div style={{ marginTop: 8 }}>
                   <SwipeToFinish label={t.selesai} onConfirm={handleSelesai} tinggi={32} konsol />
@@ -372,8 +375,9 @@ const s = {
     background: 'repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.22) 0 1px, transparent 1px 3px)',
   },
   // Kamera dan suara di konsol, dikecilkan dari 36px ke sekitar 24px supaya setinggi tombol LIVE
-  ikonKonsol: { display: 'inline-flex', alignItems: 'stretch', height: 36, flexShrink: 0, zoom: 0.67 },
-  barisJalan: { position: 'relative', display: 'flex', alignItems: 'center', gap: 5, height: 24 },
+  ikonKonsol: { display: 'inline-flex', alignItems: 'stretch', height: 24, flexShrink: 0 },
+  grupAksi: { position: 'relative', display: 'flex', alignItems: 'center', gap: 5, flexShrink: 0 },
+  barisJalan: { display: 'flex', alignItems: 'center', gap: 5, height: 24 },
   infoJalan: { flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, letterSpacing: '0.04em', textTransform: 'uppercase' },
   ikonInfo: { display: 'inline-flex', alignItems: 'center', gap: 5, flexShrink: 0 },
   potong: { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' },
