@@ -103,6 +103,9 @@ export default function KartuMisiOjek({ permintaan, lokasiAktif, mulaiLokasi, be
     const el = e.currentTarget
     const pointerId = e.pointerId
     awalTahanRef.current = { x: e.clientX, y: e.clientY }
+    // Tahan lama di iPhone memunculkan menu salin/tempel; pemilihan teks dimatikan selama ikon ditahan.
+    document.body.classList.add('tanpa-pilih')
+    window.getSelection?.()?.removeAllRanges()
     clearTimeout(tahanRef.current)
     tahanRef.current = setTimeout(() => {
       try { el.setPointerCapture(pointerId) } catch { /* pointer sudah lepas */ }
@@ -129,6 +132,7 @@ export default function KartuMisiOjek({ permintaan, lokasiAktif, mulaiLokasi, be
   }
   function lepasTahan() {
     clearTimeout(tahanRef.current)
+    document.body.classList.remove('tanpa-pilih')
     if (!sedangSeretRef.current) return
     sedangSeretRef.current = false
     baruSeretRef.current = true
@@ -211,6 +215,7 @@ export default function KartuMisiOjek({ permintaan, lokasiAktif, mulaiLokasi, be
               ...gayaSlot(slotChat, bawahTertutup),
               touchAction: 'none',
               userSelect: 'none',
+              WebkitUserSelect: 'none',
               WebkitTouchCallout: 'none',
               ...(seret ? { zIndex: 1200, borderColor: 'var(--glow-blue)', willChange: 'transform', transition: 'none' } : null),
             }}

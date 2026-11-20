@@ -648,3 +648,6 @@ button {
 @media (prefers-reduced-motion: reduce) {
   .konsol-alarm, .konsol-denyut, .glitch-masuk { animation: none; }
 }
+
+/* Selama ikon chat ditahan untuk dipindah: tidak ada pemilihan teks dan menu salin/tempel */
+.tanpa-pilih, .tanpa-pilih * { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }

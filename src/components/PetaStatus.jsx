@@ -519,6 +519,9 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
     const el = e.currentTarget
     const pointerId = e.pointerId
     awalTahanRef.current = { x: e.clientX, y: e.clientY }
+    // Tahan lama di iPhone memunculkan menu salin/tempel; pemilihan teks dimatikan selama ikon ditahan.
+    document.body.classList.add('tanpa-pilih')
+    window.getSelection?.()?.removeAllRanges()
     clearTimeout(tahanRef.current)
     tahanRef.current = setTimeout(() => {
       try { el.setPointerCapture(pointerId) } catch { /* pointer sudah lepas */ }
@@ -550,6 +553,7 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
   }
   function lepasTahan() {
     clearTimeout(tahanRef.current)
+    document.body.classList.remove('tanpa-pilih')
     if (!sedangSeretRef.current) return
     sedangSeretRef.current = false
     baruSeretRef.current = true
@@ -805,6 +809,7 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
               ...gayaSlot(slotChat, bawahTertutup),
               touchAction: 'none',
               userSelect: 'none',
+              WebkitUserSelect: 'none',
               WebkitTouchCallout: 'none',
               ...(seret && wrapRef.current
                 ? { top: awalTahanRef.current.y - wrapRef.current.getBoundingClientRect().top - 24, left: awalTahanRef.current.x - wrapRef.current.getBoundingClientRect().left - 24, right: 'auto', bottom: 'auto', transition: 'none', animation: 'none', zIndex: 1200, borderColor: 'var(--glow-blue)', willChange: 'transform' }
