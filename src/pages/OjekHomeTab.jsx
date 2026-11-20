@@ -215,7 +215,7 @@ export default function OjekHomeTab({ slotKonsol,
                   </button>
                 </div>
                 <div style={{ marginTop: 8 }}>
-                  <SwipeToFinish label={`${t.selesai} →`} onConfirm={handleSelesai} tinggi={32} konsol />
+                  <SwipeToFinish label={t.selesai} onConfirm={handleSelesai} tinggi={32} konsol />
                 </div>
               </>
             ) : (
