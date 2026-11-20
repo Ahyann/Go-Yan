@@ -731,6 +731,15 @@ export function playTombolSuara() {
   nadaPendek(ctx, 'square', 1320, 1320, 0.04, 0.05, 0.12)
 }
 
+// Geser selesai: satu tik pendek tiap 10% jarak geser, nadanya naik makin dekat ke ujung.
+// Kalau digeser pelan, tiknya terdengar satu per satu; kalau ditarik balik, nadanya turun lagi.
+export function playGeserTik(langkah = 0) {
+  const ctx = ctxSiapEfek()
+  if (!ctx) return
+  const f = 380 + langkah * 90
+  nadaPendek(ctx, 'square', f, f, 0.035, 0.07, 0)
+}
+
 // Pop up GO: dibuka dengan dua nada naik seperti sinyal radio, ditutup dengan satu nada turun.
 export function playGoBuka() {
   const ctx = ctxSiapEfek()

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { playGeserTik } from '../lib/sound'
 
 // tinggi: tinggi trek dalam px. konsol: gaya layar konsol (trek gelap bergaris cyan, huruf piksel).
 export default function SwipeToFinish({ label, onConfirm, tinggi = 52, konsol = false }) {
@@ -10,6 +11,7 @@ export default function SwipeToFinish({ label, onConfirm, tinggi = 52, konsol = 
   const gesekIni = useRef(0)
   const gesekSekarang = useRef(0)
   const sudahTrigger = useRef(false)
+  const langkahTik = useRef(0)
   const [mengonfirmasi, setMengonfirmasi] = useState(false)
 
   const DIAMETER = tinggi
@@ -57,6 +59,13 @@ export default function SwipeToFinish({ label, onConfirm, tinggi = 52, konsol = 
     gesekSekarang.current = nilaiBaru
     terapkanPosisi(nilaiBaru, false)
 
+    // Bunyi tik tiap melewati 10% jarak (naik atau turun), bukan sekali saja
+    const langkah = maks > 0 ? Math.floor((nilaiBaru / maks) * 10) : 0
+    if (langkah !== langkahTik.current) {
+      langkahTik.current = langkah
+      if (langkah > 0) playGeserTik(langkah)
+    }
+
     if (!sudahTrigger.current && maks > 0 && nilaiBaru >= maks * 0.88) {
       sudahTrigger.current = true
       setMengonfirmasi(true)
@@ -69,6 +78,7 @@ export default function SwipeToFinish({ label, onConfirm, tinggi = 52, konsol = 
   function handleEnd() {
     if (mulaiX.current === null) return
     mulaiX.current = null
+    langkahTik.current = 0
     if (!sudahTrigger.current) {
       gesekSekarang.current = 0
       terapkanPosisi(0, true)
