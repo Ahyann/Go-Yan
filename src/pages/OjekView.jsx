@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLokasiSaya } from '../lib/useLokasiSaya'
 import { usePesanPenumpang } from '../lib/usePesanPenumpang'
-import { playChatSound, playTabPindah } from '../lib/sound'
+import { playChatSound, playTabPindah, playKonsolAlarm } from '../lib/sound'
 import { getar } from '../lib/getar'
 import { gayaTeksJalan } from '../lib/teksJalan'
 import { useLanguage } from '../context/LanguageContext.jsx'
@@ -48,6 +48,7 @@ export default function OjekView({
   const { t } = useLanguage()
   const [tabAktif, setTabAktif] = useState('home')
   const [slotKonsol, setSlotKonsol] = useState(null)
+  const [alarmKonsol, setAlarmKonsol] = useState(false)
   const [adaChatBaru, setAdaChatBaru] = useState(false)
   const [adaRiwayatBaru, setAdaRiwayatBaru] = useState(false)
   const [adaPermintaanBaru, setAdaPermintaanBaru] = useState(false)
@@ -82,6 +83,12 @@ export default function OjekView({
       permintaan.dibuatPada !== permintaanTerakhirRef.current
 
     permintaanTerakhirRef.current = permintaan?.dibuatPada ?? null
+
+    if (permintaanBaru) {
+      // Konsol bawah: tepi berkedip merah tiga kali dengan bunyi alarm, dimainkan sekali per misi baru
+      setAlarmKonsol(true)
+      playKonsolAlarm()
+    }
 
     if (permintaanBaru && tabAktifRef.current !== 'home') {
       setAdaPermintaanBaru(true)
@@ -128,6 +135,12 @@ export default function OjekView({
       setAdaRiwayatBaru(true)
     }
   }, [riwayat, riwayatSiap])
+
+  useEffect(() => {
+    if (!alarmKonsol) return undefined
+    const id = setTimeout(() => setAlarmKonsol(false), 1700)
+    return () => clearTimeout(id)
+  }, [alarmKonsol])
 
   function pilihTab(tab) {
     if (tab === tabAktif) return
@@ -204,7 +217,10 @@ export default function OjekView({
 
       {/* Konsol tetap di dasar layar: bagian atas untuk info (diisi Home lewat portal), bagian bawah
           baris tab halaman. Tingginya tetap di semua keadaan dan semua tab, jadi isi di atasnya tidak naik-turun. */}
-      <div style={s.konsol}>
+      <div
+        className={[alarmKonsol ? 'konsol-alarm' : '', permintaan?.status === STATUS_PERMINTAAN.MENUNGGU ? 'konsol-denyut' : ''].filter(Boolean).join(' ') || undefined}
+        style={s.konsol}
+      >
         <div aria-hidden="true" style={s.garisScan} />
         <div ref={setSlotKonsol} style={s.areaInfo}>
           {tabAktif !== 'home' && (

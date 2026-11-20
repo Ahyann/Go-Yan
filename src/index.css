@@ -621,3 +621,30 @@ button {
 @media (prefers-reduced-motion: reduce) {
   .kelopak-spidey, .glitch-teks { animation: none; }
 }
+
+/* Konsol ojek saat misi baru masuk (A1 + A5): tepi berkedip merah tiga kali, isi muncul tersentak seperti
+   sinyal rusak, lalu selama menunggu jawaban layar berdenyut merah tipis. */
+@keyframes konsol-alarm {
+  0%, 100% { border-color: #1A5E8A #8FD8FF #8FD8FF #1A5E8A; }
+  8%, 28%, 48% { border-color: #FF4C4C; }
+  18%, 38% { border-color: #7F1820; }
+  60% { border-color: #1A5E8A #8FD8FF #8FD8FF #1A5E8A; }
+}
+.konsol-alarm { animation: konsol-alarm 1.6s steps(1) 1; }
+@keyframes konsol-denyut {
+  0%, 100% { box-shadow: inset 0 0 0 2px #04192A; }
+  50% { box-shadow: inset 0 0 0 2px #04192A, inset 0 0 22px rgba(255, 76, 76, 0.45); }
+}
+.konsol-denyut { animation: konsol-denyut 1.6s ease-in-out infinite; }
+/* Saat keduanya aktif, dua animasi harus digabung; kalau tidak, yang terakhir menimpa alarm */
+.konsol-alarm.konsol-denyut { animation: konsol-alarm 1.6s steps(1) 1, konsol-denyut 1.6s ease-in-out infinite; }
+@keyframes glitch-masuk {
+  0% { opacity: 0; transform: translateX(-8px); clip-path: inset(0 0 60% 0); }
+  8% { opacity: 1; transform: translateX(6px); clip-path: inset(40% 0 0 0); }
+  16% { transform: translateX(-3px); clip-path: inset(20% 0 30% 0); }
+  24%, 100% { transform: none; clip-path: inset(0); }
+}
+.glitch-masuk { animation: glitch-masuk 1.6s steps(1) 1 both; animation-delay: 0.9s; }
+@media (prefers-reduced-motion: reduce) {
+  .konsol-alarm, .konsol-denyut, .glitch-masuk { animation: none; }
+}

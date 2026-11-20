@@ -191,13 +191,13 @@ export default function OjekHomeTab({ slotKonsol,
               {adaPermintaanMasuk ? t.monitorMisiBaru : sedangJalan ? t.monitorBerjalan : t.monitorStatus}
             </span>
             {adaPermintaanMasuk ? (
-              <>
+              <div key={permintaan.dibuatPada} className="glitch-masuk">
                 <div style={s.baris1}>{permintaan.aksi === AKSI.JEMPUT ? t.jemput : t.antar} · {permintaan.waktu} · {permintaan.where}</div>
-                <div className="naik-masuk" style={s.tombolMelayang}>
+                <div style={s.tombolMelayang}>
                   <button className="tekan" style={s.tolakBtn} onClick={handleTolak}>{t.batalMisi}</button>
                   <button className="tekan" style={s.terimaBtn} onClick={handleTerima}>{t.mulaiMisi}</button>
                 </div>
-              </>
+              </div>
             ) : sedangJalan && permintaan ? (
               <>
                 <div style={s.baris1}>{permintaan.aksi === AKSI.JEMPUT ? t.jemput : t.antar} · {permintaan.waktu}</div>

@@ -694,6 +694,18 @@ if (typeof document !== 'undefined') {
   )
 }
 
+// Konsol ojek saat misi baru masuk: tiga bip alarm pendek bergantian tinggi-rendah, seirama dengan
+// tepi konsol yang berkedip merah tiga kali, lalu satu desis kotak pendek saat isi muncul dengan efek glitch.
+export function playKonsolAlarm() {
+  const ctx = ctxSiapEfek()
+  if (!ctx) return
+  ;[0, 0.32, 0.64].forEach((t) => {
+    nadaPendek(ctx, 'square', 1046, 1046, 0.1, 0.09, t)
+    nadaPendek(ctx, 'square', 784, 784, 0.1, 0.07, t + 0.12)
+  })
+  nadaPendek(ctx, 'square', 220, 1600, 0.12, 0.05, 1.0)
+}
+
 // Pop up GO: dibuka dengan dua nada naik seperti sinyal radio, ditutup dengan satu nada turun.
 export function playGoBuka() {
   const ctx = ctxSiapEfek()
