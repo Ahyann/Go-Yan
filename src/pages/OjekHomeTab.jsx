@@ -153,6 +153,7 @@ export default function OjekHomeTab({ slotKonsol,
       <section style={s.mainCard}>
         {/* Papan judul di bingkai atas, seperti layar pelacak retro */}
         <div ref={papanRef} aria-hidden="true" style={{ ...s.papanJudul, ...(geserPapan != null ? { transform: `translateX(-${geserPapan}px)` } : null) }}>
+          <span aria-hidden="true" style={s.panahPlay} />
           <span className="glitch-teks" style={s.teksJudul}>GO</span>
           <span ref={kepalaRef} style={s.kepalaLingkar}>
             <span style={s.kepalaIsi}>
@@ -313,6 +314,8 @@ const s = {
     padding: '0 12px',
     pointerEvents: 'none',
   },
+  // Panah play kecil sebelum GO, mengisi selisih lebar GO dan YAN supaya kiri dan kanan papan seimbang
+  panahPlay: { width: 10, height: 12, flexShrink: 0, background: '#BFE9FF', clipPath: 'polygon(0 0, 100% 50%, 0 100%)', filter: 'drop-shadow(0 0 3px rgba(94, 208, 255, 0.6))' },
   teksJudul: { fontFamily: "'Silkscreen', monospace", fontSize: 15, letterSpacing: '0.08em', color: '#BFE9FF', lineHeight: 1 },
   kepalaLingkar: {
     width: 36, height: 36, margin: '-6px 0', flexShrink: 0, borderRadius: '50%', background: '#fff',
