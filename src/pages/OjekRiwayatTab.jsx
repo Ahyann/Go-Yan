@@ -84,17 +84,19 @@ export default function OjekRiwayatTab({ riwayat, onTandaiLunas, onHapusRiwayat,
           riwayatBulanIni.map((r) => (
             <SwipeableItem key={r.id} onDelete={() => onHapusRiwayat(r.id)} onEdit={() => setItemEdit(r)}>
               <div style={s.item}>
-                <div>
-                  <div style={s.itemJam}>{r.jam} · {r.tanggal.split('-')[2]}</div>
+                {/* Kiri: jam besar, lalu tanggal · jemput/antar · tempat dalam satu baris */}
+                <div style={s.itemKiri}>
+                  <div style={s.itemJam}>{r.jam}</div>
                   <div style={s.itemDesc}>
-                    {r.aksi === 'jemput' ? t.jemput : t.antar} · {r.where}
+                    {Number(r.tanggal.split('-')[2])} {t.namaBulanPendek[Number(r.tanggal.split('-')[1]) - 1]} · {r.aksi === 'jemput' ? t.jemput : t.antar} · {r.where}
                   </div>
                 </div>
-                <div style={s.itemKanan}>
-                  <div style={s.itemTarif}>{formatRupiah(r.tarif)}</div>
+                {/* Kanan: harga lalu kolom status selebar tetap, supaya harga semua baris sejajar */}
+                <div style={s.itemTarif}>{formatRupiah(r.tarif)}</div>
+                <div style={s.kolomStatus}>
                   {r.statusBayar === STATUS_BAYAR.BELUM ? (
-                    <button style={s.lunasBtn} onClick={() => onTandaiLunas(r.id)}>
-                      {t.tandaiLunas}
+                    <button className="tekan" style={s.lunasBtn} onClick={() => onTandaiLunas(r.id)} aria-label={t.tandaiLunas}>
+                      {t.tandaiLunasSingkat}
                     </button>
                   ) : (
                     <div style={s.lunasBadge}>{t.lunas}</div>
@@ -257,37 +259,37 @@ const s = {
   kosong: { fontSize: 13.5, color: 'var(--text-dim)', textAlign: 'center', padding: '20px 0' },
   item: {
     display: 'flex',
-    justifyContent: 'space-between',
     alignItems: 'center',
     background: 'var(--card-blue)',
     border: '1px solid var(--blue-border)',
     borderRadius: 0,
-    padding: '12px 14px',
+    padding: '12px 12px 12px 14px',
     gap: 12,
   },
-  itemJam: { fontFamily: 'var(--font-data)', fontSize: 13, color: 'var(--text)' },
-  itemDesc: { fontSize: 11.5, color: '#8FB4DC', marginTop: 2 },
-  itemKanan: { display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 },
-  itemTarif: { fontFamily: 'var(--font-data)', fontSize: 13, color: 'var(--text)' },
+  itemKiri: { flex: 1, minWidth: 0 },
+  itemJam: { fontFamily: 'var(--font-data)', fontSize: 15, fontWeight: 700, color: '#FFFFFF', lineHeight: 1.2 },
+  itemDesc: { fontSize: 12, color: '#8FB4DC', marginTop: 4, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' },
+  itemTarif: { flexShrink: 0, fontFamily: 'var(--font-data)', fontSize: 13, fontWeight: 700, color: 'var(--text)', whiteSpace: 'nowrap' },
+  kolomStatus: { flexShrink: 0, width: 54, display: 'flex', justifyContent: 'center' },
   lunasBtn: {
-    fontSize: 11,
-    fontWeight: 600,
-    color: 'var(--warn)',
-    background: 'transparent',
-    border: '1px solid var(--warn)',
-    borderRadius: 0,
-    padding: '4px 10px',
-    lineHeight: 1.3,
-  },
-  lunasBadge: {
-    fontFamily: 'var(--font-data)',
+    width: '100%',
+    height: 28,
     fontSize: 11,
     fontWeight: 600,
     color: 'var(--glow-blue)',
-    textShadow: '0 0 5px var(--glow-blue-mid)',
-    padding: '4px 10px',
+    background: 'transparent',
+    border: '1px solid var(--glow-blue)',
     borderRadius: 0,
-    border: '1px solid transparent',
-    lineHeight: 1.3,
+    padding: 0,
+  },
+  lunasBadge: {
+    width: '100%',
+    height: 28,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: 11,
+    fontWeight: 600,
+    color: '#4ADE80',
   },
 }
