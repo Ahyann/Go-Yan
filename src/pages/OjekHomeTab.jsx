@@ -28,11 +28,8 @@ export default function OjekHomeTab({ slotKonsol,
 }) {
   const { t } = useLanguage()
   const { user, isDemo } = useAuth()
-  // Teks info misi terakhir, disimpan supaya isi lama konsol masih bisa tampil saat animasi keluar (setelah ditolak/dibatalkan)
-  const infoKonsolRef = useRef('')
   const adaPermintaanMasuk = permintaan?.status === STATUS_PERMINTAAN.MENUNGGU
   const sedangJalan = permintaan?.status === STATUS_PERMINTAAN.DITERIMA
-  if (adaPermintaanMasuk) infoKonsolRef.current = `${permintaan.aksi === AKSI.JEMPUT ? t.jemput : t.antar} · ${permintaan.waktu} · ${permintaan.where}`
   const lokasiPenumpang = useLokasiPenumpang()
   const { kirimPesan, kirimFoto, kirimSuara, hapusPesan } = usePesanOjek()
   const [teksPesan, setTeksPesan] = useState('')
@@ -177,18 +174,7 @@ export default function OjekHomeTab({ slotKonsol,
                 </div>
               </div>
             ) : transisiBatal ? (
-              <div style={{ position: 'relative' }}>
-                <div className="glitch-keluar" aria-hidden="true">
-                  <div style={s.baris1}>{infoKonsolRef.current}</div>
-                  <div style={s.tombolMelayang}>
-                    <button disabled style={s.tolakBtn}>{t.batalMisi}</button>
-                    <button disabled style={s.terimaBtn}>{t.mulaiMisi}</button>
-                  </div>
-                </div>
-                <div className="muncul-lambat" style={{ position: 'absolute', top: 0, left: 0, right: 0 }}>
-                  <div style={{ ...s.baris1, color: '#FF8A94' }}>{transisiBatal === 'tolak' ? t.monitorDitolakInfo : t.monitorDibatalkanInfo}</div>
-                </div>
-              </div>
+              <div style={{ ...s.baris1, color: '#FF8A94' }}>{transisiBatal === 'tolak' ? t.monitorDitolakInfo : t.monitorDibatalkanInfo}</div>
             ) : sedangJalan && permintaan ? (
               <>
                 <div style={s.baris1}>{permintaan.aksi === AKSI.JEMPUT ? t.jemput : t.antar} · {permintaan.waktu}</div>

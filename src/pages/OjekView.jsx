@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLokasiSaya } from '../lib/useLokasiSaya'
 import { usePesanPenumpang } from '../lib/usePesanPenumpang'
-import { playChatSound, playTabPindah, playKonsolAlarm, playKonsolMati } from '../lib/sound'
+import { playChatSound, playTabPindah, playKonsolMati } from '../lib/sound'
 import { getar } from '../lib/getar'
 import TeksJalan from '../components/TeksJalan.jsx'
 import { useLanguage } from '../context/LanguageContext.jsx'
@@ -50,7 +50,6 @@ export default function OjekView({
   const [tabAktif, setTabAktif] = useState('home')
   const [slotKonsol, setSlotKonsol] = useState(null)
   const [alarmKonsol, setAlarmKonsol] = useState(false)
-  const [batalKonsol, setBatalKonsol] = useState(false)
   const statusKonsolLaluRef = useRef(undefined)
   const [adaChatBaru, setAdaChatBaru] = useState(false)
   const [adaRiwayatBaru, setAdaRiwayatBaru] = useState(false)
@@ -90,7 +89,6 @@ export default function OjekView({
     if (permintaanBaru) {
       // Konsol bawah: tepi berkedip merah tiga kali dengan bunyi alarm, dimainkan sekali per misi baru
       setAlarmKonsol(true)
-      playKonsolAlarm()
     }
 
     if (permintaanBaru && tabAktifRef.current !== 'home') {
@@ -145,17 +143,9 @@ export default function OjekView({
     const lalu = statusKonsolLaluRef.current
     statusKonsolLaluRef.current = statusPermintaan
     if (lalu === STATUS_PERMINTAAN.MENUNGGU && statusPermintaan !== STATUS_PERMINTAAN.MENUNGGU && statusPermintaan !== STATUS_PERMINTAAN.DITERIMA) {
-      setBatalKonsol(true)
       playKonsolMati()
-      getar([30, 40, 30])
     }
   }, [statusPermintaan])
-
-  useEffect(() => {
-    if (!batalKonsol) return undefined
-    const id = setTimeout(() => setBatalKonsol(false), 1100)
-    return () => clearTimeout(id)
-  }, [batalKonsol])
 
   useEffect(() => {
     if (!alarmKonsol) return undefined
@@ -240,7 +230,7 @@ export default function OjekView({
       {/* Konsol tetap di dasar layar: bagian atas untuk info (diisi Home lewat portal), bagian bawah
           baris tab halaman. Tingginya tetap di semua keadaan dan semua tab, jadi isi di atasnya tidak naik-turun. */}
       <div
-        className={[alarmKonsol ? 'konsol-alarm' : '', batalKonsol ? 'konsol-batal' : '', permintaan?.status === STATUS_PERMINTAAN.MENUNGGU ? 'konsol-denyut' : ''].filter(Boolean).join(' ') || undefined}
+        className={[alarmKonsol ? 'konsol-alarm' : '', permintaan?.status === STATUS_PERMINTAAN.MENUNGGU ? 'konsol-denyut' : ''].filter(Boolean).join(' ') || undefined}
         style={s.konsol}
       >
         <div aria-hidden="true" style={s.garisScan} />

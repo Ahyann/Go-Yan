@@ -648,32 +648,3 @@ button {
 @media (prefers-reduced-motion: reduce) {
   .konsol-alarm, .konsol-denyut, .glitch-masuk { animation: none; }
 }
-
-/* Konsol ojek saat misi ditolak/dibatalkan: tepi bergetar sambil berkedip merah, isi lama terpotong-potong
-   lalu hilang seperti layar dimatikan, kemudian keterangan merah muncul. */
-@keyframes konsol-batal {
-  0% { transform: translateX(-4px); border-color: #FF4C4C; }
-  12% { transform: translateX(4px); border-color: #7F1820; }
-  24% { transform: translateX(-3px); border-color: #FF4C4C; }
-  36% { transform: translateX(2px); border-color: #7F1820; }
-  48% { transform: none; border-color: #FF4C4C; }
-  70% { border-color: #7F1820; }
-  85%, 100% { transform: none; border-color: #1A5E8A #8FD8FF #8FD8FF #1A5E8A; }
-}
-.konsol-batal { animation: konsol-batal 1s steps(1) 1; }
-@keyframes glitch-keluar {
-  0% { opacity: 1; transform: none; clip-path: inset(0); }
-  12% { transform: translateX(6px); text-shadow: -2px 0 #FF4C4C, 2px 0 #5ED0FF; }
-  26% { transform: translateX(-6px); clip-path: inset(40% 0 0 0); }
-  40% { transform: translateX(3px); clip-path: inset(0 0 55% 0); }
-  55% { transform: none; clip-path: inset(30% 0 30% 0); opacity: 0.7; }
-  70% { clip-path: inset(48% 0 48% 0); opacity: 0.5; }
-  85%, 100% { clip-path: inset(50% 0 50% 0); opacity: 0; }
-}
-.glitch-keluar { animation: glitch-keluar 0.9s steps(1) 1 forwards; }
-@keyframes muncul-lambat { from { opacity: 0; } to { opacity: 1; } }
-.muncul-lambat { animation: muncul-lambat 0.3s steps(3) 0.9s 1 both; }
-@media (prefers-reduced-motion: reduce) {
-  .konsol-batal, .muncul-lambat { animation: none; }
-  .glitch-keluar { display: none; }
-}
