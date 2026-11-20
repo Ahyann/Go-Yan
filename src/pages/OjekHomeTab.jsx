@@ -138,7 +138,17 @@ export default function OjekHomeTab({
     <main style={s.wrap}>
       <section style={s.mainCard}>
         {/* Papan judul di bingkai atas, seperti layar pelacak retro */}
-        <div aria-hidden="true" style={s.papanJudul}>GO-YAN TRACKER</div>
+        <div aria-hidden="true" style={s.papanJudul}>
+          <span className="glitch-teks" style={s.teksJudul}>GO</span>
+          <span style={s.kepalaLingkar}>
+            <span style={s.kepalaIsi}>
+              <img src={`${import.meta.env.BASE_URL}icons/spidericon.png`} alt="" style={s.kepalaImg} />
+              <span className="kelopak-spidey" style={{ left: '7%' }} />
+              <span className="kelopak-spidey" style={{ left: '53%' }} />
+            </span>
+          </span>
+          <span className="glitch-teks" style={s.teksJudul}>YAN</span>
+        </div>
         <div style={s.mapArea}>
           <PetaLokasiPenumpang
             lokasi={lokasiPenumpang}
@@ -249,24 +259,34 @@ const s = {
     background: '#3B9BD6',
     border: '3px solid #04192A',
     boxShadow: 'inset 0 4px 0 #8FD8FF, inset 0 -4px 0 #1F6FA0, inset 4px 0 0 #6FC3EE, inset -4px 0 0 #2B83BC',
-    padding: '40px 12px 0',
+    padding: '16px 12px 0',
   },
+  // Papan judul menumpang di tepi atas peta (separuh masuk ke peta), kepala Spiderman keluar dari papan
   papanJudul: {
     position: 'absolute',
-    top: 7,
+    top: 3,
     left: '50%',
     transform: 'translateX(-50%)',
-    zIndex: 2,
+    zIndex: 1200,
+    display: 'flex',
+    alignItems: 'center',
+    gap: 6,
+    height: 26,
+    boxSizing: 'border-box',
     whiteSpace: 'nowrap',
-    fontFamily: 'var(--font-judul)',
-    fontSize: 17,
-    letterSpacing: '2px',
-    color: '#BFE9FF',
-    background: '#0B3A5C',
+    background: 'linear-gradient(180deg, #1C5B8A, #0B3A5C)',
     border: '2px solid #04192A',
-    boxShadow: 'inset 0 0 0 2px #5ED0FF',
-    padding: '2px 14px 1px',
+    boxShadow: 'inset 0 0 0 2px #9BDDFF, inset 0 -4px 0 rgba(0, 0, 0, 0.25), 3px 3px 0 #04192A',
+    padding: '0 12px',
+    pointerEvents: 'none',
   },
+  teksJudul: { fontFamily: "'Silkscreen', monospace", fontSize: 15, letterSpacing: '0.08em', color: '#BFE9FF', lineHeight: 1 },
+  kepalaLingkar: {
+    width: 36, height: 36, margin: '-6px 0', flexShrink: 0, borderRadius: '50%', background: '#fff',
+    boxShadow: '0 0 0 2px #04192A', display: 'flex', alignItems: 'center', justifyContent: 'center',
+  },
+  kepalaIsi: { position: 'relative', width: 34, height: 34 },
+  kepalaImg: { width: 34, height: 34, imageRendering: 'pixelated', display: 'block' },
   bingkaiBawah: { flexShrink: 0, padding: '12px 0 14px' },
   slotKosong: {
     height: 34,

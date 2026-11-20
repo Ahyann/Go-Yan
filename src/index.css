@@ -602,3 +602,22 @@ button {
 @media (prefers-reduced-motion: reduce) {
   .kedip-piksel, .titik-tunggu::after { animation: none; }
 }
+
+/* Papan judul GO-YAN di peta ojek: mata Spiderman berkedip (kelopak merah turun menutup mata putih)
+   dan tulisan sesekali "glitch" bergeser dengan bayangan merah dan cyan. */
+@keyframes kedip-mata { 0%, 90%, 100% { transform: scaleY(0); } 93%, 96% { transform: scaleY(1); } }
+.kelopak-spidey {
+  position: absolute; top: 35%; width: 40%; height: 31%;
+  background: #ED1C24; border-bottom: 2px solid #000;
+  transform-origin: 50% 0; transform: scaleY(0);
+  animation: kedip-mata 3.5s infinite;
+}
+@keyframes glitch-teks {
+  0%, 88%, 100% { transform: none; text-shadow: 0 0 6px rgba(94, 208, 255, 0.5); }
+  90% { transform: translateX(2px); text-shadow: -2px 0 #FF4C4C, 2px 0 #5ED0FF; }
+  94% { transform: translateX(-2px); text-shadow: 2px 0 #FF4C4C, -2px 0 #5ED0FF; }
+}
+.glitch-teks { display: inline-block; animation: glitch-teks 4s steps(1) infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .kelopak-spidey, .glitch-teks { animation: none; }
+}
