@@ -11,6 +11,7 @@ import PetaLokasiPenumpang from '../components/PetaLokasiPenumpang.jsx'
 import SplashLabaLaba from '../components/SplashLabaLaba.jsx'
 import SpideyMenunggu from '../components/SpideyMenunggu.jsx'
 import MissionSuccessPopup from '../components/MissionSuccessPopup.jsx'
+import KartuMisiOjek from '../components/KartuMisiOjek.jsx'
 import SwipeToFinish from '../components/SwipeToFinish.jsx'
 import DemoWelcomePopup from '../components/DemoWelcomePopup.jsx'
 
@@ -142,11 +143,12 @@ export default function OjekHomeTab({ slotKonsol,
             lokasi={lokasiPenumpang}
             teksKosong={teksKosongPeta}
             isiPenuh
-            lokasiAktif={sedangJalan ? lokasiAktif : undefined}
-            onToggleLokasi={sedangJalan ? (lokasiAktif ? berhentiLokasi : mulaiLokasi) : undefined}
           />
           <div aria-hidden="true" style={s.garisDalamPeta} />
           {!lewatiSplash && <SplashLabaLaba ukuran={10} />}
+          {sedangJalan && !transisiDiterima && (
+            <KartuMisiOjek permintaan={permintaan} lokasiAktif={lokasiAktif} mulaiLokasi={mulaiLokasi} berhentiLokasi={berhentiLokasi} />
+          )}
           {tampilSpidey && (
             <div style={{ position: 'absolute', top: 0, bottom: 0, left: 14, right: 14, zIndex: 1100 }}>
               <SpideyMenunggu dibuatPada={dibuatPadaRef.current} diterima={transisiDiterima} dibatalkan={!!transisiBatal} menyusut={susutBatal} isDemo={isDemo} teks={teksSpidey} gayaTolak info={permintaan ? { aksi: permintaan.aksi === AKSI.JEMPUT ? t.jemput : t.antar, waktu: permintaan.waktu, where: permintaan.where } : null} />
