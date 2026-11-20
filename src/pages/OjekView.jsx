@@ -273,7 +273,7 @@ const s = {
     marginTop: 18,
     display: 'flex',
     flexDirection: 'column',
-    background: '#023854',
+    background: '#03121F',
     borderStyle: 'solid',
     borderWidth: 4,
     borderColor: '#1A5E8A #8FD8FF #8FD8FF #1A5E8A',
