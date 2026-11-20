@@ -92,7 +92,7 @@ export default function OjekHomeTab({ slotKonsol,
     diterima: t.ojekSpDiterima,
     diterimaSub: t.ojekSpMenuju,
     batal: transisiBatal === 'tolak' ? t.ojekSpTolak : t.ojekSpBatal,
-    batalSub: transisiBatal === 'tolak' ? t.ojekSpTolakSub : t.ojekSpBatalSub,
+    batalSub: t.ojekSpSiaga,
   }
 
   function handleKirimPesan() {
