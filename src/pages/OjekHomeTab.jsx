@@ -289,7 +289,10 @@ const s = {
   kepalaImg: { width: 34, height: 34, imageRendering: 'pixelated', display: 'block' },
   bingkaiBawah: { flexShrink: 0, padding: '12px 0 14px' },
   slotKosong: {
-    height: 34,
+    // Bilah lebih pendek di tengah dengan sudut berundak, seperti layar kecil di referensi
+    margin: '0 34px',
+    clipPath: 'polygon(4px 0, calc(100% - 4px) 0, 100% 4px, 100% calc(100% - 4px), calc(100% - 4px) 100%, 4px 100%, 0 calc(100% - 4px), 0 4px)',
+    height: 32,
     boxSizing: 'border-box',
     overflow: 'hidden',
     display: 'flex',
@@ -298,11 +301,12 @@ const s = {
     border: '3px solid #04192A',
     boxShadow: 'inset 0 4px 0 #3E4042',
     fontFamily: "'Silkscreen', monospace",
-    fontSize: 14,
+    fontSize: 12,
+    lineHeight: 1,
     letterSpacing: '0.08em',
     color: '#8FD8FF',
     textShadow: '0 0 6px rgba(94, 208, 255, 0.6)',
-    paddingTop: 2,
+    paddingTop: 4,
   },
   mapArea: {
     flex: 1,
