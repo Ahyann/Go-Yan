@@ -715,6 +715,22 @@ export function playKonsolMati() {
   nadaPendek(ctx, 'sawtooth', 700, 90, 0.2, 0.04, 0.08)
 }
 
+// Tombol kamera di konsol ojek: dua klik pendek seperti rana kamera
+export function playTombolKamera() {
+  const ctx = ctxSiapEfek()
+  if (!ctx) return
+  nadaPendek(ctx, 'square', 1800, 600, 0.04, 0.08, 0)
+  nadaPendek(ctx, 'square', 1400, 300, 0.05, 0.08, 0.07)
+}
+
+// Tombol suara di konsol ojek: satu nada naik seperti mikrofon menyala
+export function playTombolSuara() {
+  const ctx = ctxSiapEfek()
+  if (!ctx) return
+  nadaPendek(ctx, 'triangle', 440, 880, 0.12, 0.12, 0)
+  nadaPendek(ctx, 'square', 1320, 1320, 0.04, 0.05, 0.12)
+}
+
 // Pop up GO: dibuka dengan dua nada naik seperti sinyal radio, ditutup dengan satu nada turun.
 export function playGoBuka() {
   const ctx = ctxSiapEfek()

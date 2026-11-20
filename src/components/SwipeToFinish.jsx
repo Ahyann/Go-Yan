@@ -114,6 +114,13 @@ export default function SwipeToFinish({ label, onConfirm, tinggi = 52, konsol = 
 
       <div ref={labelRef} style={s.labelWrap}>
         <span style={{ ...s.label, ...(konsol ? s.labelKonsol : null) }}>{mengonfirmasi ? 'Selesai! ✓' : label}</span>
+        {konsol && !mengonfirmasi && (
+          <span aria-hidden="true" style={{ display: 'inline-flex', gap: 1, marginLeft: 6, color: '#5ED0FF', fontSize: 11 }}>
+            <span className="panah-kedip">▸</span>
+            <span className="panah-kedip" style={{ animationDelay: '0.2s' }}>▸</span>
+            <span className="panah-kedip" style={{ animationDelay: '0.4s' }}>▸</span>
+          </span>
+        )}
       </div>
 
       <div ref={handleRef} style={{ ...s.handle, width: tinggi, height: tinggi, ...(konsol ? s.handleKonsol : null) }}>

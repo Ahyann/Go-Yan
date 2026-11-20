@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import TeksJalan from '../components/TeksJalan.jsx'
 import { STATUS_PERMINTAAN, AKSI } from '../lib/constants'
-import { playMisiDiterima, playPesananBatal } from '../lib/sound'
+import { playMisiDiterima, playPesananBatal, playTombolKamera, playTombolSuara } from '../lib/sound'
 import { useLokasiPenumpang, hapusLokasiPenumpangSekarang } from '../lib/useLokasiPenumpang'
 import { usePesanOjek } from '../lib/usePesanOjek'
 import { useLanguage } from '../context/LanguageContext.jsx'
@@ -198,8 +198,8 @@ export default function OjekHomeTab({ slotKonsol,
                       <span style={s.potong}>{permintaan.where}</span>
                     </span>
                   </span>
-                  <span style={s.ikonKonsol}><TombolFoto onKirimFoto={kirimFoto} disabled={!lokasiAktif && !isDemo} /></span>
-                  <span style={s.ikonKonsol}><TombolSuara onKirimSuara={kirimSuara} disabled={!lokasiAktif && !isDemo} /></span>
+                  <span className="ikon-konsol" style={s.ikonKonsol} onPointerDown={playTombolKamera}><TombolFoto onKirimFoto={kirimFoto} disabled={!lokasiAktif && !isDemo} /></span>
+                  <span className="ikon-konsol" style={s.ikonKonsol} onPointerDown={playTombolSuara}><TombolSuara onKirimSuara={kirimSuara} disabled={!lokasiAktif && !isDemo} /></span>
                   <button
                     className="tekan"
                     style={{ ...s.tombolLive, ...(lokasiAktif ? s.tombolLiveNyala : null) }}

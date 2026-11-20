@@ -665,3 +665,14 @@ button {
     box-shadow: 0 0 0 1px rgba(96, 192, 240, 0.25), 0 0 40px rgba(0, 0, 0, 0.6);
   }
 }
+
+/* Konsol ojek: tombol kamera dan suara menyala cyan saat disorot atau ditekan */
+@media (hover: hover) {
+  .ikon-konsol button:hover:not(:disabled) { background: rgba(94, 208, 255, 0.18) !important; border-color: #5ED0FF !important; color: #FFFFFF !important; }
+}
+.ikon-konsol button:active { background: rgba(94, 208, 255, 0.3) !important; border-color: #5ED0FF !important; color: #FFFFFF !important; }
+
+/* Geser selesai di konsol: tiga panah berkedip berurutan ke arah kanan */
+@keyframes panah-kedip { 0%, 100% { opacity: 0.2; } 50% { opacity: 1; } }
+.panah-kedip { animation: panah-kedip 1.2s steps(2) infinite; }
+@media (prefers-reduced-motion: reduce) { .panah-kedip { animation: none; opacity: 1; } }
