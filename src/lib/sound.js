@@ -706,6 +706,15 @@ export function playKonsolAlarm() {
   nadaPendek(ctx, 'square', 220, 1600, 0.12, 0.05, 1.0)
 }
 
+// Konsol ojek saat misi ditolak atau dibatalkan: layar "dimatikan" dengan satu nada kotak yang jatuh cepat,
+// mengiringi isi konsol yang terpotong-potong lalu hilang. Pendek dan pelan karena bunyi batal utama sudah ada.
+export function playKonsolMati() {
+  const ctx = ctxSiapEfek()
+  if (!ctx) return
+  nadaPendek(ctx, 'square', 1500, 160, 0.28, 0.06, 0)
+  nadaPendek(ctx, 'sawtooth', 700, 90, 0.2, 0.04, 0.08)
+}
+
 // Pop up GO: dibuka dengan dua nada naik seperti sinyal radio, ditutup dengan satu nada turun.
 export function playGoBuka() {
   const ctx = ctxSiapEfek()
