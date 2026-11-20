@@ -52,8 +52,15 @@ export default function KartuMisiOjek({ permintaan, lokasiAktif, mulaiLokasi, be
   const { pesan: pesanFajri } = usePesanPenumpang()
   const riwayatChat = useRiwayatChat(pesan, pesanFajri)
   const [kartuBuka, setKartuBuka] = useState(true)
-  const [chatBuka, setChatBuka] = useState(true)
-  const [kosongDibuka, setKosongDibuka] = useState(false)
+  // Kotak chat: awalnya tertutup, lalu mengikuti perlakuan terakhir selama app dibuka (tidak ikut terbuka sendiri saat kembali dari tab lain)
+  const [chatBuka, setChatBukaState] = useState(() => {
+    try { return sessionStorage.getItem('goyan:chat-ojek-buka') === '1' } catch { return false }
+  })
+  const [kosongDibuka, setKosongDibuka] = useState(chatBuka)
+  function setChatBuka(nilai) {
+    setChatBukaState(nilai)
+    try { sessionStorage.setItem('goyan:chat-ojek-buka', nilai ? '1' : '0') } catch { /* abaikan */ }
+  }
   const [teksPesan, setTeksPesan] = useState('')
   const chatRef = useRef(null)
   const kartuRef = useRef(null)
