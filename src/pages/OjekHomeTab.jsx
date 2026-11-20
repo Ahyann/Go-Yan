@@ -151,7 +151,7 @@ export default function OjekHomeTab({ slotKonsol,
           )}
           {tampilSpidey && (
             <div style={{ position: 'absolute', top: 0, bottom: 0, left: 14, right: 14, zIndex: 1100 }}>
-              <SpideyMenunggu dibuatPada={dibuatPadaRef.current} diterima={transisiDiterima} dibatalkan={!!transisiBatal} menyusut={susutBatal} isDemo={isDemo} teks={teksSpidey} gayaTolak info={permintaan ? { aksi: permintaan.aksi === AKSI.JEMPUT ? t.jemput : t.antar, waktu: permintaan.waktu, where: permintaan.where } : null} />
+              <SpideyMenunggu dibuatPada={dibuatPadaRef.current} diterima={transisiDiterima} dibatalkan={!!transisiBatal} menyusut={susutBatal} isDemo={isDemo} teks={teksSpidey} gayaTolak kompak />
             </div>
           )}
         </div>

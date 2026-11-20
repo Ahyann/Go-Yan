@@ -39,7 +39,7 @@ const campur = (a, b, u) => `rgb(${Math.round(a[0] + (b[0] - a[0]) * u)},${Math.
 // Logo laba-laba latar digambar di SATU kanvas (bukan ratusan elemen SVG yang masing-masing dianimasikan, yang
 // berat sekali di HP). Tiga keadaan: masuk (kotak meledak dari tengah lalu pita cahaya menyapu), diterima (menyala
 // hijau lalu melayang naik), dibatalkan (memerah, bergetar, lalu berjatuhan).
-function LogoLatar({ sk, lebar, tinggi, mode }) {
+function LogoLatar({ sk, lebar, tinggi, mode, pusat = 0.47 }) {
   const refKanvas = useRef(null)
   const refMulai = useRef({ mode: null, t: 0 })
   useEffect(() => {
@@ -53,7 +53,7 @@ function LogoLatar({ sk, lebar, tinggi, mode }) {
     if (refMulai.current.mode !== mode) refMulai.current = { mode, t: performance.now() }
     const mulai = refMulai.current.t
     const ox = lebar / 2 - (KOLOM * sk) / 2
-    const oy = tinggi * 0.47 - (BARIS_LABA * sk) / 2
+    const oy = tinggi * pusat - (BARIS_LABA * sk) / 2
     let id = 0
     let terakhir = 0
     const gambar = (now) => {
@@ -310,7 +310,7 @@ const REAKSI = [
 
 const SUDAH_WHOOSH = new Set()
 
-export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalkan = false, menyusut = false, isDemo = false, teks = null, gayaTolak = false, info = null, tanpaWhoosh = false }) {
+export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalkan = false, menyusut = false, isDemo = false, teks = null, gayaTolak = false, info = null, tanpaWhoosh = false, kompak = false }) {
   const { t } = useLanguage()
   const [sekarang, setSekarang] = useState(() => Date.now())
 
@@ -375,8 +375,9 @@ export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalka
   }, [])
   const { tinggi: tinggiPenuh, lebar: lebarPenuh, bawah: bawahDock } = ukuran
   // Satu kotak logo selebar mungkin (maks 90% lebar, 62% tinggi), Spiderman menggantung di seperlima atas.
-  const sk = Math.max(8, Math.min(Math.floor((lebarPenuh * 0.9) / KOLOM), Math.floor((tinggiPenuh * 0.62) / BARIS_LABA)))
-  const topSpidey = Math.round(tinggiPenuh * 0.2)
+  const sk = Math.max(8, Math.min(Math.floor((lebarPenuh * 0.9) / KOLOM), Math.floor((tinggiPenuh * (kompak ? 0.66 : 0.62)) / BARIS_LABA)))
+  // kompak (akun ojek): judul dan info di kartu dihilangkan karena sudah ada di konsol bawah, jadi logo dan Spiderman turun mengisi ruangnya
+  const topSpidey = Math.round(tinggiPenuh * (kompak ? 0.27 : 0.2))
   const awalJatuh = -(topSpidey + 22 + TINGGI * SKALA + 40)
   useEffect(() => {
     // Jaring hanya berbunyi sekali untuk tiap pesanan, dan tidak untuk kartu yang baru terpasang karena pindah tab
@@ -424,7 +425,7 @@ export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalka
     >
       {/* Logo laba-laba dari layar pembuka sebagai latar. Masuk: kotak meledak dari tengah. Diterima: menyala
           hijau lalu kotaknya melayang naik. Dibatalkan: memerah, bergetar, lalu kotaknya berjatuhan. */}
-      <LogoLatar sk={sk} lebar={lebarPenuh} tinggi={tinggiPenuh} mode={diterima ? 'diterima' : dibatalkan ? 'batal' : 'masuk'} />
+      <LogoLatar sk={sk} lebar={lebarPenuh} tinggi={tinggiPenuh} mode={diterima ? 'diterima' : dibatalkan ? 'batal' : 'masuk'} pusat={kompak ? 0.55 : 0.47} />
 
       <div className="sp-kilau" style={{ opacity: diterima || dibatalkan ? 0 : 1 }} aria-hidden="true" />
 
@@ -535,10 +536,10 @@ export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalka
       </div>
 
       <div className="sp-teks-muncul" style={{ ...s.teks, bottom: 14 + bawahDock }}>
-        <div style={{ ...s.judul, ...bayang, color: diterima ? '#4ADE80' : dibatalkan ? 'var(--merah-teks)' : '#FFFFFF' }}>
+        {!(kompak && !diterima && !dibatalkan) && <div style={{ ...s.judul, ...bayang, color: diterima ? '#4ADE80' : dibatalkan ? 'var(--merah-teks)' : '#FFFFFF' }}>
           {diterima ? (teks?.diterima ?? t.spideyDiterima) : dibatalkan ? (teks?.batal ?? t.spideyBatal) : (teks?.menunggu ?? t.spideyMenunggu)}
-        </div>
-        <div style={{ ...s.sub, ...bayang }}>
+        </div>}
+        <div style={{ ...s.sub, ...bayang, ...(kompak && !diterima && !dibatalkan ? { fontSize: 15, marginTop: 0 } : null) }}>
           {diterima ? (
             teks?.diterimaSub ?? (isDemo ? t.spideyMenujuDemo : t.spideyMenuju)
           ) : dibatalkan ? (
