@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import TeksJalan from '../components/TeksJalan.jsx'
 import { STATUS_PERMINTAAN, AKSI } from '../lib/constants'
-import { playMisiDiterima, playPesananBatal, playMissionSuccess, playTombolKamera, playTombolSuara } from '../lib/sound'
+import { playMisiDiterima, playPesananBatal, playMissionSuccess, playWhooshMasuk, playTombolKamera, playTombolSuara } from '../lib/sound'
 import { useLokasiPenumpang, hapusLokasiPenumpangSekarang } from '../lib/useLokasiPenumpang'
 import { usePesanOjek } from '../lib/usePesanOjek'
 import { useLanguage } from '../context/LanguageContext.jsx'
@@ -64,6 +64,7 @@ export default function OjekHomeTab({ slotKonsol,
   // Info misi disimpan dulu karena permintaan langsung kosong setelah selesai.
   const [misiSelesai, setMisiSelesai] = useState(null)
   const [susutSelesai, setSusutSelesai] = useState(false)
+  const [keluarSelesai, setKeluarSelesai] = useState(false)
   const [transisiBatal, setTransisiBatal] = useState(null) // 'tolak' | 'batal'
   const [susutBatal, setSusutBatal] = useState(false)
   const [statusLalu, setStatusLalu] = useState(permintaan?.status)
@@ -91,19 +92,22 @@ export default function OjekHomeTab({ slotKonsol,
     const selesai = setTimeout(() => { setTransisiBatal(null); setSusutBatal(false) }, 3200)
     return () => { clearTimeout(mulaiSusut); clearTimeout(selesai) }
   }, [transisiBatal])
-  useEffect(() => {
-    if (!misiSelesai) return undefined
-    const mulaiSusut = setTimeout(() => setSusutSelesai(true), 3800)
-    const habis = setTimeout(() => { setMisiSelesai(null); setSusutSelesai(false) }, 4400)
-    return () => { clearTimeout(mulaiSusut); clearTimeout(habis) }
-  }, [misiSelesai])
+  // Tombol OK di konsol: Spiderman ditarik naik keluar, lalu kartu menyusut dan hilang
+  function tutupMisiSelesai() {
+    if (keluarSelesai) return
+    setKeluarSelesai(true)
+    playWhooshMasuk()
+    setTimeout(() => setSusutSelesai(true), 800)
+    setTimeout(() => { setMisiSelesai(null); setSusutSelesai(false); setKeluarSelesai(false) }, 1400)
+  }
   const tampilSpidey = adaPermintaanMasuk || transisiDiterima || !!transisiBatal || !!misiSelesai
   const teksSpidey = {
     menunggu: t.ojekSpMasuk,
     menungguSub: t.ojekSpMenungguSub,
+    diterima: t.ojekSpDiterima,
+    diterimaSub: t.ojekSpMenuju,
     // Saat misi selesai hanya judul di atas; keterangan misi tampil di konsol bawah supaya tidak dobel
-    diterima: misiSelesai ? t.ojekSpSelesai : t.ojekSpDiterima,
-    diterimaSub: misiSelesai ? '' : t.ojekSpMenuju,
+    selesai: t.ojekSpSelesai,
     batal: transisiBatal === 'tolak' ? t.ojekSpTolak : t.ojekSpBatal,
     batalSub: t.ojekSpSiaga,
   }
@@ -140,8 +144,9 @@ export default function OjekHomeTab({ slotKonsol,
     berhentiLokasi()
     hapusLokasiPenumpangSekarang(isDemo, user?.uid)
     hapusPesan()
-    if (permintaan) setMisiSelesai({ aksi: permintaan.aksi, waktu: permintaan.waktu, where: permintaan.where })
+    if (permintaan) setMisiSelesai({ aksi: permintaan.aksi, waktu: permintaan.waktu, where: permintaan.where, mulai: Date.now() })
     setSusutSelesai(false)
+    setKeluarSelesai(false)
     playMissionSuccess()
     onSelesai()
   }
@@ -168,7 +173,7 @@ export default function OjekHomeTab({ slotKonsol,
           )}
           {tampilSpidey && (
             <div style={{ position: 'absolute', top: 0, bottom: 0, left: 14, right: 14, zIndex: 1100 }}>
-              <SpideyMenunggu dibuatPada={dibuatPadaRef.current} diterima={transisiDiterima || !!misiSelesai} dibatalkan={!!transisiBatal} menyusut={susutBatal || susutSelesai} isDemo={isDemo} teks={teksSpidey} gayaTolak kompak />
+              <SpideyMenunggu key={misiSelesai ? `selesai-${misiSelesai.mulai}` : 'misi'} dibuatPada={misiSelesai ? misiSelesai.mulai : dibuatPadaRef.current} diterima={transisiDiterima} selesai={!!misiSelesai} keluar={keluarSelesai} dibatalkan={!!transisiBatal} menyusut={susutBatal || susutSelesai} isDemo={isDemo} teks={teksSpidey} gayaTolak kompak />
             </div>
           )}
         </div>
@@ -193,7 +198,10 @@ export default function OjekHomeTab({ slotKonsol,
             ) : misiSelesai ? (
               <div key="selesai" className="glitch-masuk" style={{ animationDelay: '0.2s' }}>
                 <div style={s.baris1}>{misiSelesai.aksi === AKSI.JEMPUT ? t.jemput : t.antar} · {misiSelesai.waktu} · {misiSelesai.where}</div>
-                <div style={{ ...s.baris2, color: '#4ADE80' }}>✓ {t.monitorTercatat}</div>
+                <div style={s.tombolMelayang}>
+                  <span style={{ ...s.baris2, flex: 1, marginTop: 0, color: '#4ADE80', alignSelf: 'center' }}>✓ {t.monitorTercatat}</span>
+                  <button className="tekan" style={{ ...s.terimaBtn, flex: 'none', padding: '0 22px' }} onClick={tutupMisiSelesai} disabled={keluarSelesai}>OK</button>
+                </div>
               </div>
             ) : transisiBatal ? (
               <div style={{ ...s.baris1, color: '#FF8A94' }}>{transisiBatal === 'tolak' ? t.monitorDitolakInfo : t.monitorDibatalkanInfo}</div>

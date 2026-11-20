@@ -676,3 +676,7 @@ button {
 @keyframes panah-kedip { 0%, 100% { opacity: 0.2; } 50% { opacity: 1; } }
 .panah-kedip { animation: panah-kedip 1.2s steps(2) infinite; }
 @media (prefers-reduced-motion: reduce) { .panah-kedip { animation: none; opacity: 1; } }
+
+/* Misi selesai (akun ojek): setelah tombol OK, Spiderman ditarik naik keluar kartu dan tulisan memudar */
+.sp-keluar .sp-masuk { animation: sp-tarik 0.8s cubic-bezier(0.6, 0, 0.4, 1) 0s both; }
+.sp-keluar .sp-teks-muncul { opacity: 0; transition: opacity 0.3s ease-out; }

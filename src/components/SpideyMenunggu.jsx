@@ -310,7 +310,7 @@ const REAKSI = [
 
 const SUDAH_WHOOSH = new Set()
 
-export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalkan = false, menyusut = false, isDemo = false, teks = null, gayaTolak = false, info = null, tanpaWhoosh = false, kompak = false }) {
+export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalkan = false, menyusut = false, isDemo = false, teks = null, gayaTolak = false, info = null, tanpaWhoosh = false, kompak = false, selesai = false, keluar = false }) {
   const { t } = useLanguage()
   const [sekarang, setSekarang] = useState(() => Date.now())
 
@@ -419,7 +419,7 @@ export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalka
   return (
     <div
       ref={refKartu}
-      className={`sp-kartu${diterima ? ' sp-diterima' : ''}${dibatalkan ? ' sp-batal' : ''}${dibatalkan && gayaTolak ? ' sp-tolak' : ''}${menyusut ? ' sp-susut' : ''}`}
+      className={`sp-kartu${diterima ? ' sp-diterima' : ''}${dibatalkan ? ' sp-batal' : ''}${dibatalkan && gayaTolak ? ' sp-tolak' : ''}${menyusut ? ' sp-susut' : ''}${keluar ? ' sp-keluar' : ''}`}
       style={{ ...s.kartu, height: menyusut ? 0 : tinggiPenuh, bottom: -bawahDock }}
       role="status"
     >
@@ -463,7 +463,7 @@ export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalka
             <rect x="-1" y="1" width="1" height="3" fill="#FFFFFF" />
             <rect x="9" y="1" width="1" height="3" fill="#FFFFFF" />
             <rect x="10" y="6" width="1" height="1" fill="#FFFFFF" />
-            {diterima ? (
+            {diterima || selesai ? (
               <path d="M2.5 2.5h1v1h1v-1h1v-1h1v1h-1v1h-1v1h-1v-1h-1z" fill="#16A34A" />
             ) : dibatalkan ? (
               <>
@@ -536,11 +536,11 @@ export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalka
       </div>
 
       <div className="sp-teks-muncul" style={{ ...s.teks, bottom: 14 + bawahDock }}>
-        {!(kompak && !diterima) && <div style={{ ...s.judul, ...bayang, color: diterima ? '#4ADE80' : dibatalkan ? 'var(--merah-teks)' : '#FFFFFF' }}>
-          {diterima ? (teks?.diterima ?? t.spideyDiterima) : dibatalkan ? (teks?.batal ?? t.spideyBatal) : (teks?.menunggu ?? t.spideyMenunggu)}
+        {!(kompak && !diterima && !selesai) && <div style={{ ...s.judul, ...bayang, color: diterima || selesai ? '#4ADE80' : dibatalkan ? 'var(--merah-teks)' : '#FFFFFF' }}>
+          {selesai ? teks?.selesai : diterima ? (teks?.diterima ?? t.spideyDiterima) : dibatalkan ? (teks?.batal ?? t.spideyBatal) : (teks?.menunggu ?? t.spideyMenunggu)}
         </div>}
         <div style={{ ...s.sub, ...bayang, ...(kompak && !diterima ? { fontSize: 11, marginTop: 0 } : null) }}>
-          {diterima ? (
+          {selesai ? null : diterima ? (
             teks?.diterimaSub ?? (isDemo ? t.spideyMenujuDemo : t.spideyMenuju)
           ) : dibatalkan ? (
             teks?.batalSub ?? t.spideyBatalSub
