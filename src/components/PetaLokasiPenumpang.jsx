@@ -378,12 +378,7 @@ export default function PetaLokasiPenumpang({
         </div>
       )}
 
-      <div style={s.badge}>
-        <span className={posisiValid ? undefined : 'kedip-piksel'} style={posisiValid ? s.dotHijau : s.dotMerah} />
-        {posisiValid
-          ? (isDemo ? t.lokasiPassengerLive : t.lokasiFajriLive)
-          : <span className="titik-tunggu">{teksKosongFinal}</span>}
-      </div>
+      {/* Label status di peta (No requests yet / lokasi live) sengaja tidak ditampilkan dulu */}
     </div>
   )
 }
