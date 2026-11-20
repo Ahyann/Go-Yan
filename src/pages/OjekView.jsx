@@ -204,6 +204,7 @@ export default function OjekView({
       {/* Konsol tetap di dasar layar: bagian atas untuk info (diisi Home lewat portal), bagian bawah
           baris tab halaman. Tingginya tetap di semua keadaan dan semua tab, jadi isi di atasnya tidak naik-turun. */}
       <div style={s.konsol}>
+        <div aria-hidden="true" style={s.garisScan} />
         <div ref={setSlotKonsol} style={s.areaInfo}>
           {tabAktif !== 'home' && (
             <>
