@@ -651,3 +651,17 @@ button {
 
 /* Selama ikon chat ditahan untuk dipindah: tidak ada pemilihan teks dan menu salin/tempel */
 .tanpa-pilih, .tanpa-pilih * { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+
+/* Di layar lebar (web desktop) app tidak melebar: tampil sebagai satu kolom selebar HP di tengah.
+   transform membuat #root menjadi acuan elemen position: fixed, jadi nav dan popup ikut berada di dalam kolom. */
+@media (min-width: 481px) {
+  html { background: #02121D; }
+  #root {
+    max-width: 430px;
+    margin: 0 auto;
+    position: relative;
+    transform: translateZ(0);
+    background: var(--bg);
+    box-shadow: 0 0 0 1px rgba(96, 192, 240, 0.25), 0 0 40px rgba(0, 0, 0, 0.6);
+  }
+}
