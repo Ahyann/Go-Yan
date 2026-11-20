@@ -204,7 +204,6 @@ export default function OjekView({
       {/* Konsol tetap di dasar layar: bagian atas untuk info (diisi Home lewat portal), bagian bawah
           baris tab halaman. Tingginya tetap di semua keadaan dan semua tab, jadi isi di atasnya tidak naik-turun. */}
       <div style={s.konsol}>
-        <div aria-hidden="true" style={s.garisScan} />
         <div ref={setSlotKonsol} style={s.areaInfo}>
           {tabAktif !== 'home' && (
             <>
@@ -273,15 +272,15 @@ const s = {
     marginTop: 18,
     display: 'flex',
     flexDirection: 'column',
-    // Abu-abu gelap seperti layar LED di referensi, dengan kilau tipis di atas
-    background: 'linear-gradient(180deg, #3A3C3F 0, #2A2C2E 6px, #232527 100%)',
+    // Abu-abu dua tingkat seperti layar LED di referensi: separuh atas #3B3B3B, separuh bawah #2C2C2C
+    background: 'linear-gradient(180deg, #3B3B3B 0 50%, #2C2C2C 50% 100%)',
     borderStyle: 'solid',
     borderWidth: 4,
     borderColor: '#1A5E8A #8FD8FF #8FD8FF #1A5E8A',
     boxShadow: 'inset 0 0 0 2px #04192A',
     fontFamily: "'Silkscreen', monospace",
-    color: '#5ED0FF',
-    textShadow: '0 0 6px rgba(94, 208, 255, 0.55)',
+    color: '#94DDF4',
+    textShadow: '0 0 6px rgba(148, 221, 244, 0.5)',
   },
   garisScan: {
     position: 'absolute', inset: 0, pointerEvents: 'none',
