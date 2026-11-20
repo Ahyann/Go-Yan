@@ -141,7 +141,7 @@ export default function OjekView({
 
   return (
     <div style={s.appWrap}>
-      <div style={s.stageScroll}>
+      <div style={tabAktif === 'home' ? s.stageHome : s.stageLayar}>
         {tabAktif === 'home' && (
           <OjekHomeTab
             permintaan={permintaan}
@@ -195,12 +195,29 @@ export default function OjekView({
 }
 
 const s = {
+  // Bingkai biru piksel menyelimuti seluruh layar sampai tepi, termasuk dock tab di bawah.
+  // Tepi terang di atas/kiri dan gelap di bawah/kanan supaya bingkai terlihat timbul.
   appWrap: {
     display: 'flex',
     flexDirection: 'column',
     height: 'var(--app-height, 100dvh)',
-    maxWidth: 480,
-    margin: '0 auto',
+    boxSizing: 'border-box',
+    padding: 'calc(var(--safe-top) + 8px) 8px 0',
+    background: '#3B9BD6',
+    boxShadow: 'inset 0 4px 0 #8FD8FF, inset 4px 0 0 #6FC3EE, inset -4px 0 0 #2B83BC, inset 0 -4px 0 #1F6FA0',
   },
-  stageScroll: { flex: 1, overflowY: 'auto' },
+  stageHome: { flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' },
+  // Tab selain Home tampil seperti layar yang menjorok ke dalam bingkai. --safe-top dinolkan karena
+  // jarak dari notch sudah diberi oleh bingkai.
+  stageLayar: {
+    flex: 1,
+    minHeight: 0,
+    overflowY: 'auto',
+    background: 'var(--bg, #023854)',
+    borderStyle: 'solid',
+    borderWidth: 4,
+    borderColor: '#1A5E8A #8FD8FF #8FD8FF #1A5E8A',
+    boxShadow: 'inset 0 0 0 2px #04192A',
+    '--safe-top': '0px',
+  },
 }

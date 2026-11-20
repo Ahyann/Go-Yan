@@ -157,6 +157,7 @@ export default function OjekHomeTab({
             lokasiAktif={sedangJalan ? lokasiAktif : undefined}
             onToggleLokasi={sedangJalan ? (lokasiAktif ? berhentiLokasi : mulaiLokasi) : undefined}
           />
+          <div aria-hidden="true" style={s.garisDalamPeta} />
           {!lewatiSplash && <SplashLabaLaba ukuran={10} />}
           {tampilSpidey && (
             <div style={{ position: 'absolute', top: 0, bottom: 0, left: 14, right: 14, zIndex: 1100 }}>
@@ -228,9 +229,11 @@ export default function OjekHomeTab({
 const s = {
   wrap: {
     height: '100%',
-    padding: 'calc(var(--safe-top) + 14px) 20px 20px',
-    maxWidth: 480,
-    margin: '0 auto',
+    padding: 0,
+    width: '100%',
+    boxSizing: 'border-box',
+    flex: 1,
+    minHeight: 0,
     display: 'flex',
     flexDirection: 'column',
     gap: 20,
@@ -255,11 +258,8 @@ const s = {
     flexDirection: 'column',
     minHeight: 0,
     position: 'relative',
-    // Bingkai biru tebal: tepi luar gelap, kilau terang di atas, bayangan gelap di bawah
-    background: '#3B9BD6',
-    border: '3px solid #04192A',
-    boxShadow: 'inset 0 4px 0 #8FD8FF, inset 0 -4px 0 #1F6FA0, inset 4px 0 0 #6FC3EE, inset -4px 0 0 #2B83BC',
-    padding: '16px 12px 0',
+    // Bingkai biru kini milik seluruh layar (OjekView), kartu ini cukup memberi ruang untuk papan judul
+    padding: '16px 0 0',
   },
   // Papan judul menumpang di tepi atas peta (separuh masuk ke peta), kepala Spiderman keluar dari papan
   papanJudul: {
@@ -313,9 +313,14 @@ const s = {
     position: 'relative',
     minHeight: 200,
     overflow: 'hidden',
-    border: '3px solid #04192A',
     background: 'var(--panel)',
+    // Peta menjorok ke dalam: tepi gelap di atas/kiri, terang di bawah/kanan (bevel piksel 3D)
+    borderStyle: 'solid',
+    borderWidth: 4,
+    borderColor: '#1A5E8A #8FD8FF #8FD8FF #1A5E8A',
   },
+  // Garis gelap tipis di sisi dalam bevel, di atas peta (tidak menangkap sentuhan)
+  garisDalamPeta: { position: 'absolute', inset: 0, zIndex: 1050, pointerEvents: 'none', boxShadow: 'inset 0 0 0 2px #04192A, inset 3px 3px 0 rgba(0, 0, 0, 0.35)' },
   bawahCard: {
     flexShrink: 0,
     padding: 16,

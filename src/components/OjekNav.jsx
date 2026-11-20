@@ -34,7 +34,7 @@ const s = {
   // Pembungkus memberi jarak dari tepi layar; dock-nya sendiri tetap bagian dari layout.
   luar: {
     flexShrink: 0,
-    padding: '0 14px calc(var(--safe-bottom) + 14px)',
+    padding: '8px 0 calc(var(--safe-bottom) + 8px)',
   },
   nav: {
     position: 'relative',
