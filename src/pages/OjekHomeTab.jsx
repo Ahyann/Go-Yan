@@ -27,6 +27,7 @@ export default function OjekHomeTab({ slotKonsol,
 }) {
   const { t } = useLanguage()
   const { user, isDemo } = useAuth()
+  const [bawahKartu, setBawahKartu] = useState(0)
   const adaPermintaanMasuk = permintaan?.status === STATUS_PERMINTAAN.MENUNGGU
   const sedangJalan = permintaan?.status === STATUS_PERMINTAAN.DITERIMA
   const lokasiPenumpang = useLokasiPenumpang()
@@ -143,11 +144,12 @@ export default function OjekHomeTab({ slotKonsol,
             lokasi={lokasiPenumpang}
             teksKosong={teksKosongPeta}
             isiPenuh
+            bawahTertutup={bawahKartu}
           />
           <div aria-hidden="true" style={s.garisDalamPeta} />
           {!lewatiSplash && <SplashLabaLaba ukuran={10} />}
           {sedangJalan && !transisiDiterima && (
-            <KartuMisiOjek permintaan={permintaan} lokasiAktif={lokasiAktif} mulaiLokasi={mulaiLokasi} berhentiLokasi={berhentiLokasi} />
+            <KartuMisiOjek onBawah={setBawahKartu} permintaan={permintaan} lokasiAktif={lokasiAktif} mulaiLokasi={mulaiLokasi} berhentiLokasi={berhentiLokasi} />
           )}
           {tampilSpidey && (
             <div style={{ position: 'absolute', top: 0, bottom: 0, left: 14, right: 14, zIndex: 1100 }}>

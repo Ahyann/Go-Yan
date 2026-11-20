@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import QuickChatMarker from './QuickChatMarker.jsx'
+import { PenunjukKarakter } from './PetaStatus.jsx'
 import PusatkanKeSaya from './PusatkanKeSaya.jsx'
 import { useBubblePesan } from '../lib/useBubblePesan'
 import { useLokasiOjek } from '../lib/useLokasiOjek'
@@ -142,6 +143,7 @@ export default function PetaLokasiPenumpang({
   lokasi,
   teksKosong,
   isiPenuh = false,
+  bawahTertutup = 0,
   lokasiAktif,
   onToggleLokasi,
 }) {
@@ -224,6 +226,8 @@ export default function PetaLokasiPenumpang({
         <TandaiGeserUser />
         <PusatkanKeSaya sinyal={sinyalLive} posisi={posisiSayaMarker} />
         <PantauUkuran />
+        {isiPenuh && posisiPenumpangMarker && <PenunjukKarakter posisi={posisiPenumpangMarker} ikon={{ file: ikonFajri, w: 24, h: 24 }} label={isDemo ? t.ariaKembaliLokasiPassenger : t.ariaKembaliLokasiFajri} bawah={bawahTertutup} />}
+        {isiPenuh && posisiSayaMarker && <PenunjukKarakter posisi={posisiSayaMarker} ikon={{ file: ikonAhyan, w: 24, h: 24 }} label={t.ariaKembaliKarakterSaya} bawah={bawahTertutup} />}
 
         <TileLayer
           maxNativeZoom={22}
@@ -322,61 +326,6 @@ export default function PetaLokasiPenumpang({
           </Popup>
         </Marker>
       </MapContainer>
-
-      {(tampilkanTombolLokasi || posisiValid || posisiSayaValid) && (
-        <div
-          className="peta-bar-tambahan"
-          style={s.barTambahan}
-        >
-          {tampilkanTombolLokasi && (
-            <button
-              className="btn-map-control"
-              style={lokasiAktif ? s.liveAktif : s.liveMati}
-              aria-pressed={lokasiAktif}
-              onClick={() => {
-                // Baru dinyalakan (bukan dimatikan): peta pindah ke karakter sendiri.
-                if (!lokasiAktif) setSinyalLive((n) => n + 1)
-                onToggleLokasi()
-              }}
-              aria-label={lokasiAktif ? t.ariaMatikanLive : t.ariaNyalakanLive}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 2C8 2 5 5 5 9c0 5.5 7 13 7 13s7-7.5 7-13c0-4-3-7-7-7z" />
-                <circle cx="12" cy="9" r="2.5" />
-              </svg>
-              {lokasiAktif ? t.tombolLiveNyala : t.tombolLiveMati}
-            </button>
-          )}
-          <div style={s.grupLokasi}>
-          {posisiValid && (
-            <button
-              className="btn-map-control"
-              style={s.kotakKontrol}
-              onClick={handleRecenter}
-              aria-label={isDemo ? t.ariaKembaliLokasiPassenger : t.ariaKembaliLokasiFajri}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="3" />
-                <path d="M12 2v3M12 19v3M2 12h3M19 12h3" />
-              </svg>
-            </button>
-          )}
-          {posisiSayaValid && (
-            <button
-              className="btn-map-control"
-              style={s.kotakKontrol}
-              onClick={handleRecenterSaya}
-              aria-label={t.ariaKembaliKarakterSaya}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="8" r="3.5" />
-                <path d="M5 21c0-3.9 3.1-7 7-7s7 3.1 7 7" />
-              </svg>
-            </button>
-          )}
-          </div>
-        </div>
-      )}
 
       {/* Label status di peta (No requests yet / lokasi live) sengaja tidak ditampilkan dulu */}
     </div>

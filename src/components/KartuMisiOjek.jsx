@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { AKSI } from '../lib/constants'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
@@ -18,7 +18,33 @@ function formatJam(ms) {
 // Kartu misi berjalan di akun ojek, dibuat sama dengan kartu di akun penumpang: strip status yang bisa dibuka
 // (info misi + share lokasi, kolom ketik, foto, suara, kirim) dan kotak CHAT di kanan atas peta.
 // Dipasang di dalam area peta. Tombol Selesai ada di konsol bawah.
-export default function KartuMisiOjek({ permintaan, lokasiAktif, mulaiLokasi, berhentiLokasi }) {
+const SLOT_CHAT = ['kanan-atas', 'kanan-bawah', 'kiri-bawah']
+const KUNCI_SLOT_CHAT = 'goyan:slot-chat'
+const ASAL_TRANSFORM = { 'kanan-atas': 'top right', 'kanan-bawah': 'bottom right', 'kiri-bawah': 'bottom left' }
+
+function bacaSlotChat() {
+  try {
+    const nilai = localStorage.getItem(KUNCI_SLOT_CHAT)
+    return SLOT_CHAT.includes(nilai) ? nilai : 'kanan-atas'
+  } catch {
+    return 'kanan-atas'
+  }
+}
+
+// bawah: tinggi dasar peta yang tertutup kartu, supaya pojok bawah ikut naik-turun bersama kartu.
+function gayaSlot(slot, bawah) {
+  const atas = slot === 'kanan-atas'
+  const kiri = slot === 'kiri-bawah'
+  return {
+    top: atas ? 14 : 'auto',
+    bottom: atas ? 'auto' : bawah + 8,
+    left: kiri ? 14 : 'auto',
+    right: kiri ? 'auto' : 14,
+    transition: 'bottom 0.2s ease-out',
+  }
+}
+
+export default function KartuMisiOjek({ permintaan, lokasiAktif, mulaiLokasi, berhentiLokasi, onBawah }) {
   const { t } = useLanguage()
   const { isDemo } = useAuth()
   const { ikonFajri } = useProfilIkon()
@@ -30,6 +56,94 @@ export default function KartuMisiOjek({ permintaan, lokasiAktif, mulaiLokasi, be
   const [kosongDibuka, setKosongDibuka] = useState(false)
   const [teksPesan, setTeksPesan] = useState('')
   const chatRef = useRef(null)
+  const kartuRef = useRef(null)
+  const [bawahTertutup, setBawahTertutup] = useState(60)
+  const [slotChat, setSlotChat] = useState(bacaSlotChat)
+  const [seret, setSeret] = useState(null)
+  const slotRefs = useRef({})
+  const tahanRef = useRef(null)
+  const awalTahanRef = useRef(null)
+  const sedangSeretRef = useRef(false)
+  const sorotRef = useRef('kanan-atas')
+  const baruSeretRef = useRef(false)
+  const gelembungRef = useRef(null)
+
+  // Tinggi kartu (plus jarak 14px) dilaporkan ke peta dan dipakai pojok bawah chat.
+  useLayoutEffect(() => {
+    const el = kartuRef.current
+    if (!el) return undefined
+    const ukur = () => {
+      const b = Math.round(el.offsetHeight) + 14
+      setBawahTertutup(b)
+      if (onBawah) onBawah(b)
+    }
+    ukur()
+    const pengamat = new ResizeObserver(ukur)
+    pengamat.observe(el)
+    return () => {
+      pengamat.disconnect()
+      if (onBawah) onBawah(0)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  function slotTerdekat(x, y) {
+    let terbaik = slotChat
+    let jarakMin = Infinity
+    SLOT_CHAT.forEach((slot) => {
+      const rect = slotRefs.current[slot]?.getBoundingClientRect()
+      if (!rect) return
+      const jarak = Math.hypot(x - (rect.left + rect.width / 2), y - (rect.top + rect.height / 2))
+      if (jarak < jarakMin) { jarakMin = jarak; terbaik = slot }
+    })
+    return terbaik
+  }
+  function mulaiTahan(e) {
+    if (e.button != null && e.button !== 0) return
+    const el = e.currentTarget
+    const pointerId = e.pointerId
+    awalTahanRef.current = { x: e.clientX, y: e.clientY }
+    clearTimeout(tahanRef.current)
+    tahanRef.current = setTimeout(() => {
+      try { el.setPointerCapture(pointerId) } catch { /* pointer sudah lepas */ }
+      if (navigator.vibrate) navigator.vibrate(15)
+      sedangSeretRef.current = true
+      sorotRef.current = slotChat
+      setSeret({ sorot: slotChat })
+    }, 350)
+  }
+  function geserTahan(e) {
+    if (!sedangSeretRef.current) {
+      const awal = awalTahanRef.current
+      if (awal && Math.hypot(e.clientX - awal.x, e.clientY - awal.y) > 10) clearTimeout(tahanRef.current)
+      return
+    }
+    const awal = awalTahanRef.current
+    if (gelembungRef.current) gelembungRef.current.style.transform = `translate3d(${e.clientX - awal.x}px, ${e.clientY - awal.y}px, 0)`
+    const sorot = slotTerdekat(e.clientX, e.clientY)
+    if (sorot !== sorotRef.current) {
+      if (navigator.vibrate) navigator.vibrate(8)
+      sorotRef.current = sorot
+      setSeret({ sorot })
+    }
+  }
+  function lepasTahan() {
+    clearTimeout(tahanRef.current)
+    if (!sedangSeretRef.current) return
+    sedangSeretRef.current = false
+    baruSeretRef.current = true
+    setTimeout(() => { baruSeretRef.current = false }, 350)
+    const tujuan = sorotRef.current
+    if (gelembungRef.current) gelembungRef.current.style.transform = ''
+    setSlotChat(tujuan)
+    try { localStorage.setItem(KUNCI_SLOT_CHAT, tujuan) } catch { /* abaikan */ }
+    setSeret(null)
+  }
+  function klikGelembung() {
+    if (baruSeretRef.current) return
+    setChatBuka(true)
+    setKosongDibuka(true)
+  }
 
   const bisaPesan = lokasiAktif || isDemo
   const labelShare = lokasiAktif ? t.ariaMatikanShare : (isDemo ? t.ariaNyalakanShareDemo : t.ariaNyalakanShare)
@@ -52,7 +166,7 @@ export default function KartuMisiOjek({ permintaan, lokasiAktif, mulaiLokasi, be
   return (
     <>
       {(kotakTerbuka ? (
-        <div className="chat-buka" style={s.kotakChat}>
+        <div className="chat-buka" style={{ ...s.kotakChat, ...gayaSlot(slotChat, bawahTertutup), transformOrigin: ASAL_TRANSFORM[slotChat] }}>
           <div style={s.kotakChatKepala}>
             <span style={s.kotakChatJudul}>{t.judulChat}</span>
             <button className="tekan" style={s.kotakChatX} onClick={() => setChatBuka(false)} aria-expanded="true" aria-label={t.ariaBukaChat}>
@@ -88,14 +202,56 @@ export default function KartuMisiOjek({ permintaan, lokasiAktif, mulaiLokasi, be
           </div>
         </div>
       ) : (
-        <button className="tekan" style={s.tombolGelembung} onClick={() => { setChatBuka(true); setKosongDibuka(true) }} aria-expanded="false" aria-label={t.ariaBukaChat}>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" aria-hidden="true">
-            <path d="M4 5h16v11H9l-5 4z" />
-          </svg>
-        </button>
+        <>
+          <button
+            ref={gelembungRef}
+            className={seret ? undefined : 'tekan'}
+            style={{
+              ...s.tombolGelembung,
+              ...gayaSlot(slotChat, bawahTertutup),
+              touchAction: 'none',
+              userSelect: 'none',
+              WebkitTouchCallout: 'none',
+              ...(seret ? { zIndex: 1200, borderColor: 'var(--glow-blue)', willChange: 'transform', transition: 'none' } : null),
+            }}
+            onClick={klikGelembung}
+            onPointerDown={mulaiTahan}
+            onPointerMove={geserTahan}
+            onPointerUp={lepasTahan}
+            onPointerCancel={lepasTahan}
+            onContextMenu={(e) => e.preventDefault()}
+            aria-expanded="false"
+            aria-label={t.ariaBukaChat}
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" aria-hidden="true">
+              <path d="M4 5h16v11H9l-5 4z" />
+            </svg>
+          </button>
+          {seret && SLOT_CHAT.map((slot) => (
+            <div
+              key={slot}
+              ref={(el) => { slotRefs.current[slot] = el }}
+              aria-hidden="true"
+              style={{
+                position: 'absolute', zIndex: 1090, width: 48, height: 48, boxSizing: 'border-box',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--glow-blue)',
+                border: seret.sorot === slot ? '1px solid var(--glow-blue)' : '1px dashed rgba(94,208,255,0.35)',
+                background: seret.sorot === slot ? 'rgba(94,208,255,0.18)' : 'transparent',
+                boxShadow: seret.sorot === slot ? '0 0 14px rgba(94,208,255,0.55)' : 'none',
+                transition: 'background 0.12s, box-shadow 0.12s, border-color 0.12s',
+                pointerEvents: 'none',
+                ...gayaSlot(slot, bawahTertutup),
+              }}
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" style={{ opacity: seret.sorot === slot ? 1 : 0.35 }}>
+                <path d="M4 5h16v11H9l-5 4z" />
+              </svg>
+            </div>
+          ))}
+        </>
       ))}
 
-      <div className="naik-masuk" style={{ ...s.kartu, ...(kartuBuka ? s.kartuBuka : null) }}>
+      <div ref={kartuRef} className="naik-masuk" style={{ ...s.kartu, ...(kartuBuka ? s.kartuBuka : null) }}>
         <button className="tekan" style={s.strip} onClick={() => setKartuBuka((b) => !b)} aria-expanded={kartuBuka} aria-label={t.ariaBukaDetailStatus}>
           <span style={s.stripKiri}>
             <span style={s.dotHijau} />
@@ -184,11 +340,11 @@ const s = {
   pesanInput: { flex: 1, minWidth: 0, height: 36, boxSizing: 'border-box', background: 'var(--bg)', border: '1px solid var(--blue-border)', borderRadius: 0, padding: '0 12px', fontSize: 16, color: 'var(--text)' },
   kirimBtn: { ...kotak36, color: '#fff', background: 'var(--nav-red)' },
   hint: { fontSize: 11.5, color: 'var(--text-dim)', textAlign: 'center' },
-  kotakChat: { position: 'absolute', top: 14, right: 14, width: 'min(172px, 46%)', zIndex: 1100, boxSizing: 'border-box', background: 'rgba(1,42,64,0.45)', border: '1px solid rgba(96, 192, 240, 0.25)', padding: '0 8px 6px' },
+  kotakChat: { position: 'absolute', width: 'min(172px, 46%)', zIndex: 1100, boxSizing: 'border-box', background: 'rgba(1,42,64,0.45)', border: '1px solid rgba(96, 192, 240, 0.25)', padding: '0 8px 6px' },
   kotakChatKepala: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, minHeight: 40 },
   kotakChatJudul: { fontFamily: 'var(--font-data)', fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', color: 'var(--glow-blue)', textShadow: '0 1px 3px rgba(0,0,0,0.8)' },
   kotakChatX: { width: 32, height: 32, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text)', background: 'rgba(1, 42, 64, 0.6)' },
-  tombolGelembung: { position: 'absolute', top: 14, right: 14, zIndex: 1100, width: 48, height: 48, background: 'rgba(1,42,64,0.45)', border: '1px solid rgba(96, 192, 240, 0.25)', color: 'var(--glow-blue)', display: 'flex', alignItems: 'center', justifyContent: 'center' },
+  tombolGelembung: { position: 'absolute', zIndex: 1100, width: 48, height: 48, background: 'rgba(1,42,64,0.45)', border: '1px solid rgba(96, 192, 240, 0.25)', color: 'var(--glow-blue)', display: 'flex', alignItems: 'center', justifyContent: 'center' },
   kotakChatIsi: { maxHeight: 'min(112px, 16vh)', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 4, overscrollBehavior: 'contain', WebkitOverflowScrolling: 'touch' },
   chatBaris: { display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 6, fontSize: 12, lineHeight: 1.3, color: 'var(--text)', textShadow: '0 1px 3px rgba(0,0,0,0.9), 0 0 2px rgba(0,0,0,0.9)' },
   chatTeks: { minWidth: 0, overflowWrap: 'anywhere' },

@@ -141,7 +141,7 @@ function formatJarak(meter) {
 
 // bawah: tinggi area di dasar peta yang tertutup kartu status dan dock (px). Karakter yang
 // tersembunyi di balik kartu juga dianggap di luar layar.
-function PenunjukKarakter({ posisi, ikon, label, bawah }) {
+export function PenunjukKarakter({ posisi, ikon, label, bawah }) {
   const map = useMap()
   const [info, setInfo] = useState(null)
   const refTombol = useRef(null)
