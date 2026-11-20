@@ -141,6 +141,13 @@ export default function OjekView({
 
   return (
     <div style={s.appWrap}>
+      {/* Hiasan bingkai: garis penggaris di sisi kiri-kanan dan dua lampu di sudut atas */}
+      <div aria-hidden="true" style={{ ...s.penggarisKecil, left: 6 }} />
+      <div aria-hidden="true" style={{ ...s.penggarisBesar, left: 6 }} />
+      <div aria-hidden="true" style={{ ...s.penggarisKecil, right: 6 }} />
+      <div aria-hidden="true" style={{ ...s.penggarisBesar, right: 6 }} />
+      <span aria-hidden="true" className="kedip-piksel" style={{ ...s.lampu, left: 7, background: '#3DDC84', boxShadow: '0 0 6px #3DDC84, 0 0 0 1px #04192A' }} />
+      <span aria-hidden="true" style={{ ...s.lampu, right: 7, background: '#FF4C4C', boxShadow: '0 0 0 1px #04192A' }} />
       <div style={tabAktif === 'home' ? s.stageHome : s.stageLayar}>
         {tabAktif === 'home' && (
           <OjekHomeTab
@@ -202,10 +209,20 @@ const s = {
     flexDirection: 'column',
     height: 'var(--app-height, 100dvh)',
     boxSizing: 'border-box',
-    padding: 'calc(var(--safe-top) + 8px) 8px 0',
+    position: 'relative',
+    padding: 'calc(var(--safe-top) + 8px) 22px 0',
     background: '#3B9BD6',
     boxShadow: 'inset 0 4px 0 #8FD8FF, inset 4px 0 0 #6FC3EE, inset -4px 0 0 #2B83BC, inset 0 -4px 0 #1F6FA0',
   },
+  penggarisKecil: {
+    position: 'absolute', top: 'calc(var(--safe-top) + 40px)', bottom: 120, width: 5, pointerEvents: 'none',
+    background: 'repeating-linear-gradient(to bottom, #1A5E8A 0 2px, transparent 2px 14px)',
+  },
+  penggarisBesar: {
+    position: 'absolute', top: 'calc(var(--safe-top) + 40px)', bottom: 120, width: 9, pointerEvents: 'none',
+    background: 'repeating-linear-gradient(to bottom, #1A5E8A 0 2px, transparent 2px 70px)',
+  },
+  lampu: { position: 'absolute', top: 'calc(var(--safe-top) + 6px)', width: 8, height: 8, pointerEvents: 'none' },
   stageHome: { flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' },
   // Tab selain Home tampil seperti layar yang menjorok ke dalam bingkai. --safe-top dinolkan karena
   // jarak dari notch sudah diberi oleh bingkai.
