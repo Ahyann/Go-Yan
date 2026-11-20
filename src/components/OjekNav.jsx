@@ -38,10 +38,14 @@ const s = {
   },
   nav: {
     position: 'relative',
-    height: 60,
+    height: 64,
     boxSizing: 'border-box',
     background: DOCK_GELAP,
-    border: '1px solid rgba(96, 192, 240, 0.4)',
+    // Menjorok ke dalam bingkai seperti peta: tepi gelap di atas/kiri, terang di bawah/kanan, garis gelap di dalam
+    borderStyle: 'solid',
+    borderWidth: 4,
+    borderColor: '#1A5E8A #8FD8FF #8FD8FF #1A5E8A',
+    boxShadow: 'inset 0 0 0 2px #04192A, inset 3px 3px 0 rgba(0, 0, 0, 0.35)',
     display: 'flex',
     alignItems: 'center',
     gap: 2,
