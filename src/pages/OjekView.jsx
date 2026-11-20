@@ -234,6 +234,7 @@ export default function OjekView({
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="square" aria-hidden="true">{u.ikon}</svg>
                 <span>{u.label}</span>
                 {u.badge && <span style={s.titikBaru} aria-hidden="true" />}
+                {aktif && ['tl', 'tr', 'bl', 'br'].map((k) => <span key={k} aria-hidden="true" style={{ ...s.siku, ...s['siku_' + k] }} />)}
               </button>
             )
           })}
@@ -298,7 +299,13 @@ const s = {
     display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3,
     color: '#5ED0FF', fontFamily: "'Silkscreen', monospace", fontSize: 8, letterSpacing: '0.04em', textTransform: 'uppercase',
   },
-  tabAktif: { background: '#5ED0FF', color: '#04192A', textShadow: 'none' },
+  // Tab aktif seperti dock awal: latar biru tipis dengan siku cyan di empat sudut
+  tabAktif: { background: 'rgba(94, 208, 255, 0.14)' },
+  siku: { position: 'absolute', width: 8, height: 8, borderColor: '#5ED0FF', borderStyle: 'solid', borderWidth: 0 },
+  siku_tl: { top: 3, left: 3, borderTopWidth: 2, borderLeftWidth: 2 },
+  siku_tr: { top: 3, right: 3, borderTopWidth: 2, borderRightWidth: 2 },
+  siku_bl: { bottom: 3, left: 3, borderBottomWidth: 2, borderLeftWidth: 2 },
+  siku_br: { bottom: 3, right: 3, borderBottomWidth: 2, borderRightWidth: 2 },
   titikBaru: { position: 'absolute', top: 4, right: '22%', width: 7, height: 7, background: '#FF4C4C', boxShadow: '0 0 0 2px #04192A' },
   lampu: { position: 'absolute', top: 'calc(var(--safe-top) + 6px)', width: 8, height: 8, pointerEvents: 'none' },
   stageHome: { flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' },
