@@ -165,7 +165,7 @@ export default function OjekHomeTab({
             </div>
           ) : (
             <div aria-hidden="true" style={s.slotKosong}>
-              <span className="teks-jalan">{TEKS_JALAN}{TEKS_JALAN}</span>
+              <span className="teks-jalan">{t.teksJalanOjek}{t.teksJalanOjek}</span>
             </div>
           )}
         </div>
@@ -214,8 +214,6 @@ export default function OjekHomeTab({
     </>
   )
 }
-
-const TEKS_JALAN = 'GO-YAN TRACKER SIAP  ▪  MENUNGGU MISI DARI FAJRI  ▪  JANGAN LUPA PAKAI HELM  ▪  HATI-HATI DI JALAN  ▪  '
 
 const s = {
   wrap: {
