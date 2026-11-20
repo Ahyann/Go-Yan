@@ -57,7 +57,7 @@ export default function KartuMisiOjek({ permintaan, lokasiAktif, mulaiLokasi, be
   const [teksPesan, setTeksPesan] = useState('')
   const chatRef = useRef(null)
   const kartuRef = useRef(null)
-  const [bawahTertutup, setBawahTertutup] = useState(60)
+  const [bawahTertutup, setBawahTertutup] = useState(0)
   const [slotChat, setSlotChat] = useState(bacaSlotChat)
   const [seret, setSeret] = useState(null)
   const slotRefs = useRef({})
@@ -204,6 +204,28 @@ export default function KartuMisiOjek({ permintaan, lokasiAktif, mulaiLokasi, be
               </div>
             ))}
           </div>
+          {/* Baris kirim pesan di dalam kotak chat: ketik, kamera, suara, kirim (dibuat kecil) */}
+          <div style={s.barisKirim}>
+            <input
+              className="input-pesan"
+              style={{ ...s.inputKecil, opacity: bisaPesan ? 1 : 0.5 }}
+              value={teksPesan}
+              onChange={(e) => setTeksPesan(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') handleKirim() }}
+              placeholder={t.placeholderKetik}
+              aria-label={t.tombolKirimPesan}
+              maxLength={24}
+              disabled={!bisaPesan}
+            />
+            <span style={s.kecilkan}><TombolFoto onKirimFoto={kirimFoto} disabled={!bisaPesan} /></span>
+            <span style={s.kecilkan}><TombolSuara onKirimSuara={kirimSuara} disabled={!bisaPesan} /></span>
+            <button className="tekan" style={{ ...s.kirimKecil, opacity: bisaPesan && teksPesan.trim() ? 1 : 0.5 }} onClick={handleKirim} disabled={!bisaPesan || !teksPesan.trim()} aria-label={t.kirim}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="square" aria-hidden="true">
+                <path d="M4 12h15M13 6l6 6-6 6" />
+              </svg>
+            </button>
+          </div>
+          {!bisaPesan && <div style={s.hintKecil}>{t.pesanPerluLive}</div>}
         </div>
       ) : (
         <>
@@ -256,70 +278,6 @@ export default function KartuMisiOjek({ permintaan, lokasiAktif, mulaiLokasi, be
         </>
       ))}
 
-      <div ref={kartuRef} className="naik-masuk" style={{ ...s.kartu, ...(kartuBuka ? s.kartuBuka : null) }}>
-        <button className="tekan" style={s.strip} onClick={() => setKartuBuka((b) => !b)} aria-expanded={kartuBuka} aria-label={t.ariaBukaDetailStatus}>
-          <span style={s.stripKiri}>
-            <span style={s.dotHijau} />
-            <img src={`/icons/${ikonFajri}`} style={s.avatar} alt="" />
-            <span>{permintaan.aksi === AKSI.JEMPUT ? t.sedangMenjemput : t.sedangMengantar} {isDemo ? t.namaDemo : 'Fajri'}</span>
-          </span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--glow-blue)" strokeWidth="2.5" strokeLinecap="square" aria-hidden="true" style={{ transform: kartuBuka ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }}>
-            <path d="M6 15l6-6 6 6" />
-          </svg>
-        </button>
-        {kartuBuka && (
-          <div className="naik-masuk" style={s.isi}>
-            <div style={s.detail}>
-              <span style={s.chipAksi}>{String(permintaan.aksi === AKSI.JEMPUT ? t.jemput : t.antar).toUpperCase()}</span>
-              {permintaan.where && (
-                <span style={s.tempat}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="square" aria-hidden="true" style={{ flexShrink: 0 }}>
-                    <path d="M12 2C8 2 5 5 5 9c0 5.5 7 13 7 13s7-7.5 7-13c0-4-3-7-7-7z" />
-                    <circle cx="12" cy="9" r="2.5" />
-                  </svg>
-                  <span style={s.tempatTeks}>{permintaan.where}</span>
-                </span>
-              )}
-              {permintaan.waktu && (
-                <span style={s.jam}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="square" aria-hidden="true" style={{ flexShrink: 0 }}>
-                    <circle cx="12" cy="12" r="9" />
-                    <path d="M12 7v5l3 2" />
-                  </svg>
-                  {permintaan.waktu}
-                </span>
-              )}
-            </div>
-            <div style={s.pesanRow}>
-              <button className="tekan" style={lokasiAktif ? s.shareAktif : s.share} onClick={lokasiAktif ? berhentiLokasi : mulaiLokasi} aria-label={labelShare} aria-pressed={lokasiAktif}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" aria-hidden="true">
-                  <path d="M12 2C8 2 5 5 5 9c0 5.5 7 13 7 13s7-7.5 7-13c0-4-3-7-7-7z" />
-                  <circle cx="12" cy="9" r="2.5" />
-                </svg>
-              </button>
-              <input
-                className="input-pesan"
-                style={{ ...s.pesanInput, opacity: bisaPesan ? 1 : 0.5 }}
-                value={teksPesan}
-                onChange={(e) => setTeksPesan(e.target.value)}
-                onKeyDown={(e) => { if (e.key === 'Enter') handleKirim() }}
-                placeholder={t.placeholderKetik}
-                aria-label={t.tombolKirimPesan}
-                maxLength={24}
-                disabled={!bisaPesan}
-              />
-              <TombolFoto onKirimFoto={kirimFoto} disabled={!bisaPesan} />
-              <TombolSuara onKirimSuara={kirimSuara} disabled={!bisaPesan} />
-              <button className="tekan" style={{ ...s.kirimBtn, opacity: bisaPesan && teksPesan.trim() ? 1 : 0.5 }} onClick={handleKirim} disabled={!bisaPesan || !teksPesan.trim()} aria-label={t.kirim}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="square" aria-hidden="true">
-                  <path d="M4 12h15M13 6l6 6-6 6" />
-                </svg>
-              </button>
-            </div>
-            {!bisaPesan && <div style={s.hint}>{t.pesanPerluLive}</div>}
-          </div>
-        )}
-      </div>
     </>
   )
 }
@@ -327,6 +285,11 @@ export default function KartuMisiOjek({ permintaan, lokasiAktif, mulaiLokasi, be
 const kotak36 = { width: 36, height: 36, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }
 
 const s = {
+  barisKirim: { display: 'flex', alignItems: 'center', gap: 4, marginTop: 6 },
+  inputKecil: { flex: 1, minWidth: 0, height: 28, boxSizing: 'border-box', background: 'rgba(2,18,29,0.85)', border: '1px solid #2F7FAF', borderRadius: 0, padding: '0 6px', fontSize: 16, color: 'var(--text)', transform: 'none' },
+  kecilkan: { display: 'inline-flex', flexShrink: 0, zoom: 0.78 },
+  kirimKecil: { width: 28, height: 28, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', background: 'var(--nav-red)' },
+  hintKecil: { fontSize: 10, color: 'var(--text-dim)', marginTop: 4 },
   kartu: { position: 'absolute', left: 14, right: 14, bottom: 14, zIndex: 1100, background: 'var(--panel)', color: 'var(--text)' },
   kartuBuka: { borderTop: '3px solid var(--nav-red)' },
   strip: { width: '100%', minHeight: 40, padding: '0 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, fontSize: 13.5, fontWeight: 600, textAlign: 'left' },
@@ -345,7 +308,7 @@ const s = {
   pesanInput: { flex: 1, minWidth: 0, height: 36, boxSizing: 'border-box', background: 'var(--bg)', border: '1px solid var(--blue-border)', borderRadius: 0, padding: '0 12px', fontSize: 16, color: 'var(--text)' },
   kirimBtn: { ...kotak36, color: '#fff', background: 'var(--nav-red)' },
   hint: { fontSize: 11.5, color: 'var(--text-dim)', textAlign: 'center' },
-  kotakChat: { position: 'absolute', width: 'min(172px, 46%)', zIndex: 1100, boxSizing: 'border-box', background: 'rgba(1,42,64,0.45)', border: '1px solid rgba(96, 192, 240, 0.25)', padding: '0 8px 6px' },
+  kotakChat: { position: 'absolute', width: 'min(250px, 78%)', zIndex: 1100, boxSizing: 'border-box', background: 'rgba(1,42,64,0.45)', border: '1px solid rgba(96, 192, 240, 0.25)', padding: '0 8px 6px' },
   kotakChatKepala: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, minHeight: 40 },
   kotakChatJudul: { fontFamily: 'var(--font-data)', fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', color: 'var(--glow-blue)', textShadow: '0 1px 3px rgba(0,0,0,0.8)' },
   kotakChatX: { width: 32, height: 32, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text)', background: 'rgba(1, 42, 64, 0.6)' },

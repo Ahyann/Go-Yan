@@ -179,7 +179,37 @@ export default function OjekHomeTab({ slotKonsol,
               <div style={{ ...s.baris1, color: '#FF8A94' }}>{transisiBatal === 'tolak' ? t.monitorDitolakInfo : t.monitorDibatalkanInfo}</div>
             ) : sedangJalan && permintaan ? (
               <>
-                <div style={s.baris1}>{permintaan.aksi === AKSI.JEMPUT ? t.jemput : t.antar} · {permintaan.waktu} · {permintaan.where}</div>
+                <div style={s.barisJalan}>
+                  <span style={s.infoJalan}>
+                    <span style={s.ikonInfo}>
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="square" aria-hidden="true">
+                        <circle cx="12" cy="12" r="9" />
+                        <path d="M12 7v5l3 2" />
+                      </svg>
+                      {permintaan.waktu}
+                    </span>
+                    <span style={{ ...s.ikonInfo, minWidth: 0 }}>
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="square" aria-hidden="true" style={{ flexShrink: 0 }}>
+                        <path d="M12 2C8 2 5 5 5 9c0 5.5 7 13 7 13s7-7.5 7-13c0-4-3-7-7-7z" />
+                        <circle cx="12" cy="9" r="2.5" />
+                      </svg>
+                      <span style={s.potong}>{permintaan.where}</span>
+                    </span>
+                  </span>
+                  <button
+                    className="tekan"
+                    style={{ ...s.tombolLive, ...(lokasiAktif ? s.tombolLiveNyala : null) }}
+                    onClick={lokasiAktif ? berhentiLokasi : mulaiLokasi}
+                    aria-pressed={lokasiAktif}
+                    aria-label={lokasiAktif ? t.ariaMatikanShare : t.ariaNyalakanShare}
+                  >
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="square" aria-hidden="true">
+                      <path d="M12 2C8 2 5 5 5 9c0 5.5 7 13 7 13s7-7.5 7-13c0-4-3-7-7-7z" />
+                      <circle cx="12" cy="9" r="2.5" />
+                    </svg>
+                    LIVE
+                  </button>
+                </div>
                 <div style={{ marginTop: 8 }}>
                   <SwipeToFinish label={`${t.selesai} →`} onConfirm={handleSelesai} tinggi={32} konsol />
                 </div>
@@ -337,6 +367,12 @@ const s = {
     position: 'absolute', inset: 0, pointerEvents: 'none',
     background: 'repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.22) 0 1px, transparent 1px 3px)',
   },
+  barisJalan: { display: 'flex', alignItems: 'center', gap: 8, height: 24 },
+  infoJalan: { flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: 12, fontSize: 13, letterSpacing: '0.06em', textTransform: 'uppercase' },
+  ikonInfo: { display: 'inline-flex', alignItems: 'center', gap: 5, flexShrink: 0 },
+  potong: { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' },
+  tombolLive: { flexShrink: 0, height: 24, display: 'inline-flex', alignItems: 'center', gap: 4, padding: '0 7px', fontFamily: "'Silkscreen', monospace", fontSize: 10, color: '#94DDF4', border: '2px solid #5C7F96', background: 'transparent' },
+  tombolLiveNyala: { color: '#04192A', background: '#4ADE80', borderColor: '#4ADE80', textShadow: 'none' },
   baris1: { fontSize: 14, letterSpacing: '0.06em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', textTransform: 'uppercase' },
   baris2: { fontSize: 11, letterSpacing: '0.06em', opacity: 0.75, marginTop: 5, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', textTransform: 'uppercase' },
   tombolMelayang: { display: 'flex', gap: 8, marginTop: 8, position: 'relative' },
