@@ -375,9 +375,9 @@ export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalka
   }, [])
   const { tinggi: tinggiPenuh, lebar: lebarPenuh, bawah: bawahDock } = ukuran
   // Satu kotak logo selebar mungkin (maks 90% lebar, 62% tinggi), Spiderman menggantung di seperlima atas.
-  const sk = Math.max(8, Math.min(Math.floor((lebarPenuh * 0.9) / KOLOM), Math.floor((tinggiPenuh * (kompak ? 0.66 : 0.62)) / BARIS_LABA)))
+  const sk = Math.max(8, Math.min(Math.floor((lebarPenuh * 0.9) / KOLOM), Math.floor((tinggiPenuh * (kompak ? 0.64 : 0.62)) / BARIS_LABA)))
   // kompak (akun ojek): judul dan info di kartu dihilangkan karena sudah ada di konsol bawah, jadi logo dan Spiderman turun mengisi ruangnya
-  const topSpidey = Math.round(tinggiPenuh * (kompak ? 0.27 : 0.2))
+  const topSpidey = Math.round(tinggiPenuh * (kompak ? 0.23 : 0.2))
   const awalJatuh = -(topSpidey + 22 + TINGGI * SKALA + 40)
   useEffect(() => {
     // Jaring hanya berbunyi sekali untuk tiap pesanan, dan tidak untuk kartu yang baru terpasang karena pindah tab
@@ -425,7 +425,7 @@ export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalka
     >
       {/* Logo laba-laba dari layar pembuka sebagai latar. Masuk: kotak meledak dari tengah. Diterima: menyala
           hijau lalu kotaknya melayang naik. Dibatalkan: memerah, bergetar, lalu kotaknya berjatuhan. */}
-      <LogoLatar sk={sk} lebar={lebarPenuh} tinggi={tinggiPenuh} mode={diterima ? 'diterima' : dibatalkan ? 'batal' : 'masuk'} pusat={kompak ? 0.55 : 0.47} />
+      <LogoLatar sk={sk} lebar={lebarPenuh} tinggi={tinggiPenuh} mode={diterima ? 'diterima' : dibatalkan ? 'batal' : 'masuk'} pusat={kompak ? 0.5 : 0.47} />
 
       <div className="sp-kilau" style={{ opacity: diterima || dibatalkan ? 0 : 1 }} aria-hidden="true" />
 
@@ -539,7 +539,7 @@ export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalka
         {!(kompak && !diterima && !dibatalkan) && <div style={{ ...s.judul, ...bayang, color: diterima ? '#4ADE80' : dibatalkan ? 'var(--merah-teks)' : '#FFFFFF' }}>
           {diterima ? (teks?.diterima ?? t.spideyDiterima) : dibatalkan ? (teks?.batal ?? t.spideyBatal) : (teks?.menunggu ?? t.spideyMenunggu)}
         </div>}
-        <div style={{ ...s.sub, ...bayang, ...(kompak && !diterima && !dibatalkan ? { fontSize: 15, marginTop: 0 } : null) }}>
+        <div style={{ ...s.sub, ...bayang, ...(kompak && !diterima && !dibatalkan ? { fontSize: 11, marginTop: 0 } : null) }}>
           {diterima ? (
             teks?.diterimaSub ?? (isDemo ? t.spideyMenujuDemo : t.spideyMenuju)
           ) : dibatalkan ? (
