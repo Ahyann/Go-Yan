@@ -11,6 +11,8 @@ import PetaLokasiPenumpang from '../components/PetaLokasiPenumpang.jsx'
 import SplashLabaLaba from '../components/SplashLabaLaba.jsx'
 import SpideyMenunggu from '../components/SpideyMenunggu.jsx'
 import MissionSuccessPopup from '../components/MissionSuccessPopup.jsx'
+import TombolFoto from '../components/TombolFoto.jsx'
+import TombolSuara from '../components/TombolSuara.jsx'
 import KartuMisiOjek from '../components/KartuMisiOjek.jsx'
 import SwipeToFinish from '../components/SwipeToFinish.jsx'
 import DemoWelcomePopup from '../components/DemoWelcomePopup.jsx'
@@ -196,6 +198,8 @@ export default function OjekHomeTab({ slotKonsol,
                       <span style={s.potong}>{permintaan.where}</span>
                     </span>
                   </span>
+                  <span style={s.ikonKonsol}><TombolFoto onKirimFoto={kirimFoto} disabled={!lokasiAktif && !isDemo} /></span>
+                  <span style={s.ikonKonsol}><TombolSuara onKirimSuara={kirimSuara} disabled={!lokasiAktif && !isDemo} /></span>
                   <button
                     className="tekan"
                     style={{ ...s.tombolLive, ...(lokasiAktif ? s.tombolLiveNyala : null) }}
@@ -367,8 +371,10 @@ const s = {
     position: 'absolute', inset: 0, pointerEvents: 'none',
     background: 'repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.22) 0 1px, transparent 1px 3px)',
   },
-  barisJalan: { display: 'flex', alignItems: 'center', gap: 8, height: 24 },
-  infoJalan: { flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: 12, fontSize: 13, letterSpacing: '0.06em', textTransform: 'uppercase' },
+  // Kamera dan suara di konsol, dikecilkan dari 36px ke sekitar 24px supaya setinggi tombol LIVE
+  ikonKonsol: { display: 'inline-flex', alignItems: 'stretch', height: 36, flexShrink: 0, zoom: 0.67 },
+  barisJalan: { position: 'relative', display: 'flex', alignItems: 'center', gap: 5, height: 24 },
+  infoJalan: { flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, letterSpacing: '0.04em', textTransform: 'uppercase' },
   ikonInfo: { display: 'inline-flex', alignItems: 'center', gap: 5, flexShrink: 0 },
   potong: { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' },
   tombolLive: { flexShrink: 0, height: 24, display: 'inline-flex', alignItems: 'center', gap: 4, padding: '0 7px', fontFamily: "'Silkscreen', monospace", fontSize: 10, color: '#94DDF4', border: '2px solid #5C7F96', background: 'transparent' },

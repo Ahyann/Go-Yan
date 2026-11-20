@@ -204,7 +204,7 @@ export default function KartuMisiOjek({ permintaan, lokasiAktif, mulaiLokasi, be
               </div>
             ))}
           </div>
-          {/* Baris kirim pesan di dalam kotak chat: ketik, kamera, suara, kirim (dibuat kecil) */}
+          {/* Baris kirim pesan di dalam kotak chat: ketik dan kirim. Kamera dan suara ada di konsol bawah. */}
           <div style={s.barisKirim}>
             <input
               className="input-pesan"
@@ -217,8 +217,6 @@ export default function KartuMisiOjek({ permintaan, lokasiAktif, mulaiLokasi, be
               maxLength={24}
               disabled={!bisaPesan}
             />
-            <span style={s.kecilkan}><TombolFoto onKirimFoto={kirimFoto} disabled={!bisaPesan} /></span>
-            <span style={s.kecilkan}><TombolSuara onKirimSuara={kirimSuara} disabled={!bisaPesan} /></span>
             <button className="tekan" style={{ ...s.kirimKecil, opacity: bisaPesan && teksPesan.trim() ? 1 : 0.5 }} onClick={handleKirim} disabled={!bisaPesan || !teksPesan.trim()} aria-label={t.kirim}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="square" aria-hidden="true">
                 <path d="M4 12h15M13 6l6 6-6 6" />
@@ -308,7 +306,7 @@ const s = {
   pesanInput: { flex: 1, minWidth: 0, height: 36, boxSizing: 'border-box', background: 'var(--bg)', border: '1px solid var(--blue-border)', borderRadius: 0, padding: '0 12px', fontSize: 16, color: 'var(--text)' },
   kirimBtn: { ...kotak36, color: '#fff', background: 'var(--nav-red)' },
   hint: { fontSize: 11.5, color: 'var(--text-dim)', textAlign: 'center' },
-  kotakChat: { position: 'absolute', width: 'min(250px, 78%)', zIndex: 1100, boxSizing: 'border-box', background: 'rgba(1,42,64,0.45)', border: '1px solid rgba(96, 192, 240, 0.25)', padding: '0 8px 6px' },
+  kotakChat: { position: 'absolute', width: 'min(200px, 62%)', zIndex: 1100, boxSizing: 'border-box', background: 'rgba(1,42,64,0.45)', border: '1px solid rgba(96, 192, 240, 0.25)', padding: '0 8px 6px' },
   kotakChatKepala: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, minHeight: 40 },
   kotakChatJudul: { fontFamily: 'var(--font-data)', fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', color: 'var(--glow-blue)', textShadow: '0 1px 3px rgba(0,0,0,0.8)' },
   kotakChatX: { width: 32, height: 32, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text)', background: 'rgba(1, 42, 64, 0.6)' },
