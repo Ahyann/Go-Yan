@@ -273,14 +273,15 @@ const s = {
     marginTop: 18,
     display: 'flex',
     flexDirection: 'column',
-    background: '#03121F',
+    // Seluruh layar konsol abu-abu polos (tanpa gradasi), tekstur dari garis scan
+    background: '#2F2F2F',
     borderStyle: 'solid',
     borderWidth: 4,
     borderColor: '#1A5E8A #8FD8FF #8FD8FF #1A5E8A',
     boxShadow: 'inset 0 0 0 2px #04192A',
     fontFamily: "'Silkscreen', monospace",
-    color: '#5ED0FF',
-    textShadow: '0 0 6px rgba(94, 208, 255, 0.55)',
+    color: '#94DDF4',
+    textShadow: '0 0 6px rgba(148, 221, 244, 0.5)',
   },
   garisScan: {
     position: 'absolute', inset: 0, pointerEvents: 'none',
@@ -293,8 +294,7 @@ const s = {
   },
   barisInfo: { fontSize: 14, letterSpacing: '0.06em', textTransform: 'uppercase', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' },
   barisJalan: { fontSize: 11, letterSpacing: '0.06em', opacity: 0.75, marginTop: 5, whiteSpace: 'nowrap', overflow: 'hidden' },
-  // Baris tab abu-abu dua tingkat seperti layar LED referensi, bagian info di atasnya tetap gelap
-  barisTab: { position: 'relative', display: 'flex', height: 40, flexShrink: 0, borderTop: '2px solid #04192A', background: 'linear-gradient(180deg, #3B3B3B 0 50%, #2C2C2C 50% 100%)', color: '#94DDF4' },
+  barisTab: { position: 'relative', display: 'flex', height: 40, flexShrink: 0, borderTop: '2px solid #1E1E1E' },
   tab: {
     position: 'relative', flex: 1, minWidth: 0, padding: 0, border: 'none', borderRadius: 0, background: 'transparent',
     display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3,
