@@ -142,10 +142,8 @@ export default function OjekHomeTab({
       </header>
 
       <section style={s.mainCard}>
-        {/* Bingkai piksel tebal di atas tepi kartu peta (tidak menangkap sentuhan) */}
-        <div aria-hidden="true" style={s.bingkai}>
-          {['tl', 'tr', 'bl', 'br'].map((k) => <span key={k} style={{ ...s.sudut, ...s['sudut_' + k] }} />)}
-        </div>
+        {/* Papan judul di bingkai atas, seperti layar pelacak retro */}
+        <div aria-hidden="true" style={s.papanJudul}>GO-YAN TRACKER</div>
         <div style={s.mapArea}>
           <PetaLokasiPenumpang
             lokasi={lokasiPenumpang}
@@ -162,21 +160,18 @@ export default function OjekHomeTab({
           )}
         </div>
 
-        {adaPermintaanMasuk && (
-          <div style={s.bawahCard}>
-            <div style={s.misiBaruRow}>
-              <div style={s.misiBaruLabel}>{isDemo ? t.misiBaruDemo : t.misiBaru}</div>
+        {/* Bingkai bawah yang lebih lebar. Saat ada misi masuk, tombolnya ada di sini; selain itu berisi slot gelap kosong.
+            Info misi (aksi, jam, tempat) sudah tampil di bawah Spiderman. */}
+        <div style={s.bingkaiBawah}>
+          {adaPermintaanMasuk ? (
+            <div className="naik-masuk" style={s.tombolMelayang}>
+              <button className="tekan" style={s.tolakBtn} onClick={handleTolak}>{t.batalMisi}</button>
+              <button className="tekan" style={s.terimaBtn} onClick={handleTerima}>{t.mulaiMisi}</button>
             </div>
-            <div style={s.permintaanAksi}>
-              {permintaan.aksi === AKSI.JEMPUT ? t.jemput : t.antar} · {permintaan.waktu}
-            </div>
-            <div style={s.permintaanWhere}>{permintaan.where}</div>
-            <div style={s.tombolRow}>
-              <button style={s.tolakBtn} onClick={handleTolak}>{t.batalMisi}</button>
-              <button style={s.terimaBtn} onClick={handleTerima}>{t.mulaiMisi}</button>
-            </div>
-          </div>
-        )}
+          ) : (
+            <div aria-hidden="true" style={s.slotKosong} />
+          )}
+        </div>
 
         {sedangJalan && !transisiDiterima && (
           <div style={s.bawahCard}>
@@ -251,29 +246,39 @@ const s = {
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
-    background: 'var(--panel)',
-    borderRadius: 0,
-    overflow: 'hidden',
     minHeight: 0,
     position: 'relative',
-    padding: 16,
+    // Bingkai biru tebal: tepi luar gelap, kilau terang di atas, bayangan gelap di bawah
+    background: '#3B9BD6',
+    border: '3px solid #04192A',
+    boxShadow: 'inset 0 4px 0 #8FD8FF, inset 0 -4px 0 #1F6FA0, inset 4px 0 0 #6FC3EE, inset -4px 0 0 #2B83BC',
+    padding: '40px 12px 0',
   },
-  bingkai: {
+  papanJudul: {
     position: 'absolute',
-    inset: 0,
-    zIndex: 1050,
-    pointerEvents: 'none',
-    boxShadow: 'inset 0 0 0 3px #04192A, inset 0 6px 0 #9BDDFF, inset 0 0 0 10px #2E8FCC, inset 0 0 0 13px #4FB4F2, inset 0 0 0 16px #04192A',
+    top: 7,
+    left: '50%',
+    transform: 'translateX(-50%)',
+    zIndex: 2,
+    whiteSpace: 'nowrap',
+    fontFamily: 'var(--font-judul)',
+    fontSize: 17,
+    letterSpacing: '2px',
+    color: '#BFE9FF',
+    background: '#0B3A5C',
+    border: '2px solid #04192A',
+    boxShadow: 'inset 0 0 0 2px #5ED0FF',
+    padding: '2px 14px 1px',
   },
-  sudut: { position: 'absolute', width: 6, height: 6, background: 'var(--bg, #023854)' },
-  sudut_tl: { top: 0, left: 0 },
-  sudut_tr: { top: 0, right: 0 },
-  sudut_bl: { bottom: 0, left: 0 },
-  sudut_br: { bottom: 0, right: 0 },
+  bingkaiBawah: { flexShrink: 0, padding: '12px 0 14px' },
+  slotKosong: { height: 30, background: '#2A2C2E', border: '3px solid #04192A', boxShadow: 'inset 0 4px 0 #3E4042' },
   mapArea: {
     flex: 1,
     position: 'relative',
     minHeight: 200,
+    overflow: 'hidden',
+    border: '3px solid #04192A',
+    background: 'var(--panel)',
   },
   bawahCard: {
     flexShrink: 0,
@@ -281,7 +286,9 @@ const s = {
     display: 'flex',
     flexDirection: 'column',
     gap: 12,
-    borderTop: '1px solid var(--garis)',
+    marginTop: 12,
+    background: 'var(--panel)',
+    border: '3px solid #04192A',
   },
 
   permintaanLabel: { fontSize: 13, color: '#9FC3E8' },
@@ -318,24 +325,30 @@ const s = {
   },
   permintaanWhere: { fontSize: 14, color: '#8FB4DC' },
   tombolRow: { display: 'flex', gap: 10 },
+  tombolMelayang: { display: 'flex', gap: 10 },
   tolakBtn: {
     flex: 1,
-    background: 'transparent',
-    color: 'var(--text)',
-    fontSize: 15,
-    fontWeight: 600,
-    padding: '13px',
+    height: 52,
+    background: 'rgba(1, 26, 41, 0.92)',
+    color: '#fff',
+    fontFamily: 'var(--font-mono, monospace)',
+    fontSize: 13,
+    fontWeight: 700,
+    letterSpacing: '0.14em',
     borderRadius: 0,
-    border: '1px solid var(--garis)',
+    border: '3px solid #04192A',
   },
   terimaBtn: {
-    flex: 1,
+    flex: 1.4,
+    height: 52,
     background: 'var(--nav-red)',
     color: '#fff',
-    fontSize: 15,
-    fontWeight: 600,
-    padding: '13px',
+    fontFamily: 'var(--font-judul)',
+    fontSize: 22,
+    letterSpacing: '1px',
     borderRadius: 0,
+    border: 'none',
+    boxShadow: '3px 3px 0 #000, inset 0 -4px 0 rgba(0, 0, 0, 0.28)',
   },
 
   // Pita merah selebar kartu, menempel di tepi atas panel (padding panel 16).
