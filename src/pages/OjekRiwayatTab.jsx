@@ -54,28 +54,17 @@ export default function OjekRiwayatTab({ riwayat, onTandaiLunas, onHapusRiwayat,
         </button>
       </div>
 
-      <div style={s.ringkasanRow}>
-        <section style={s.cardBiruScroll}>
-          <div style={s.scrollPage}>
-            <div style={s.tagihanLabel}>{t.belumDitransfer}</div>
-            <div style={s.angkaBelum}>{formatRupiah(totalBelumBayar)}</div>
-            <div style={s.tagihanSub}>{belumBayar.length} {t.satuanPerjalanan}</div>
-          </div>
-          <div style={{ ...s.dotsRow, visibility: 'hidden' }}>
-            <span style={s.dot} />
-            <span style={s.dot} />
-          </div>
-        </section>
-
-        <SudahDiterimaCarousel
-          totalSemua={totalSudahDiterima}
-          jumlahSemua={sudahBayar.length}
-          totalBulanIni={totalSudahDiterimaBulanIni}
-          jumlahBulanIni={sudahBayarBulanIni.length}
-          labelBulan={t.namaBulanPendek[bulanAktif]}
-          t={t}
-        />
-      </div>
+      {/* Satu kartu ringkasan. Halaman awal: yang belum ditransfer. Geser ke kanan: diterima bulan ini, lalu total diterima. */}
+      <RingkasanCarousel
+        totalBelum={totalBelumBayar}
+        jumlahBelum={belumBayar.length}
+        totalSemua={totalSudahDiterima}
+        jumlahSemua={sudahBayar.length}
+        totalBulanIni={totalSudahDiterimaBulanIni}
+        jumlahBulanIni={sudahBayarBulanIni.length}
+        labelBulan={t.namaBulanPendek[bulanAktif]}
+        t={t}
+      />
 
       <div style={s.list}>
         {riwayatBulanIni.length === 0 ? (
@@ -133,39 +122,35 @@ export default function OjekRiwayatTab({ riwayat, onTandaiLunas, onHapusRiwayat,
   )
 }
 
-function SudahDiterimaCarousel({ totalSemua, jumlahSemua, totalBulanIni, jumlahBulanIni, labelBulan, t }) {
+function RingkasanCarousel({ totalBelum, jumlahBelum, totalSemua, jumlahSemua, totalBulanIni, jumlahBulanIni, labelBulan, t }) {
   const scrollRef = useRef(null)
   const [halaman, setHalaman] = useState(0)
 
   function handleScroll() {
     const el = scrollRef.current
     if (!el) return
-    const posisi = Math.round(el.scrollLeft / el.clientWidth)
-    setHalaman(posisi)
+    setHalaman(Math.round(el.scrollLeft / el.clientWidth))
   }
+
+  const halamanList = [
+    { label: t.belumDitransfer, angka: totalBelum, gaya: s.angkaBelum, sub: `${jumlahBelum} ${t.satuanPerjalanan} · ${t.sudahDiterima} ${formatRupiah(totalSemua)}` },
+    { label: `${t.sudahDiterima} ${labelBulan}`, angka: totalBulanIni, gaya: s.angkaSudah, sub: `${jumlahBulanIni} ${t.satuanPerjalanan}` },
+    { label: `${t.sudahDiterima} · Total`, angka: totalSemua, gaya: s.angkaSudah, sub: `${jumlahSemua} ${t.satuanPerjalanan}` },
+  ]
 
   return (
     <div style={s.cardBiruScroll}>
-      <div
-        ref={scrollRef}
-        className="no-scrollbar"
-        style={s.scrollInner}
-        onScroll={handleScroll}
-      >
-        <div style={s.scrollPage}>
-          <div style={s.tagihanLabel}>{t.sudahDiterima}</div>
-          <div style={s.angkaSudah}>{formatRupiah(totalSemua)}</div>
-          <div style={s.tagihanSub}>{jumlahSemua} {t.satuanPerjalanan}</div>
-        </div>
-        <div style={s.scrollPage}>
-          <div style={s.tagihanLabel}>{t.sudahDiterima} {labelBulan}</div>
-          <div style={s.angkaSudah}>{formatRupiah(totalBulanIni)}</div>
-          <div style={s.tagihanSub}>{jumlahBulanIni} {t.satuanPerjalanan}</div>
-        </div>
+      <div ref={scrollRef} className="no-scrollbar" style={s.scrollInner} onScroll={handleScroll}>
+        {halamanList.map((h) => (
+          <div key={h.label} style={s.scrollPage}>
+            <div style={s.tagihanLabel}>{h.label}</div>
+            <div style={h.gaya}>{formatRupiah(h.angka)}</div>
+            <div style={s.tagihanSub}>{h.sub}</div>
+          </div>
+        ))}
       </div>
       <div style={s.dotsRow}>
-        <span style={halaman === 0 ? s.dotAktif : s.dot} />
-        <span style={halaman === 1 ? s.dotAktif : s.dot} />
+        {halamanList.map((h, i) => <span key={h.label} style={halaman === i ? s.dotAktif : s.dot} />)}
       </div>
     </div>
   )
@@ -246,23 +231,23 @@ const s = {
     boxShadow: '0 0 4px var(--glow-blue-mid)',
   },
   angkaBelum: {
-    fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 19,
+    fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 28,
     color: 'var(--web-red)', textShadow: '0 0 6px rgba(226,54,54,0.5)',
   },
   angkaSudah: {
-    fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 19,
+    fontFamily: 'var(--font-data)', fontWeight: 700, fontSize: 28,
     color: 'var(--glow-blue)', textShadow: '0 0 6px var(--glow-blue-mid)',
   },
   tagihanSub: { fontSize: 12, color: '#8FB4DC', marginTop: 4 },
-  list: { display: 'flex', flexDirection: 'column', gap: 10 },
+  // Daftar dalam satu panel, tiap perjalanan dipisah garis tipis
+  list: { display: 'flex', flexDirection: 'column', background: 'var(--card-blue)', border: '1px solid var(--blue-border)' },
   tipDemo: { fontSize: 11, color: 'var(--text-dim)', textAlign: 'center', marginTop: 4, lineHeight: 1.4 },
   kosong: { fontSize: 13.5, color: 'var(--text-dim)', textAlign: 'center', padding: '20px 0' },
   item: {
     display: 'flex',
     alignItems: 'center',
     background: 'var(--card-blue)',
-    border: '1px solid var(--blue-border)',
-    borderRadius: 0,
+    borderBottom: '1px solid var(--blue-border)',
     padding: '12px 12px 12px 14px',
     gap: 12,
   },
