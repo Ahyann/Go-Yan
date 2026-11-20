@@ -11,8 +11,6 @@ import PetaLokasiPenumpang from '../components/PetaLokasiPenumpang.jsx'
 import SplashLabaLaba from '../components/SplashLabaLaba.jsx'
 import SpideyMenunggu from '../components/SpideyMenunggu.jsx'
 import MissionSuccessPopup from '../components/MissionSuccessPopup.jsx'
-import TombolFoto from '../components/TombolFoto.jsx'
-import TombolSuara from '../components/TombolSuara.jsx'
 import SwipeToFinish from '../components/SwipeToFinish.jsx'
 import DemoWelcomePopup from '../components/DemoWelcomePopup.jsx'
 
@@ -177,8 +175,10 @@ export default function OjekHomeTab({ slotKonsol,
               <div style={{ ...s.baris1, color: '#FF8A94' }}>{transisiBatal === 'tolak' ? t.monitorDitolakInfo : t.monitorDibatalkanInfo}</div>
             ) : sedangJalan && permintaan ? (
               <>
-                <div style={s.baris1}>{permintaan.aksi === AKSI.JEMPUT ? t.jemput : t.antar} · {permintaan.waktu}</div>
-                <div style={s.baris2}>{permintaan.where}</div>
+                <div style={s.baris1}>{permintaan.aksi === AKSI.JEMPUT ? t.jemput : t.antar} · {permintaan.waktu} · {permintaan.where}</div>
+                <div style={{ marginTop: 8 }}>
+                  <SwipeToFinish label={`${t.selesai} →`} onConfirm={handleSelesai} tinggi={32} konsol />
+                </div>
               </>
             ) : (
               <>
@@ -192,39 +192,6 @@ export default function OjekHomeTab({ slotKonsol,
           slotKonsol,
         )}
 
-        {sedangJalan && !transisiDiterima && (
-          <div style={s.bawahCard}>
-            <div style={s.pita}>
-              <span>{t.misiBerjalan}</span>
-              <span style={s.pitaJam}>{permintaan.waktu}</span>
-            </div>
-            <div style={s.jalanRow}>
-              <span style={s.dotHijau} />
-              {permintaan.aksi === AKSI.JEMPUT ? t.sedangMenjemput : t.sedangMengantar} {isDemo ? t.namaDemo : 'Fajri'} · {permintaan.where}
-            </div>
-
-            <div style={{ ...s.pesanRow, opacity: lokasiAktif || isDemo ? 1 : 0.5 }}>
-              <TombolFoto onKirimFoto={kirimFoto} disabled={!lokasiAktif && !isDemo} />
-              <TombolSuara onKirimSuara={kirimSuara} disabled={!lokasiAktif && !isDemo} />
-              <input
-                style={s.pesanInput}
-                value={teksPesan}
-                onChange={(e) => setTeksPesan(e.target.value)}
-                placeholder={isDemo ? t.placeholderPesanBubbleDemo : t.placeholderPesanBubble}
-                maxLength={24}
-                disabled={!lokasiAktif && !isDemo}
-              />
-              <button style={s.pesanBtn} onClick={handleKirimPesan} disabled={!lokasiAktif && !isDemo}>{t.kirim}</button>
-            </div>
-            <div style={s.pesanHint}>
-              {lokasiAktif || isDemo ? t.quickChatHint : t.pesanPerluLive}
-            </div>
-
-            {lokasiError && <div style={s.lokasiError}>{lokasiError}</div>}
-
-            <SwipeToFinish label={`${t.selesai} →`} onConfirm={handleSelesai} />
-          </div>
-        )}
       </section>
     </main>
 
@@ -306,16 +273,6 @@ const s = {
   },
   // Garis gelap tipis di sisi dalam bevel, di atas peta (tidak menangkap sentuhan)
   garisDalamPeta: { position: 'absolute', inset: 0, zIndex: 1050, pointerEvents: 'none', boxShadow: 'inset 0 0 0 2px #04192A, inset 3px 3px 0 rgba(0, 0, 0, 0.35)' },
-  bawahCard: {
-    flexShrink: 0,
-    padding: 16,
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 12,
-    marginTop: 12,
-    background: 'var(--panel)',
-    border: '3px solid #04192A',
-  },
 
   permintaanLabel: { fontSize: 13, color: '#9FC3E8' },
   misiBaruRow: {
@@ -405,24 +362,9 @@ const s = {
     boxShadow: 'inset 0 -3px 0 rgba(0, 0, 0, 0.3)',
   },
 
-  // Pita merah selebar kartu, menempel di tepi atas panel (padding panel 16).
-  pita: {
-    margin: '-16px -16px 0',
-    background: 'var(--nav-red)',
-    color: '#fff',
-    padding: '8px 16px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    fontSize: 12,
-    fontWeight: 700,
-    letterSpacing: '0.06em',
-  },
-  pitaJam: { fontFamily: 'var(--font-data)' },
-  jalanRow: { display: 'flex', alignItems: 'center', fontSize: 14.5, fontWeight: 600, color: 'var(--text)' },
   dotHijau: {
     width: 8, height: 8, borderRadius: '50%', background: 'var(--signal)',
-    display: 'inline-block', marginRight: 8,
+    flexShrink: 0,
   },
   pesanRow: { display: 'flex', gap: 8, position: 'relative' },
   pesanInput: {

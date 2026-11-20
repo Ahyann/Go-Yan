@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 
-export default function SwipeToFinish({ label, onConfirm }) {
+// tinggi: tinggi trek dalam px. konsol: gaya layar konsol (trek gelap bergaris cyan, huruf piksel).
+export default function SwipeToFinish({ label, onConfirm, tinggi = 52, konsol = false }) {
   const trackRef = useRef(null)
   const handleRef = useRef(null)
   const labelRef = useRef(null)
@@ -11,7 +12,7 @@ export default function SwipeToFinish({ label, onConfirm }) {
   const sudahTrigger = useRef(false)
   const [mengonfirmasi, setMengonfirmasi] = useState(false)
 
-  const DIAMETER = 52
+  const DIAMETER = tinggi
 
   function batasGeser() {
     const track = trackRef.current
@@ -108,14 +109,14 @@ export default function SwipeToFinish({ label, onConfirm }) {
   }, [mengonfirmasi])
 
   return (
-    <div ref={trackRef} style={s.track}>
-      <div ref={fillRef} style={s.fill} />
+    <div ref={trackRef} style={{ ...s.track, height: tinggi, ...(konsol ? s.trackKonsol : null) }}>
+      <div ref={fillRef} style={{ ...s.fill, height: tinggi, width: tinggi, ...(konsol ? s.fillKonsol : null) }} />
 
       <div ref={labelRef} style={s.labelWrap}>
-        <span style={s.label}>{mengonfirmasi ? 'Selesai! ✓' : label}</span>
+        <span style={{ ...s.label, ...(konsol ? s.labelKonsol : null) }}>{mengonfirmasi ? 'Selesai! ✓' : label}</span>
       </div>
 
-      <div ref={handleRef} style={s.handle}>
+      <div ref={handleRef} style={{ ...s.handle, width: tinggi, height: tinggi, ...(konsol ? s.handleKonsol : null) }}>
         {mengonfirmasi ? (
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
             <path d="M20 6L9 17l-5-5" />
@@ -131,6 +132,10 @@ export default function SwipeToFinish({ label, onConfirm }) {
 }
 
 const s = {
+  trackKonsol: { background: '#1E1E1E', boxShadow: 'inset 0 0 0 2px #5ED0FF' },
+  fillKonsol: { background: 'rgba(188, 30, 47, 0.55)' },
+  labelKonsol: { fontFamily: "'Silkscreen', monospace", fontSize: 12, fontWeight: 400, letterSpacing: '0.08em', color: '#94DDF4', textTransform: 'uppercase' },
+  handleKonsol: { boxShadow: 'inset 0 -3px 0 #7F1820, inset 0 0 0 2px #FF6B78' },
   track: {
     position: 'relative',
     boxSizing: 'border-box',
