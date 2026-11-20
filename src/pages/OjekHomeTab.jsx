@@ -136,11 +136,6 @@ export default function OjekHomeTab({
   return (
     <>
     <main style={s.wrap}>
-      <header style={s.header}>
-        <div style={s.eyebrow}>{t.ojekEyebrow}</div>
-        <h1 style={s.title}>{isDemo ? t.haloDemo : t.ojekHalo}</h1>
-      </header>
-
       <section style={s.mainCard}>
         {/* Papan judul di bingkai atas, seperti layar pelacak retro */}
         <div aria-hidden="true" style={s.papanJudul}>GO-YAN TRACKER</div>
@@ -221,7 +216,7 @@ export default function OjekHomeTab({
 const s = {
   wrap: {
     height: '100%',
-    padding: 'calc(var(--safe-top) + 24px) 20px 20px',
+    padding: 'calc(var(--safe-top) + 14px) 20px 20px',
     maxWidth: 480,
     margin: '0 auto',
     display: 'flex',
