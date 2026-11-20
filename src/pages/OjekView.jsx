@@ -8,6 +8,7 @@ import { useLanguage } from '../context/LanguageContext.jsx'
 import { useReminderKeberangkatan } from '../lib/useReminderKeberangkatan'
 import { STATUS_PERMINTAAN } from '../lib/constants'
 import PermintaanBaruToast from '../components/PermintaanBaruToast.jsx'
+import PapanGoYan from '../components/PapanGoYan.jsx'
 import OjekHomeTab from './OjekHomeTab.jsx'
 import OjekJadwalTab from './OjekJadwalTab.jsx'
 import OjekRiwayatTab from './OjekRiwayatTab.jsx'
@@ -170,6 +171,7 @@ export default function OjekView({
       <div aria-hidden="true" style={{ ...s.penggarisBesar, left: 6 }} />
       <div aria-hidden="true" style={{ ...s.penggarisKecil, right: 6 }} />
       <div aria-hidden="true" style={{ ...s.penggarisBesar, right: 6 }} />
+      <PapanGoYan />
       <span aria-hidden="true" className="kedip-piksel" style={{ ...s.lampu, left: 7, background: '#3DDC84', boxShadow: '0 0 6px #3DDC84, 0 0 0 1px #04192A' }} />
       <span aria-hidden="true" style={{ ...s.lampu, right: 7, background: '#FF4C4C', boxShadow: '0 0 0 1px #04192A' }} />
       <div style={tabAktif === 'home' ? s.stageHome : s.stageLayar}>
@@ -332,6 +334,8 @@ const s = {
   stageLayar: {
     flex: 1,
     minHeight: 0,
+    // Sejajar dengan tepi atas peta di Home (jarak yang sama untuk papan GO-YAN)
+    marginTop: 16,
     overflowY: 'auto',
     background: 'var(--bg, #023854)',
     borderStyle: 'solid',

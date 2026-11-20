@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { gayaTeksJalan } from '../lib/teksJalan'
 import { STATUS_PERMINTAAN, AKSI } from '../lib/constants'
@@ -33,19 +33,6 @@ export default function OjekHomeTab({ slotKonsol,
   const lokasiPenumpang = useLokasiPenumpang()
   const { kirimPesan, kirimFoto, kirimSuara, hapusPesan } = usePesanOjek()
   const [teksPesan, setTeksPesan] = useState('')
-  // Papan GO-YAN digeser supaya titik tengah KEPALA (bukan titik tengah papan) tepat di tengah layar.
-  // "GO" lebih pendek dari "YAN", jadi tanpa ini kepala bergeser ke kiri; dengan ini tidak perlu ruang kosong di samping GO.
-  const papanRef = useRef(null)
-  const kepalaRef = useRef(null)
-  const [geserPapan, setGeserPapan] = useState(null)
-  useLayoutEffect(() => {
-    const ukur = () => {
-      if (!papanRef.current || !kepalaRef.current) return
-      setGeserPapan(papanRef.current.clientLeft + kepalaRef.current.offsetLeft + kepalaRef.current.offsetWidth / 2)
-    }
-    ukur()
-    document.fonts?.ready?.then(ukur)
-  }, [])
   const [showMissionSuccess, setShowMissionSuccess] = useState(false)
 
   // Layar pembuka abu-abu dilewati kalau halaman di-refresh saat ada misi yang menunggu jawaban.
@@ -152,18 +139,6 @@ export default function OjekHomeTab({ slotKonsol,
     <>
     <main style={s.wrap}>
       <section style={s.mainCard}>
-        {/* Papan judul di bingkai atas, seperti layar pelacak retro */}
-        <div ref={papanRef} aria-hidden="true" style={{ ...s.papanJudul, ...(geserPapan != null ? { transform: `translateX(-${geserPapan}px)` } : null) }}>
-          <span className="glitch-teks" style={s.teksJudul}><span aria-hidden="true" style={s.panahPlay} />GO</span>
-          <span ref={kepalaRef} style={s.kepalaLingkar}>
-            <span style={s.kepalaIsi}>
-              <img src={`${import.meta.env.BASE_URL}icons/spidericon.png`} alt="" style={s.kepalaImg} />
-              <span className="kelopak-spidey" style={{ left: '7%' }} />
-              <span className="kelopak-spidey" style={{ left: '53%' }} />
-            </span>
-          </span>
-          <span className="glitch-teks" style={s.teksJudul}>YAN</span>
-        </div>
         <div style={s.mapArea}>
           <PetaLokasiPenumpang
             lokasi={lokasiPenumpang}
@@ -295,33 +270,6 @@ const s = {
     // Bingkai biru kini milik seluruh layar (OjekView), kartu ini cukup memberi ruang untuk papan judul
     padding: '16px 0 0',
   },
-  // Papan judul menumpang di tepi atas peta (separuh masuk ke peta), kepala Spiderman keluar dari papan
-  papanJudul: {
-    position: 'absolute',
-    top: 3,
-    left: '50%',
-    transform: 'translateX(-50%)',
-    zIndex: 1200,
-    display: 'flex',
-    alignItems: 'center',
-    gap: 6,
-    height: 26,
-    boxSizing: 'border-box',
-    whiteSpace: 'nowrap',
-    background: 'linear-gradient(180deg, #1C5B8A, #0B3A5C)',
-    border: '2px solid #04192A',
-    boxShadow: 'inset 0 0 0 2px #9BDDFF, inset 0 -4px 0 rgba(0, 0, 0, 0.25), 3px 3px 0 #04192A',
-    padding: '0 12px',
-    pointerEvents: 'none',
-  },
-  // Panah play kecil sebelum GO, mengisi selisih lebar GO dan YAN supaya kiri dan kanan papan seimbang
-  // Setinggi huruf GO, ikut bergeser saat glitch karena berada di dalam span GO. Sudut berundak ala piksel.
-  panahPlay: { display: 'inline-block', width: 9, height: 10, marginRight: 7, verticalAlign: 'baseline', background: 'currentColor', clipPath: 'polygon(0 0, 33% 0, 33% 20%, 67% 20%, 67% 40%, 100% 40%, 100% 60%, 67% 60%, 67% 80%, 33% 80%, 33% 100%, 0 100%)' },
-  teksJudul: { fontFamily: "'Silkscreen', monospace", fontSize: 15, letterSpacing: '0.08em', color: '#BFE9FF', lineHeight: 1 },
-  // Kepala Spiderman saja, tanpa lingkaran putih; ukurannya setara lingkaran putih sebelumnya (36px + cincin 2px)
-  kepalaLingkar: { width: 40, height: 40, margin: '-8px 0', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' },
-  kepalaIsi: { position: 'relative', width: 40, height: 40 },
-  kepalaImg: { width: 40, height: 40, imageRendering: 'pixelated', display: 'block' },
   bingkaiBawah: { flexShrink: 0, padding: '12px 0 14px' },
   slotKosong: {
     // Layar serba guna di bawah peta: lebih tinggi supaya nanti bisa menampilkan info lain, sudut berundak
