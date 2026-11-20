@@ -593,3 +593,12 @@ button {
 @media (prefers-reduced-motion: reduce) {
   .teks-jalan { animation: none; }
 }
+
+/* Label status peta ojek (S1): kotak merah berkedip dan titik yang bertambah satu per satu. */
+@keyframes kedip-piksel { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0.15; } }
+@keyframes titik-tunggu { 0% { content: ''; } 25% { content: '.'; } 50% { content: '..'; } 75%, 100% { content: '...'; } }
+.kedip-piksel { animation: kedip-piksel 1s steps(1) infinite; }
+.titik-tunggu::after { content: ''; display: inline-block; width: 3ch; text-align: left; animation: titik-tunggu 1.6s steps(1) infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .kedip-piksel, .titik-tunggu::after { animation: none; }
+}

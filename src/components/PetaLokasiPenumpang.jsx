@@ -379,8 +379,10 @@ export default function PetaLokasiPenumpang({
       )}
 
       <div style={s.badge}>
-        <span style={posisiValid ? s.dotHijau : s.dotMerah} />
-        {posisiValid ? (isDemo ? t.lokasiPassengerLive : t.lokasiFajriLive) : teksKosongFinal}
+        <span className={posisiValid ? undefined : 'kedip-piksel'} style={posisiValid ? s.dotHijau : s.dotMerah} />
+        {posisiValid
+          ? (isDemo ? t.lokasiPassengerLive : t.lokasiFajriLive)
+          : <span className="titik-tunggu">{teksKosongFinal}</span>}
       </div>
     </div>
   )
@@ -487,18 +489,18 @@ const s = {
     background: '#0B3A5C',
     color: '#BFE9FF',
     fontFamily: "'Silkscreen', monospace",
-    fontSize: 11,
+    fontSize: 9,
     letterSpacing: '0.06em',
     textTransform: 'uppercase',
-    padding: '6px 9px 5px',
+    padding: '4px 7px 3px',
     borderRadius: 0,
     border: '2px solid #04192A',
-    boxShadow: 'inset 0 0 0 2px #5ED0FF, 3px 3px 0 #04192A',
+    boxShadow: 'inset 0 0 0 2px #5ED0FF, 2px 2px 0 #04192A',
     display: 'flex',
     alignItems: 'center',
-    gap: 7,
+    gap: 6,
     zIndex: 1000,
   },
-  dotHijau: { width: 7, height: 7, background: 'var(--signal)', boxShadow: '0 0 0 1px #04192A' },
-  dotMerah: { width: 7, height: 7, background: 'var(--web-red)', boxShadow: '0 0 0 1px #04192A' },
+  dotHijau: { width: 6, height: 6, background: 'var(--signal)', boxShadow: '0 0 0 1px #04192A' },
+  dotMerah: { width: 6, height: 6, background: 'var(--web-red)', boxShadow: '0 0 0 1px #04192A' },
 }
