@@ -266,6 +266,7 @@ const s = {
     minWidth: 0,
   },
   chip: {
+    whiteSpace: 'nowrap',
     height: 40,
     width: '100%',
     boxSizing: 'border-box',
@@ -277,6 +278,7 @@ const s = {
     borderRadius: 0,
   },
   chipAktif: {
+    whiteSpace: 'nowrap',
     height: 40,
     fontSize: 12,
     fontWeight: 600,
@@ -299,6 +301,7 @@ const s = {
     borderLeft: '1px solid var(--garis)',
   },
   bacaAktif: {
+    whiteSpace: 'nowrap',
     fontSize: 12,
     fontWeight: 600,
     lineHeight: '40px',
@@ -314,6 +317,7 @@ const s = {
     borderLeft: '1px solid var(--garis)',
   },
   bacaRedup: {
+    whiteSpace: 'nowrap',
     fontSize: 12,
     fontWeight: 600,
     lineHeight: '40px',
