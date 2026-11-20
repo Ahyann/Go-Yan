@@ -299,9 +299,9 @@ const s = {
     display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3,
     color: '#5ED0FF', fontFamily: "'Silkscreen', monospace", fontSize: 8, letterSpacing: '0.04em', textTransform: 'uppercase',
   },
-  // Tab aktif seperti dock awal tapi merah: latar merah tipis dengan siku merah di empat sudut
-  tabAktif: { background: 'rgba(188, 30, 47, 0.3)', color: '#FF8A94', textShadow: '0 0 6px rgba(255, 76, 76, 0.6)' },
-  siku: { position: 'absolute', width: 8, height: 8, borderColor: '#FF4C4C', borderStyle: 'solid', borderWidth: 0 },
+  // Tab aktif seperti dock awal: latar biru tipis dengan siku cyan di empat sudut
+  tabAktif: { background: 'rgba(94, 208, 255, 0.14)' },
+  siku: { position: 'absolute', width: 8, height: 8, borderColor: '#5ED0FF', borderStyle: 'solid', borderWidth: 0 },
   siku_tl: { top: 3, left: 3, borderTopWidth: 2, borderLeftWidth: 2 },
   siku_tr: { top: 3, right: 3, borderTopWidth: 2, borderRightWidth: 2 },
   siku_bl: { bottom: 3, left: 3, borderBottomWidth: 2, borderLeftWidth: 2 },
