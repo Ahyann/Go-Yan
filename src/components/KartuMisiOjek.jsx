@@ -206,10 +206,10 @@ export default function KartuMisiOjek({ permintaan, lokasiAktif, mulaiLokasi, be
             ))}
           </div>
           {/* Baris kirim pesan di dalam kotak chat: ketik dan kirim. Kamera dan suara ada di konsol bawah. */}
-          <div style={s.barisKirim}>
+          <div style={{ ...s.barisKirim, borderColor: teksPesan.trim() ? 'var(--nav-red)' : '#2F7FAF' }}>
             <input
               className="input-pesan"
-              style={{ ...s.inputKecil, opacity: bisaPesan ? 1 : 0.5 }}
+              style={s.inputKecil}
               value={teksPesan}
               onChange={(e) => setTeksPesan(e.target.value)}
               onKeyDown={(e) => { if (e.key === 'Enter') handleKirim() }}
@@ -218,9 +218,10 @@ export default function KartuMisiOjek({ permintaan, lokasiAktif, mulaiLokasi, be
               maxLength={24}
               disabled={!bisaPesan}
             />
-            <button className="tekan" style={{ ...s.kirimKecil, opacity: bisaPesan && teksPesan.trim() ? 1 : 0.5 }} onClick={handleKirim} disabled={!bisaPesan || !teksPesan.trim()} aria-label={t.kirim}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="square" aria-hidden="true">
-                <path d="M4 12h15M13 6l6 6-6 6" />
+            <button className="tekan" style={{ ...s.kirimKecil, background: teksPesan.trim() ? 'var(--nav-red)' : '#2F7FAF' }} onClick={handleKirim} disabled={!bisaPesan || !teksPesan.trim()} aria-label={t.kirim}>
+              {/* Pesawat kertas */}
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M2 3l20 9-20 9 3-9z" />
               </svg>
             </button>
           </div>
@@ -283,10 +284,11 @@ export default function KartuMisiOjek({ permintaan, lokasiAktif, mulaiLokasi, be
 const kotak36 = { width: 36, height: 36, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }
 
 const s = {
-  barisKirim: { display: 'flex', alignItems: 'center', gap: 4, marginTop: 6 },
-  inputKecil: { flex: 1, minWidth: 0, height: 28, boxSizing: 'border-box', background: 'rgba(2,18,29,0.85)', border: '1px solid #2F7FAF', borderRadius: 0, padding: '0 6px', fontSize: 16, color: 'var(--text)', transform: 'none' },
+  // Kolom ketik dan tombol kirim menyatu dalam satu bingkai; bingkai dan tombol berubah merah saat ada teks
+  barisKirim: { display: 'flex', alignItems: 'stretch', height: 28, boxSizing: 'border-box', marginTop: 6, border: '2px solid #2F7FAF', background: '#0B3A5C', transition: 'border-color 0.15s' },
+  inputKecil: { flex: 1, minWidth: 0, height: '100%', boxSizing: 'border-box', background: 'transparent', border: 'none', borderRadius: 0, padding: '0 6px', fontSize: 16, color: 'var(--text)', transform: 'none' },
   kecilkan: { display: 'inline-flex', flexShrink: 0, zoom: 0.78 },
-  kirimKecil: { width: 28, height: 28, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', background: 'var(--nav-red)' },
+  kirimKecil: { width: 26, height: '100%', transition: 'background 0.15s', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', background: 'var(--nav-red)' },
   hintKecil: { fontSize: 10, color: 'var(--text-dim)', marginTop: 4 },
   kartu: { position: 'absolute', left: 14, right: 14, bottom: 14, zIndex: 1100, background: 'var(--panel)', color: 'var(--text)' },
   kartuBuka: { borderTop: '3px solid var(--nav-red)' },
