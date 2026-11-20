@@ -27,6 +27,7 @@ export default function KartuMisiOjek({ permintaan, lokasiAktif, mulaiLokasi, be
   const riwayatChat = useRiwayatChat(pesan, pesanFajri)
   const [kartuBuka, setKartuBuka] = useState(true)
   const [chatBuka, setChatBuka] = useState(true)
+  const [kosongDibuka, setKosongDibuka] = useState(false)
   const [teksPesan, setTeksPesan] = useState('')
   const chatRef = useRef(null)
 
@@ -46,11 +47,11 @@ export default function KartuMisiOjek({ permintaan, lokasiAktif, mulaiLokasi, be
     setTeksPesan('')
   }
 
-  const tampilChat = riwayatChat.length > 0
+  const kotakTerbuka = chatBuka && (riwayatChat.length > 0 || kosongDibuka)
 
   return (
     <>
-      {tampilChat && (chatBuka ? (
+      {(kotakTerbuka ? (
         <div className="chat-buka" style={s.kotakChat}>
           <div style={s.kotakChatKepala}>
             <span style={s.kotakChatJudul}>{t.judulChat}</span>
@@ -61,6 +62,14 @@ export default function KartuMisiOjek({ permintaan, lokasiAktif, mulaiLokasi, be
             </button>
           </div>
           <div ref={chatRef} className="no-scrollbar" style={s.kotakChatIsi} role="log" aria-live="polite">
+            {riwayatChat.length === 0 && (
+              <div style={s.chatKosong}>
+                <div>
+                  <div style={s.chatKosongJudul}>{t.chatKosong}</div>
+                  <div style={s.chatKosongInfo}>{t.chatKosongInfo}</div>
+                </div>
+              </div>
+            )}
             {riwayatChat.map((p) => (
               <div key={p.id} style={{ ...s.chatBaris, ...(typeof p.suara === 'string' ? { flexWrap: 'wrap', rowGap: 0 } : null) }}>
                 <span style={s.chatTeks}>
@@ -79,7 +88,7 @@ export default function KartuMisiOjek({ permintaan, lokasiAktif, mulaiLokasi, be
           </div>
         </div>
       ) : (
-        <button className="tekan" style={s.tombolGelembung} onClick={() => setChatBuka(true)} aria-expanded="false" aria-label={t.ariaBukaChat}>
+        <button className="tekan" style={s.tombolGelembung} onClick={() => { setChatBuka(true); setKosongDibuka(true) }} aria-expanded="false" aria-label={t.ariaBukaChat}>
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" aria-hidden="true">
             <path d="M4 5h16v11H9l-5 4z" />
           </svg>
@@ -187,6 +196,9 @@ const s = {
   chatNamaOjek: { fontWeight: 700, color: 'var(--merah-teks)' },
   chatNamaSaya: { fontWeight: 700, color: 'var(--glow-blue)' },
   chatTitikDua: { color: 'var(--text-dim)' },
+  chatKosong: { display: 'flex', alignItems: 'center', gap: 12, padding: '6px 0 4px', color: 'var(--text-dim)' },
+  chatKosongJudul: { fontFamily: 'var(--font-data)', fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text)' },
+  chatKosongInfo: { fontSize: 11, lineHeight: 1.35, marginTop: 3, color: 'var(--text-dim)' },
   chatSuaraBaris: { flexBasis: '100%', marginTop: 1 },
   chatFotoMini: { display: 'block', marginTop: 4, maxWidth: '100%', maxHeight: 84, objectFit: 'cover', border: '1px solid rgba(96, 192, 240, 0.4)' },
 }
