@@ -125,18 +125,26 @@ export default function TombolSuara({ onKirimSuara, disabled, kecil = false }) {
         </svg>
       </button>
       {merekam && (
-        <div style={s.bar} role="group" aria-label={t.suaraMerekam}>
-          <button type="button" className="tekan" style={{ ...s.batal, ...(kecil ? { width: 24 } : null) }} onClick={batal} aria-label={t.ariaBatalRekam}>
+        <div style={{ ...s.bar, ...(kecil ? s.barKonsol : null) }} role="group" aria-label={t.suaraMerekam}>
+          <button type="button" className="tekan" style={{ ...s.batal, ...(kecil ? s.batalKonsol : null) }} onClick={batal} aria-label={t.ariaBatalRekam}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="square" aria-hidden="true">
               <path d="M6 6l12 12M18 6L6 18" />
             </svg>
           </button>
-          <div style={{ ...s.waktu, ...(kecil ? { padding: '0 6px', gap: 5 } : null) }}>
+          <div style={{ ...s.waktu, ...(kecil ? s.waktuKonsol : null) }}>
             <span className="rekam-kedip" style={s.titikRekam} />
             {!kecil && <span style={s.label}>{t.suaraMerekam}</span>}
-            <span style={s.angka}>{kecil ? formatDurasi(detik) : `${formatDurasi(detik)} / ${formatDurasi(BATAS_DETIK)}`}</span>
+            {kecil ? (
+              // Layar konsol: detik berjalan / batas maksimal, dengan garis kemajuan merah di dasar
+              <>
+                <span style={s.angkaKonsol}>{detik}<span style={{ opacity: 0.55 }}>/{BATAS_DETIK}S</span></span>
+                <span aria-hidden="true" style={{ ...s.kemajuanKonsol, width: `${Math.min(100, (detik / BATAS_DETIK) * 100)}%` }} />
+              </>
+            ) : (
+              <span style={s.angka}>{formatDurasi(detik)} / {formatDurasi(BATAS_DETIK)}</span>
+            )}
           </div>
-          <button type="button" className="tekan" style={{ ...s.kirim, ...(kecil ? { width: 24 } : null) }} onClick={kirim} aria-label={t.ariaKirimSuara}>
+          <button type="button" className="tekan" style={{ ...s.kirim, ...(kecil ? s.kirimKonsol : null) }} onClick={kirim} aria-label={t.ariaKirimSuara}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="square" aria-hidden="true">
               <path d="M4 12h15M13 6l6 6-6 6" />
             </svg>
@@ -148,6 +156,13 @@ export default function TombolSuara({ onKirimSuara, disabled, kecil = false }) {
 }
 
 const s = {
+  // Versi konsol ojek (kecil): mengikuti layar abu bertekstur, huruf piksel cyan, tombol bertepi seperti tombol konsol lain
+  barKonsol: { background: '#2F2F2F', gap: 4 },
+  batalKonsol: { width: 24, border: '2px solid #5C7F96', color: '#94DDF4' },
+  waktuKonsol: { position: 'relative', padding: '0 6px', gap: 5, background: '#1E1E1E', border: 'none', boxShadow: 'inset 0 0 0 2px #5ED0FF', overflow: 'hidden' },
+  angkaKonsol: { fontFamily: "'Silkscreen', monospace", fontSize: 10, color: '#94DDF4', textShadow: '0 0 6px rgba(148, 221, 244, 0.5)', whiteSpace: 'nowrap' },
+  kemajuanKonsol: { position: 'absolute', left: 0, bottom: 0, height: 3, background: '#BC1E2F', transition: 'width 1s linear' },
+  kirimKonsol: { width: 24, background: '#BC1E2F', boxShadow: 'inset 0 -3px 0 #7F1820, inset 0 0 0 2px #FF6B78' },
   tombol: {
     flexShrink: 0,
     width: 36,
