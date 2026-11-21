@@ -762,6 +762,30 @@ export function playGeserTik(langkah = 0) {
   nadaPendek(ctx, 'square', f, f, 0.035, 0.07, 0)
 }
 
+// Riwayat dihapus: satu desis "swoosh" pendek yang turun saat kartu meluncur keluar ke kiri
+export function playHapusGeser() {
+  const ctx = ctxSiapEfek()
+  if (!ctx) return
+  const lama = 0.28
+  const n = Math.floor(ctx.sampleRate * lama)
+  const buf = ctx.createBuffer(1, n, ctx.sampleRate)
+  const d = buf.getChannelData(0)
+  for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * Math.sin((Math.PI * i) / n)
+  const sumber = ctx.createBufferSource()
+  sumber.buffer = buf
+  const saring = ctx.createBiquadFilter()
+  saring.type = 'bandpass'
+  saring.Q.value = 1.2
+  saring.frequency.setValueAtTime(2600, ctx.currentTime)
+  saring.frequency.exponentialRampToValueAtTime(500, ctx.currentTime + lama)
+  const gain = ctx.createGain()
+  gain.gain.value = 0.35
+  sumber.connect(saring)
+  saring.connect(gain)
+  gain.connect(ctx.destination)
+  sumber.start()
+}
+
 // Sambutan konsol ojek saat app dibuka: empat nada naik pendek seperti layar menyala
 export function playSambutKonsol() {
   const ctx = ctxSiapEfek()

@@ -1,14 +1,14 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLanguage } from '../context/LanguageContext.jsx'
-import { playKonsolMati } from '../lib/sound'
+import { playHapusGeser } from '../lib/sound'
 import { getar } from '../lib/getar'
 
 const LEBAR_TOMBOL = 76
 const JARAK_TOMBOL = 8
 const JARAK_KARTU = 8
 const AMBANG_BATAS = 40
-const LAMA_GLITCH = 560 // ms animasi glitch lalu menyusut seperti TV dimatikan
-const LAMA_TUTUP = 200 // ms celah kartu menutup sebelum datanya benar-benar dihapus
+const LAMA_KELUAR = 320 // ms kartu meluncur keluar ke kiri
+const LAMA_TUTUP = 220 // ms celah kartu menutup sebelum datanya benar-benar dihapus
 
 const LABEL = { id: { edit: 'Edit', hapus: 'Hapus' }, en: { edit: 'Edit', hapus: 'Delete' } }
 
@@ -22,7 +22,7 @@ export default function SwipeableItem({ children, onDelete, onEdit }) {
   const lebarTerbuka = lebarTombol + JARAK_KARTU
 
   const [geser, setGeser] = useState(0)
-  const [fase, setFase] = useState(null) // null | 'glitch' | 'tutup'
+  const [fase, setFase] = useState(null) // null | 'keluar' | 'tutup'
   const [tinggi, setTinggi] = useState(null)
   const wrapRef = useRef(null)
   const timerRef = useRef([])
@@ -62,20 +62,20 @@ export default function SwipeableItem({ children, onDelete, onEdit }) {
     }
   }
 
-  // Hapus: kartu glitch merah-biru lalu menyusut jadi garis seperti TV dimatikan (satu bunyi TV mati + getar pendek),
+  // Hapus: kartu meluncur keluar ke kiri (satu bunyi swoosh + getar pendek),
   // celahnya menutup, baru datanya dihapus
   function handleDeleteClick() {
     if (fase) return
     setGeser(0)
-    setFase('glitch')
-    playKonsolMati()
+    setFase('keluar')
+    playHapusGeser()
     getar(15)
     timerRef.current.push(setTimeout(() => {
       setTinggi(wrapRef.current?.offsetHeight ?? null)
       setFase('tutup')
       requestAnimationFrame(() => requestAnimationFrame(() => setTinggi(0)))
-    }, LAMA_GLITCH))
-    timerRef.current.push(setTimeout(() => onDelete(), LAMA_GLITCH + LAMA_TUTUP))
+    }, LAMA_KELUAR))
+    timerRef.current.push(setTimeout(() => onDelete(), LAMA_KELUAR + LAMA_TUTUP))
   }
 
   function handleEditClick() {
@@ -148,7 +148,7 @@ export default function SwipeableItem({ children, onDelete, onEdit }) {
           if (mulaiX.current !== null) handleEnd()
         }}
       >
-        <div className={fase ? 'hapus-glitch' : undefined}>{children}</div>
+        <div className={fase ? 'hapus-keluar' : undefined}>{children}</div>
       </div>
     </div>
   )

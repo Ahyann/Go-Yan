@@ -807,15 +807,7 @@ button {
 .bingkai-jemput { animation: bingkai-jemput 1.2s steps(1) infinite; }
 @media (prefers-reduced-motion: reduce) { .bingkai-jemput { animation: none; } }
 
-/* Riwayat ojek: kartu yang dihapus glitch merah-biru lalu menyusut jadi garis seperti TV dimatikan */
-@keyframes hapus-glitch {
-  0% { transform: none; filter: none; opacity: 1; }
-  8% { transform: translateX(-4px); filter: drop-shadow(3px 0 0 #ED1C24) drop-shadow(-3px 0 0 #5ED0FF); }
-  16% { transform: translateX(4px); }
-  26% { transform: translateX(-2px); filter: drop-shadow(2px 0 0 #ED1C24); }
-  55% { transform: scaleY(0.04); filter: brightness(3); opacity: 1; }
-  85% { transform: scaleY(0.04) scaleX(0); opacity: 1; }
-  100% { transform: scaleY(0.04) scaleX(0); opacity: 0; }
-}
-.hapus-glitch { animation: hapus-glitch 0.56s linear both; transform-origin: center; }
-@media (prefers-reduced-motion: reduce) { .hapus-glitch { animation: none; opacity: 0; } }
+/* Riwayat ojek: kartu yang dihapus meluncur keluar ke kiri, lalu celahnya menutup (tinggi diatur di SwipeableItem) */
+@keyframes hapus-keluar { 0% { transform: translateX(0); opacity: 1; } 100% { transform: translateX(-115%); opacity: 0.6; } }
+.hapus-keluar { animation: hapus-keluar 0.32s cubic-bezier(0.6, 0, 0.4, 1) both; }
+@media (prefers-reduced-motion: reduce) { .hapus-keluar { animation: none; opacity: 0; } }
