@@ -4,6 +4,7 @@ import { useLanguage } from '../context/LanguageContext.jsx'
 const KEY_CUACA = 'goyan:cuaca'
 const BASI_CUACA_MS = 15 * 60 * 1000 // cuaca dianggap segar selama 15 menit
 const CEK_LOKASI_MS = 60 * 1000
+let sudahMintaIzin = false // permintaan izin lokasi hanya dimunculkan sekali per sesi app
 
 const TEKS = {
   id: {
@@ -34,7 +35,8 @@ function bacaCache() {
   try { return JSON.parse(localStorage.getItem(KEY_CUACA) || 'null') } catch { return null }
 }
 
-// Posisi dibaca hanya kalau izin lokasi sudah diberikan (tidak memunculkan permintaan izin sendiri). Akurasi posisi
+// Posisi diminta sekali saat app dibuka (izin lokasi memang dibutuhkan ojek); sesudahnya dicek tiap menit selama izin ada
+// dan tidak ditolak. Akurasi posisi
 // dipakai sebagai kekuatan sinyal GPS: makin kecil meter, makin kuat. Cuaca dari Open-Meteo (tanpa kunci), memakai
 // koordinat yang dibulatkan ke 2 desimal (±1 km) dan disimpan 15 menit supaya tidak sering memanggil.
 function useStatusSiaga(lokasiAktif) {
@@ -70,10 +72,12 @@ function useStatusSiaga(lokasiAktif) {
     }
 
     function cekLokasi() {
-      if (!izin || izin.state !== 'granted') {
+      const butuhIzin = !izin || izin.state === 'prompt'
+      if (izin?.state === 'denied' || (butuhIzin && sudahMintaIzin)) {
         setAkurasi(null)
         return
       }
+      if (butuhIzin) sudahMintaIzin = true
       navigator.geolocation.getCurrentPosition(
         (pos) => {
           if (batal) return
@@ -90,7 +94,7 @@ function useStatusSiaga(lokasiAktif) {
         izin = await navigator.permissions.query({ name: 'geolocation' })
         izin.onchange = cekLokasi
       } catch {
-        izin = null // browser tidak bisa menanyakan izin: tidak ada cek lokasi (tanpa memunculkan permintaan izin)
+        izin = null // browser tidak bisa menanyakan izin: langsung minta posisi (sekali)
       }
       if (!batal) cekLokasi()
     }
@@ -150,16 +154,16 @@ function IkonSinyal({ tingkat }) {
   )
 }
 
-function IkonMotor() {
+function IkonTrip() {
   return (
-    <svg width="17" height="13" viewBox="0 0 14 11" aria-hidden="true" {...svg}>
+    <svg width="17" height="14" viewBox="0 0 12 12" aria-hidden="true" {...svg}>
+      <rect x="1" y="0" width="1" height="12" fill="#FFFFFF" />
       <g className="ik-motor">
-        <rect x="5" y="0" width="2" height="2" fill="#fff" />
-        <g fill="#ED1C24"><rect x="5" y="2" width="2" height="2" /><rect x="3" y="4" width="7" height="2" /><rect x="10" y="3" width="1" height="2" /></g>
-        <rect x="10" y="2" width="2" height="1" fill="#fff" />
+        {[0, 1, 2].map((r) => [0, 1, 2, 3].map((c) => (
+          <rect key={`${r}${c}`} x={2 + c * 2} y={r * 2} width="2" height="2" fill={(r + c) % 2 === 0 ? '#ED1C24' : '#FFFFFF'} />
+        )))}
       </g>
-      <g fill="#5ED0FF"><rect x="1" y="6" width="4" height="4" /><rect x="9" y="6" width="4" height="4" /></g>
-      <g fill="#04192A"><rect x="2" y="7" width="2" height="2" /><rect x="10" y="7" width="2" height="2" /></g>
+      <rect x="0" y="11" width="4" height="1" fill="#5ED0FF" />
     </svg>
   )
 }
@@ -186,13 +190,13 @@ export default function BarisStatusSiaga({ totalTrip = null, lokasiAktif = false
     <div role="group" aria-label={`${cuaca ? `${cuaca.suhu}°, ${k.kode[jenis]}` : k.cuaca}; ${k.gps} ${k.sinyal[tingkat]}; ${k.trip} ${totalTrip ?? '-'}`} style={s.baris}>
       {slot(jenis ? <IkonCuaca jenis={jenis} /> : <IkonCuaca jenis="mendung" />, cuaca ? `${cuaca.suhu}°` : '--°', jenis ? k.kode[jenis] : k.cuaca)}
       {slot(<IkonSinyal tingkat={tingkat} />, k.sinyal[tingkat], k.gps)}
-      {slot(<IkonMotor />, totalTrip ?? '--', k.trip)}
+      {slot(<IkonTrip />, totalTrip ?? '--', k.trip)}
     </div>
   )
 }
 
 const s = {
-  baris: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 22, borderTop: '1px solid rgba(94, 208, 255, 0.22)', paddingTop: 1 },
+  baris: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 26, borderTop: '1px solid rgba(94, 208, 255, 0.22)', paddingTop: 4 },
   slot: { display: 'inline-flex', alignItems: 'center', gap: 7 },
   teks: { display: 'flex', flexDirection: 'column', lineHeight: 1.05 },
   nilai: { fontFamily: "'JetBrains Mono', monospace", fontSize: 11, letterSpacing: '0.04em', color: '#FFFFFF', whiteSpace: 'nowrap' },

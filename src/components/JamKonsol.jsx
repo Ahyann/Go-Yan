@@ -125,5 +125,5 @@ const s = {
   kiri: { minWidth: 0 },
   kecil: { fontSize: 10, letterSpacing: '0.06em', opacity: 0.65, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' },
   jam: { fontSize: 28, lineHeight: 1, color: '#FFFFFF', letterSpacing: '0.04em', textShadow: '0 0 8px rgba(148, 221, 244, 0.6)', flexShrink: 0 },
-  bawah: { marginTop: 8 },
+  bawah: { marginTop: 10 },
 }
