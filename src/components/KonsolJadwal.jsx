@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { HARI_KERJA_KEYS } from '../lib/constants'
-import { playGeserTik, playLunasSemua } from '../lib/sound'
+import { playGeserTik, playLunasSemua, playKonsolMati } from '../lib/sound'
 import { getar } from '../lib/getar'
 import SwipeToFinish from './SwipeToFinish.jsx'
 
@@ -14,6 +14,28 @@ const PRESET = {
   kamis: { antar: KOSONG, jemput: { aktif: true, jam: '15:00' } },
   jumat: { antar: KOSONG, jemput: KOSONG },
 }
+// Undo: jadwal sebelum diisi disimpan 24 jam, jadi isi otomatis bisa dibatalkan walaupun app sempat ditutup
+const KUNCI_UNDO = 'goyan:undo-jadwal'
+const BATAS_UNDO = 24 * 60 * 60 * 1000
+
+function bacaUndo() {
+  try {
+    const u = JSON.parse(localStorage.getItem(KUNCI_UNDO) || 'null')
+    return u && u.basis && Date.now() - u.waktu < BATAS_UNDO ? u : null
+  } catch {
+    return null
+  }
+}
+
+function simpanUndo(u) {
+  try {
+    if (u) localStorage.setItem(KUNCI_UNDO, JSON.stringify(u))
+    else localStorage.removeItem(KUNCI_UNDO)
+  } catch {
+    // penyimpanan diblokir: undo hanya berlaku selama app terbuka
+  }
+}
+
 const MULAI_ISI = 450 // ms menunggu baris hari tampil setelah mode atur menyala
 const JEDA_HARI = 260 // ms antar hari saat terisi berurutan
 const PERCIK = [[-26, -22, 0], [0, -30, 0.03], [26, -22, 0.06], [32, 2, 0.02], [24, 26, 0.05], [-2, 32, 0.01], [-28, 24, 0.04], [-34, 0, 0.07]]
@@ -21,11 +43,11 @@ const PERCIK = [[-26, -22, 0], [0, -30, 0.03], [26, -22, 0.06], [32, 2, 0.02], [
 const TEKS = {
   id: {
     judulJadwal: 'JADWAL MINGGUAN', belumDiisi: 'BELUM DIISI', geser: 'GESER UNTUK ISI JADWAL', mengisi: 'MENGISI JADWAL…',
-    terisi: 'JADWAL TERISI', tersimpan: 'TERSIMPAN · RESET TIAP SABTU',
+    terisi: 'JADWAL TERISI', tersimpan: 'TERSIMPAN · RESET TIAP SABTU', undo: 'UNDO',
   },
   en: {
     judulJadwal: 'WEEKLY SCHEDULE', belumDiisi: 'NOT SET', geser: 'SWIPE TO FILL SCHEDULE', mengisi: 'FILLING SCHEDULE…',
-    terisi: 'SCHEDULE FILLED', tersimpan: 'SAVED · RESETS EVERY SATURDAY',
+    terisi: 'SCHEDULE FILLED', tersimpan: 'SAVED · RESETS EVERY SATURDAY', undo: 'UNDO',
   },
 }
 
@@ -37,6 +59,7 @@ export default function KonsolJadwal({ jadwalRef, onHariBaru, onMasukAtur, onSel
   const x = TEKS[lang] || TEKS.id
   const [fase, setFase] = useState('awal') // awal | isi | selesai (selesai: baru saja diisi lewat slide)
   const [langkah, setLangkah] = useState(0)
+  const [undo, setUndo] = useState(bacaUndo)
   const timerRef = useRef([])
 
   useEffect(() => () => timerRef.current.forEach(clearTimeout), [])
@@ -45,6 +68,9 @@ export default function KonsolJadwal({ jadwalRef, onHariBaru, onMasukAtur, onSel
     // Hasil akhirnya langsung disimpan (tidak menunggu animasi), jadi pindah tab di tengah jalan pun jadwalnya sudah tersimpan
     const basis = jadwalRef.current?.ambilDraft() || {}
     const akhir = { ...basis }
+    const u = { waktu: Date.now(), basis }
+    simpanUndo(u)
+    setUndo(u)
     HARI_KERJA_KEYS.forEach((h) => { akhir[h] = { ...(basis[h] || {}), ...PRESET[h] } })
     Promise.resolve(onSimpan?.(akhir)).catch((e) => console.error('Gagal simpan jadwal:', e))
 
@@ -68,6 +94,17 @@ export default function KonsolJadwal({ jadwalRef, onHariBaru, onMasukAtur, onSel
       getar(25)
     }, akhirAnimasi + 120))
     timerRef.current.push(setTimeout(() => onSelesaiIsi?.(), akhirAnimasi + 900))
+  }
+
+  function batalkanIsi() {
+    if (!undo) return
+    jadwalRef.current?.pasangDraft(undo.basis)
+    Promise.resolve(onSimpan?.(undo.basis)).catch((e) => console.error('Gagal membatalkan jadwal:', e))
+    simpanUndo(null)
+    setUndo(null)
+    setFase('awal')
+    playKonsolMati()
+    getar(15)
   }
 
   if (fase === 'isi') {
@@ -95,8 +132,9 @@ export default function KonsolJadwal({ jadwalRef, onHariBaru, onMasukAtur, onSel
         </div>
         <div className={baru ? 'cek-teks' : undefined} style={{ minWidth: 0, flex: 1 }}>
           <div style={{ ...s.judul, color: '#4ADE80', fontSize: 12 }}>{x.terisi}</div>
-          <div style={{ ...s.redup, marginTop: 4 }}>{x.tersimpan}</div>
+          <div style={{ ...s.redup, marginTop: 4, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{x.tersimpan}</div>
         </div>
+        {undo && <button type="button" data-tanpa-suara className="tekan" style={s.undo} onClick={batalkanIsi}>{x.undo}</button>}
       </div>
     )
   }
@@ -128,5 +166,6 @@ const s = {
   seg: { display: 'flex', gap: 4 },
   petak: { flex: 1, height: 9, transition: 'background 0.12s' },
   kotakCek: { position: 'relative', width: 40, height: 40, flexShrink: 0, background: '#4ADE80', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 14px rgba(74,222,128,0.6)' },
+  undo: { flexShrink: 0, padding: '6px 8px', fontFamily: 'inherit', fontSize: 9, color: '#FFD23F', background: 'transparent', border: '1px solid #FFD23F', borderRadius: 0 },
   percik: { position: 'absolute', left: 17, top: 17, width: 6, height: 6, opacity: 0, pointerEvents: 'none' },
 }
