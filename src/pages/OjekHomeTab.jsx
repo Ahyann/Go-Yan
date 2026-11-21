@@ -272,8 +272,8 @@ export default function OjekHomeTab({ slotKonsol, putaranMasuk = 0,
 
 const s = {
   // Penanda "Live location active" di pojok kiri atas peta, sama seperti akun penumpang
-  toastLive: { position: 'absolute', left: 10, top: 10, zIndex: 1100, display: 'flex', alignItems: 'center', gap: 6, background: 'var(--nav-red)', color: '#fff', fontFamily: 'var(--font-data)', fontSize: 10, fontWeight: 700, letterSpacing: '0.06em', padding: '4px 8px', pointerEvents: 'none' },
-  titikLive: { width: 6, height: 6, background: '#fff', flexShrink: 0 },
+  toastLive: { position: 'absolute', left: 12, top: 26, zIndex: 1100, display: 'flex', alignItems: 'center', gap: 5, background: 'var(--nav-red)', color: '#fff', fontFamily: 'var(--font-data)', fontSize: 9, fontWeight: 700, letterSpacing: '0.04em', padding: '3px 7px', whiteSpace: 'nowrap', pointerEvents: 'none' },
+  titikLive: { width: 5, height: 5, background: '#fff', flexShrink: 0 },
   wrap: {
     height: '100%',
     padding: 0,
