@@ -33,13 +33,13 @@ function simpanUndo(u) {
 const TEKS = {
   id: {
     belum: 'BELUM LUNAS', trip: 'TRIP', tahan: 'TAHAN UNTUK LUNASKAN SEMUA', tanya: 'LUNASKAN', bisaUndo: 'BISA DI-UNDO 24 JAM',
-    batal: 'BATAL', ya: 'YA, LUNAS', ditandai: 'TRIP DITANDAI LUNAS', sisa: 'UNDO TERSEDIA · SISA', undo: 'UNDO',
+    batal: 'BATAL', ya: 'YA, LUNAS', ditandai: 'TRIP DITANDAI LUNAS', sisa: 'UNDO TERSEDIA · SISA', sisaUndo: 'UNDO', pada: 'LUNAS', undo: 'UNDO',
     filter: 'BELUM', semua: 'SEMUA', rekap: 'REKAP', tersalin: 'TERSALIN', tagih: 'TAGIH', terkirim: 'TERKIRIM',
     semuaLunas: 'SEMUA SUDAH LUNAS', rekapJudul: 'Rekap Go-Yan belum lunas', tagihPesan: 'Halo Fajri, ada {n} trip yang belum ditransfer, totalnya {total}.',
   },
   en: {
     belum: 'UNPAID', trip: 'TRIPS', tahan: 'HOLD TO MARK ALL PAID', tanya: 'MARK PAID', bisaUndo: 'UNDO AVAILABLE FOR 24H',
-    batal: 'CANCEL', ya: 'YES, PAID', ditandai: 'TRIPS MARKED PAID', sisa: 'UNDO AVAILABLE · LEFT', undo: 'UNDO',
+    batal: 'CANCEL', ya: 'YES, PAID', ditandai: 'TRIPS MARKED PAID', sisa: 'UNDO AVAILABLE · LEFT', sisaUndo: 'UNDO', pada: 'PAID', undo: 'UNDO',
     filter: 'UNPAID', semua: 'ALL', rekap: 'RECAP', tersalin: 'COPIED', tagih: 'REMIND', terkirim: 'SENT',
     semuaLunas: 'ALL PAID', rekapJudul: 'Go-Yan unpaid recap', tagihPesan: 'Hi Fajri, {n} trips are not transferred yet, total {total}.',
   },
@@ -193,9 +193,15 @@ export default function KonsolRiwayat({ riwayat, onEditRiwayat, hanyaBelum, onHa
     const m = String(Math.floor((sisa % 3600000) / 60000)).padStart(2, '0')
     const d = String(Math.floor((sisa % 60000) / 1000)).padStart(2, '0')
     return (
-      <div style={s.kolom}>
-        <div style={{ ...s.judul, color: '#4ADE80' }}>✓ {undo.ids.length} {x.ditandai}</div>
-        <div style={s.redup}>{x.sisa} {j}:{m}:{d}</div>
+      <div style={{ ...s.kolom, marginTop: 5 }}>
+        <div style={{ ...s.baris, justifyContent: 'space-between' }}>
+          <span style={{ ...s.judul, color: '#4ADE80' }}>✓ {undo.ids.length} {x.ditandai}</span>
+          {undo.total != null && <span style={{ ...s.judul, color: '#4ADE80', flexShrink: 0 }}>{formatRupiah(undo.total).toUpperCase()}</span>}
+        </div>
+        <div style={{ ...s.baris, justifyContent: 'space-between' }}>
+          <span style={s.redup}>{x.pada} {waktuLunas(undo.waktu)}</span>
+          <span style={{ ...s.redup, flexShrink: 0 }}>{x.sisaUndo} {j}:{m}:{d}</span>
+        </div>
         <div style={s.baris}>
           <button type="button" data-tanpa-suara className="tekan" style={{ ...s.tombol, ...s.lebar, color: '#FFD23F', borderColor: '#FFD23F' }} onClick={batalkanLunas}><Ikon nama="undo" />{x.undo}</button>
           {TOMBOL_FUNGSI && <TombolFilter hanyaBelum={hanyaBelum} onHanyaBelum={onHanyaBelum} x={x} />}
@@ -248,6 +254,12 @@ function TombolFilter({ hanyaBelum, onHanyaBelum, x }) {
       <Ikon nama="filter" />{hanyaBelum ? x.semua : x.filter}
     </button>
   )
+}
+
+// Jam saat semua trip dilunaskan, misalnya "14:32"
+function waktuLunas(waktu) {
+  const t = new Date(waktu)
+  return `${String(t.getHours()).padStart(2, '0')}:${String(t.getMinutes()).padStart(2, '0')}`
 }
 
 // Arah percikan di sekitar kotak ceklis: [geser x, geser y, jeda]
