@@ -29,7 +29,7 @@ const SELESAI_SESUDAH_TAP = MATI_SESUDAH_TAP + 380 // lalu tampilan jam "dinyala
 // menyusul, lalu muncul TAP HERE. Saat layar diketuk (baru di sini ada suara) keduanya glitch sekali. Sesudah itu layar mengecil jadi garis seperti TV dimatikan, dan tampilan jam
 // menyala dari garis yang sama (hari dan tanggal + keterangan di kiri, jam besar di kanan, baris status di bawah).
 // lewatiSambut: sudah ada pesanan, jadi WELCOME tidak ditampilkan dan konsol langsung ke tampilan jam
-export default function JamKonsol({ keterangan, bergilir = false, totalTrip = null, lokasiAktif = false, lewatiSambut = false }) {
+export default function JamKonsol({ keterangan, bergilir = false, totalTrip = null, lokasiAktif = false, jadwal = null, lewatiSambut = false }) {
   if (lewatiSambut) statusSambut = 'selesai'
   const { lang, t } = useLanguage()
   const { isDemo } = useAuth()
@@ -94,7 +94,7 @@ export default function JamKonsol({ keterangan, bergilir = false, totalTrip = nu
     )
   }
 
-  if (halaman === 'cuaca') return <KonsolCuaca lokasiAktif={lokasiAktif} onKembali={() => setHalaman(null)} />
+  if (halaman === 'cuaca') return <KonsolCuaca lokasiAktif={lokasiAktif} jadwal={jadwal} onKembali={() => setHalaman(null)} />
 
   const tanggal = sekarang
     .toLocaleDateString(lang === 'id' ? 'id-ID' : 'en-GB', { weekday: 'short', day: 'numeric', month: 'short' })

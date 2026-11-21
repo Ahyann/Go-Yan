@@ -781,12 +781,12 @@ button {
 @keyframes ik-sinar { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
 @keyframes ik-awan { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(1px); } }
 @keyframes ik-motor { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-1px); } }
-@keyframes ik-tetes { 0% { opacity: 0; transform: translateY(-1px); } 40% { opacity: 1; } 100% { opacity: 0; transform: translateY(1px); } }
+@keyframes ik-tetes { 0% { opacity: 0; transform: translateY(-1px); } 30% { opacity: 1; } 100% { opacity: 0; transform: translateY(4px); } }
 @keyframes ik-denyut { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
 .ik-sinar { animation: ik-sinar 1.2s steps(1) infinite; }
 .ik-awan { animation: ik-awan 2.4s steps(2) infinite; }
 .ik-motor { animation: ik-motor 0.5s steps(1) infinite; }
-.ik-tetes { animation: ik-tetes 0.9s steps(3) infinite; }
+.ik-tetes { animation: ik-tetes 0.9s steps(4) infinite; }
 .ik-denyut { animation: ik-denyut 1.4s steps(1) infinite; }
 @keyframes ik-kilap { 0%, 55% { transform: translateX(-3px); opacity: 0; } 60% { opacity: 1; } 95% { transform: translateX(14px); opacity: 1; } 100% { transform: translateX(14px); opacity: 0; } }
 @keyframes ik-kilau { 0%, 58% { opacity: 0; } 66%, 80% { opacity: 1; } 90%, 100% { opacity: 0; } }
@@ -797,3 +797,7 @@ button {
 /* Slot status siaga yang bisa diketuk (cuaca): redup sebentar saat ditekan, cincin fokus untuk keyboard */
 .slot-status:active { opacity: 0.55; }
 .slot-status:focus-visible { outline: 2px solid #5ED0FF; outline-offset: 3px; }
+
+/* Strip jam di halaman cuaca digeser dengan jari, bilah gulirnya disembunyikan */
+.gulir-sembunyi { scrollbar-width: none; }
+.gulir-sembunyi::-webkit-scrollbar { display: none; }

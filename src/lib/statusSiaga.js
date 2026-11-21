@@ -46,12 +46,12 @@ function bacaCache() {
 // Posisi diminta sekali saat app dibuka (izin lokasi memang dibutuhkan ojek); sesudahnya dicek tiap menit selama izin ada
 // dan tidak ditolak. Akurasi posisi dipakai sebagai kekuatan sinyal GPS: makin kecil meter, makin kuat. Cuaca dan prakiraan
 // 12 jam dari Open-Meteo (tanpa kunci), memakai koordinat yang dibulatkan ke 2 desimal (±1 km) dan disimpan 15 menit.
-// cuaca: { suhu, kode, jam: [{ w: 'HH:MM', suhu, kode, hujan }] }
+// cuaca: { suhu, kode, nama, jam: [{ tgl: 'YYYY-MM-DD', w: 'HH:MM', suhu, kode, hujan }] }; nama = nama tempat (kosong kalau gagal dicari)
 export function useStatusSiaga(lokasiAktif) {
   const [akurasi, setAkurasi] = useState(null) // null: GPS mati / belum ada izin
   const [cuaca, setCuaca] = useState(() => {
     const c = bacaCache()
-    return c ? { suhu: c.suhu, kode: c.kode, jam: Array.isArray(c.jam) ? c.jam : [] } : null
+    return c ? { suhu: c.suhu, kode: c.kode, nama: c.nama || '', jam: Array.isArray(c.jam) ? c.jam : [] } : null
   })
 
   useEffect(() => {
@@ -64,7 +64,7 @@ export function useStatusSiaga(lokasiAktif) {
       const cache = bacaCache()
       const la = Math.round(lat * 100) / 100
       const lo = Math.round(lng * 100) / 100
-      if (cache && Array.isArray(cache.jam) && Date.now() - cache.waktu < BASI_CUACA_MS && cache.lat === la && cache.lng === lo) return
+      if (cache && Array.isArray(cache.jam) && typeof cache.nama === 'string' && Date.now() - cache.waktu < BASI_CUACA_MS && cache.lat === la && cache.lng === lo) return
       kontrol?.abort()
       kontrol = new AbortController()
       const url = `https://api.open-meteo.com/v1/forecast?latitude=${la}&longitude=${lo}&current=temperature_2m,weather_code&hourly=temperature_2m,precipitation_probability,weather_code&forecast_days=2&timezone=auto`
@@ -81,14 +81,24 @@ export function useStatusSiaga(lokasiAktif) {
             let i0 = h.time.findIndex((t) => t.slice(0, 13) >= sekarangJam)
             if (i0 < 0) i0 = 0
             jam = h.time.slice(i0, i0 + JAM_PRAKIRAAN).map((t, i) => ({
+              tgl: t.slice(0, 10),
               w: t.slice(11, 16),
               suhu: Math.round(h.temperature_2m?.[i0 + i]),
               kode: h.weather_code?.[i0 + i],
               hujan: h.precipitation_probability?.[i0 + i] ?? 0,
             }))
           }
-          setCuaca({ suhu, kode, jam })
-          try { localStorage.setItem(KEY_CUACA, JSON.stringify({ waktu: Date.now(), lat: la, lng: lo, suhu, kode, jam })) } catch { /* penyimpanan diblokir */ }
+          setCuaca((lama) => ({ suhu, kode, jam, nama: lama?.nama || '' }))
+          const simpan = (nama) => {
+            if (batal) return
+            setCuaca((lama) => ({ ...(lama || { suhu, kode, jam }), nama }))
+            try { localStorage.setItem(KEY_CUACA, JSON.stringify({ waktu: Date.now(), lat: la, lng: lo, suhu, kode, jam, nama })) } catch { /* penyimpanan diblokir */ }
+          }
+          // Nama tempat dari koordinat (dibulatkan ±1 km), layanan tanpa kunci; gagal -> nama kosong dan tulisan pengganti
+          fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${la}&longitude=${lo}&localityLanguage=id`, { signal: kontrol.signal })
+            .then((r) => (r.ok ? r.json() : Promise.reject(new Error('lokasi ' + r.status))))
+            .then((g) => simpan(String(g?.locality || g?.city || g?.principalSubdivision || '').toUpperCase()))
+            .catch(() => simpan(''))
         })
         .catch(() => { /* offline atau ditolak: pakai cuaca terakhir kalau ada */ })
     }

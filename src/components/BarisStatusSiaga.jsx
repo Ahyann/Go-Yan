@@ -11,14 +11,15 @@ export function IkonCuaca({ jenis }) {
       <g fill="#FFD84A" className="ik-sinar"><rect x="9" y="0" width="2" height="1" /><rect x="12" y="2" width="2" height="2" /><rect x="7" y="2" width="1" height="2" /><rect x="12" y="1" width="1" height="1" /></g>
     </>
   )
-  const tetes = (xs) => <g fill="#5ED0FF">{xs.map((x, i) => <rect key={x} className="ik-tetes" style={{ animationDelay: `${i * 0.25}s` }} x={x} y="11" width="1" height="1" />)}</g>
+  const awanGelap = <g fill="#9FB7CC" className="ik-awan"><rect x="2" y="3" width="10" height="3" /><rect x="3" y="2" width="3" height="1" /><rect x="5" y="0" width="4" height="3" /><rect x="1" y="4" width="1" height="1" /></g>
+  const tetes = (xs) => <g fill="#5ED0FF">{xs.map((x, i) => <rect key={x} className="ik-tetes" style={{ animationDelay: `${i * 0.22}s` }} x={x} y="7" width="1" height="2" />)}</g>
   return (
     <svg width="17" height="14" viewBox="0 0 14 12" aria-hidden="true" {...svg}>
       {jenis === 'cerah' && <><rect x="4" y="4" width="6" height="5" fill="#FFD84A" /><rect x="5" y="3" width="4" height="7" fill="#FFD84A" /><g fill="#FFD84A" className="ik-sinar"><rect x="6" y="0" width="2" height="2" /><rect x="6" y="11" width="2" height="1" /><rect x="1" y="5" width="2" height="2" /><rect x="11" y="5" width="2" height="2" /></g></>}
       {jenis === 'sebagian' && <>{matahari}{awan}</>}
       {jenis === 'mendung' && awan}
       {jenis === 'kabut' && <><g fill="#DCEBFF"><rect x="2" y="3" width="10" height="1" /><rect x="1" y="6" width="10" height="1" /><rect x="3" y="9" width="9" height="1" /></g></>}
-      {(jenis === 'gerimis' || jenis === 'hujan') && <>{awan}{tetes(jenis === 'hujan' ? [3, 6, 9] : [4, 8])}</>}
+      {(jenis === 'gerimis' || jenis === 'hujan') && <>{awanGelap}{tetes(jenis === 'hujan' ? [3, 6, 9, 12] : [4, 8])}</>}
       {jenis === 'petir' && <>{awan}<g fill="#FFD84A" className="ik-sinar"><rect x="6" y="9" width="2" height="1" /><rect x="5" y="10" width="2" height="1" /><rect x="6" y="11" width="1" height="1" /></g></>}
     </svg>
   )

@@ -30,6 +30,7 @@ export default function OjekHomeTab({ slotKonsol, putaranMasuk = 0,
   mulaiLokasi,
   berhentiLokasi,
   totalTrip = null,
+  jadwalMingguan = null,
 }) {
   const { t, lang } = useLanguage()
   const { user, isDemo } = useAuth()
@@ -272,7 +273,7 @@ export default function OjekHomeTab({ slotKonsol, putaranMasuk = 0,
               </>
             ) : (
               <>
-                <JamKonsol bergilir keterangan={t.monitorStandby} totalTrip={totalTrip} lokasiAktif={lokasiAktif} />
+                <JamKonsol bergilir keterangan={t.monitorStandby} totalTrip={totalTrip} lokasiAktif={lokasiAktif} jadwal={jadwalMingguan} />
               </>
             )}
           </>,
