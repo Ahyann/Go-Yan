@@ -15,10 +15,10 @@ export function dengarSambutSelesai(fn) {
 }
 
 const KATA = 'WELCOME'
-const MULAI = 250 // ms sebelum huruf pertama
-const PER_HURUF = 95 // ms tiap huruf diketik
-const NAMA_PADA = MULAI + KATA.length * PER_HURUF + 150 // nama muncul sesudah WELCOME lengkap
-const TAP_PADA = NAMA_PADA + 500 // tulisan TAP HERE muncul; sambutan menunggu sampai layar diketuk
+const MULAI = 100 // ms sebelum huruf pertama
+const PER_HURUF = 50 // ms tiap huruf diketik
+const NAMA_PADA = MULAI + KATA.length * PER_HURUF + 60 // nama muncul sesudah WELCOME lengkap
+const TAP_PADA = NAMA_PADA + 250 // tulisan TAP HERE muncul; sambutan menunggu sampai layar diketuk
 const MATI_SESUDAH_TAP = 700 // glitch dulu, lalu layar "dimatikan" jadi garis tipis
 const SELESAI_SESUDAH_TAP = MATI_SESUDAH_TAP + 380 // lalu tampilan jam "dinyalakan" dari garis tipis
 

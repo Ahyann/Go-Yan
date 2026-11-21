@@ -709,7 +709,7 @@ button {
 /* Sambutan konsol ojek: nama naik menyusul, glitch berwarna sekali sesudah semua masuk,
    lalu layar mengecil jadi garis (TV dimatikan) dan tampilan jam menyala dari garis yang sama */
 @keyframes sambut-nama { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-.sambut-nama { animation: sambut-nama 0.3s ease-out both; }
+.sambut-nama { animation: sambut-nama 0.2s ease-out both; }
 @keyframes sambut-glitch {
   0% { transform: translateX(-6px); filter: drop-shadow(-4px 0 #FF4C4C) drop-shadow(4px 0 #5ED0FF); clip-path: inset(0 0 55% 0); }
   20% { transform: translateX(5px); filter: drop-shadow(4px 0 #FF2BD6) drop-shadow(-4px 0 #4ADE80); clip-path: inset(45% 0 0 0); }
