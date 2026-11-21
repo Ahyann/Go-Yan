@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLokasiSaya } from '../lib/useLokasiSaya'
 import { usePesanPenumpang } from '../lib/usePesanPenumpang'
-import { playChatSound, playTabPindah, playKonsolAlarm, playKonsolMati, bunyikanSetelahSiap } from '../lib/sound'
+import { playChatSound, playTabPindah, playKonsolAlarm, playKonsolMati, bunyikanSetelahSiap, siapkanSuaraMasuk } from '../lib/sound'
 import { getar } from '../lib/getar'
 import JamKonsol from '../components/JamKonsol.jsx'
 import PesanBergilir from '../components/PesanBergilir.jsx'
@@ -52,6 +52,7 @@ export default function OjekView({
   const [slotKonsol, setSlotKonsol] = useState(null)
   const [alarmKonsol, setAlarmKonsol] = useState(false)
   const [putaranMasuk, setPutaranMasuk] = useState(0)
+  const [tahanMasuk, setTahanMasuk] = useState(false) // Spiderman disembunyikan sebentar selagi suara disiapkan
   // Glitch berkala di layar konsol: sekali tiap 9-16 detik (acak), sekitar setengah detik
   const [glitchBerkala, setGlitchBerkala] = useState(false)
   useEffect(() => {
@@ -94,9 +95,15 @@ export default function OjekView({
     if (!alarmTertundaRef.current) return
     alarmTertundaRef.current = false
     if (!statusMenungguRef.current) return
-    setAlarmKonsol(true)
-    setPutaranMasuk((n) => n + 1) // Spiderman di Home turun lagi dari atas
-    bunyikanSetelahSiap(playKonsolAlarm)
+    // Suara disiapkan dulu, baru alarm + Spiderman turun dimulai bersamaan
+    setTahanMasuk(true)
+    siapkanSuaraMasuk().then(() => {
+      setTahanMasuk(false)
+      if (!statusMenungguRef.current) return
+      setAlarmKonsol(true)
+      setPutaranMasuk((n) => n + 1) // Spiderman di Home turun lagi dari atas
+      bunyikanSetelahSiap(playKonsolAlarm)
+    })
   }
 
   useEffect(() => {
@@ -249,6 +256,7 @@ export default function OjekView({
             berhentiLokasi={berhentiLokasi}
             slotKonsol={slotKonsol}
             putaranMasuk={putaranMasuk}
+            tahanMasuk={tahanMasuk}
           />
         )}
         {tabAktif === 'jadwal' && (
