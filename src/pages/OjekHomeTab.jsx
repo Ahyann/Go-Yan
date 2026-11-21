@@ -12,7 +12,7 @@ import PetaLokasiPenumpang from '../components/PetaLokasiPenumpang.jsx'
 import SplashLabaLaba from '../components/SplashLabaLaba.jsx'
 import SpideyMenunggu from '../components/SpideyMenunggu.jsx'
 import MissionSuccessPopup from '../components/MissionSuccessPopup.jsx'
-import TombolFoto from '../components/TombolFoto.jsx'
+import { useSesiFoto, FotoInput, FotoPeta, FotoKonsol, labelSesiFoto } from '../components/SesiFotoOjek.jsx'
 import TombolSuara from '../components/TombolSuara.jsx'
 import KartuMisiOjek from '../components/KartuMisiOjek.jsx'
 import SwipeToFinish from '../components/SwipeToFinish.jsx'
@@ -28,13 +28,15 @@ export default function OjekHomeTab({ slotKonsol, putaranMasuk = 0,
   mulaiLokasi,
   berhentiLokasi,
 }) {
-  const { t } = useLanguage()
+  const { t, lang } = useLanguage()
   const { user, isDemo } = useAuth()
   const [bawahKartu, setBawahKartu] = useState(0)
   const adaPermintaanMasuk = permintaan?.status === STATUS_PERMINTAAN.MENUNGGU
   const sedangJalan = permintaan?.status === STATUS_PERMINTAAN.DITERIMA
   const lokasiPenumpang = useLokasiPenumpang()
   const { kirimPesan, kirimFoto, kirimSuara, hapusPesan } = usePesanOjek()
+  // Sesi foto: peta berganti viewfinder dan layar konsol berganti tombol potret selama kamera dipakai
+  const sesiFoto = useSesiFoto({ aktif: permintaan?.status === STATUS_PERMINTAAN.DITERIMA, onKirimFoto: kirimFoto })
   const [teksPesan, setTeksPesan] = useState('')
   const [showMissionSuccess, setShowMissionSuccess] = useState(false)
 
@@ -169,6 +171,8 @@ export default function OjekHomeTab({ slotKonsol, putaranMasuk = 0,
           />
           <div aria-hidden="true" style={s.garisDalamPeta} />
           {!lewatiSplash && <SplashLabaLaba ukuran={10} />}
+          <FotoInput sesi={sesiFoto} />
+          <FotoPeta sesi={sesiFoto} />
           {sedangJalan && lokasiAktif && <div className="live-masuk" style={s.toastLive}><span className="live-kedip" style={s.titikLive} />{t.liveLocationAktif}</div>}
           {sedangJalan && !transisiDiterima && (
             <KartuMisiOjek onBawah={setBawahKartu} permintaan={permintaan} lokasiAktif={lokasiAktif} mulaiLokasi={mulaiLokasi} berhentiLokasi={berhentiLokasi} />
@@ -186,10 +190,12 @@ export default function OjekHomeTab({ slotKonsol, putaranMasuk = 0,
             Dikirim lewat portal supaya konsol tetap satu dan tingginya tidak berubah. */}
         {slotKonsol && createPortal(
           <>
-            <span className="label-konsol" style={{ ...s.labelMonitor, ...(misiSelesai && !adaPermintaanMasuk ? s.labelHijau : adaPermintaanMasuk || transisiBatal ? s.labelMerah : s.labelBiru) }}>
-              {misiSelesai && !adaPermintaanMasuk ? t.monitorSelesai : adaPermintaanMasuk ? t.monitorMisiBaru : transisiBatal ? (transisiBatal === 'tolak' ? t.monitorDitolak : t.monitorDibatalkan) : sedangJalan ? t.monitorBerjalan : t.monitorStatus}
+            <span className="label-konsol" style={{ ...s.labelMonitor, ...(sesiFoto.fase ? s.labelBiru : misiSelesai && !adaPermintaanMasuk ? s.labelHijau : adaPermintaanMasuk || transisiBatal ? s.labelMerah : s.labelBiru) }}>
+              {sesiFoto.fase ? labelSesiFoto(sesiFoto.fase, lang) : misiSelesai && !adaPermintaanMasuk ? t.monitorSelesai : adaPermintaanMasuk ? t.monitorMisiBaru : transisiBatal ? (transisiBatal === 'tolak' ? t.monitorDitolak : t.monitorDibatalkan) : sedangJalan ? t.monitorBerjalan : t.monitorStatus}
             </span>
-            {adaPermintaanMasuk ? (
+            {sesiFoto.fase ? (
+              <FotoKonsol sesi={sesiFoto} />
+            ) : adaPermintaanMasuk ? (
               <div key={permintaan.dibuatPada}>
                 <div style={s.baris1}>{permintaan.aksi === AKSI.JEMPUT ? t.jemput : t.antar} · {permintaan.waktu} · {permintaan.where}</div>
                 <div style={s.tombolMelayang}>
@@ -228,7 +234,14 @@ export default function OjekHomeTab({ slotKonsol, putaranMasuk = 0,
                   </span>
                   {/* Kamera, suara, dan LIVE dikelompokkan: bar rekaman suara hanya menutupi kelompok ini, info jam dan tempat tetap terlihat */}
                   <span style={s.grupAksi}>
-                  <span className="ikon-konsol" style={s.ikonKonsol} onPointerDown={playTombolKamera}><TombolFoto onKirimFoto={kirimFoto} kecil /></span>
+                  <span className="ikon-konsol" style={s.ikonKonsol} onPointerDown={playTombolKamera}>
+                    <button type="button" style={s.tombolKamera} onClick={sesiFoto.mulai} aria-label={t.ariaKirimFoto}>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" />
+                        <circle cx="12" cy="13" r="4" />
+                      </svg>
+                    </button>
+                  </span>
                   <span className="ikon-konsol" style={s.ikonKonsol} onPointerDown={playTombolSuara}><TombolSuara onKirimSuara={kirimSuara} kecil /></span>
                   <button
                     className="tekan"
@@ -404,6 +417,7 @@ const s = {
     background: 'repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.22) 0 1px, transparent 1px 3px)',
   },
   // Kamera dan suara di konsol, dikecilkan dari 36px ke sekitar 24px supaya setinggi tombol LIVE
+  tombolKamera: { flexShrink: 0, width: 24, padding: 0, borderRadius: 0, background: 'transparent', border: '1px solid var(--blue-border)', color: 'var(--glow-blue)', display: 'flex', alignItems: 'center', justifyContent: 'center' },
   ikonKonsol: { display: 'inline-flex', alignItems: 'stretch', height: 24, flexShrink: 0 },
   grupAksi: { position: 'relative', display: 'flex', alignItems: 'center', gap: 5, flexShrink: 0 },
   barisJalan: { display: 'flex', alignItems: 'center', gap: 5, height: 24 },

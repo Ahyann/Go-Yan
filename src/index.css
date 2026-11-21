@@ -765,3 +765,14 @@ button {
 }
 @keyframes lunas-pop { 0% { transform: scale(0.2); opacity: 0; } 60% { transform: scale(1.25); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .riwayat-lunas, .lunas-pop { animation: none; } }
+
+/* Sesi foto ojek: foto mengecil terbang saat dikirim, layar memudar kembali ke peta, lalu tulisan TERKIRIM membal dengan cincin sonar */
+.foto-lapis-hilang { animation: foto-lapis-hilang 1s ease-in both; }
+.foto-terbang { animation: foto-terbang 0.95s cubic-bezier(0.5, 0, 0.8, 0.4) both; }
+.foto-sonar { opacity: 0; animation: foto-sonar 0.75s ease-out 0.4s both; }
+.foto-terkirim { animation: foto-terkirim 0.9s cubic-bezier(0.3, 1.5, 0.5, 1) 0.3s both; }
+@keyframes foto-lapis-hilang { 0%, 40% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes foto-terbang { 0% { transform: none; opacity: 1; } 55% { transform: translateY(-4%) scale(0.5) rotate(-3deg); opacity: 1; } 100% { transform: translateY(-14%) scale(0.06) rotate(-9deg); opacity: 0; } }
+@keyframes foto-sonar { 0% { transform: scale(0.3); opacity: 0.9; } 100% { transform: scale(2.8); opacity: 0; } }
+@keyframes foto-terkirim { 0% { transform: translate(-50%, -50%) scale(0.2); opacity: 0; } 35% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; } 55%, 85% { transform: translate(-50%, -50%) scale(1); opacity: 1; } 100% { transform: translate(-50%, -62%) scale(1); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .foto-lapis-hilang, .foto-terbang, .foto-sonar, .foto-terkirim { animation: none; } }
