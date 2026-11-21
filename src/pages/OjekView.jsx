@@ -291,7 +291,7 @@ export default function OjekView({
           {tabAktif !== 'home' && (
             <>
               <span className="label-konsol" style={s.labelStatus}>{t.monitorStatus}</span>
-              <JamKonsol keterangan={permintaan?.status === STATUS_PERMINTAAN.MENUNGGU ? t.monitorMisiBaru : t.monitorStandby} bawah={<PesanBergilir teks={t.teksJalanOjek} />} />
+              <JamKonsol lewatiSambut={!!permintaan} keterangan={permintaan?.status === STATUS_PERMINTAAN.MENUNGGU ? t.monitorMisiBaru : t.monitorStandby} bawah={<PesanBergilir teks={t.teksJalanOjek} />} />
             </>
           )}
         </div>
