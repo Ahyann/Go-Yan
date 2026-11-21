@@ -7,8 +7,9 @@ const KUNCI_MODE_SUARA = 'goyan-mode-suara'
 
 function bacaModeSuara() {
   try {
+    // Pilihan "dengan voice over" sudah dihapus dari pengaturan: yang dulu memilihnya ikut jadi tanpa voice
     const tersimpan = localStorage.getItem(KUNCI_MODE_SUARA)
-    return Object.values(MODE_SUARA).includes(tersimpan) ? tersimpan : MODE_SUARA.TANPA_VOICE
+    return tersimpan === MODE_SUARA.SENYAP ? MODE_SUARA.SENYAP : MODE_SUARA.TANPA_VOICE
   } catch {
     return MODE_SUARA.TANPA_VOICE
   }
@@ -27,7 +28,7 @@ export function dengarkanModeSuara(fungsi) {
 }
 
 export function aturModeSuara(mode) {
-  if (!Object.values(MODE_SUARA).includes(mode)) return
+  if (mode !== MODE_SUARA.TANPA_VOICE && mode !== MODE_SUARA.SENYAP) return
   modeSuara = mode
   try {
     localStorage.setItem(KUNCI_MODE_SUARA, mode)

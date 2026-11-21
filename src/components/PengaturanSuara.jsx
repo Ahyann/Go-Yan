@@ -9,7 +9,6 @@ export default function PengaturanSuara() {
 
   const pilihan = [
     { mode: MODE_SUARA.TANPA_VOICE, nama: t.suaraTanpaVoice, desc: t.suaraTanpaVoiceDesc },
-    { mode: MODE_SUARA.NORMAL, nama: t.suaraNormal, desc: t.suaraNormalDesc },
     { mode: MODE_SUARA.SENYAP, nama: t.suaraSenyap, desc: t.suaraSenyapDesc },
   ]
   const indeks = Math.max(0, pilihan.findIndex((p) => p.mode === mode))
