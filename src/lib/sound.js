@@ -377,6 +377,15 @@ function jalurSpidey(ctx) {
   return bus
 }
 
+// Untuk ketukan pertama setelah app dibuka: audio masih "tidur" (suspended), dan efek yang dibunyikan saat itu
+// langsung dilewati. Fungsi ini membangunkan audio dulu, lalu menjalankan efeknya begitu audio siap.
+export function bunyikanSetelahSiap(fn) {
+  if (!efekBoleh()) return
+  const ctx = getAudioCtx()
+  if (ctx.state === 'running') fn()
+  else Promise.resolve(ctx.resume?.()).then(() => fn()).catch(() => {})
+}
+
 function ctxSiapEfek() {
   if (!efekBoleh()) return null
   const ctx = getAudioCtx()

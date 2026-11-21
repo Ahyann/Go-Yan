@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
-import { playSambutGlitch, playKonsolMati, playSambutKonsol } from '../lib/sound'
+import { playSambutGlitch, playKonsolMati, playSambutKonsol, bunyikanSetelahSiap } from '../lib/sound'
 
 // Sambutan hanya sekali tiap app dibuka (bukan tiap pindah tab)
 let sudahDisambut = false
@@ -46,8 +46,8 @@ export default function JamKonsol({ keterangan, bawah = null }) {
   function lanjut() {
     if (fase !== 'tunggu') return
     setFase('glitch')
-    playSambutKonsol()
-    playSambutGlitch()
+    // Ketukan ini sering jadi sentuhan pertama di app; audio dibangunkan dulu supaya suaranya tidak hilang
+    bunyikanSetelahSiap(() => { playSambutKonsol(); playSambutGlitch() })
     setTimeout(() => { setFase('mati'); playKonsolMati() }, MATI_SESUDAH_TAP)
     setTimeout(() => { setFase('jam'); setDariSambut(true) }, SELESAI_SESUDAH_TAP)
   }
