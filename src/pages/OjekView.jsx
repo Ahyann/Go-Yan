@@ -101,12 +101,18 @@ export default function OjekView({
     bunyikanSetelahSiap(playKonsolAlarm)
   }
 
+  // Kembali ke Home / app selagi permintaan masih menunggu: alarm lengkap hanya kalau ada permintaan baru yang tertunda;
+  // selain itu cukup lampu merah konsol yang menyala (tanpa suara, tanpa Spiderman turun ulang)
+  const lampuAtauAlarm = () => {
+    if (document.hidden) return
+    if (alarmTertundaRef.current) putarAlarmTertunda(false)
+    else if (statusMenungguRef.current) setAlarmKonsol(true)
+  }
+
   useEffect(() => {
     const saatTampil = () => {
       if (document.hidden) return
-      // Tiap app dibuka lagi selagi ada permintaan menunggu: alarm + Spiderman turun diputar ulang
-      if (statusMenungguRef.current) alarmTertundaRef.current = true
-      if (tabAktifRef.current === 'home') putarAlarmTertunda()
+      if (tabAktifRef.current === 'home') lampuAtauAlarm()
     }
     document.addEventListener('visibilitychange', saatTampil)
     return () => document.removeEventListener('visibilitychange', saatTampil)
@@ -118,11 +124,8 @@ export default function OjekView({
 
     if (permintaanTerakhirRef.current === undefined) {
       permintaanTerakhirRef.current = permintaan?.dibuatPada ?? null
-      // App baru dibuka dan permintaan sudah menunggu: alarm tetap diputar
-      if (permintaan?.status === STATUS_PERMINTAAN.MENUNGGU) {
-        alarmTertundaRef.current = true
-        if (tabAktifRef.current === 'home' && !document.hidden) putarAlarmTertunda()
-      }
+      // App baru dibuka dan permintaan sudah menunggu: lampu merah menyala sebentar (tanpa suara)
+      if (permintaan?.status === STATUS_PERMINTAAN.MENUNGGU && tabAktifRef.current === 'home' && !document.hidden) setAlarmKonsol(true)
       return
     }
 
@@ -216,9 +219,7 @@ export default function OjekView({
     setTabAktif(tab)
     if (tab === 'home') {
       tabAktifRef.current = 'home'
-      // Tiap kembali ke Home selagi permintaan masih menunggu, alarm bunyi lagi (bukan hanya sekali)
-      if (statusMenungguRef.current) alarmTertundaRef.current = true
-      if (!document.hidden) putarAlarmTertunda(false)
+      lampuAtauAlarm()
       setAdaChatBaru(false)
       setAdaPermintaanBaru(false)
     }
