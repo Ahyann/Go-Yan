@@ -54,7 +54,7 @@ const TEKS = {
 // Isi konsol bawah saat tab Schedule ojek terbuka. Jadwal kosong: slide untuk mengisi jadwal biasa. Hari terisi berurutan
 // (baris menyala, tik naik nada) dan jadwal langsung tersimpan; sesudahnya konsol menampilkan JADWAL TERISI sampai jadwal
 // direset tiap Sabtu, jadi tidak perlu menggeser lagi.
-export default function KonsolJadwal({ jadwalRef, onHariBaru, onMasukAtur, onSelesaiIsi, jadwalAda, onSimpan }) {
+export default function KonsolJadwal({ jadwalRef, onHariBaru, onMasukAtur, onSelesaiIsi, onSedangIsi, jadwalAda, onSimpan }) {
   const { lang } = useLanguage()
   const x = TEKS[lang] || TEKS.id
   const [fase, setFase] = useState('awal') // awal | isi | selesai (selesai: baru saja diisi lewat slide)
@@ -74,6 +74,7 @@ export default function KonsolJadwal({ jadwalRef, onHariBaru, onMasukAtur, onSel
     HARI_KERJA_KEYS.forEach((h) => { akhir[h] = { ...(basis[h] || {}), ...PRESET[h] } })
     Promise.resolve(onSimpan?.(akhir)).catch((e) => console.error('Gagal simpan jadwal:', e))
 
+    onSedangIsi?.(true) // formulir tidak ikut data server selama animasi isi
     onMasukAtur?.() // masuk mode atur otomatis supaya semua baris hari tampil
     setFase('isi')
     setLangkah(0)
@@ -89,6 +90,7 @@ export default function KonsolJadwal({ jadwalRef, onHariBaru, onMasukAtur, onSel
     const akhirAnimasi = MULAI_ISI + HARI_KERJA_KEYS.length * JEDA_HARI
     timerRef.current.push(setTimeout(() => {
       setFase('selesai')
+      onSedangIsi?.(false)
       onHariBaru(null)
       playLunasSemua()
       getar(25)

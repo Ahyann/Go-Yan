@@ -14,7 +14,7 @@ function buatJadwalKosong() {
 }
 
 const JadwalMingguan = forwardRef(function JadwalMingguan(
-  { jadwal, onSimpan, bisaEdit, bisaTandaiSelesai = false, onTandaiSelesai, hariBaru = null },
+  { jadwal, onSimpan, bisaEdit, bisaTandaiSelesai = false, onTandaiSelesai, hariBaru = null, tahanSinkron = false },
   ref
 ) {
   const { t } = useLanguage()
@@ -24,9 +24,11 @@ const JadwalMingguan = forwardRef(function JadwalMingguan(
   const [editing, setEditing] = useState(null)
   const [tempJam, setTempJam] = useState('07:00')
 
+  // tahanSinkron (akun ojek, saat jadwal biasa diisi berurutan): isi dari server ditahan dulu supaya hari dan jamnya
+  // tidak langsung penuh sebelum animasi isi berjalan
   useEffect(() => {
-    setDraft(jadwal)
-  }, [jadwal])
+    if (!tahanSinkron) setDraft(jadwal)
+  }, [jadwal, tahanSinkron])
 
   useImperativeHandle(ref, () => ({
     reset: () => setDraft(buatJadwalKosong()),

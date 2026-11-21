@@ -10,6 +10,7 @@ export default function OjekJadwalTab({ jadwalMingguan, onTandaiSelesai, simpanJ
   const { isDemo } = useAuth()
   const [modeAtur, setModeAtur] = useState(false)
   const [hariBaru, setHariBaru] = useState(null)
+  const [sedangIsi, setSedangIsi] = useState(false)
   const jadwalRef = useRef(null)
   // Jadwal sudah terisi kalau ada satu slot yang aktif; kosong lagi setelah direset tiap Sabtu
   const jadwalAda = Object.values(jadwalMingguan || {}).some((h) => h?.antar?.aktif || h?.jemput?.aktif)
@@ -29,6 +30,7 @@ export default function OjekJadwalTab({ jadwalMingguan, onTandaiSelesai, simpanJ
       <JadwalMingguan
         ref={jadwalRef}
         hariBaru={hariBaru}
+        tahanSinkron={sedangIsi}
         jadwal={jadwalMingguan}
         onSimpan={simpanJadwal}
         bisaEdit={modeAtur}
@@ -38,7 +40,7 @@ export default function OjekJadwalTab({ jadwalMingguan, onTandaiSelesai, simpanJ
 
       <p style={s.catatan}>{isDemo ? t.jadwalCatatanOjekDemo : t.jadwalCatatanOjek}</p>
 
-      {slotKonsol && konsolSendiri && createPortal(<div className={tvNyala ? 'tv-nyala' : undefined}><KonsolJadwal jadwalRef={jadwalRef} onHariBaru={setHariBaru} onMasukAtur={() => setModeAtur(true)} onSelesaiIsi={() => setModeAtur(false)} jadwalAda={jadwalAda} onSimpan={simpanJadwal} /></div>, slotKonsol)}
+      {slotKonsol && konsolSendiri && createPortal(<div className={tvNyala ? 'tv-nyala' : undefined}><KonsolJadwal jadwalRef={jadwalRef} onHariBaru={setHariBaru} onMasukAtur={() => setModeAtur(true)} onSelesaiIsi={() => setModeAtur(false)} onSedangIsi={setSedangIsi} jadwalAda={jadwalAda} onSimpan={simpanJadwal} /></div>, slotKonsol)}
     </main>
   )
 }
