@@ -4,7 +4,7 @@ import { usePesanPenumpang } from '../lib/usePesanPenumpang'
 import { playChatSound, playTabPindah, playKonsolAlarm, playKonsolMati, bunyikanSetelahSiap } from '../lib/sound'
 import { getar } from '../lib/getar'
 import JamKonsol, { sambutSudahSelesai, dengarSambutSelesai } from '../components/JamKonsol.jsx'
-import PesanBergilir from '../components/PesanBergilir.jsx'
+import BarisStatusSiaga from '../components/BarisStatusSiaga.jsx'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { useReminderKeberangkatan } from '../lib/useReminderKeberangkatan'
 import { STATUS_PERMINTAAN } from '../lib/constants'
@@ -280,6 +280,7 @@ export default function OjekView({
             berhentiLokasi={berhentiLokasi}
             slotKonsol={slotKonsol}
             putaranMasuk={putaranMasuk}
+            totalTrip={riwayatSiap ? riwayat.length : null}
           />
         )}
         {tabAktif === 'jadwal' && (
@@ -337,7 +338,7 @@ export default function OjekView({
           {tabAktif !== 'home' && !(konsolSendiri && (tabAktif === 'riwayat' || tabAktif === 'jadwal')) && (
             <>
               <span className="label-konsol" style={s.labelStatus}>{t.monitorStatus}</span>
-              <JamKonsol lewatiSambut={!!permintaan} keterangan={permintaan?.status === STATUS_PERMINTAAN.MENUNGGU ? t.monitorMisiBaru : t.monitorStandby} bawah={<PesanBergilir teks={t.teksJalanOjek} />} />
+              <JamKonsol lewatiSambut={!!permintaan} keterangan={permintaan?.status === STATUS_PERMINTAAN.MENUNGGU ? t.monitorMisiBaru : t.monitorStandby} bawah={<BarisStatusSiaga totalTrip={riwayatSiap ? riwayat.length : null} lokasiAktif={lokasiAktif} />} />
             </>
           )}
         </div>

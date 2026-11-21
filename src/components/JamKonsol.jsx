@@ -24,7 +24,7 @@ const SELESAI_SESUDAH_TAP = MATI_SESUDAH_TAP + 380 // lalu tampilan jam "dinyala
 
 // Layar konsol ojek saat siaga. Pertama kali app dibuka: WELCOME diketik huruf demi huruf (tanpa suara), nama naik
 // menyusul, lalu muncul TAP HERE. Saat layar diketuk (baru di sini ada suara) keduanya glitch sekali. Sesudah itu layar mengecil jadi garis seperti TV dimatikan, dan tampilan jam
-// menyala dari garis yang sama (hari dan tanggal + keterangan di kiri, jam besar di kanan, pesan bergilir di bawah).
+// menyala dari garis yang sama (hari dan tanggal + keterangan di kiri, jam besar di kanan, baris status di bawah).
 // lewatiSambut: sudah ada pesanan, jadi WELCOME tidak ditampilkan dan konsol langsung ke tampilan jam
 export default function JamKonsol({ keterangan, bawah = null, lewatiSambut = false }) {
   if (lewatiSambut) statusSambut = 'selesai'
@@ -110,7 +110,7 @@ export default function JamKonsol({ keterangan, bawah = null, lewatiSambut = fal
           {menit}
         </div>
       </div>
-      {bawah && <div aria-hidden="true" style={s.bawah}>{bawah}</div>}
+      {bawah && <div style={s.bawah}>{bawah}</div>}
     </div>
   )
 }
@@ -125,5 +125,5 @@ const s = {
   kiri: { minWidth: 0 },
   kecil: { fontSize: 10, letterSpacing: '0.06em', opacity: 0.65, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' },
   jam: { fontSize: 28, lineHeight: 1, color: '#FFFFFF', letterSpacing: '0.04em', textShadow: '0 0 8px rgba(148, 221, 244, 0.6)', flexShrink: 0 },
-  bawah: { marginTop: 8, fontSize: 11, letterSpacing: '0.06em', opacity: 0.75, whiteSpace: 'nowrap', overflow: 'hidden' },
+  bawah: { marginTop: 8 },
 }

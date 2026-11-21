@@ -776,3 +776,16 @@ button {
 @keyframes foto-sonar { 0% { transform: scale(0.3); opacity: 0.9; } 100% { transform: scale(2.8); opacity: 0; } }
 @keyframes foto-terkirim { 0% { transform: translate(-50%, -50%) scale(0.2); opacity: 0; } 35% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; } 55%, 85% { transform: translate(-50%, -50%) scale(1); opacity: 1; } 100% { transform: translate(-50%, -62%) scale(1); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .foto-lapis-hilang, .foto-terbang, .foto-sonar, .foto-terkirim { animation: none; } }
+
+/* Baris status siaga konsol ojek (cuaca, sinyal GPS, total trip): ikon piksel bergerak halus */
+@keyframes ik-sinar { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
+@keyframes ik-awan { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(1px); } }
+@keyframes ik-motor { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-1px); } }
+@keyframes ik-tetes { 0% { opacity: 0; transform: translateY(-1px); } 40% { opacity: 1; } 100% { opacity: 0; transform: translateY(1px); } }
+@keyframes ik-denyut { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+.ik-sinar { animation: ik-sinar 1.2s steps(1) infinite; }
+.ik-awan { animation: ik-awan 2.4s steps(2) infinite; }
+.ik-motor { animation: ik-motor 0.5s steps(1) infinite; }
+.ik-tetes { animation: ik-tetes 0.9s steps(3) infinite; }
+.ik-denyut { animation: ik-denyut 1.4s steps(1) infinite; }
+@media (prefers-reduced-motion: reduce) { .ik-sinar, .ik-awan, .ik-motor, .ik-tetes, .ik-denyut { animation: none; } }
