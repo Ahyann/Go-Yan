@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLokasiSaya } from '../lib/useLokasiSaya'
 import { usePesanPenumpang } from '../lib/usePesanPenumpang'
-import { playChatSound, playTabPindah, playKonsolAlarm, playKonsolMati } from '../lib/sound'
+import { playChatSound, playTabPindah, playKonsolAlarm, playKonsolMati, bunyikanSetelahSiap } from '../lib/sound'
 import { getar } from '../lib/getar'
 import JamKonsol from '../components/JamKonsol.jsx'
 import PesanBergilir from '../components/PesanBergilir.jsx'
@@ -51,6 +51,7 @@ export default function OjekView({
   const [tabAktif, setTabAktif] = useState('home')
   const [slotKonsol, setSlotKonsol] = useState(null)
   const [alarmKonsol, setAlarmKonsol] = useState(false)
+  const [putaranMasuk, setPutaranMasuk] = useState(0)
   // Glitch berkala di layar konsol: sekali tiap 9-16 detik (acak), sekitar setengah detik
   const [glitchBerkala, setGlitchBerkala] = useState(false)
   useEffect(() => {
@@ -94,12 +95,16 @@ export default function OjekView({
     alarmTertundaRef.current = false
     if (!statusMenungguRef.current) return
     setAlarmKonsol(true)
-    playKonsolAlarm()
+    setPutaranMasuk((n) => n + 1) // Spiderman di Home turun lagi dari atas
+    bunyikanSetelahSiap(playKonsolAlarm)
   }
 
   useEffect(() => {
     const saatTampil = () => {
-      if (!document.hidden && tabAktifRef.current === 'home') putarAlarmTertunda()
+      if (document.hidden) return
+      // Tiap app dibuka lagi selagi ada permintaan menunggu: alarm + Spiderman turun diputar ulang
+      if (statusMenungguRef.current) alarmTertundaRef.current = true
+      if (tabAktifRef.current === 'home') putarAlarmTertunda()
     }
     document.addEventListener('visibilitychange', saatTampil)
     return () => document.removeEventListener('visibilitychange', saatTampil)
@@ -111,6 +116,11 @@ export default function OjekView({
 
     if (permintaanTerakhirRef.current === undefined) {
       permintaanTerakhirRef.current = permintaan?.dibuatPada ?? null
+      // App baru dibuka dan permintaan sudah menunggu: alarm tetap diputar
+      if (permintaan?.status === STATUS_PERMINTAAN.MENUNGGU) {
+        alarmTertundaRef.current = true
+        if (tabAktifRef.current === 'home' && !document.hidden) putarAlarmTertunda()
+      }
       return
     }
 
@@ -238,6 +248,7 @@ export default function OjekView({
             mulaiLokasi={mulaiLokasi}
             berhentiLokasi={berhentiLokasi}
             slotKonsol={slotKonsol}
+            putaranMasuk={putaranMasuk}
           />
         )}
         {tabAktif === 'jadwal' && (

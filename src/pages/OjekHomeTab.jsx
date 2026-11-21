@@ -18,7 +18,7 @@ import KartuMisiOjek from '../components/KartuMisiOjek.jsx'
 import SwipeToFinish from '../components/SwipeToFinish.jsx'
 import DemoWelcomePopup from '../components/DemoWelcomePopup.jsx'
 
-export default function OjekHomeTab({ slotKonsol,
+export default function OjekHomeTab({ slotKonsol, putaranMasuk = 0,
   permintaan,
   onTerima,
   onTolak,
@@ -174,7 +174,7 @@ export default function OjekHomeTab({ slotKonsol,
           )}
           {tampilSpidey && (
             <div style={{ position: 'absolute', top: 0, bottom: 0, left: 14, right: 14, zIndex: 1100 }}>
-              <SpideyMenunggu key={misiSelesai ? `selesai-${misiSelesai.mulai}` : 'misi'} dibuatPada={misiSelesai ? misiSelesai.mulai : dibuatPadaRef.current} diterima={transisiDiterima} selesai={!!misiSelesai} keluar={keluarSelesai} dibatalkan={!!transisiBatal} menyusut={susutBatal || susutSelesai} isDemo={isDemo} teks={teksSpidey} gayaTolak kompak />
+              <SpideyMenunggu key={misiSelesai ? `selesai-${misiSelesai.mulai}` : adaPermintaanMasuk ? `misi-${putaranMasuk}` : 'misi'} dibuatPada={misiSelesai ? misiSelesai.mulai : dibuatPadaRef.current} diterima={transisiDiterima} selesai={!!misiSelesai} keluar={keluarSelesai} dibatalkan={!!transisiBatal} menyusut={susutBatal || susutSelesai} isDemo={isDemo} teks={teksSpidey} gayaTolak kompak />
             </div>
           )}
         </div>
