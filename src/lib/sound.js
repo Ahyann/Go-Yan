@@ -762,6 +762,13 @@ export function playGeserTik(langkah = 0) {
   nadaPendek(ctx, 'square', f, f, 0.035, 0.07, 0)
 }
 
+// Geser deretan jam cuaca: tik sine sangat pendek dan pelan, tidak mengganggu
+export function playGeserHalus() {
+  const ctx = ctxSiapEfek()
+  if (!ctx) return
+  nadaPendek(ctx, 'sine', 1300, 1300, 0.025, 0.03, 0)
+}
+
 // Notifikasi pil pesanan baru (saat di tab lain): dua nada kaca bening yang naik, pendek dan lembut
 export function playNotifPil() {
   const ctx = ctxSiapEfek()

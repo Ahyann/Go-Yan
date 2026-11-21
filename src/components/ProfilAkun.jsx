@@ -123,7 +123,7 @@ function PopupGanti({ ikon, pilihanIkon, warnaKey, onPilihWarna, onBatal, onSimp
                       <span style={{ ...s.lapis, inset: 2, background: 'linear-gradient(180deg, ' + a + '33, #011A29)', clipPath: POTONG }} />
                     </div>
                     <span style={s.potongTegak}>
-                      <img src={`/icons/${nm}`} style={s.tegakImg} alt="" />
+                      <img src={`/icons/${nm}`} style={nm.startsWith('fajri') ? s.tegakImg : s.tegakKepala} alt="" />
                     </span>
                     <span style={{ ...s.garisTegak, background: a }} />
                   </div>
@@ -254,6 +254,8 @@ const s = {
   kartuTegak: { position: 'relative', width: 150, height: 190 },
   potongTegak: { position: 'absolute', left: -14, right: -14, bottom: 0, top: -52, overflow: 'hidden', clipPath: 'inset(0 0 2px 0)' },
   tegakImg: { position: 'absolute', left: '50%', marginLeft: -120, bottom: -14, width: 240, height: 240, objectFit: 'contain', imageRendering: 'pixelated', pointerEvents: 'none' },
+  // Ikon kepala persegi (karakter ojek): utuh di dalam bingkai, tidak dibesarkan keluar seperti badan Fajri
+  tegakKepala: { position: 'absolute', left: '50%', marginLeft: -66, bottom: 22, width: 132, height: 132, objectFit: 'contain', imageRendering: 'pixelated', pointerEvents: 'none' },
   garisTegak: { position: 'absolute', left: 0, right: 0, bottom: 0, height: 2, clipPath: 'polygon(0 0, 100% 0, calc(100% - 16px) 100%, 0 100%)' },
   lapis: { position: 'absolute', inset: 0, display: 'block' },
   namaKarakter: { fontFamily: 'var(--font-judul)', fontSize: 22, letterSpacing: 1, color: '#fff', textAlign: 'center', textTransform: 'uppercase', marginTop: -2 },

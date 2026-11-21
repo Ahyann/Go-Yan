@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { TEKS_STATUS, jenisCuaca, useStatusSiaga } from '../lib/statusSiaga'
-import { playGeserTik } from '../lib/sound'
+import { playGeserHalus } from '../lib/sound'
 import { IkonCuaca } from './BarisStatusSiaga.jsx'
 
 const TEKS = {
@@ -90,12 +90,12 @@ export default function KonsolCuaca({ onKembali, lokasiAktif = false, jadwal = n
   const gulirRef = useRef(null)
   const kolomTerakhir = useRef(0)
 
-  // Bunyi tik pelan setiap deretan jam bergeser satu kolom (44px)
+  // Bunyi tik halus setiap deretan jam bergeser satu kolom (44px)
   function saatGulir(e) {
     const k = Math.round(e.currentTarget.scrollLeft / 44)
     if (k !== kolomTerakhir.current) {
       kolomTerakhir.current = k
-      playGeserTik(2)
+      playGeserHalus()
     }
   }
 
