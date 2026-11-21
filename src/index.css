@@ -692,5 +692,6 @@ button {
   60% { transform: none; clip-path: none; text-shadow: 1px 0 #FF4C4C, -1px 0 #5ED0FF; }
   80%, 100% { transform: none; clip-path: none; }
 }
-.glitch-berkala { animation: glitch-berkala 0.45s steps(1) 1; }
-@media (prefers-reduced-motion: reduce) { .glitch-berkala { animation: none; } }
+/* Label kecil di atas layar (STATUS, NEW MISSION, dst.) tidak ikut glitch berkala */
+.glitch-berkala > :not(.label-konsol) { animation: glitch-berkala 0.45s steps(1) 1; }
+@media (prefers-reduced-motion: reduce) { .glitch-berkala > * { animation: none; } }

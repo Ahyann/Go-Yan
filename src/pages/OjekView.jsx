@@ -278,7 +278,7 @@ export default function OjekView({
         <div ref={setSlotKonsol} className={glitchBerkala ? 'glitch-berkala' : undefined} style={s.areaInfo}>
           {tabAktif !== 'home' && (
             <>
-              <span style={s.labelStatus}>{t.monitorStatus}</span>
+              <span className="label-konsol" style={s.labelStatus}>{t.monitorStatus}</span>
               <div style={s.barisInfo}>{permintaan?.status === STATUS_PERMINTAAN.MENUNGGU ? t.monitorMisiBaru : t.monitorSiap}</div>
               <div aria-hidden="true" style={s.barisJalan}><TeksJalan teks={t.teksJalanOjek} /></div>
             </>

@@ -184,7 +184,7 @@ export default function OjekHomeTab({ slotKonsol,
             Dikirim lewat portal supaya konsol tetap satu dan tingginya tidak berubah. */}
         {slotKonsol && createPortal(
           <>
-            <span style={{ ...s.labelMonitor, ...(misiSelesai && !adaPermintaanMasuk ? s.labelHijau : adaPermintaanMasuk || transisiBatal ? s.labelMerah : s.labelBiru) }}>
+            <span className="label-konsol" style={{ ...s.labelMonitor, ...(misiSelesai && !adaPermintaanMasuk ? s.labelHijau : adaPermintaanMasuk || transisiBatal ? s.labelMerah : s.labelBiru) }}>
               {misiSelesai && !adaPermintaanMasuk ? t.monitorSelesai : adaPermintaanMasuk ? t.monitorMisiBaru : transisiBatal ? (transisiBatal === 'tolak' ? t.monitorDitolak : t.monitorDibatalkan) : sedangJalan ? t.monitorBerjalan : t.monitorStatus}
             </span>
             {adaPermintaanMasuk ? (
