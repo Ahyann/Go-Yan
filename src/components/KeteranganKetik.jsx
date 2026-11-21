@@ -1,18 +1,13 @@
 import { useEffect, useState } from 'react'
 
-const KETIK = 110 // ms per huruf saat diketik (pelan supaya tidak pusing)
-const HAPUS = 65 // ms per huruf saat dihapus
-const JEDA = 400 // ms kosong sebelum pesan berikutnya
-const SIKLUS = 8000 // ms tiap pesan, dari mulai diketik sampai pesan berikutnya mulai; sisanya dipakai untuk menahan pesan terbaca
+const KETIK = 240 // ms per huruf saat diketik (pelan supaya tidak pusing)
+const HAPUS = 140 // ms per huruf saat dihapus
+const TAHAN = 8000 // ms pesan dibiarkan terbaca penuh
+const JEDA = 500 // ms kosong sebelum pesan berikutnya
 
-// Ikon Spiderman asli app (spidericon.png) dipasang di sel kecil layar jadul: latar gelap, tepi cyan tipis, garis scan
+// Ikon Spiderman asli app (spidericon.png, latar transparan), dipasang tajam kotak-kotak langsung di layar
 function KepalaSpidey() {
-  return (
-    <span aria-hidden="true" style={s.sel}>
-      <img src={`${import.meta.env.BASE_URL}icons/spidericon.png`} alt="" style={s.ikon} />
-      <span style={s.scan} />
-    </span>
-  )
+  return <img src={`${import.meta.env.BASE_URL}icons/spidericon.png`} alt="" aria-hidden="true" style={s.ikon} />
 }
 
 // Pengganti tulisan STANDBY di konsol ojek: kepala Spiderman, titik dua, lalu pesan yang diketik huruf demi huruf, ditahan,
@@ -25,12 +20,15 @@ export default function KeteranganKetik({ daftar, label }) {
     return () => clearInterval(id)
   }, [])
 
-  // Tiap pesan tepat SIKLUS ms: ketik, ditahan (sisa waktu), dihapus, jeda
-  const posisi = sekarang % (SIKLUS * daftar.length)
-  const indeks = Math.floor(posisi / SIKLUS)
-  const sisa = posisi - indeks * SIKLUS
+  // Lama tiap pesan: ketik + ditahan 8 detik + hapus + jeda
+  const lama = daftar.map((p) => p.length * (KETIK + HAPUS) + TAHAN + JEDA)
+  let sisa = sekarang % lama.reduce((x, y) => x + y, 0)
+  let indeks = 0
+  while (indeks < daftar.length - 1 && sisa >= lama[indeks]) {
+    sisa -= lama[indeks]
+    indeks++
+  }
   const pesan = daftar[indeks]
-  const TAHAN = Math.max(0, SIKLUS - pesan.length * (KETIK + HAPUS) - JEDA)
   const tKetik = pesan.length * KETIK
   let huruf
   if (sisa < tKetik) huruf = Math.floor(sisa / KETIK)
@@ -49,9 +47,7 @@ export default function KeteranganKetik({ daftar, label }) {
 }
 
 const s = {
-  sel: { position: 'relative', width: 17, height: 17, boxSizing: 'border-box', flexShrink: 0, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: '#04192A', border: '1px solid rgba(94, 208, 255, 0.45)', boxShadow: 'inset 0 0 0 1px rgba(0, 0, 0, 0.5)', overflow: 'hidden' },
-  ikon: { width: 13, height: 13, imageRendering: 'pixelated', display: 'block' },
-  scan: { position: 'absolute', inset: 0, background: 'repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.28) 0 1px, transparent 1px 3px)', pointerEvents: 'none' },
+  ikon: { width: 16, height: 16, imageRendering: 'pixelated', display: 'block', flexShrink: 0 },
   baris: { display: 'inline-flex', alignItems: 'center', gap: 5, maxWidth: '100%', whiteSpace: 'nowrap' },
   titik: { opacity: 0.65 },
   teks: { opacity: 0.85, minWidth: 0, overflow: 'hidden' },
