@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
+import KeteranganKetik from './KeteranganKetik.jsx'
 import { playSambutGlitch, playKonsolMati, playSambutKonsol, bunyikanSetelahSiap } from '../lib/sound'
 
 // Status sambutan selama app terbuka: null (belum), 'tunggu' (WELCOME sudah tampil, menunggu diketuk), 'selesai'.
@@ -26,7 +27,7 @@ const SELESAI_SESUDAH_TAP = MATI_SESUDAH_TAP + 380 // lalu tampilan jam "dinyala
 // menyusul, lalu muncul TAP HERE. Saat layar diketuk (baru di sini ada suara) keduanya glitch sekali. Sesudah itu layar mengecil jadi garis seperti TV dimatikan, dan tampilan jam
 // menyala dari garis yang sama (hari dan tanggal + keterangan di kiri, jam besar di kanan, baris status di bawah).
 // lewatiSambut: sudah ada pesanan, jadi WELCOME tidak ditampilkan dan konsol langsung ke tampilan jam
-export default function JamKonsol({ keterangan, bawah = null, lewatiSambut = false }) {
+export default function JamKonsol({ keterangan, bergilir = false, bawah = null, lewatiSambut = false }) {
   if (lewatiSambut) statusSambut = 'selesai'
   const { lang, t } = useLanguage()
   const { isDemo } = useAuth()
@@ -102,7 +103,9 @@ export default function JamKonsol({ keterangan, bawah = null, lewatiSambut = fal
       <div style={s.baris}>
         <div style={s.kiri}>
           <div style={s.kecil}>{tanggal}</div>
-          <div style={{ ...s.kecil, marginTop: 5 }}>{keterangan}</div>
+          <div style={{ ...s.kecil, marginTop: 5, ...(bergilir ? s.kecilKetik : null) }}>
+            {bergilir ? <KeteranganKetik label={keterangan} daftar={t.pesanSiaga.split('▪').map((x) => x.trim()).filter(Boolean)} /> : keterangan}
+          </div>
         </div>
         <div style={s.jam} aria-label={`${jam}:${menit}`}>
           {jam}
@@ -124,6 +127,7 @@ const s = {
   baris: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 },
   kiri: { minWidth: 0 },
   kecil: { fontSize: 10, letterSpacing: '0.06em', opacity: 0.65, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' },
+  kecilKetik: { opacity: 1, height: 13, display: 'flex', alignItems: 'center' },
   jam: { fontSize: 28, lineHeight: 1, color: '#FFFFFF', letterSpacing: '0.04em', textShadow: '0 0 8px rgba(148, 221, 244, 0.6)', flexShrink: 0 },
   bawah: { marginTop: 10 },
 }

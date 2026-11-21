@@ -273,7 +273,7 @@ export default function OjekHomeTab({ slotKonsol, putaranMasuk = 0,
               </>
             ) : (
               <>
-                <JamKonsol keterangan={t.monitorStandby} bawah={<BarisStatusSiaga totalTrip={totalTrip} lokasiAktif={lokasiAktif} />} />
+                <JamKonsol bergilir keterangan={t.monitorStandby} bawah={<BarisStatusSiaga totalTrip={totalTrip} lokasiAktif={lokasiAktif} />} />
               </>
             )}
           </>,
