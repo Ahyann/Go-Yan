@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 const KEY_CUACA = 'goyan:cuaca'
 const BASI_CUACA_MS = 15 * 60 * 1000 // cuaca dianggap segar selama 15 menit
 const CEK_LOKASI_MS = 60 * 1000
-const JAM_PRAKIRAAN = 12
+const JAM_PRAKIRAAN = 24
 let sudahMintaIzin = false // permintaan izin lokasi hanya dimunculkan sekali per sesi app
 
 export const TEKS_STATUS = {
@@ -45,7 +45,7 @@ function bacaCache() {
 
 // Posisi diminta sekali saat app dibuka (izin lokasi memang dibutuhkan ojek); sesudahnya dicek tiap menit selama izin ada
 // dan tidak ditolak. Akurasi posisi dipakai sebagai kekuatan sinyal GPS: makin kecil meter, makin kuat. Cuaca dan prakiraan
-// 12 jam dari Open-Meteo (tanpa kunci), memakai koordinat yang dibulatkan ke 2 desimal (±1 km) dan disimpan 15 menit.
+// 24 jam dari Open-Meteo (tanpa kunci), memakai koordinat yang dibulatkan ke 2 desimal (±1 km) dan disimpan 15 menit.
 // cuaca: { suhu, kode, nama, jam: [{ tgl: 'YYYY-MM-DD', w: 'HH:MM', suhu, kode, hujan }] }; nama = nama tempat (kosong kalau gagal dicari)
 export function useStatusSiaga(lokasiAktif) {
   const [akurasi, setAkurasi] = useState(null) // null: GPS mati / belum ada izin
@@ -64,7 +64,7 @@ export function useStatusSiaga(lokasiAktif) {
       const cache = bacaCache()
       const la = Math.round(lat * 100) / 100
       const lo = Math.round(lng * 100) / 100
-      if (cache && Array.isArray(cache.jam) && typeof cache.nama === 'string' && Date.now() - cache.waktu < BASI_CUACA_MS && cache.lat === la && cache.lng === lo) return
+      if (cache && Array.isArray(cache.jam) && cache.jam.length >= JAM_PRAKIRAAN && typeof cache.nama === 'string' && Date.now() - cache.waktu < BASI_CUACA_MS && cache.lat === la && cache.lng === lo) return
       kontrol?.abort()
       kontrol = new AbortController()
       const url = `https://api.open-meteo.com/v1/forecast?latitude=${la}&longitude=${lo}&current=temperature_2m,weather_code&hourly=temperature_2m,precipitation_probability,weather_code&forecast_days=2&timezone=auto`
