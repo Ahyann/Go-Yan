@@ -318,7 +318,7 @@ function simpanAnimDitonton(dibuatPada) {
   }
 }
 
-export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef: mapRefLuar, baruDibatalkan = false, sinyalLive = 0, isiKartu = null }) {
+export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef: mapRefLuar, baruDibatalkan = false, sinyalLive = 0, isiKartu = null, sembunyiChat = false }) {
   const { t } = useLanguage()
   const [kartuBuka, setKartuBuka] = useState(true)
   // Saat pesanan baru diterima, kartu Spiderman tetap tampil sebentar untuk animasi "diterima"
@@ -757,7 +757,7 @@ export default function PetaStatus({ permintaan, tampilkanOverlay = true, mapRef
         </Marker>
       </MapContainer>
 
-      {tampilkanOverlay && permintaan?.status === STATUS_PERMINTAAN.DITERIMA && (
+      {tampilkanOverlay && !sembunyiChat && permintaan?.status === STATUS_PERMINTAAN.DITERIMA && (
         chatBuka && (riwayatChat.length > 0 || kosongDibuka) ? (
           <div className="chat-buka" style={{ ...s.kotakChat, ...gayaSlot(slotChat, bawahTertutup), transformOrigin: ASAL_TRANSFORM[slotChat] }}>
             <div style={s.kotakChatKepala}>

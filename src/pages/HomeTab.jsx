@@ -136,6 +136,7 @@ export default function HomeTab({ permintaan, lokasiAktif, lokasiError, mulaiLok
         baruDibatalkan={baruDibatalkan}
         sinyalLive={sinyalLive}
         isiKartu={isiKartu}
+        sembunyiChat={!!sesiFoto.fase}
       />
 
       <FotoInput sesi={sesiFoto} />

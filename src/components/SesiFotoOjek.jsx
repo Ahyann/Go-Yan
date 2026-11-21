@@ -75,9 +75,16 @@ export function useSesiFoto({ aktif, onKirimFoto }) {
     setFase('kamera')
   }
 
+  // Batal: layar mati seperti TV tabung (menyusut jadi garis) dulu, baru sesi ditutup
   function batal() {
+    if (fase === 'tutup') return
     playKonsolMati()
-    setFase(null)
+    getar(10)
+    setFase('tutup')
+    timerRef.current.push(setTimeout(() => {
+      setFase(null)
+      setFoto(null)
+    }, 420))
   }
 
   function jepret() {
@@ -180,11 +187,11 @@ export function FotoPeta({ sesi, mandiri = false }) {
   const zl = mandiri ? 899 : 1150
   return (
     <>
-      <div className={fase === 'kamera' ? 'tv-nyala' : kirim ? 'foto-lapis-hilang' : undefined} style={{ ...s.lapis, zIndex: zl, ...(mandiri ? { padding: '0 14px 150px', gap: 12, background: 'rgba(1, 42, 64, 0.86)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' } : null) }}>
-        {mandiri && !kirim && <span style={s.labelCam}>{fase === 'kamera' ? x.kamera : x.preview}</span>}
+      <div className={fase === 'kamera' ? 'tv-nyala' : kirim ? 'foto-lapis-hilang' : fase === 'tutup' ? 'tv-mati' : undefined} style={{ ...s.lapis, zIndex: zl, ...(mandiri ? { padding: '0 14px 150px', gap: 12, background: 'rgba(1, 42, 64, 0.86)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' } : null) }}>
+        {mandiri && !kirim && fase !== 'tutup' && <span style={s.labelCam}>{fase === 'kamera' ? x.kamera : x.preview}</span>}
         <div style={s.bingkai}>
           {fase === 'kamera' && <video ref={videoRef} style={{ ...s.vfIsi, transform: balik ? 'scaleX(-1)' : undefined }} playsInline muted />}
-          {(fase === 'preview' || kirim) && foto && <img src={foto} alt="" className={kirim ? 'foto-terbang' : undefined} style={s.vfIsi} />}
+          {fase !== 'kamera' && foto && <img src={foto} alt="" className={kirim ? 'foto-terbang' : undefined} style={s.vfIsi} />}
           {fase === 'kamera' && <Garis />}
           {!kirim && <Siku />}
           {kilat && (
@@ -195,7 +202,7 @@ export function FotoPeta({ sesi, mandiri = false }) {
           )}
           {fase === 'preview' && foto && <div style={s.tag}>4:3 · {Math.max(1, Math.round((foto.length * 0.75) / 1024))} KB</div>}
         </div>
-        {!kirim && <div style={s.info}>{fase === 'kamera' ? x.info : x.preview}</div>}
+        {!kirim && fase !== 'tutup' && <div style={s.info}>{fase === 'kamera' ? x.info : x.preview}</div>}
       </div>
       {kirim && (
         <>
@@ -228,6 +235,9 @@ export function FotoKonsol({ sesi }) {
       </div>
     )
   }
+  if (fase === 'tutup') {
+    return <div key="tutup" className="tv-mati" style={s.barisKonsol} />
+  }
   if (fase === 'preview') {
     return (
       <div key="preview" className="tv-nyala" style={s.barisKonsol}>
@@ -244,7 +254,7 @@ export function FotoKonsol({ sesi }) {
   )
 }
 
-export const labelSesiFoto = (fase, lang) => (TEKS[lang] || TEKS.id)[fase === 'kamera' ? 'kamera' : 'preview']
+export const labelSesiFoto = (fase, lang) => (TEKS[lang] || TEKS.id)[fase === 'kamera' || fase === 'tutup' ? 'kamera' : 'preview']
 
 const s = {
   labelCam: { alignSelf: 'center', background: '#5ED0FF', color: '#04192A', fontFamily: "'Silkscreen', monospace", fontSize: 11, letterSpacing: '0.08em', padding: '4px 9px 3px', border: '2px solid #04192A' },
