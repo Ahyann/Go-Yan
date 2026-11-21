@@ -328,7 +328,7 @@ export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalka
 
   function sentuh() {
     const el = refReaksi.current
-    if (!el || diterima || dibatalkan) return
+    if (!el || diterima || dibatalkan || keluar) return
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return
     // Urutan diacak per putaran: semua reaksi keluar sekali dulu sebelum ada yang diulang, jadi tidak ada yang terlewat.
     if (antrianReaksi.current.length === 0) {
@@ -463,7 +463,8 @@ export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalka
             <rect x="-1" y="1" width="1" height="3" fill="#FFFFFF" />
             <rect x="9" y="1" width="1" height="3" fill="#FFFFFF" />
             <rect x="10" y="6" width="1" height="1" fill="#FFFFFF" />
-            {diterima || selesai ? (
+            {/* misi selesai: centang hijau, tapi saat Spiderman dipencet gelembungnya ikut berganti reaksi */}
+            {diterima || (selesai && !gelembungSentuh) ? (
               <path d="M2.5 2.5h1v1h1v-1h1v-1h1v1h-1v1h-1v1h-1v-1h-1z" fill="#16A34A" />
             ) : dibatalkan ? (
               <>
