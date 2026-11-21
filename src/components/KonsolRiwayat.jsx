@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { STATUS_BAYAR, formatRupiah } from '../lib/constants'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { usePesanOjek } from '../lib/usePesanOjek'
-import { playGeserTik, playGantiSimpan, playKonsolMati, playTombolKamera, playTombolSuara } from '../lib/sound'
+import { playGeserTik, playLunasSemua, playKonsolMati, playTombolKamera, playTombolSuara } from '../lib/sound'
 import { getar } from '../lib/getar'
 
 const KUNCI_UNDO = 'goyan:undo-lunas'
@@ -104,7 +104,7 @@ export default function KonsolRiwayat({ riwayat, onEditRiwayat, hanyaBelum, onHa
         tahanRef.current = null
         setTahan(0)
         getar(20)
-        setFase('konfirmasi')
+        konfirmasi()
         return
       }
       tahanRef.current = { raf: requestAnimationFrame(jalan) }
@@ -125,10 +125,17 @@ export default function KonsolRiwayat({ riwayat, onEditRiwayat, hanyaBelum, onHa
     const u = { ids, waktu: Date.now(), total }
     simpanUndo(u)
     setUndo(u)
-    setFase('awal')
-    playGantiSimpan()
+    setFase('sukses')
+    playLunasSemua()
     getar(25)
   }
+
+  // Animasi ceklis berjalan sebentar, lalu konsol menampilkan hitung mundur undo
+  useEffect(() => {
+    if (fase !== 'sukses') return undefined
+    const id = setTimeout(() => setFase('awal'), 1900)
+    return () => clearTimeout(id)
+  }, [fase])
 
   function batalkanLunas() {
     undo.ids.forEach((id) => Promise.resolve(onEditRiwayat(id, { statusBayar: STATUS_BAYAR.BELUM })).catch((e) => console.error(e)))
@@ -160,14 +167,21 @@ export default function KonsolRiwayat({ riwayat, onEditRiwayat, hanyaBelum, onHa
     setTimeout(() => setKilat(null), 1400)
   }
 
-  if (fase === 'konfirmasi') {
+  // Sesudah bar penuh: tanpa konfirmasi, langsung lunas dengan animasi ceklis (kotak hijau membal, ceklis tergambar, percikan piksel)
+  if (fase === 'sukses' && undo) {
     return (
-      <div style={s.kolom}>
-        <div style={s.judul}>{x.tanya} {belum.length} {x.trip}?</div>
-        <div style={s.redup}>{formatRupiah(total).toUpperCase()} · {x.bisaUndo}</div>
-        <div style={s.baris}>
-          <button type="button" className="tekan" style={{ ...s.tombol, ...s.lebar, color: '#BFE9FF', borderColor: '#BFE9FF' }} onClick={() => { setFase('awal'); playKonsolMati() }}>{x.batal}</button>
-          <button type="button" data-tanpa-suara className="tekan" style={{ ...s.tombol, ...s.lebar, ...s.hijauIsi }} onClick={konfirmasi}><Ikon nama="cek" />{x.ya}</button>
+      <div style={{ ...s.baris, gap: 12, height: 66, marginTop: -2 }}>
+        <div key={undo.waktu} className="cek-kotak" style={s.kotakCek}>
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#04192A" strokeWidth="3.4" strokeLinecap="square" aria-hidden="true">
+            <path className="cek-gambar" pathLength="1" d="M5 12.5l4.5 4.5L19 7" />
+          </svg>
+          {PERCIK.map(([dx, dy, d], i) => (
+            <span key={i} className="cek-percik" style={{ ...s.percik, '--dx': `${dx}px`, '--dy': `${dy}px`, animationDelay: `${0.18 + d}s`, background: i % 2 ? '#FFFFFF' : '#5ED0FF' }} />
+          ))}
+        </div>
+        <div className="cek-teks" style={{ minWidth: 0 }}>
+          <div style={{ ...s.judul, color: '#4ADE80', fontSize: 12 }}>{undo.ids.length} {x.ditandai}</div>
+          <div style={{ ...s.redup, marginTop: 4 }}>{formatRupiah(undo.total).toUpperCase()}</div>
         </div>
       </div>
     )
@@ -236,7 +250,12 @@ function TombolFilter({ hanyaBelum, onHanyaBelum, x }) {
   )
 }
 
+// Arah percikan di sekitar kotak ceklis: [geser x, geser y, jeda]
+const PERCIK = [[-26, -22, 0], [0, -30, 0.03], [26, -22, 0.06], [32, 2, 0.02], [24, 26, 0.05], [-2, 32, 0.01], [-28, 24, 0.04], [-34, 0, 0.07]]
+
 const s = {
+  kotakCek: { position: 'relative', width: 44, height: 44, flexShrink: 0, background: '#4ADE80', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 14px rgba(74,222,128,0.6)' },
+  percik: { position: 'absolute', left: 19, top: 19, width: 6, height: 6, opacity: 0, pointerEvents: 'none' },
   kolom: { display: 'flex', flexDirection: 'column', gap: 7, marginTop: -2 },
   judul: { fontSize: 11, color: '#FFFFFF', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' },
   redup: { fontSize: 10, opacity: 0.7, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' },

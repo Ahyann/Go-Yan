@@ -724,6 +724,14 @@ export function playKonsolMati() {
   nadaPendek(ctx, 'sawtooth', 700, 90, 0.2, 0.04, 0.08)
 }
 
+// Semua trip dilunaskan lewat bar tahan di konsol History: tiga nada naik (do-mi-sol) dan satu kilau tinggi, selaras dengan ceklis yang tergambar
+export function playLunasSemua() {
+  const ctx = ctxSiapEfek()
+  if (!ctx) return
+  ;[523, 659, 784].forEach((f, i) => nadaPendek(ctx, 'square', f, f, 0.12, 0.08, i * 0.09))
+  nadaPendek(ctx, 'triangle', 1568, 1568, 0.35, 0.07, 0.3)
+}
+
 // Tombol kamera di konsol ojek: dua klik pendek seperti rana kamera
 export function playTombolKamera() {
   const ctx = ctxSiapEfek()

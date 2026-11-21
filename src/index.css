@@ -723,3 +723,13 @@ button {
 @keyframes tv-nyala { 0% { transform: scaleY(0.04) scaleX(0); filter: brightness(3); opacity: 0; } 40% { transform: scaleY(0.04) scaleX(1); opacity: 1; } 100% { transform: none; filter: none; opacity: 1; } }
 .tv-nyala { animation: tv-nyala 0.4s ease-out both; transform-origin: center; }
 @media (prefers-reduced-motion: reduce) { .sambut-nama, .sambut-glitch, .tv-mati, .tv-nyala { animation: none; } }
+
+/* Konsol History ojek: animasi ceklis saat semua trip dilunaskan */
+.cek-kotak { animation: cek-pop 0.42s cubic-bezier(0.3, 1.5, 0.5, 1) both; }
+.cek-gambar { stroke-dasharray: 1; stroke-dashoffset: 1; animation: cek-gambar 0.32s ease-out 0.2s forwards; }
+.cek-percik { animation: cek-percik 0.55s ease-out both; }
+.cek-teks { animation: cek-teks 0.35s ease-out 0.25s both; }
+@keyframes cek-pop { 0% { transform: scale(0.2); opacity: 0; } 60% { transform: scale(1.18); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+@keyframes cek-gambar { to { stroke-dashoffset: 0; } }
+@keyframes cek-percik { 0% { transform: translate(0, 0) scale(1); opacity: 1; } 100% { transform: translate(var(--dx), var(--dy)) scale(0.2); opacity: 0; } }
+@keyframes cek-teks { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: none; } }
