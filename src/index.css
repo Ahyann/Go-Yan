@@ -754,3 +754,14 @@ button {
 @keyframes foto-kilat { 0% { opacity: 0.9; } 100% { opacity: 0; } }
 @keyframes foto-klik { 0% { opacity: 0; transform: rotate(-6deg) scale(0.6); } 30% { opacity: 1; transform: rotate(-6deg) scale(1.15); } 100% { opacity: 1; transform: rotate(-6deg) scale(1); } }
 @media (prefers-reduced-motion: reduce) { .foto-kilat, .foto-klik { animation: none; } }
+
+/* Riwayat ojek: baris yang baru jadi Paid menyala hijau sebentar dan tulisan Paid membal masuk */
+.riwayat-lunas { animation: riwayat-lunas 0.9s ease-out both; }
+.lunas-pop { display: inline-block; animation: lunas-pop 0.5s cubic-bezier(0.3, 1.6, 0.5, 1) both; }
+@keyframes riwayat-lunas {
+  0% { box-shadow: inset 0 0 0 0 rgba(74, 222, 128, 0); }
+  25% { box-shadow: inset 0 0 0 2px #4ADE80, 0 0 16px rgba(74, 222, 128, 0.55); background: rgba(74, 222, 128, 0.22); transform: scale(1.015); }
+  100% { box-shadow: inset 0 0 0 0 rgba(74, 222, 128, 0); transform: none; }
+}
+@keyframes lunas-pop { 0% { transform: scale(0.2); opacity: 0; } 60% { transform: scale(1.25); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .riwayat-lunas, .lunas-pop { animation: none; } }

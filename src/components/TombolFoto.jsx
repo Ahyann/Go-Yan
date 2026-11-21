@@ -16,18 +16,6 @@ function KameraLangsung({ onAmbil, onBatal, onGagal, gaya = false }) {
   const x = TEKS[lang] || TEKS.id
   const [kilat, setKilat] = useState(false)
   const [grid, setGrid] = useState(true)
-  const [pos, setPos] = useState(null)
-
-  // Gaya ojek: koordinat dan akurasi GPS ditampilkan di bawah bingkai selama kamera terbuka
-  useEffect(() => {
-    if (!gaya || !navigator.geolocation) return undefined
-    const id = navigator.geolocation.watchPosition(
-      (p) => setPos({ lat: p.coords.latitude, lng: p.coords.longitude, acc: Math.round(p.coords.accuracy) }),
-      () => {},
-      { enableHighAccuracy: true, maximumAge: 5000 }
-    )
-    return () => navigator.geolocation.clearWatch(id)
-  }, [gaya])
   const videoRef = useRef(null)
   const [siap, setSiap] = useState(false)
   const [hadap, setHadap] = useState(layarSentuh() ? 'environment' : 'user')
@@ -83,7 +71,7 @@ function KameraLangsung({ onAmbil, onBatal, onGagal, gaya = false }) {
             </>
           )}
         </div>
-        <PetaMini pos={pos} x={x} />
+        <div style={s.petunjuk}>{x.petunjuk}</div>
         <div style={{ flex: 1 }} />
         <div style={s.kontrol}>
           <button type="button" className="tekan" style={{ ...s.kotakIkon, ...s.kotakGrid, ...(grid ? null : s.kotakMati) }} onClick={() => setGrid((g) => !g)} aria-pressed={grid} aria-label="Grid"><IkonGrid /><span>GRID</span></button>
@@ -144,20 +132,6 @@ const IkonBalik = () => ik(<path d="M20 8a8 8 0 00-14-2M4 4v4h4M4 16a8 8 0 0014 
 const IkonGrid = () => ik(<><rect x="3" y="3" width="18" height="18" /><path d="M9 3v18M15 3v18M3 9h18M3 15h18" /></>, 16)
 const IkonKirim = () => ik(<path d="M3 11l18-8-8 18-2-8z" />, 14)
 const IkonUlang = () => ik(<><path d="M9 14L4 9l5-5" /><path d="M4 9h11a5 5 0 010 10h-3" /></>, 14)
-
-// Potongan peta kecil di bawah bingkai: titik lokasi, koordinat, dan akurasi GPS
-function PetaMini({ pos, x }) {
-  return (
-    <div>
-      <div style={{ ...s.petunjuk, textAlign: 'left', marginBottom: 6 }}>{x.lokasiFoto}</div>
-      <div style={s.petaMini}>
-        <span style={s.titikPeta} />
-        <span style={s.koordinat}>{pos ? `${pos.lat.toFixed(4)}, ${pos.lng.toFixed(4)}` : x.mencari}</span>
-        {pos && <span style={s.akurasi}>{x.akurasi} {pos.acc} M</span>}
-      </div>
-    </div>
-  )
-}
 
 // Garis bagi sepertiga dan siku cyan di bingkai kamera (akun ojek)
 function Garis() {

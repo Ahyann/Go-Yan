@@ -1,16 +1,21 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { STATUS_BAYAR, formatRupiah } from '../lib/constants'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import MonthPickerPopup from '../components/MonthPickerPopup.jsx'
 import EditRiwayatPopup from '../components/EditRiwayatPopup.jsx'
 import SwipeableItem from '../components/SwipeableItem.jsx'
+import { playGeserTik } from '../lib/sound'
 
 export default function OjekRiwayatTab({ riwayat, onTandaiLunas, onHapusRiwayat, onEditRiwayat, hanyaBelum = false }) {
   const { t } = useLanguage()
   const { isDemo } = useAuth()
   const [showBulan, setShowBulan] = useState(false)
   const [itemEdit, setItemEdit] = useState(null)
+  // Animasi lunas: baris yang baru berubah jadi Paid menyala hijau berurutan dari atas (tahan = belum waktunya tampil lunas)
+  const [tahan, setTahan] = useState(() => new Set())
+  const [baruLunas, setBaruLunas] = useState(() => new Set())
+  const statusSebelumRef = useRef(null)
 
   const sekarang = new Date()
   const [bulanAktif, setBulanAktif] = useState(sekarang.getMonth())
@@ -36,6 +41,27 @@ export default function OjekRiwayatTab({ riwayat, onTandaiLunas, onHapusRiwayat,
 
   const sudahBayarBulanIni = riwayatBulanIni.filter((r) => r.statusBayar === STATUS_BAYAR.LUNAS)
   const totalSudahDiterimaBulanIni = sudahBayarBulanIni.reduce((jumlah, r) => jumlah + r.tarif, 0)
+
+  useEffect(() => {
+    const sekarangStatus = new Map(riwayat.map((r) => [r.id, r.statusBayar]))
+    const sebelum = statusSebelumRef.current
+    statusSebelumRef.current = sekarangStatus
+    if (!sebelum) return undefined
+    const berubah = riwayatBulanIni.filter((r) => r.statusBayar === STATUS_BAYAR.LUNAS && sebelum.get(r.id) === STATUS_BAYAR.BELUM).map((r) => r.id)
+    if (berubah.length === 0) return undefined
+    setTahan(new Set(berubah))
+    setBaruLunas(new Set(berubah))
+    const timer = []
+    berubah.forEach((id, i) => {
+      timer.push(setTimeout(() => {
+        setTahan((prev) => { const n = new Set(prev); n.delete(id); return n })
+        if (berubah.length > 1 && i < 10) playGeserTik(1 + i)
+      }, i * 140))
+    })
+    timer.push(setTimeout(() => setBaruLunas(new Set()), berubah.length * 140 + 1000))
+    return () => timer.forEach(clearTimeout)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [riwayat])
 
   function handlePilihBulan(bulan, tahun) {
     setBulanAktif(bulan)
@@ -78,11 +104,14 @@ export default function OjekRiwayatTab({ riwayat, onTandaiLunas, onHapusRiwayat,
         {riwayatBulanIni.length === 0 ? (
           <div style={s.kosong}>{t.belumAdaRiwayatBulanIni}</div>
         ) : (
-          riwayatBulanIni.map((r) => (
+          riwayatBulanIni.map((r) => {
+            const lunasTampak = r.statusBayar === STATUS_BAYAR.LUNAS && !tahan.has(r.id)
+            const animasi = lunasTampak && baruLunas.has(r.id)
+            return (
             <SwipeableItem key={r.id} onDelete={() => onHapusRiwayat(r.id)} onEdit={() => setItemEdit(r)}>
               {/* Tiket: blok tanggal di kiri (hijau saat lunas), garis putus-putus, jam dan info, lalu harga dan tombol bergaya konsol */}
-              <div style={s.tiket}>
-                <div style={{ ...s.blokTanggal, background: r.statusBayar === STATUS_BAYAR.BELUM ? '#0B4466' : '#0B4A33' }}>
+              <div className={animasi ? 'riwayat-lunas' : undefined} style={s.tiket}>
+                <div style={{ ...s.blokTanggal, background: lunasTampak ? '#0B4A33' : '#0B4466', transition: 'background 0.3s' }}>
                   <span style={s.tanggalAngka}>{Number(r.tanggal.split('-')[2])}</span>
                   <span style={s.tanggalBulan}>{t.namaBulanPendek[Number(r.tanggal.split('-')[1]) - 1]}</span>
                 </div>
@@ -93,7 +122,7 @@ export default function OjekRiwayatTab({ riwayat, onTandaiLunas, onHapusRiwayat,
                   </div>
                   <div style={{ ...s.tiketBaris, marginTop: 8 }}>
                     <span style={s.itemDesc}>{r.aksi === 'jemput' ? t.jemput : t.antar} · {r.where}</span>
-                    {r.statusBayar === STATUS_BAYAR.BELUM ? (
+                    {!lunasTampak ? (
                       <button className="tekan" style={s.lunasBtn} onClick={() => onTandaiLunas(r.id)}>
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                           <path d="M5 12l5 5L20 7" />
@@ -101,13 +130,14 @@ export default function OjekRiwayatTab({ riwayat, onTandaiLunas, onHapusRiwayat,
                         {t.tandaiLunas}
                       </button>
                     ) : (
-                      <span style={s.lunasBadge}>✓ {t.lunas}</span>
+                      <span className={animasi ? 'lunas-pop' : undefined} style={s.lunasBadge}>✓ {t.lunas}</span>
                     )}
                   </div>
                 </div>
               </div>
             </SwipeableItem>
-          ))
+            )
+          })
         )}
       </div>
 
