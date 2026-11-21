@@ -243,15 +243,15 @@ export function FotoKonsol({ sesi }) {
 export const labelSesiFoto = (fase, lang) => (TEKS[lang] || TEKS.id)[fase === 'kamera' ? 'kamera' : 'preview']
 
 const s = {
-  lapis: { position: 'absolute', inset: 0, zIndex: 1300, background: '#04141F', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '0 8px', boxSizing: 'border-box', transformOrigin: 'center' },
+  lapis: { position: 'absolute', inset: 0, zIndex: 1150, background: 'rgba(1, 42, 64, 0.8)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '0 8px', boxSizing: 'border-box', transformOrigin: 'center' },
   bingkai: { position: 'relative', width: '100%', aspectRatio: '4 / 3', maxHeight: '88%', background: '#000', overflow: 'hidden', boxShadow: '0 0 0 2px #5ED0FF55' },
   vfIsi: { position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', display: 'block' },
   info: { fontFamily: "'Silkscreen', monospace", fontSize: 9, letterSpacing: '0.1em', color: '#8FB2D0' },
   kilat: { position: 'absolute', inset: 0, background: '#fff', pointerEvents: 'none' },
   klik: { position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-judul)', fontSize: 40, color: '#fff', letterSpacing: '2px', textShadow: '3px 3px 0 #BC1E2F', transform: 'rotate(-6deg)', pointerEvents: 'none' },
   tag: { position: 'absolute', left: 8, bottom: 8, background: 'rgba(4,25,42,0.85)', border: '1px solid #5ED0FF66', color: '#5ED0FF', fontFamily: "'Silkscreen', monospace", fontSize: 8, letterSpacing: '0.08em', padding: '3px 6px 2px' },
-  sonar: { position: 'absolute', left: '50%', top: '50%', width: 44, height: 44, marginLeft: -22, marginTop: -22, border: '3px solid #4ADE80', borderRadius: '50%', zIndex: 1301, pointerEvents: 'none' },
-  terkirim: { position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', zIndex: 1302, background: '#4ADE80', color: '#04192A', fontFamily: "'Silkscreen', monospace", fontSize: 12, letterSpacing: '0.1em', padding: '8px 14px 6px', boxShadow: '0 0 0 2px #04192A, 0 0 16px rgba(74,222,128,0.7)', pointerEvents: 'none', whiteSpace: 'nowrap' },
+  sonar: { position: 'absolute', left: '50%', top: '50%', width: 44, height: 44, marginLeft: -22, marginTop: -22, border: '3px solid #4ADE80', borderRadius: '50%', zIndex: 1151, pointerEvents: 'none' },
+  terkirim: { position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', zIndex: 1152, background: '#4ADE80', color: '#04192A', fontFamily: "'Silkscreen', monospace", fontSize: 12, letterSpacing: '0.1em', padding: '8px 14px 6px', boxShadow: '0 0 0 2px #04192A, 0 0 16px rgba(74,222,128,0.7)', pointerEvents: 'none', whiteSpace: 'nowrap' },
   barisKonsol: { display: 'flex', alignItems: 'center', gap: 8, height: 56, marginTop: -2 },
   tombol: { flex: 1, minWidth: 0, height: 34, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 5, padding: '0 6px', fontFamily: 'inherit', fontSize: 9, letterSpacing: '0.06em', color: '#5ED0FF', background: 'transparent', border: '1px solid #5ED0FF', borderRadius: 0, whiteSpace: 'nowrap' },
   tombolBatal: { color: '#FF8A94', borderColor: '#FF6B78' },
