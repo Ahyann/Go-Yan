@@ -3,15 +3,16 @@ import { createPortal } from 'react-dom'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import JadwalMingguan from '../components/JadwalMingguan.jsx'
-import KonsolJadwal, { jadwalSudahTerisi, lupakanIsiJadwal } from '../components/KonsolJadwal.jsx'
+import KonsolJadwal from '../components/KonsolJadwal.jsx'
 
 export default function OjekJadwalTab({ jadwalMingguan, onTandaiSelesai, simpanJadwal, slotKonsol, konsolSendiri = true, tvNyala = false }) {
   const { t } = useLanguage()
   const { isDemo } = useAuth()
-  const [modeAtur, setModeAtur] = useState(jadwalSudahTerisi)
+  const [modeAtur, setModeAtur] = useState(false)
   const [hariBaru, setHariBaru] = useState(null)
   const jadwalRef = useRef(null)
-
+  // Jadwal sudah terisi kalau ada satu slot yang aktif; kosong lagi setelah direset tiap Sabtu
+  const jadwalAda = Object.values(jadwalMingguan || {}).some((h) => h?.antar?.aktif || h?.jemput?.aktif)
 
   return (
     <main style={s.wrap}>
@@ -29,7 +30,7 @@ export default function OjekJadwalTab({ jadwalMingguan, onTandaiSelesai, simpanJ
         ref={jadwalRef}
         hariBaru={hariBaru}
         jadwal={jadwalMingguan}
-        onSimpan={async (d) => { await simpanJadwal(d); lupakanIsiJadwal() }}
+        onSimpan={simpanJadwal}
         bisaEdit={modeAtur}
         bisaTandaiSelesai={!modeAtur}
         onTandaiSelesai={onTandaiSelesai}
@@ -37,7 +38,7 @@ export default function OjekJadwalTab({ jadwalMingguan, onTandaiSelesai, simpanJ
 
       <p style={s.catatan}>{isDemo ? t.jadwalCatatanOjekDemo : t.jadwalCatatanOjek}</p>
 
-      {slotKonsol && konsolSendiri && createPortal(<div className={tvNyala ? 'tv-nyala' : undefined}><KonsolJadwal jadwalRef={jadwalRef} onHariBaru={setHariBaru} onMasukAtur={() => setModeAtur(true)} /></div>, slotKonsol)}
+      {slotKonsol && konsolSendiri && createPortal(<div className={tvNyala ? 'tv-nyala' : undefined}><KonsolJadwal jadwalRef={jadwalRef} onHariBaru={setHariBaru} onMasukAtur={() => setModeAtur(true)} onSelesaiIsi={() => setModeAtur(false)} jadwalAda={jadwalAda} onSimpan={simpanJadwal} /></div>, slotKonsol)}
     </main>
   )
 }

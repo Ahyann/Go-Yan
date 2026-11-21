@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { HARI_KERJA_KEYS } from '../lib/constants'
-import { playGeserTik, playLunasSemua, playKonsolMati } from '../lib/sound'
+import { playGeserTik, playLunasSemua } from '../lib/sound'
 import { getar } from '../lib/getar'
 import SwipeToFinish from './SwipeToFinish.jsx'
 
@@ -18,58 +18,36 @@ const MULAI_ISI = 450 // ms menunggu baris hari tampil setelah mode atur menyala
 const JEDA_HARI = 260 // ms antar hari saat terisi berurutan
 const PERCIK = [[-26, -22, 0], [0, -30, 0.03], [26, -22, 0.06], [32, 2, 0.02], [24, 26, 0.05], [-2, 32, 0.01], [-28, 24, 0.04], [-34, 0, 0.07]]
 
-// Ingatan selama app terbuka: pindah tab lalu kembali ke Schedule, jadwal yang sudah terisi (belum disimpan) tetap terisi
-// dan konsol langsung menampilkan hasilnya, tanpa harus menggeser lagi. Dihapus saat jadwal disimpan.
-const memori = { fase: 'awal', draft: null, salinan: null }
-export const jadwalSudahTerisi = () => memori.fase === 'selesai'
-export function lupakanIsiJadwal() {
-  memori.fase = 'awal'
-  memori.draft = null
-  memori.salinan = null
-}
-
 const TEKS = {
   id: {
     judulJadwal: 'JADWAL MINGGUAN', belumDiisi: 'BELUM DIISI', geser: 'GESER UNTUK ISI JADWAL', mengisi: 'MENGISI JADWAL…',
-    terisi: 'JADWAL TERISI', ingatSave: 'JANGAN LUPA TEKAN SAVE', undo: 'UNDO', hari: ['SEN', 'SEL', 'RAB', 'KAM', 'JUM'],
+    terisi: 'JADWAL TERISI', tersimpan: 'TERSIMPAN · RESET TIAP SABTU',
   },
   en: {
     judulJadwal: 'WEEKLY SCHEDULE', belumDiisi: 'NOT SET', geser: 'SWIPE TO FILL SCHEDULE', mengisi: 'FILLING SCHEDULE…',
-    terisi: 'SCHEDULE FILLED', ingatSave: "DON'T FORGET TO SAVE", undo: 'UNDO', hari: ['MON', 'TUE', 'WED', 'THU', 'FRI'],
+    terisi: 'SCHEDULE FILLED', tersimpan: 'SAVED · RESETS EVERY SATURDAY',
   },
 }
 
-// Isi konsol bawah saat tab Schedule ojek dalam mode edit: geser untuk mengisi jadwal biasa. Hari terisi berurutan
-// (baris menyala, tik naik nada), lalu ceklis dan nada selesai. Isinya baru tersimpan setelah Save schedule ditekan.
-export default function KonsolJadwal({ jadwalRef, onHariBaru, onMasukAtur }) {
+// Isi konsol bawah saat tab Schedule ojek terbuka. Jadwal kosong: slide untuk mengisi jadwal biasa. Hari terisi berurutan
+// (baris menyala, tik naik nada) dan jadwal langsung tersimpan; sesudahnya konsol menampilkan JADWAL TERISI sampai jadwal
+// direset tiap Sabtu, jadi tidak perlu menggeser lagi.
+export default function KonsolJadwal({ jadwalRef, onHariBaru, onMasukAtur, onSelesaiIsi, jadwalAda, onSimpan }) {
   const { lang } = useLanguage()
   const x = TEKS[lang] || TEKS.id
-  const [fase, setFase] = useState(memori.fase) // awal | isi | selesai
+  const [fase, setFase] = useState('awal') // awal | isi | selesai (selesai: baru saja diisi lewat slide)
   const [langkah, setLangkah] = useState(0)
-  const [putaran, setPutaran] = useState(0)
   const timerRef = useRef([])
-  const salinanRef = useRef(null)
 
   useEffect(() => () => timerRef.current.forEach(clearTimeout), [])
 
-  // Kembali ke tab ini sesudah pernah terisi: pasang lagi isi jadwal yang tadi
-  useEffect(() => {
-    if (memori.fase === 'selesai' && memori.draft) {
-      jadwalRef.current?.pasangDraft(memori.draft)
-      salinanRef.current = memori.salinan
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
   function isiJadwal() {
-    salinanRef.current = jadwalRef.current?.ambilDraft() ?? null
-    memori.salinan = salinanRef.current
-    // Hasil akhirnya langsung dicatat: kalau pindah tab di tengah animasi, saat kembali jadwalnya sudah terisi semua
-    const basis = salinanRef.current || {}
+    // Hasil akhirnya langsung disimpan (tidak menunggu animasi), jadi pindah tab di tengah jalan pun jadwalnya sudah tersimpan
+    const basis = jadwalRef.current?.ambilDraft() || {}
     const akhir = { ...basis }
     HARI_KERJA_KEYS.forEach((h) => { akhir[h] = { ...(basis[h] || {}), ...PRESET[h] } })
-    memori.fase = 'selesai'
-    memori.draft = akhir
+    Promise.resolve(onSimpan?.(akhir)).catch((e) => console.error('Gagal simpan jadwal:', e))
+
     onMasukAtur?.() // masuk mode atur otomatis supaya semua baris hari tampil
     setFase('isi')
     setLangkah(0)
@@ -82,23 +60,14 @@ export default function KonsolJadwal({ jadwalRef, onHariBaru, onMasukAtur }) {
         getar(8)
       }, MULAI_ISI + i * JEDA_HARI))
     })
+    const akhirAnimasi = MULAI_ISI + HARI_KERJA_KEYS.length * JEDA_HARI
     timerRef.current.push(setTimeout(() => {
-      memori.fase = 'selesai'
-      memori.draft = jadwalRef.current?.ambilDraft() ?? null
       setFase('selesai')
       onHariBaru(null)
       playLunasSemua()
       getar(25)
-    }, MULAI_ISI + HARI_KERJA_KEYS.length * JEDA_HARI + 120))
-  }
-
-  function batalkan() {
-    if (salinanRef.current) jadwalRef.current?.pasangDraft(salinanRef.current)
-    memori.fase = 'awal'
-    memori.draft = null
-    setFase('awal')
-    setPutaran((n) => n + 1) // tombol geser dipasang ulang dari awal
-    playKonsolMati()
+    }, akhirAnimasi + 120))
+    timerRef.current.push(setTimeout(() => onSelesaiIsi?.(), akhirAnimasi + 900))
   }
 
   if (fase === 'isi') {
@@ -112,22 +81,22 @@ export default function KonsolJadwal({ jadwalRef, onHariBaru, onMasukAtur }) {
     )
   }
 
-  if (fase === 'selesai') {
+  if (jadwalAda || fase === 'selesai') {
+    const baru = fase === 'selesai'
     return (
       <div style={{ ...s.baris, gap: 12, height: 60 }}>
-        <div className="cek-kotak" style={s.kotakCek}>
+        <div className={baru ? 'cek-kotak' : undefined} style={s.kotakCek}>
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#04192A" strokeWidth="3.4" strokeLinecap="square" aria-hidden="true">
-            <path className="cek-gambar" pathLength="1" d="M5 12.5l4.5 4.5L19 7" />
+            <path className={baru ? 'cek-gambar' : undefined} pathLength="1" d="M5 12.5l4.5 4.5L19 7" />
           </svg>
-          {PERCIK.map(([dx, dy, d], i) => (
+          {baru && PERCIK.map(([dx, dy, d], i) => (
             <span key={i} className="cek-percik" style={{ ...s.percik, '--dx': `${dx}px`, '--dy': `${dy}px`, animationDelay: `${0.18 + d}s`, background: i % 2 ? '#FFFFFF' : '#5ED0FF' }} />
           ))}
         </div>
-        <div className="cek-teks" style={{ minWidth: 0, flex: 1 }}>
+        <div className={baru ? 'cek-teks' : undefined} style={{ minWidth: 0, flex: 1 }}>
           <div style={{ ...s.judul, color: '#4ADE80', fontSize: 12 }}>{x.terisi}</div>
-          <div style={{ ...s.redup, marginTop: 4 }}>{x.ingatSave}</div>
+          <div style={{ ...s.redup, marginTop: 4 }}>{x.tersimpan}</div>
         </div>
-        <button type="button" data-tanpa-suara className="tekan" style={s.undo} onClick={batalkan}>{x.undo}</button>
       </div>
     )
   }
@@ -146,7 +115,7 @@ export default function KonsolJadwal({ jadwalRef, onHariBaru, onMasukAtur }) {
           {x.belumDiisi}
         </span>
       </div>
-      <SwipeToFinish key={putaran} label={x.geser} tinggi={34} konsol cyan onConfirm={isiJadwal} />
+      <SwipeToFinish label={x.geser} tinggi={34} konsol cyan onConfirm={isiJadwal} />
     </div>
   )
 }
@@ -158,8 +127,6 @@ const s = {
   redup: { fontSize: 9, opacity: 0.75, lineHeight: 1.55, letterSpacing: '0.04em' },
   seg: { display: 'flex', gap: 4 },
   petak: { flex: 1, height: 9, transition: 'background 0.12s' },
-  hari: { display: 'flex', justifyContent: 'space-between', fontSize: 8, opacity: 0.65 },
   kotakCek: { position: 'relative', width: 40, height: 40, flexShrink: 0, background: '#4ADE80', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 14px rgba(74,222,128,0.6)' },
   percik: { position: 'absolute', left: 17, top: 17, width: 6, height: 6, opacity: 0, pointerEvents: 'none' },
-  undo: { flexShrink: 0, padding: '6px 8px', fontFamily: 'inherit', fontSize: 9, color: '#FFD23F', background: 'transparent', border: '1px solid #FFD23F', borderRadius: 0 },
 }

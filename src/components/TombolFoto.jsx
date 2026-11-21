@@ -11,10 +11,23 @@ import { playTombolKamera } from '../lib/sound'
 // dipakai (gak ada / izin ditolak), jatuh ke pilih file.
 const layarSentuh = () => window.matchMedia('(pointer: coarse)').matches
 
-function KameraLangsung({ onAmbil, onBatal, onGagal, gaya = false, onGaleri }) {
+function KameraLangsung({ onAmbil, onBatal, onGagal, gaya = false }) {
   const { t, lang } = useLanguage()
   const x = TEKS[lang] || TEKS.id
   const [kilat, setKilat] = useState(false)
+  const [grid, setGrid] = useState(true)
+  const [pos, setPos] = useState(null)
+
+  // Gaya ojek: koordinat dan akurasi GPS ditampilkan di bawah bingkai selama kamera terbuka
+  useEffect(() => {
+    if (!gaya || !navigator.geolocation) return undefined
+    const id = navigator.geolocation.watchPosition(
+      (p) => setPos({ lat: p.coords.latitude, lng: p.coords.longitude, acc: Math.round(p.coords.accuracy) }),
+      () => {},
+      { enableHighAccuracy: true, maximumAge: 5000 }
+    )
+    return () => navigator.geolocation.clearWatch(id)
+  }, [gaya])
   const videoRef = useRef(null)
   const [siap, setSiap] = useState(false)
   const [hadap, setHadap] = useState(layarSentuh() ? 'environment' : 'user')
@@ -61,7 +74,7 @@ function KameraLangsung({ onAmbil, onBatal, onGagal, gaya = false, onGaleri }) {
       <LayarKonsol judul="CAMERA" onTutup={onBatal}>
         <div style={s.vf}>
           <video ref={videoRef} style={{ ...s.vfVideo, transform: balik ? 'scaleX(-1)' : undefined }} playsInline muted />
-          <Garis />
+          {grid && <Garis />}
           <Siku />
           {kilat && (
             <>
@@ -70,10 +83,10 @@ function KameraLangsung({ onAmbil, onBatal, onGagal, gaya = false, onGaleri }) {
             </>
           )}
         </div>
-        <div style={s.petunjuk}>{x.petunjuk}</div>
+        <PetaMini pos={pos} x={x} />
         <div style={{ flex: 1 }} />
         <div style={s.kontrol}>
-          <button type="button" className="tekan" style={s.kotakIkon} onClick={onGaleri} aria-label={x.galeri}><IkonGaleri /></button>
+          <button type="button" className="tekan" style={{ ...s.kotakIkon, ...s.kotakGrid, ...(grid ? null : s.kotakMati) }} onClick={() => setGrid((g) => !g)} aria-pressed={grid} aria-label="Grid"><IkonGrid /><span>GRID</span></button>
           <button type="button" data-tanpa-suara className="tekan" style={{ ...s.shutter, opacity: siap ? 1 : 0.5, transform: kilat ? 'scale(0.92)' : undefined }} disabled={!siap} onClick={jepret} aria-label={t.ambilFoto}>
             <span style={{ ...s.shutterIsi, background: kilat ? '#7F1820' : '#BC1E2F' }} />
           </button>
@@ -119,8 +132,8 @@ function KameraLangsung({ onAmbil, onBatal, onGagal, gaya = false, onGaleri }) {
 }
 
 const TEKS = {
-  id: { petunjuk: 'ARAHKAN KE TUJUAN · KETUK UNTUK FOTO', periksa: 'PERIKSA FOTONYA SEBELUM DIKIRIM', ulangi: 'ULANGI', kirim: 'KIRIM', kirimFajri: 'KIRIM KE FAJRI', galeri: 'Pilih dari galeri' },
-  en: { petunjuk: 'AIM AT THE SPOT · TAP TO SHOOT', periksa: 'CHECK THE PHOTO BEFORE SENDING', ulangi: 'RETAKE', kirim: 'SEND', kirimFajri: 'SEND TO FAJRI', galeri: 'Choose from gallery' },
+  id: { petunjuk: 'ARAHKAN KE TUJUAN · KETUK UNTUK FOTO', periksa: 'PERIKSA FOTONYA SEBELUM DIKIRIM', ulangi: 'ULANGI', kirim: 'KIRIM', kirimFajri: 'KIRIM KE FAJRI', lokasiFoto: 'LOKASI FOTO', mencari: 'MENCARI LOKASI…', akurasi: 'AKURASI' },
+  en: { petunjuk: 'AIM AT THE SPOT · TAP TO SHOOT', periksa: 'CHECK THE PHOTO BEFORE SENDING', ulangi: 'RETAKE', kirim: 'SEND', kirimFajri: 'SEND TO FAJRI', lokasiFoto: 'PHOTO LOCATION', mencari: 'LOCATING…', akurasi: 'ACCURACY' },
 }
 
 const ik = (children, uk = 16) => (
@@ -128,9 +141,23 @@ const ik = (children, uk = 16) => (
 )
 const IkonX = () => ik(<path d="M5 5l14 14M19 5L5 19" />)
 const IkonBalik = () => ik(<path d="M20 8a8 8 0 00-14-2M4 4v4h4M4 16a8 8 0 0014 2M20 20v-4h-4" />, 18)
-const IkonGaleri = () => ik(<><rect x="3" y="4" width="18" height="16" /><path d="M3 16l5-5 4 4 3-3 6 6" /></>)
+const IkonGrid = () => ik(<><rect x="3" y="3" width="18" height="18" /><path d="M9 3v18M15 3v18M3 9h18M3 15h18" /></>, 16)
 const IkonKirim = () => ik(<path d="M3 11l18-8-8 18-2-8z" />, 14)
 const IkonUlang = () => ik(<><path d="M9 14L4 9l5-5" /><path d="M4 9h11a5 5 0 010 10h-3" /></>, 14)
+
+// Potongan peta kecil di bawah bingkai: titik lokasi, koordinat, dan akurasi GPS
+function PetaMini({ pos, x }) {
+  return (
+    <div>
+      <div style={{ ...s.petunjuk, textAlign: 'left', marginBottom: 6 }}>{x.lokasiFoto}</div>
+      <div style={s.petaMini}>
+        <span style={s.titikPeta} />
+        <span style={s.koordinat}>{pos ? `${pos.lat.toFixed(4)}, ${pos.lng.toFixed(4)}` : x.mencari}</span>
+        {pos && <span style={s.akurasi}>{x.akurasi} {pos.acc} M</span>}
+      </div>
+    </div>
+  )
+}
 
 // Garis bagi sepertiga dan siku cyan di bingkai kamera (akun ojek)
 function Garis() {
@@ -230,7 +257,6 @@ export default function TombolFoto({ onKirimFoto, disabled, onSelesai, kecil = f
       {kameraAktif && (
         <KameraLangsung
           gaya={kecil}
-          onGaleri={() => { setKameraAktif(false); inputRef.current?.click() }}
           onBatal={() => setKameraAktif(false)}
           onAmbil={(foto) => {
             setKameraAktif(false)
@@ -280,6 +306,12 @@ const s = {
   layarIsi: { width: '100%', maxWidth: 430, boxSizing: 'border-box', padding: 'calc(var(--safe-top, 0px) + 16px) 16px calc(env(safe-area-inset-bottom, 0px) + 22px)', display: 'flex', flexDirection: 'column', gap: 12 },
   atas: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 32 },
   labelCam: { background: '#5ED0FF', color: '#04192A', fontFamily: "'Silkscreen', monospace", fontSize: 11, letterSpacing: '0.08em', padding: '4px 9px 3px', border: '2px solid #04192A' },
+  kotakGrid: { flexDirection: 'column', gap: 2, fontFamily: "'Silkscreen', monospace", fontSize: 7, letterSpacing: '0.06em' },
+  kotakMati: { opacity: 0.45 },
+  petaMini: { position: 'relative', height: 62, overflow: 'hidden', background: '#132B45', backgroundImage: 'linear-gradient(#1C3A5A 2px, transparent 2px), linear-gradient(90deg, #1C3A5A 2px, transparent 2px)', backgroundSize: '26px 26px', border: '1px solid #5ED0FF55' },
+  titikPeta: { position: 'absolute', left: '46%', top: '34%', width: 12, height: 12, background: '#ED1C24', border: '2px solid #04192A', boxShadow: '0 0 0 2px #5ED0FF' },
+  koordinat: { position: 'absolute', left: 8, bottom: 6, fontFamily: "'JetBrains Mono', monospace", fontSize: 8, color: '#BFE9FF' },
+  akurasi: { position: 'absolute', right: 8, bottom: 6, fontFamily: "'JetBrains Mono', monospace", fontSize: 8, color: '#4ADE80' },
   kotakIkon: { width: 44, height: 44, boxSizing: 'border-box', padding: 0, border: '1px solid #5ED0FF', background: 'rgba(4,25,42,0.7)', color: '#5ED0FF', borderRadius: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
   vf: { position: 'relative', width: '100%', aspectRatio: '4 / 3', overflow: 'hidden', background: '#000', boxShadow: 'inset 0 0 0 2px #5ED0FF55' },
   vfVideo: { position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', display: 'block' },
