@@ -30,11 +30,11 @@ export function lupakanIsiJadwal() {
 
 const TEKS = {
   id: {
-    ringkas: 'SEN, SEL, KAM JEMPUT 15:00 · RAB ANTAR + JEMPUT 16:00', geser: 'GESER UNTUK ISI JADWAL', mengisi: 'MENGISI JADWAL…',
+    judulJadwal: 'JADWAL MINGGUAN', belumDiisi: 'BELUM DIISI', geser: 'GESER UNTUK ISI JADWAL', mengisi: 'MENGISI JADWAL…',
     terisi: 'JADWAL TERISI', ingatSave: 'JANGAN LUPA TEKAN SAVE', undo: 'UNDO', hari: ['SEN', 'SEL', 'RAB', 'KAM', 'JUM'],
   },
   en: {
-    ringkas: 'MON, TUE, THU PICKUP 15:00 · WED DROP-OFF + PICKUP 16:00', geser: 'SWIPE TO FILL SCHEDULE', mengisi: 'FILLING SCHEDULE…',
+    judulJadwal: 'WEEKLY SCHEDULE', belumDiisi: 'NOT SET', geser: 'SWIPE TO FILL SCHEDULE', mengisi: 'FILLING SCHEDULE…',
     terisi: 'SCHEDULE FILLED', ingatSave: "DON'T FORGET TO SAVE", undo: 'UNDO', hari: ['MON', 'TUE', 'WED', 'THU', 'FRI'],
   },
 }
@@ -133,7 +133,19 @@ export default function KonsolJadwal({ jadwalRef, onHariBaru, onMasukAtur }) {
   }
 
   return (
-    <div style={{ ...s.kolom, height: 58, justifyContent: 'center' }}>
+    <div style={s.kolom}>
+      <div style={{ ...s.baris, justifyContent: 'space-between', fontSize: 9, letterSpacing: '0.06em', height: 20 }}>
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: '#FFFFFF', fontSize: 10 }}>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="square" aria-hidden="true">
+            <rect x="3" y="5" width="18" height="16" /><path d="M3 10h18M8 3v4M16 3v4M8 15l3 3 5-6" />
+          </svg>
+          {x.judulJadwal}
+        </span>
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, color: '#FF6B78' }}>
+          <i className="titik-merah" style={{ width: 6, height: 6, background: '#FF4C4C', display: 'block' }} />
+          {x.belumDiisi}
+        </span>
+      </div>
       <SwipeToFinish key={putaran} label={x.geser} tinggi={34} konsol cyan onConfirm={isiJadwal} />
     </div>
   )
