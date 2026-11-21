@@ -747,6 +747,15 @@ export function playSambutKonsol() {
   ;[523, 659, 784, 1046].forEach((f, i) => nadaPendek(ctx, 'square', f, f, 0.08, 0.06, i * 0.09))
 }
 
+// Glitch sambutan konsol: tiga desis kotak acak pendek
+export function playSambutGlitch() {
+  const ctx = ctxSiapEfek()
+  if (!ctx) return
+  nadaPendek(ctx, 'square', 1800, 200, 0.05, 0.06, 0)
+  nadaPendek(ctx, 'sawtooth', 300, 1400, 0.05, 0.05, 0.06)
+  nadaPendek(ctx, 'square', 2200, 600, 0.04, 0.05, 0.12)
+}
+
 // Pop up GO: dibuka dengan dua nada naik seperti sinyal radio, ditutup dengan satu nada turun.
 export function playGoBuka() {
   const ctx = ctxSiapEfek()

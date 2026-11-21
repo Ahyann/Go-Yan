@@ -250,10 +250,7 @@ export default function OjekHomeTab({ slotKonsol,
               </>
             ) : (
               <>
-                <JamKonsol keterangan={t.monitorStandby} />
-                <div aria-hidden="true" style={{ ...s.baris2, overflow: 'hidden', marginTop: 8 }}>
-                  <PesanBergilir teks={t.teksJalanOjek} />
-                </div>
+                <JamKonsol keterangan={t.monitorStandby} bawah={<PesanBergilir teks={t.teksJalanOjek} />} />
               </>
             )}
           </>,
