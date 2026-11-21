@@ -4,8 +4,8 @@ import { TEKS_STATUS, jenisCuaca, useStatusSiaga } from '../lib/statusSiaga'
 import { IkonCuaca } from './BarisStatusSiaga.jsx'
 
 const TEKS = {
-  id: { stJas: 'BAWA JAS HUJAN', jamS: 'J', menitS: 'M', kini: 'SEKARANG', stPanas: 'PANAS, BAWA MINUM', stAman: 'AMAN', kembali: 'KEMBALI', hujan: 'HUJAN ± ', cerah: 'TANPA HUJAN', kosong: 'NYALAKAN LOKASI UNTUK PRAKIRAAN', lokasi: 'LOKASIMU', jemput: 'JEMPUT', antar: 'ANTAR' },
-  en: { stJas: 'WEAR A RAINCOAT', jamS: 'H', menitS: 'M', kini: 'NOW', stPanas: 'HOT, DRINK UP', stAman: 'ALL CLEAR', kembali: 'BACK', hujan: 'RAIN ~ ', cerah: 'NO RAIN', kosong: 'TURN ON LOCATION FOR FORECAST', lokasi: 'YOUR AREA', jemput: 'PICKUP', antar: 'DROP-OFF' },
+  id: { stJas: 'BAWA JAS HUJAN', jamS: 'J', menitS: 'M', kini: 'SEKARANG', label: 'STATUS:', tanpaJemput: 'BELUM ADA JEMPUT', stPanas: 'PANAS, MINUM!', stAman: 'AMAN', kembali: 'KEMBALI', kosong: 'NYALAKAN LOKASI UNTUK PRAKIRAAN', lokasi: 'LOKASIMU', jemput: 'JEMPUT', antar: 'ANTAR' },
+  en: { stJas: 'WEAR RAINCOAT', jamS: 'H', menitS: 'M', kini: 'NOW', label: 'STATUS:', tanpaJemput: 'NO PICKUP 24H', stPanas: 'HOT, DRINK UP', stAman: 'ALL CLEAR', kembali: 'BACK', kosong: 'TURN ON LOCATION FOR FORECAST', lokasi: 'YOUR AREA', jemput: 'PICKUP', antar: 'DROP-OFF' },
 }
 const AMBANG_HUJAN = 50 // persen peluang hujan yang dianggap "akan hujan"
 const HARI = ['minggu', 'senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu']
@@ -54,6 +54,25 @@ function acaraJam(jadwal, j) {
   return hasil
 }
 
+// Jadwal jemput/antar terdekat dalam 24 jam ke depan (memakai jam HP), atau null kalau tidak ada
+function jadwalTerdekat(jadwal, sekarang) {
+  if (!jadwal) return null
+  let terbaik = null
+  for (let d = 0; d <= 1; d++) {
+    const tgl = new Date(sekarang + d * 86400000)
+    const h = jadwal[HARI[tgl.getDay()]]
+    if (!h) continue
+    for (const jenis of ['jemput', 'antar']) {
+      const a = h[jenis]
+      if (!a?.aktif || !/^\d{2}:\d{2}$/.test(a.jam || '')) continue
+      const t = new Date(tgl.getFullYear(), tgl.getMonth(), tgl.getDate(), Number(a.jam.slice(0, 2)), Number(a.jam.slice(3, 5))).getTime()
+      const sisa = t - sekarang
+      if (sisa > -60000 && sisa <= 86400000 && (!terbaik || sisa < terbaik.sisa)) terbaik = { jenis, jam: a.jam, sisa }
+    }
+  }
+  return terbaik
+}
+
 // Halaman prakiraan cuaca di layar konsol ojek: cuaca sekarang besar di kiri beserta nama tempat, jam-jam berikutnya di kanan
 // (bisa digeser). Jam yang cocok dengan jadwal jemput/antar yang sudah diisi ditandai merah, dan ringkasannya di kanan atas.
 export default function KonsolCuaca({ onKembali, lokasiAktif = false, jadwal = null }) {
@@ -93,19 +112,15 @@ export default function KonsolCuaca({ onKembali, lokasiAktif = false, jadwal = n
     else status = { jenis: 'aman', teks: k.stAman, warna: '#4ADE80' }
   }
 
-  let ringkas = ''
-  let warnaRingkas = '#4ADE80'
-  if (idxJadwal >= 0) {
-    const a = tanda[idxJadwal][0]
-    const sisa = new Date(`${berikut[idxJadwal].tgl}T${a.jam}:00`).getTime() - sekarang
-    const jm = Math.floor(sisa / 3600000)
-    const mn = Math.floor((sisa % 3600000) / 60000)
-    ringkas = `${k[a.jenis]} ${sisa <= 0 ? k.kini : jm > 0 ? `${jm}${k.jamS} ${mn}${k.menitS}` : `${mn}${k.menitS}`}`
+  // Pojok kanan: hitung mundur ke jadwal terdekat dalam 24 jam, atau keterangan belum ada jemputan
+  const terdekat = jadwalTerdekat(jadwal, sekarang)
+  let ringkas = k.tanpaJemput
+  let warnaRingkas = 'rgba(232, 237, 249, 0.55)'
+  if (terdekat) {
+    const jm = Math.floor(terdekat.sisa / 3600000)
+    const mn = Math.max(0, Math.floor((terdekat.sisa % 3600000) / 60000))
+    ringkas = `${k[terdekat.jenis]} ${terdekat.sisa <= 0 ? k.kini : jm > 0 ? `${jm}${k.jamS} ${mn}${k.menitS}` : `${mn}${k.menitS}`}`
     warnaRingkas = '#FF7A85'
-  } else if (jam.length) {
-    const jamHujan = jam.find((j) => j.hujan >= AMBANG_HUJAN)
-    ringkas = jamHujan ? `${k.hujan}${jamHujan.w}` : k.cerah
-    warnaRingkas = jamHujan ? '#5ED0FF' : '#4ADE80'
   }
 
   return (
@@ -116,6 +131,7 @@ export default function KonsolCuaca({ onKembali, lokasiAktif = false, jadwal = n
         </button>
         {status && (
           <span style={{ ...s.status, color: status.warna }}>
+            <span style={s.statusLabel}>{k.label}</span>
             <EmoteStatus jenis={status.jenis} />
             <span style={s.statusTeks}>{status.teks}</span>
           </span>
@@ -166,9 +182,10 @@ export default function KonsolCuaca({ onKembali, lokasiAktif = false, jadwal = n
 const s = {
   kepala: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, height: 18 },
   status: { display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 8, letterSpacing: '0.08em', minWidth: 0, flex: '0 1 auto' },
+  statusLabel: { color: '#E8EDF9', opacity: 0.6, whiteSpace: 'nowrap' },
   statusTeks: { whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' },
-  kembali: { background: 'none', border: 'none', color: '#FFFFFF', font: 'inherit', fontSize: 9, letterSpacing: '0.1em', padding: '2px 6px 2px 0', cursor: 'pointer', whiteSpace: 'nowrap' },
-  ringkas: { fontSize: 9, letterSpacing: '0.08em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0 },
+  kembali: { background: 'none', border: 'none', color: '#FFFFFF', font: 'inherit', fontSize: 8, letterSpacing: '0.1em', padding: '2px 6px 2px 0', cursor: 'pointer', whiteSpace: 'nowrap' },
+  ringkas: { fontSize: 8, letterSpacing: '0.08em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0 },
   badan: { display: 'flex', alignItems: 'center', gap: 8, marginTop: 3, height: 46 },
   kiri: { display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0, paddingRight: 8, borderRight: '1px solid rgba(94, 208, 255, 0.2)', maxWidth: 128 },
   kiriTeks: { display: 'flex', flexDirection: 'column', lineHeight: 1.15, minWidth: 0 },
