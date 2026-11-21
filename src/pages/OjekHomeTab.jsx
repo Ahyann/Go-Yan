@@ -350,9 +350,9 @@ const s = {
     background: 'var(--panel)',
     // Peta menjorok ke dalam: tepi gelap di atas/kiri, terang di bawah/kanan (bevel piksel 3D)
     borderStyle: 'solid',
-    borderWidth: 6,
-    borderColor: '#1C6A9B #2A86BD #2A86BD #1C6A9B',
-    boxShadow: '0 0 0 2px #0F4770',
+    borderWidth: 7,
+    borderColor: '#114A71 #195F90 #195F90 #114A71',
+    boxShadow: '0 0 0 2px #0A3556',
   },
   // Garis gelap tipis di sisi dalam bevel, di atas peta (tidak menangkap sentuhan)
   // Tepi dalam peta: garis gelap tipis di semua sisi (seperti layar Spidey Tracker), tanpa bayangan jatuh

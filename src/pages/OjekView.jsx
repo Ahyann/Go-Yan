@@ -432,9 +432,9 @@ const s = {
     overflowY: 'auto',
     background: 'var(--bg, #023854)',
     borderStyle: 'solid',
-    borderWidth: 6,
-    borderColor: '#1C6A9B #2A86BD #2A86BD #1C6A9B',
-    boxShadow: '0 0 0 2px #0F4770, inset 0 0 0 3px #071E30',
+    borderWidth: 7,
+    borderColor: '#114A71 #195F90 #195F90 #114A71',
+    boxShadow: '0 0 0 2px #0A3556, inset 0 0 0 3px #071E30',
     '--safe-top': '0px',
   },
 }
