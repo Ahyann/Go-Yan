@@ -801,3 +801,8 @@ button {
 /* Strip jam di halaman cuaca digeser dengan jari, bilah gulirnya disembunyikan */
 .gulir-sembunyi { scrollbar-width: none; }
 .gulir-sembunyi::-webkit-scrollbar { display: none; }
+
+/* Halaman cuaca ojek: bingkai merah kolom jam jemput berkedip pelan */
+@keyframes bingkai-jemput { 0%, 100% { border-top-color: #ED1C24; border-left-color: #ED1C24; border-right-color: #ED1C24; } 50% { border-top-color: rgba(237, 28, 36, 0.35); border-left-color: rgba(237, 28, 36, 0.35); border-right-color: rgba(237, 28, 36, 0.35); } }
+.bingkai-jemput { animation: bingkai-jemput 1.2s steps(1) infinite; }
+@media (prefers-reduced-motion: reduce) { .bingkai-jemput { animation: none; } }
