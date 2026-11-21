@@ -13,6 +13,8 @@ const PRESET = {
   rabu: { antar: { aktif: true, jam: '' }, jemput: { aktif: true, jam: '16:00' } },
   kamis: { antar: KOSONG, jemput: { aktif: true, jam: '15:00' } },
   jumat: { antar: KOSONG, jemput: KOSONG },
+  sabtu: { antar: KOSONG, jemput: KOSONG },
+  minggu: { antar: KOSONG, jemput: KOSONG },
 }
 // Undo: jadwal sebelum diisi disimpan 24 jam, jadi isi otomatis bisa dibatalkan walaupun app sempat ditutup
 const KUNCI_UNDO = 'goyan:undo-jadwal'
@@ -43,17 +45,17 @@ const PERCIK = [[-26, -22, 0], [0, -30, 0.03], [26, -22, 0.06], [32, 2, 0.02], [
 const TEKS = {
   id: {
     judulJadwal: 'JADWAL MINGGUAN', belumDiisi: 'BELUM DIISI', geser: 'GESER UNTUK ISI JADWAL', mengisi: 'MENGISI JADWAL…',
-    terisi: 'JADWAL TERISI', tersimpan: 'TERSIMPAN · RESET TIAP SABTU', undo: 'UNDO', reset: 'RESET',
+    terisi: 'JADWAL TERISI', tersimpan: 'TERSIMPAN · RESET TIAP SENIN', undo: 'UNDO', reset: 'RESET',
   },
   en: {
     judulJadwal: 'WEEKLY SCHEDULE', belumDiisi: 'NOT SET', geser: 'SWIPE TO FILL SCHEDULE', mengisi: 'FILLING SCHEDULE…',
-    terisi: 'SCHEDULE FILLED', tersimpan: 'SAVED · RESETS EVERY SATURDAY', undo: 'UNDO', reset: 'RESET',
+    terisi: 'SCHEDULE FILLED', tersimpan: 'SAVED · RESETS EVERY MONDAY', undo: 'UNDO', reset: 'RESET',
   },
 }
 
 // Isi konsol bawah saat tab Schedule ojek terbuka. Jadwal kosong: slide untuk mengisi jadwal biasa. Hari terisi berurutan
 // (baris menyala, tik naik nada) dan jadwal langsung tersimpan; sesudahnya konsol menampilkan JADWAL TERISI sampai jadwal
-// direset tiap Sabtu, jadi tidak perlu menggeser lagi.
+// direset tiap Senin, jadi tidak perlu menggeser lagi.
 export default function KonsolJadwal({ jadwalRef, onHariBaru, onMasukAtur, onSelesaiIsi, onSedangIsi, jadwalAda, onSimpan }) {
   const { lang } = useLanguage()
   const x = TEKS[lang] || TEKS.id

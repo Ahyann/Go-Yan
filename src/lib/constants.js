@@ -23,7 +23,8 @@ export const STATUS_PERMINTAAN = {
   DITOLAK: 'ditolak',
 }
 
-export const HARI_KERJA_KEYS = ['senin', 'selasa', 'rabu', 'kamis', 'jumat']
+// Hari yang bisa dijadwalkan: Senin sampai Minggu
+export const HARI_KERJA_KEYS = ['senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu', 'minggu']
 
 export const formatRupiah = (angka) =>
   new Intl.NumberFormat('id-ID', {

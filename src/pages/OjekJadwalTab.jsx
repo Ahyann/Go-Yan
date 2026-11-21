@@ -12,7 +12,7 @@ export default function OjekJadwalTab({ jadwalMingguan, onTandaiSelesai, simpanJ
   const [hariBaru, setHariBaru] = useState(null)
   const [sedangIsi, setSedangIsi] = useState(false)
   const jadwalRef = useRef(null)
-  // Jadwal sudah terisi kalau ada satu slot yang aktif; kosong lagi setelah direset tiap Sabtu
+  // Jadwal sudah terisi kalau ada satu slot yang aktif; kosong lagi setelah direset tiap Senin
   const jadwalAda = Object.values(jadwalMingguan || {}).some((h) => h?.antar?.aktif || h?.jemput?.aktif)
 
   return (

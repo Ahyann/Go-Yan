@@ -10,6 +10,8 @@ const KOSONG = {
   rabu: { antar: { aktif: false, jam: '' }, jemput: { aktif: false, jam: '' }, selesai: false },
   kamis: { antar: { aktif: false, jam: '' }, jemput: { aktif: false, jam: '' }, selesai: false },
   jumat: { antar: { aktif: false, jam: '' }, jemput: { aktif: false, jam: '' }, selesai: false },
+  sabtu: { antar: { aktif: false, jam: '' }, jemput: { aktif: false, jam: '' }, selesai: false },
+  minggu: { antar: { aktif: false, jam: '' }, jemput: { aktif: false, jam: '' }, selesai: false },
 }
 
 function formatTanggalLokal(d) {
@@ -23,17 +25,25 @@ export function kodeMingguIni() {
   const d = new Date()
   const hari = d.getDay()
 
-  const mundurHari = (hari - 6 + 7) % 7
+  // Minggu jadwal dimulai Senin 00:00 (jadwal berisi Senin sampai Minggu, jadi direset saat Senin dimulai)
+  const mundurHari = (hari - 1 + 7) % 7
 
   const referensi = new Date(d)
   referensi.setDate(d.getDate() - mundurHari)
-  referensi.setHours(12, 0, 0, 0)
-
-  if (referensi > d) {
-    referensi.setDate(referensi.getDate() - 7)
-  }
+  referensi.setHours(0, 0, 0, 0)
 
   return formatTanggalLokal(referensi)
+}
+
+// Jadwal lama memakai kode Sabtu 12:00. Kode Sabtu itu masih dianggap minggu ini kalau jatuh antara Sabtu sebelum
+// Senin minggu ini sampai Sabtu minggu ini, supaya jadwal yang sudah diisi tidak hilang saat aturan reset berganti.
+function kodeLamaMasihBerlaku(kode, mingguSekarang) {
+  if (!kode) return false
+  const k = new Date(`${kode}T12:00:00`)
+  if (Number.isNaN(k.getTime()) || k.getDay() !== 6) return false
+  const senin = new Date(`${mingguSekarang}T12:00:00`).getTime()
+  const selisihHari = Math.round((k.getTime() - senin) / 86400000)
+  return selisihHari >= -2 && selisihHari <= 5
 }
 
 export function useJadwalMingguan() {
@@ -56,7 +66,7 @@ export function useJadwalMingguan() {
       }
 
       const data = snap.data()
-      if (data.kodeMinggu !== mingguSekarang) {
+      if (data.kodeMinggu !== mingguSekarang && !kodeLamaMasihBerlaku(data.kodeMinggu, mingguSekarang)) {
         setJadwal({ ...KOSONG, kodeMinggu: mingguSekarang })
         return
       }

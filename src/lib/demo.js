@@ -24,6 +24,8 @@ const JADWAL_CONTOH = {
   rabu: { antar: { aktif: false, jam: '' }, jemput: { aktif: false, jam: '' }, selesai: false },
   kamis: { antar: { aktif: true, jam: '17:00' }, jemput: { aktif: true, jam: '07:15' }, selesai: false },
   jumat: { antar: { aktif: false, jam: '' }, jemput: { aktif: false, jam: '' }, selesai: false },
+  sabtu: { antar: { aktif: false, jam: '' }, jemput: { aktif: false, jam: '' }, selesai: false },
+  minggu: { antar: { aktif: false, jam: '' }, jemput: { aktif: false, jam: '' }, selesai: false },
 }
 
 // Dipanggil begitu sesi demo baru mulai, biar app-nya keliatan "hidup"
