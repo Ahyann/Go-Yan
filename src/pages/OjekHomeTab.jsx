@@ -351,11 +351,12 @@ const s = {
     // Peta menjorok ke dalam: tepi gelap di atas/kiri, terang di bawah/kanan (bevel piksel 3D)
     borderStyle: 'solid',
     borderWidth: 6,
-    borderColor: '#0C3A5A #8FD8FF #8FD8FF #0C3A5A',
+    borderColor: '#1C6A9B #2A86BD #2A86BD #1C6A9B',
+    boxShadow: '0 0 0 2px #0F4770',
   },
   // Garis gelap tipis di sisi dalam bevel, di atas peta (tidak menangkap sentuhan)
-  // Lekuk dalam peta: bibir gelap berlapis di atas dan kiri (bayangan jatuh ke dalam), tipis di bawah dan kanan
-  garisDalamPeta: { position: 'absolute', inset: 0, zIndex: 1050, pointerEvents: 'none', boxShadow: 'inset 0 0 0 2px #04192A, inset 8px 8px 0 rgba(0, 0, 0, 0.55), inset 11px 11px 0 rgba(0, 0, 0, 0.25), inset -4px -4px 0 rgba(0, 0, 0, 0.3)' },
+  // Tepi dalam peta: garis gelap tipis di semua sisi (seperti layar Spidey Tracker), tanpa bayangan jatuh
+  garisDalamPeta: { position: 'absolute', inset: 0, zIndex: 1050, pointerEvents: 'none', boxShadow: 'inset 0 0 0 3px #071E30' },
 
   permintaanLabel: { fontSize: 13, color: '#9FC3E8' },
   misiBaruRow: {

@@ -433,8 +433,8 @@ const s = {
     background: 'var(--bg, #023854)',
     borderStyle: 'solid',
     borderWidth: 6,
-    borderColor: '#0C3A5A #8FD8FF #8FD8FF #0C3A5A',
-    boxShadow: 'inset 0 0 0 2px #04192A, inset 8px 8px 0 rgba(0, 0, 0, 0.5), inset 11px 11px 0 rgba(0, 0, 0, 0.22)',
+    borderColor: '#1C6A9B #2A86BD #2A86BD #1C6A9B',
+    boxShadow: '0 0 0 2px #0F4770, inset 0 0 0 3px #071E30',
     '--safe-top': '0px',
   },
 }
