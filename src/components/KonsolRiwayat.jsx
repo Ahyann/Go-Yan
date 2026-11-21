@@ -8,6 +8,9 @@ import { getar } from '../lib/getar'
 const KUNCI_UNDO = 'goyan:undo-lunas'
 const BATAS_UNDO = 24 * 60 * 60 * 1000
 const LAMA_TAHAN = 1000 // ms menahan tombol sampai bar penuh
+// Tombol fungsi (belum saja, salin rekap, tagih) disembunyikan dulu: terlalu rapat dengan baris tab di bawahnya.
+// Kodenya tetap ada; nyalakan lagi setelah letaknya dipilih dari mockup.
+const TOMBOL_FUNGSI = false
 
 function bacaUndo() {
   try {
@@ -181,7 +184,7 @@ export default function KonsolRiwayat({ riwayat, onEditRiwayat, hanyaBelum, onHa
         <div style={s.redup}>{x.sisa} {j}:{m}:{d}</div>
         <div style={s.baris}>
           <button type="button" data-tanpa-suara className="tekan" style={{ ...s.tombol, ...s.lebar, color: '#FFD23F', borderColor: '#FFD23F' }} onClick={batalkanLunas}><Ikon nama="undo" />{x.undo}</button>
-          <TombolFilter hanyaBelum={hanyaBelum} onHanyaBelum={onHanyaBelum} x={x} />
+          {TOMBOL_FUNGSI && <TombolFilter hanyaBelum={hanyaBelum} onHanyaBelum={onHanyaBelum} x={x} />}
         </div>
       </div>
     )
@@ -208,11 +211,13 @@ export default function KonsolRiwayat({ riwayat, onEditRiwayat, hanyaBelum, onHa
         <span style={{ ...s.isiBar, width: `${tahan * 100}%` }} />
         <span style={{ position: 'relative' }}>{x.tahan} <span className="panah-kedip">▮▮▮</span></span>
       </button>
-      <div style={s.baris}>
-        <TombolFilter hanyaBelum={hanyaBelum} onHanyaBelum={onHanyaBelum} x={x} />
-        <button type="button" data-tanpa-suara className="tekan" style={{ ...s.tombol, ...s.lebar }} onClick={salinRekap}><Ikon nama="salin" />{kilat === 'rekap' ? x.tersalin : x.rekap}</button>
-        <button type="button" data-tanpa-suara className="tekan" style={{ ...s.tombol, ...s.lebar, opacity: belum.length ? 1 : 0.4 }} onClick={tagih}><Ikon nama="kirim" />{kilat === 'tagih' ? x.terkirim : x.tagih}</button>
-      </div>
+      {TOMBOL_FUNGSI && (
+        <div style={s.baris}>
+          <TombolFilter hanyaBelum={hanyaBelum} onHanyaBelum={onHanyaBelum} x={x} />
+          <button type="button" data-tanpa-suara className="tekan" style={{ ...s.tombol, ...s.lebar }} onClick={salinRekap}><Ikon nama="salin" />{kilat === 'rekap' ? x.tersalin : x.rekap}</button>
+          <button type="button" data-tanpa-suara className="tekan" style={{ ...s.tombol, ...s.lebar, opacity: belum.length ? 1 : 0.4 }} onClick={tagih}><Ikon nama="kirim" />{kilat === 'tagih' ? x.terkirim : x.tagih}</button>
+        </div>
+      )}
     </div>
   )
 }
@@ -245,7 +250,7 @@ const s = {
   hijauIsi: { background: '#4ADE80', borderColor: '#4ADE80', color: '#04192A' },
   cyanIsi: { background: '#5ED0FF', color: '#04192A' },
   bar: {
-    position: 'relative', height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden',
+    position: 'relative', height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden',
     fontFamily: 'inherit', fontSize: 9, letterSpacing: '0.08em', color: '#4ADE80', background: 'transparent',
     border: '1px solid #4ADE80', borderRadius: 0, touchAction: 'none', WebkitUserSelect: 'none', userSelect: 'none',
   },
