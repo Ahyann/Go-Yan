@@ -379,16 +379,6 @@ function jalurSpidey(ctx) {
 
 // Untuk ketukan pertama setelah app dibuka: audio masih "tidur" (suspended), dan efek yang dibunyikan saat itu
 // langsung dilewati. Fungsi ini membangunkan audio dulu, lalu menjalankan efeknya begitu audio siap.
-// Alarm misi + Spiderman turun saat app dibuka lagi: file suara laba-laba dimuat duluan (tidak menunggu antrean
-// 4 detik) dan audio dibangunkan, baru animasinya dimulai supaya suara dan gerak masuk bersamaan.
-// Paling lama ditunggu 900 ms; lewat dari itu animasi tetap jalan.
-export function siapkanSuaraMasuk() {
-  const ctx = getAudioCtx()
-  const muat = spiderBuffer ? Promise.resolve() : muatSpiderBuffer()
-  const bangun = ctx.state === 'running' ? Promise.resolve() : Promise.resolve(ctx.resume?.()).catch(() => {})
-  return Promise.race([Promise.all([muat, bangun]), new Promise((r) => setTimeout(r, 900))])
-}
-
 export function bunyikanSetelahSiap(fn) {
   if (!efekBoleh()) return
   const ctx = getAudioCtx()
