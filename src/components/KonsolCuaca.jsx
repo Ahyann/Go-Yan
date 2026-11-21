@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { TEKS_STATUS, jenisCuaca, useStatusSiaga } from '../lib/statusSiaga'
+import { playGeserTik } from '../lib/sound'
 import { IkonCuaca } from './BarisStatusSiaga.jsx'
 
 const TEKS = {
@@ -87,6 +88,16 @@ export default function KonsolCuaca({ onKembali, lokasiAktif = false, jadwal = n
   const jenisSkrg = cuaca ? jenisCuaca(cuaca.kode) : 'mendung'
   const [sekarang, setSekarang] = useState(() => Date.now())
   const gulirRef = useRef(null)
+  const kolomTerakhir = useRef(0)
+
+  // Bunyi tik pelan setiap deretan jam bergeser satu kolom (44px)
+  function saatGulir(e) {
+    const k = Math.round(e.currentTarget.scrollLeft / 44)
+    if (k !== kolomTerakhir.current) {
+      kolomTerakhir.current = k
+      playGeserTik(2)
+    }
+  }
 
   // Hitung mundur ke jadwal diperbarui tiap 30 detik
   useEffect(() => {
@@ -99,7 +110,10 @@ export default function KonsolCuaca({ onKembali, lokasiAktif = false, jadwal = n
     const g = gulirRef.current
     if (!g || idxJadwal < 0) return
     const sel = g.children[idxJadwal]
-    if (sel) g.scrollLeft = Math.max(0, sel.offsetLeft - g.offsetLeft - 44)
+    if (sel) {
+      g.scrollLeft = Math.max(0, sel.offsetLeft - g.offsetLeft - 44)
+      kolomTerakhir.current = Math.round(g.scrollLeft / 44) // geser otomatis tidak berbunyi
+    }
   }, [idxJadwal, jam.length])
 
   // Cuaca di jam jadwal terdekat (kalau jam itu masuk prakiraan): emote jas hujan, botol minum, atau centang di sebelah hitung mundur
@@ -147,7 +161,7 @@ export default function KonsolCuaca({ onKembali, lokasiAktif = false, jadwal = n
               <span style={s.tempat}>{cuaca.nama || k.lokasi}</span>
             </span>
           </div>
-          <div ref={gulirRef} className="gulir-sembunyi" style={s.gulir} role="list" aria-label={lang === 'en' ? 'Next hours, swipe sideways' : 'Jam berikutnya, geser ke samping'}>
+          <div ref={gulirRef} onScroll={saatGulir} className="gulir-sembunyi" style={s.gulir} role="list" aria-label={lang === 'en' ? 'Next hours, swipe sideways' : 'Jam berikutnya, geser ke samping'}>
             {berikut.map((j, i) => {
               const jenis = jenisCuaca(j.kode)
               const hujan = j.hujan >= AMBANG_HUJAN

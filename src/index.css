@@ -806,3 +806,16 @@ button {
 @keyframes bingkai-jemput { 0%, 100% { border-top-color: #ED1C24; border-left-color: #ED1C24; border-right-color: #ED1C24; } 50% { border-top-color: rgba(237, 28, 36, 0.35); border-left-color: rgba(237, 28, 36, 0.35); border-right-color: rgba(237, 28, 36, 0.35); } }
 .bingkai-jemput { animation: bingkai-jemput 1.2s steps(1) infinite; }
 @media (prefers-reduced-motion: reduce) { .bingkai-jemput { animation: none; } }
+
+/* Riwayat ojek: kartu yang dihapus glitch merah-biru lalu menyusut jadi garis seperti TV dimatikan */
+@keyframes hapus-glitch {
+  0% { transform: none; filter: none; opacity: 1; }
+  8% { transform: translateX(-4px); filter: drop-shadow(3px 0 0 #ED1C24) drop-shadow(-3px 0 0 #5ED0FF); }
+  16% { transform: translateX(4px); }
+  26% { transform: translateX(-2px); filter: drop-shadow(2px 0 0 #ED1C24); }
+  55% { transform: scaleY(0.04); filter: brightness(3); opacity: 1; }
+  85% { transform: scaleY(0.04) scaleX(0); opacity: 1; }
+  100% { transform: scaleY(0.04) scaleX(0); opacity: 0; }
+}
+.hapus-glitch { animation: hapus-glitch 0.56s linear both; transform-origin: center; }
+@media (prefers-reduced-motion: reduce) { .hapus-glitch { animation: none; opacity: 0; } }
