@@ -205,7 +205,7 @@ export default function KonsolRiwayat({ riwayat, onEditRiwayat, hanyaBelum, onHa
   }
 
   return (
-    <div style={s.kolom}>
+    <div style={{ ...s.kolom, marginTop: 5 }}>
       <div style={{ ...s.baris, justifyContent: 'space-between', fontSize: 10 }}>
         <span style={{ opacity: 0.7 }}>{belum.length ? `${x.belum} · ${belum.length} ${x.trip}` : x.semuaLunas}</span>
         {belum.length > 0 && <span style={{ color: '#FF6B78' }}>{formatRupiah(total).toUpperCase()}</span>}
