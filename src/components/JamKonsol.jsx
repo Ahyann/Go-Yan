@@ -127,7 +127,7 @@ const s = {
   baris: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 },
   kiri: { minWidth: 0 },
   kecil: { fontSize: 10, letterSpacing: '0.06em', opacity: 0.65, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' },
-  kecilKetik: { opacity: 1, height: 13, display: 'flex', alignItems: 'center' },
+  kecilKetik: { opacity: 1, marginTop: 1, height: 17, display: 'flex', alignItems: 'center' },
   jam: { fontSize: 28, lineHeight: 1, color: '#FFFFFF', letterSpacing: '0.04em', textShadow: '0 0 8px rgba(148, 221, 244, 0.6)', flexShrink: 0 },
   bawah: { marginTop: 10 },
 }

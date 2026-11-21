@@ -5,14 +5,13 @@ const HAPUS = 28 // ms per huruf saat dihapus
 const TAHAN = 2400 // ms pesan dibiarkan terbaca
 const JEDA = 280 // ms kosong sebelum pesan berikutnya
 
-// Kepala Spiderman piksel kecil (merah, mata putih, garis jaring gelap) yang menyatu dengan layar jadul
+// Ikon Spiderman asli app (spidericon.png) dipasang di sel kecil layar jadul: latar gelap, tepi cyan tipis, garis scan
 function KepalaSpidey() {
   return (
-    <svg width="13" height="13" viewBox="0 0 12 12" aria-hidden="true" shapeRendering="crispEdges" style={{ flexShrink: 0, display: 'block' }}>
-      <g fill="#ED1C24"><rect x="3" y="0" width="6" height="1" /><rect x="2" y="1" width="8" height="8" /><rect x="3" y="9" width="6" height="2" /></g>
-      <g fill="#FFFFFF"><rect x="3" y="5" width="3" height="2" /><rect x="4" y="4" width="1" height="1" /><rect x="6" y="5" width="3" height="2" /><rect x="7" y="4" width="1" height="1" /></g>
-      <g fill="#04192A"><rect x="6" y="1" width="1" height="3" /><rect x="3" y="3" width="1" height="1" /><rect x="8" y="3" width="1" height="1" /><rect x="2" y="8" width="8" height="1" /></g>
-    </svg>
+    <span aria-hidden="true" style={s.sel}>
+      <img src={`${import.meta.env.BASE_URL}icons/spidericon.png`} alt="" style={s.ikon} />
+      <span style={s.scan} />
+    </span>
   )
 }
 
@@ -54,6 +53,9 @@ export default function KeteranganKetik({ daftar, label }) {
 }
 
 const s = {
+  sel: { position: 'relative', width: 17, height: 17, boxSizing: 'border-box', flexShrink: 0, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: '#04192A', border: '1px solid rgba(94, 208, 255, 0.45)', boxShadow: 'inset 0 0 0 1px rgba(0, 0, 0, 0.5)', overflow: 'hidden' },
+  ikon: { width: 13, height: 13, imageRendering: 'pixelated', display: 'block' },
+  scan: { position: 'absolute', inset: 0, background: 'repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.28) 0 1px, transparent 1px 3px)', pointerEvents: 'none' },
   baris: { display: 'inline-flex', alignItems: 'center', gap: 5, maxWidth: '100%', whiteSpace: 'nowrap' },
   titik: { opacity: 0.65 },
   teks: { opacity: 0.85, minWidth: 0, overflow: 'hidden' },
