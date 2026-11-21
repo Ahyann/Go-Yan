@@ -193,7 +193,7 @@ export default function KonsolRiwayat({ riwayat, onEditRiwayat, hanyaBelum, onHa
     const m = String(Math.floor((sisa % 3600000) / 60000)).padStart(2, '0')
     const d = String(Math.floor((sisa % 60000) / 1000)).padStart(2, '0')
     return (
-      <div style={{ ...s.kolom, marginTop: 5 }}>
+      <div style={{ ...s.kolom, gap: 5, marginTop: 1 }}>
         <div style={{ ...s.baris, justifyContent: 'space-between' }}>
           <span style={{ ...s.judul, color: '#4ADE80' }}>✓ {undo.ids.length} {x.ditandai}</span>
           {undo.total != null && <span style={{ ...s.judul, color: '#4ADE80', flexShrink: 0 }}>{formatRupiah(undo.total).toUpperCase()}</span>}
@@ -203,7 +203,7 @@ export default function KonsolRiwayat({ riwayat, onEditRiwayat, hanyaBelum, onHa
           <span style={{ ...s.redup, flexShrink: 0 }}>{x.sisaUndo} {j}:{m}:{d}</span>
         </div>
         <div style={s.baris}>
-          <button type="button" data-tanpa-suara className="tekan" style={{ ...s.tombol, ...s.lebar, color: '#FFD23F', borderColor: '#FFD23F' }} onClick={batalkanLunas}><Ikon nama="undo" />{x.undo}</button>
+          <button type="button" data-tanpa-suara className="tekan" style={{ ...s.tombol, ...s.lebar, height: 24, marginTop: 1, color: '#FFD23F', borderColor: '#FFD23F' }} onClick={batalkanLunas}><Ikon nama="undo" />{x.undo}</button>
           {TOMBOL_FUNGSI && <TombolFilter hanyaBelum={hanyaBelum} onHanyaBelum={onHanyaBelum} x={x} />}
         </div>
       </div>
