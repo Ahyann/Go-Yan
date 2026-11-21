@@ -3,8 +3,8 @@ import { useLokasiSaya } from '../lib/useLokasiSaya'
 import { usePesanPenumpang } from '../lib/usePesanPenumpang'
 import { playChatSound, playTabPindah, playKonsolAlarm, playKonsolMati } from '../lib/sound'
 import { getar } from '../lib/getar'
-import TeksJalan from '../components/TeksJalan.jsx'
 import JamKonsol from '../components/JamKonsol.jsx'
+import PesanBergilir from '../components/PesanBergilir.jsx'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { useReminderKeberangkatan } from '../lib/useReminderKeberangkatan'
 import { STATUS_PERMINTAAN } from '../lib/constants'
@@ -281,7 +281,7 @@ export default function OjekView({
             <>
               <span className="label-konsol" style={s.labelStatus}>{t.monitorStatus}</span>
               <JamKonsol keterangan={permintaan?.status === STATUS_PERMINTAAN.MENUNGGU ? t.monitorMisiBaru : t.monitorStandby} />
-              <div aria-hidden="true" style={{ ...s.barisJalan, marginTop: 8 }}><TeksJalan teks={t.teksJalanOjek} /></div>
+              <div aria-hidden="true" style={{ ...s.barisJalan, marginTop: 8 }}><PesanBergilir teks={t.teksJalanOjek} /></div>
             </>
           )}
         </div>

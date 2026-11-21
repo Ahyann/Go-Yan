@@ -740,6 +740,13 @@ export function playGeserTik(langkah = 0) {
   nadaPendek(ctx, 'square', f, f, 0.035, 0.07, 0)
 }
 
+// Sambutan konsol ojek saat app dibuka: empat nada naik pendek seperti layar menyala
+export function playSambutKonsol() {
+  const ctx = ctxSiapEfek()
+  if (!ctx) return
+  ;[523, 659, 784, 1046].forEach((f, i) => nadaPendek(ctx, 'square', f, f, 0.08, 0.06, i * 0.09))
+}
+
 // Pop up GO: dibuka dengan dua nada naik seperti sinyal radio, ditutup dengan satu nada turun.
 export function playGoBuka() {
   const ctx = ctxSiapEfek()
