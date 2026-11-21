@@ -3,8 +3,9 @@ import { useLanguage } from '../context/LanguageContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { playSambutGlitch, playKonsolMati, playSambutKonsol, bunyikanSetelahSiap } from '../lib/sound'
 
-// Sambutan hanya sekali tiap app dibuka (bukan tiap pindah tab)
-let sudahDisambut = false
+// Status sambutan selama app terbuka: null (belum), 'tunggu' (WELCOME sudah tampil, menunggu diketuk), 'selesai'.
+// Pindah tab sebelum diketuk tetap menampilkan WELCOME + TAP HERE; sesudah diketuk langsung jam.
+let statusSambut = null
 
 const KATA = 'WELCOME'
 const MULAI = 250 // ms sebelum huruf pertama
@@ -21,8 +22,8 @@ export default function JamKonsol({ keterangan, bawah = null }) {
   const { lang, t } = useLanguage()
   const { isDemo } = useAuth()
   const [sekarang, setSekarang] = useState(() => new Date())
-  const [fase, setFase] = useState(() => (sudahDisambut ? 'jam' : 'ketik')) // ketik | tunggu | glitch | mati | jam
-  const [huruf, setHuruf] = useState(0)
+  const [fase, setFase] = useState(() => (statusSambut === 'selesai' ? 'jam' : statusSambut === 'tunggu' ? 'tunggu' : 'ketik')) // ketik | tunggu | glitch | mati | jam
+  const [huruf, setHuruf] = useState(() => (statusSambut === 'tunggu' ? KATA.length : 0))
   const [dariSambut, setDariSambut] = useState(false)
   const nama = (isDemo ? t.namaDemo : 'Ahyan').toUpperCase()
 
@@ -33,18 +34,18 @@ export default function JamKonsol({ keterangan, bawah = null }) {
 
   useEffect(() => {
     if (fase !== 'ketik') return undefined
-    sudahDisambut = true
     const timer = []
     for (let i = 1; i <= KATA.length; i++) {
       timer.push(setTimeout(() => setHuruf(i), MULAI + (i - 1) * PER_HURUF))
     }
-    timer.push(setTimeout(() => setFase('tunggu'), TAP_PADA))
+    timer.push(setTimeout(() => { setFase('tunggu'); statusSambut = 'tunggu' }, TAP_PADA))
     return () => timer.forEach(clearTimeout)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   function lanjut() {
     if (fase !== 'tunggu') return
+    statusSambut = 'selesai'
     setFase('glitch')
     // Ketukan ini sering jadi sentuhan pertama di app; audio dibangunkan dulu supaya suaranya tidak hilang
     bunyikanSetelahSiap(() => { playSambutKonsol(); playSambutGlitch() })
