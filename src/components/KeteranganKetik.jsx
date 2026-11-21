@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 
-const KETIK = 55 // ms per huruf saat diketik
-const HAPUS = 28 // ms per huruf saat dihapus
-const TAHAN = 2400 // ms pesan dibiarkan terbaca
-const JEDA = 280 // ms kosong sebelum pesan berikutnya
+const KETIK = 110 // ms per huruf saat diketik (pelan supaya tidak pusing)
+const HAPUS = 65 // ms per huruf saat dihapus
+const JEDA = 400 // ms kosong sebelum pesan berikutnya
+const SIKLUS = 8000 // ms tiap pesan, dari mulai diketik sampai pesan berikutnya mulai; sisanya dipakai untuk menahan pesan terbaca
 
 // Ikon Spiderman asli app (spidericon.png) dipasang di sel kecil layar jadul: latar gelap, tepi cyan tipis, garis scan
 function KepalaSpidey() {
@@ -21,20 +21,16 @@ export default function KeteranganKetik({ daftar, label }) {
   const [sekarang, setSekarang] = useState(() => Date.now())
 
   useEffect(() => {
-    const id = setInterval(() => setSekarang(Date.now()), 30)
+    const id = setInterval(() => setSekarang(Date.now()), 50)
     return () => clearInterval(id)
   }, [])
 
-  // Lama tiap pesan dalam satu putaran: ketik + tahan + hapus + jeda
-  const lama = daftar.map((p) => p.length * KETIK + TAHAN + p.length * HAPUS + JEDA)
-  const total = lama.reduce((a, b) => a + b, 0)
-  let sisa = sekarang % total
-  let indeks = 0
-  while (indeks < daftar.length - 1 && sisa >= lama[indeks]) {
-    sisa -= lama[indeks]
-    indeks++
-  }
+  // Tiap pesan tepat SIKLUS ms: ketik, ditahan (sisa waktu), dihapus, jeda
+  const posisi = sekarang % (SIKLUS * daftar.length)
+  const indeks = Math.floor(posisi / SIKLUS)
+  const sisa = posisi - indeks * SIKLUS
   const pesan = daftar[indeks]
+  const TAHAN = Math.max(0, SIKLUS - pesan.length * (KETIK + HAPUS) - JEDA)
   const tKetik = pesan.length * KETIK
   let huruf
   if (sisa < tKetik) huruf = Math.floor(sisa / KETIK)
