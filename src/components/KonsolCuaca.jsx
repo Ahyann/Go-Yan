@@ -3,12 +3,42 @@ import { TEKS_STATUS, jenisCuaca, useStatusSiaga } from '../lib/statusSiaga'
 import { IkonCuaca } from './BarisStatusSiaga.jsx'
 
 const TEKS = {
-  id: { kembali: 'KEMBALI', hujan: 'HUJAN ± ', cerah: 'TANPA HUJAN', kosong: 'NYALAKAN LOKASI UNTUK PRAKIRAAN', lokasi: 'LOKASIMU', jemput: 'JEMPUT', antar: 'ANTAR' },
-  en: { kembali: 'BACK', hujan: 'RAIN ~ ', cerah: 'NO RAIN', kosong: 'TURN ON LOCATION FOR FORECAST', lokasi: 'YOUR AREA', jemput: 'PICKUP', antar: 'DROP-OFF' },
+  id: { stJas: 'BAWA JAS HUJAN', stPanas: 'PANAS, BAWA MINUM', stAman: 'AMAN', kembali: 'KEMBALI', hujan: 'HUJAN ± ', cerah: 'TANPA HUJAN', kosong: 'NYALAKAN LOKASI UNTUK PRAKIRAAN', lokasi: 'LOKASIMU', jemput: 'JEMPUT', antar: 'ANTAR' },
+  en: { stJas: 'WEAR A RAINCOAT', stPanas: 'HOT, DRINK UP', stAman: 'ALL CLEAR', kembali: 'BACK', hujan: 'RAIN ~ ', cerah: 'NO RAIN', kosong: 'TURN ON LOCATION FOR FORECAST', lokasi: 'YOUR AREA', jemput: 'PICKUP', antar: 'DROP-OFF' },
 }
 const AMBANG_HUJAN = 50 // persen peluang hujan yang dianggap "akan hujan"
 const HARI = ['minggu', 'senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu']
 const MERAH = '#ED1C24'
+const BATAS_PANAS = 32 // derajat Celsius yang dianggap panas sekali
+
+// Emote piksel untuk status di tengah kepala halaman
+function EmoteStatus({ jenis }) {
+  const p = { width: 13, height: 13, viewBox: '0 0 12 12', shapeRendering: 'crispEdges', 'aria-hidden': true, style: { flexShrink: 0, display: 'block' } }
+  if (jenis === 'jas') {
+    return (
+      <svg {...p} className="ik-denyut">
+        <g fill="#FFD84A"><rect x="4" y="0" width="4" height="1" /><rect x="3" y="1" width="6" height="2" /><rect x="2" y="3" width="8" height="8" /><rect x="1" y="4" width="1" height="5" /><rect x="10" y="4" width="1" height="5" /></g>
+        <g fill="#04192A"><rect x="5" y="2" width="2" height="1" /><rect x="6" y="5" width="1" height="1" /><rect x="6" y="8" width="1" height="1" /></g>
+        <g fill="#5ED0FF"><rect className="ik-tetes" x="0" y="0" width="1" height="2" /><rect className="ik-tetes" style={{ animationDelay: '0.4s' }} x="11" y="1" width="1" height="2" /></g>
+      </svg>
+    )
+  }
+  if (jenis === 'panas') {
+    return (
+      <svg {...p}>
+        <rect x="5" y="0" width="2" height="1" fill="#FFFFFF" />
+        <rect x="5" y="1" width="2" height="2" fill="#9FD9F5" />
+        <rect x="3" y="3" width="6" height="9" fill="#9FD9F5" />
+        <rect x="4" y="6" width="4" height="5" fill="#5ED0FF" className="ik-denyut" />
+      </svg>
+    )
+  }
+  return (
+    <svg {...p}>
+      <g fill="#4ADE80"><rect x="1" y="6" width="2" height="2" /><rect x="3" y="8" width="2" height="2" /><rect x="5" y="6" width="2" height="2" /><rect x="7" y="4" width="2" height="2" /><rect x="9" y="2" width="2" height="2" /></g>
+    </svg>
+  )
+}
 
 // Jadwal ojek yang sudah diisi (jemput/antar) untuk satu jam prakiraan: kembalian [{ jenis: 'jemput' | 'antar', jam: 'HH:MM' }]
 function acaraJam(jadwal, j) {
@@ -36,14 +66,22 @@ export default function KonsolCuaca({ onKembali, lokasiAktif = false, jadwal = n
   const idxJadwal = tanda.findIndex((t) => t.length > 0)
   const jenisSkrg = cuaca ? jenisCuaca(cuaca.kode) : 'mendung'
 
+  // Status tengah: cuaca di jam jadwal terdekat (kalau ada), kalau tidak cuaca sekarang
+  const sasaran = idxJadwal >= 0 ? berikut[idxJadwal] : jam[0]
+  let status = null
+  if (sasaran) {
+    const jn = jenisCuaca(sasaran.kode)
+    if (jn === 'gerimis' || jn === 'hujan' || jn === 'petir' || sasaran.hujan >= AMBANG_HUJAN) status = { jenis: 'jas', teks: k.stJas, warna: '#5ED0FF' }
+    else if (sasaran.suhu >= BATAS_PANAS) status = { jenis: 'panas', teks: k.stPanas, warna: '#FFD84A' }
+    else status = { jenis: 'aman', teks: k.stAman, warna: '#4ADE80' }
+  }
+
   let ringkas = ''
   let warnaRingkas = '#4ADE80'
   if (idxJadwal >= 0) {
-    const j = berikut[idxJadwal]
     const a = tanda[idxJadwal][0]
-    const jenis = jenisCuaca(j.kode)
-    ringkas = `${k[a.jenis]} ${a.jam} · ${kode[jenis]}${j.hujan >= AMBANG_HUJAN ? ` ${j.hujan}%` : ''}`
-    warnaRingkas = j.hujan >= AMBANG_HUJAN ? '#5ED0FF' : '#4ADE80'
+    ringkas = `${k[a.jenis]} ${a.jam}`
+    warnaRingkas = '#FF7A85'
   } else if (jam.length) {
     const jamHujan = jam.find((j) => j.hujan >= AMBANG_HUJAN)
     ringkas = jamHujan ? `${k.hujan}${jamHujan.w}` : k.cerah
@@ -56,6 +94,12 @@ export default function KonsolCuaca({ onKembali, lokasiAktif = false, jadwal = n
         <button type="button" onClick={onKembali} style={s.kembali} aria-label={k.kembali}>
           <span aria-hidden="true" style={{ color: '#5ED0FF' }}>◀</span> {k.kembali}
         </button>
+        {status && (
+          <span style={{ ...s.status, color: status.warna }}>
+            <EmoteStatus jenis={status.jenis} />
+            <span style={s.statusTeks}>{status.teks}</span>
+          </span>
+        )}
         <span style={{ ...s.ringkas, color: warnaRingkas }}>{ringkas}</span>
       </div>
       {jam.length === 0 ? (
@@ -100,10 +144,12 @@ export default function KonsolCuaca({ onKembali, lokasiAktif = false, jadwal = n
 }
 
 const s = {
-  kepala: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, height: 22 },
-  kembali: { background: 'none', border: 'none', color: '#FFFFFF', font: 'inherit', fontSize: 9, letterSpacing: '0.1em', padding: '4px 6px 4px 0', cursor: 'pointer', whiteSpace: 'nowrap' },
+  kepala: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, height: 18 },
+  status: { display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 8, letterSpacing: '0.08em', minWidth: 0, flex: '0 1 auto' },
+  statusTeks: { whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' },
+  kembali: { background: 'none', border: 'none', color: '#FFFFFF', font: 'inherit', fontSize: 9, letterSpacing: '0.1em', padding: '2px 6px 2px 0', cursor: 'pointer', whiteSpace: 'nowrap' },
   ringkas: { fontSize: 9, letterSpacing: '0.08em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0 },
-  badan: { display: 'flex', alignItems: 'center', gap: 8, marginTop: 6, height: 46 },
+  badan: { display: 'flex', alignItems: 'center', gap: 8, marginTop: 3, height: 46 },
   kiri: { display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0, paddingRight: 8, borderRight: '1px solid rgba(94, 208, 255, 0.2)', maxWidth: 128 },
   kiriTeks: { display: 'flex', flexDirection: 'column', lineHeight: 1.15, minWidth: 0 },
   suhuBesar: { fontFamily: "'JetBrains Mono', monospace", fontSize: 18, color: '#FFFFFF' },
