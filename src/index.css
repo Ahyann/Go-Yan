@@ -793,3 +793,7 @@ button {
 .ik-kilap { animation: ik-kilap 3s steps(10) infinite; }
 .ik-kilau { animation: ik-kilau 3s steps(1) infinite; }
 @media (prefers-reduced-motion: reduce) { .ik-sinar, .ik-awan, .ik-motor, .ik-tetes, .ik-denyut, .ik-kilap, .ik-kilau { animation: none; } .ik-kilau { opacity: 1; } }
+
+/* Slot status siaga yang bisa diketuk (cuaca): redup sebentar saat ditekan, cincin fokus untuk keyboard */
+.slot-status:active { opacity: 0.55; }
+.slot-status:focus-visible { outline: 2px solid #5ED0FF; outline-offset: 3px; }

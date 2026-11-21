@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 
 const KETIK = 240 // ms per huruf saat diketik (pelan supaya tidak pusing)
 const HAPUS = 140 // ms per huruf saat dihapus
-const TAHAN = 8000 // ms pesan dibiarkan terbaca penuh
+const TAHAN = 10000 // ms pesan dibiarkan terbaca penuh
 const JEDA = 500 // ms kosong sebelum pesan berikutnya
 
 // Ikon Spiderman asli app (spidericon.png, latar transparan), dipasang tajam kotak-kotak langsung di layar
@@ -20,7 +20,7 @@ export default function KeteranganKetik({ daftar, label }) {
     return () => clearInterval(id)
   }, [])
 
-  // Lama tiap pesan: ketik + ditahan 8 detik + hapus + jeda
+  // Lama tiap pesan: ketik + ditahan 10 detik + hapus + jeda
   const lama = daftar.map((p) => p.length * (KETIK + HAPUS) + TAHAN + JEDA)
   let sisa = sekarang % lama.reduce((x, y) => x + y, 0)
   let indeks = 0

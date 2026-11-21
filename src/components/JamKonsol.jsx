@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import KeteranganKetik from './KeteranganKetik.jsx'
+import BarisStatusSiaga from './BarisStatusSiaga.jsx'
+import KonsolCuaca from './KonsolCuaca.jsx'
 import { playSambutGlitch, playKonsolMati, playSambutKonsol, bunyikanSetelahSiap } from '../lib/sound'
 
 // Status sambutan selama app terbuka: null (belum), 'tunggu' (WELCOME sudah tampil, menunggu diketuk), 'selesai'.
@@ -27,7 +29,7 @@ const SELESAI_SESUDAH_TAP = MATI_SESUDAH_TAP + 380 // lalu tampilan jam "dinyala
 // menyusul, lalu muncul TAP HERE. Saat layar diketuk (baru di sini ada suara) keduanya glitch sekali. Sesudah itu layar mengecil jadi garis seperti TV dimatikan, dan tampilan jam
 // menyala dari garis yang sama (hari dan tanggal + keterangan di kiri, jam besar di kanan, baris status di bawah).
 // lewatiSambut: sudah ada pesanan, jadi WELCOME tidak ditampilkan dan konsol langsung ke tampilan jam
-export default function JamKonsol({ keterangan, bergilir = false, bawah = null, lewatiSambut = false }) {
+export default function JamKonsol({ keterangan, bergilir = false, totalTrip = null, lokasiAktif = false, lewatiSambut = false }) {
   if (lewatiSambut) statusSambut = 'selesai'
   const { lang, t } = useLanguage()
   const { isDemo } = useAuth()
@@ -35,6 +37,7 @@ export default function JamKonsol({ keterangan, bergilir = false, bawah = null, 
   const [fase, setFase] = useState(() => (statusSambut === 'selesai' ? 'jam' : statusSambut === 'tunggu' ? 'tunggu' : 'ketik')) // ketik | tunggu | glitch | mati | jam
   const [huruf, setHuruf] = useState(() => (statusSambut === 'tunggu' ? KATA.length : 0))
   const [dariSambut, setDariSambut] = useState(false)
+  const [halaman, setHalaman] = useState(null) // null: jam biasa, 'cuaca': halaman prakiraan cuaca
   const nama = (isDemo ? t.namaDemo : 'Ahyan').toUpperCase()
 
   // Pesanan masuk saat WELCOME masih tampil: langsung pindah ke jam
@@ -91,6 +94,8 @@ export default function JamKonsol({ keterangan, bergilir = false, bawah = null, 
     )
   }
 
+  if (halaman === 'cuaca') return <KonsolCuaca lokasiAktif={lokasiAktif} onKembali={() => setHalaman(null)} />
+
   const tanggal = sekarang
     .toLocaleDateString(lang === 'id' ? 'id-ID' : 'en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
     .replace(/,/g, '')
@@ -113,7 +118,7 @@ export default function JamKonsol({ keterangan, bergilir = false, bawah = null, 
           {menit}
         </div>
       </div>
-      {bawah && <div style={s.bawah}>{bawah}</div>}
+      <div style={s.bawah}><BarisStatusSiaga totalTrip={totalTrip} lokasiAktif={lokasiAktif} onBukaCuaca={() => setHalaman('cuaca')} /></div>
     </div>
   )
 }

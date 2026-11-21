@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import JamKonsol from '../components/JamKonsol.jsx'
-import BarisStatusSiaga from '../components/BarisStatusSiaga.jsx'
 import { STATUS_PERMINTAAN, AKSI } from '../lib/constants'
 import { playMisiDiterima, playPesananBatal, playMissionSuccess, playWhooshMasuk, playTombolKamera, playTombolSuara } from '../lib/sound'
 import { useLokasiPenumpang, hapusLokasiPenumpangSekarang } from '../lib/useLokasiPenumpang'
@@ -273,7 +272,7 @@ export default function OjekHomeTab({ slotKonsol, putaranMasuk = 0,
               </>
             ) : (
               <>
-                <JamKonsol bergilir keterangan={t.monitorStandby} bawah={<BarisStatusSiaga totalTrip={totalTrip} lokasiAktif={lokasiAktif} />} />
+                <JamKonsol bergilir keterangan={t.monitorStandby} totalTrip={totalTrip} lokasiAktif={lokasiAktif} />
               </>
             )}
           </>,
