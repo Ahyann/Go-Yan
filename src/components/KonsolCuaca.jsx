@@ -1,10 +1,11 @@
+import { useEffect, useRef, useState } from 'react'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { TEKS_STATUS, jenisCuaca, useStatusSiaga } from '../lib/statusSiaga'
 import { IkonCuaca } from './BarisStatusSiaga.jsx'
 
 const TEKS = {
-  id: { stJas: 'BAWA JAS HUJAN', stPanas: 'PANAS, BAWA MINUM', stAman: 'AMAN', kembali: 'KEMBALI', hujan: 'HUJAN ± ', cerah: 'TANPA HUJAN', kosong: 'NYALAKAN LOKASI UNTUK PRAKIRAAN', lokasi: 'LOKASIMU', jemput: 'JEMPUT', antar: 'ANTAR' },
-  en: { stJas: 'WEAR A RAINCOAT', stPanas: 'HOT, DRINK UP', stAman: 'ALL CLEAR', kembali: 'BACK', hujan: 'RAIN ~ ', cerah: 'NO RAIN', kosong: 'TURN ON LOCATION FOR FORECAST', lokasi: 'YOUR AREA', jemput: 'PICKUP', antar: 'DROP-OFF' },
+  id: { stJas: 'BAWA JAS HUJAN', jamS: 'J', menitS: 'M', kini: 'SEKARANG', stPanas: 'PANAS, BAWA MINUM', stAman: 'AMAN', kembali: 'KEMBALI', hujan: 'HUJAN ± ', cerah: 'TANPA HUJAN', kosong: 'NYALAKAN LOKASI UNTUK PRAKIRAAN', lokasi: 'LOKASIMU', jemput: 'JEMPUT', antar: 'ANTAR' },
+  en: { stJas: 'WEAR A RAINCOAT', jamS: 'H', menitS: 'M', kini: 'NOW', stPanas: 'HOT, DRINK UP', stAman: 'ALL CLEAR', kembali: 'BACK', hujan: 'RAIN ~ ', cerah: 'NO RAIN', kosong: 'TURN ON LOCATION FOR FORECAST', lokasi: 'YOUR AREA', jemput: 'PICKUP', antar: 'DROP-OFF' },
 }
 const AMBANG_HUJAN = 50 // persen peluang hujan yang dianggap "akan hujan"
 const HARI = ['minggu', 'senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu']
@@ -65,6 +66,22 @@ export default function KonsolCuaca({ onKembali, lokasiAktif = false, jadwal = n
   const tanda = berikut.map((j) => acaraJam(jadwal, j))
   const idxJadwal = tanda.findIndex((t) => t.length > 0)
   const jenisSkrg = cuaca ? jenisCuaca(cuaca.kode) : 'mendung'
+  const [sekarang, setSekarang] = useState(() => Date.now())
+  const gulirRef = useRef(null)
+
+  // Hitung mundur ke jadwal diperbarui tiap 30 detik
+  useEffect(() => {
+    const id = setInterval(() => setSekarang(Date.now()), 30000)
+    return () => clearInterval(id)
+  }, [])
+
+  // Deretan jam otomatis digeser supaya kolom jadwal terdekat langsung kelihatan
+  useEffect(() => {
+    const g = gulirRef.current
+    if (!g || idxJadwal < 0) return
+    const sel = g.children[idxJadwal]
+    if (sel) g.scrollLeft = Math.max(0, sel.offsetLeft - g.offsetLeft - 44)
+  }, [idxJadwal, jam.length])
 
   // Status tengah: cuaca di jam jadwal terdekat (kalau ada), kalau tidak cuaca sekarang
   const sasaran = idxJadwal >= 0 ? berikut[idxJadwal] : jam[0]
@@ -80,7 +97,10 @@ export default function KonsolCuaca({ onKembali, lokasiAktif = false, jadwal = n
   let warnaRingkas = '#4ADE80'
   if (idxJadwal >= 0) {
     const a = tanda[idxJadwal][0]
-    ringkas = `${k[a.jenis]} ${a.jam}`
+    const sisa = new Date(`${berikut[idxJadwal].tgl}T${a.jam}:00`).getTime() - sekarang
+    const jm = Math.floor(sisa / 3600000)
+    const mn = Math.floor((sisa % 3600000) / 60000)
+    ringkas = `${k[a.jenis]} ${sisa <= 0 ? k.kini : jm > 0 ? `${jm}${k.jamS} ${mn}${k.menitS}` : `${mn}${k.menitS}`}`
     warnaRingkas = '#FF7A85'
   } else if (jam.length) {
     const jamHujan = jam.find((j) => j.hujan >= AMBANG_HUJAN)
@@ -114,7 +134,7 @@ export default function KonsolCuaca({ onKembali, lokasiAktif = false, jadwal = n
               <span style={s.tempat}>{cuaca.nama || k.lokasi}</span>
             </span>
           </div>
-          <div className="gulir-sembunyi" style={s.gulir} role="list" aria-label={lang === 'en' ? 'Next hours, swipe sideways' : 'Jam berikutnya, geser ke samping'}>
+          <div ref={gulirRef} className="gulir-sembunyi" style={s.gulir} role="list" aria-label={lang === 'en' ? 'Next hours, swipe sideways' : 'Jam berikutnya, geser ke samping'}>
             {berikut.map((j, i) => {
               const jenis = jenisCuaca(j.kode)
               const hujan = j.hujan >= AMBANG_HUJAN
