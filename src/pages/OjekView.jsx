@@ -92,12 +92,12 @@ export default function OjekView({
   const statusMenungguRef = useRef(false)
   statusMenungguRef.current = permintaan?.status === STATUS_PERMINTAAN.MENUNGGU
 
-  const putarAlarmTertunda = () => {
+  const putarAlarmTertunda = (spideyBaru = true) => {
     if (!alarmTertundaRef.current) return
     alarmTertundaRef.current = false
     if (!statusMenungguRef.current) return
     setAlarmKonsol(true)
-    setPutaranMasuk((n) => n + 1) // Spiderman di Home turun lagi dari atas
+    if (spideyBaru) setPutaranMasuk((n) => n + 1) // Spiderman di Home turun lagi dari atas (saat pindah tab, Home dipasang ulang dan sudah turun sendiri)
     bunyikanSetelahSiap(playKonsolAlarm)
   }
 
@@ -216,7 +216,9 @@ export default function OjekView({
     setTabAktif(tab)
     if (tab === 'home') {
       tabAktifRef.current = 'home'
-      if (!document.hidden) putarAlarmTertunda()
+      // Tiap kembali ke Home selagi permintaan masih menunggu, alarm bunyi lagi (bukan hanya sekali)
+      if (statusMenungguRef.current) alarmTertundaRef.current = true
+      if (!document.hidden) putarAlarmTertunda(false)
       setAdaChatBaru(false)
       setAdaPermintaanBaru(false)
     }
