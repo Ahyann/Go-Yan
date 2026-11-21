@@ -7,16 +7,18 @@ import { getar } from '../lib/getar'
 
 // Kartu profil di tab Akun (penumpang dan ojek): foto besar dengan sudut siku warna glow dan nama.
 // Ketuk foto untuk membuka pop up ganti karakter (digeser kiri-kanan) dan warna glow.
-export default function ProfilAkun({ nama, peran, ikon, pilihanIkon, onPilihIkon, warnaKey, onPilihWarna, t }) {
+export default function ProfilAkun({ nama, peran, ikon, pilihanIkon, onPilihIkon, warnaKey, onPilihWarna, t, kecil = false }) {
   const [buka, setBuka] = useState(false)
   const warna = ambilWarnaGlow(warnaKey)
   const a = warna.utama
+  // kecil (opt-in, akun ojek): foto karakter diperkecil supaya tidak mendominasi kartu
+  const k = kecil ? s.kecil : {}
   return (
     <>
-      <section style={{ ...s.kartu, background: `linear-gradient(100deg, ${a}33, var(--card-blue) 62%)` }}>
-        <button type="button" data-tanpa-suara className="tekan" style={s.tombolFoto} onClick={() => setBuka(true)} aria-label={t.gantiFoto}>
+      <section style={{ ...s.kartu, ...k.kartu, background: `linear-gradient(100deg, ${a}33, var(--card-blue) 62%)` }}>
+        <button type="button" data-tanpa-suara className="tekan" style={{ ...s.tombolFoto, ...k.tombolFoto }} onClick={() => setBuka(true)} aria-label={t.gantiFoto}>
           <span key={ikon} className="foto-lompat" style={s.potong}>
-            <img src={`/icons/${ikon}`} style={s.fotoImg} alt="" />
+            <img src={`/icons/${ikon}`} style={{ ...s.fotoImg, ...k.fotoImg }} alt="" />
           </span>
         </button>
         <div style={s.teksBlok}>
@@ -203,6 +205,11 @@ function Siku({ warna, besar = false, mini = false }) {
 }
 
 const s = {
+  kecil: {
+    kartu: { marginTop: 22, minHeight: 84, paddingLeft: 104 },
+    tombolFoto: { left: 10, width: 84, height: 104 },
+    fotoImg: { left: -10, width: 104, height: 104 },
+  },
   kartu: { position: 'relative', marginTop: 46, minHeight: 100, border: '1px solid var(--blue-border)', borderRadius: 0, padding: '0 14px 0 140px', display: 'flex', alignItems: 'center' },
   tombolFoto: { position: 'absolute', left: 10, bottom: 0, width: 116, height: 146, padding: 0, background: 'transparent', border: 'none', borderRadius: 0 },
   potong: { position: 'absolute', inset: 0, overflow: 'hidden', clipPath: 'inset(0 0 2px 0)' },

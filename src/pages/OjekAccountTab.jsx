@@ -45,6 +45,7 @@ export default function OjekAccountTab() {
         warnaKey={warnaAhyan}
         onPilihWarna={pilihWarnaAhyan}
         t={t}
+        kecil
       />
 
       <PengaturanSuara />
