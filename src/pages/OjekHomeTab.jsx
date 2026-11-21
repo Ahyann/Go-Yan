@@ -350,13 +350,13 @@ const s = {
     background: 'var(--panel)',
     // Peta menjorok ke dalam: tepi gelap di atas/kiri, terang di bawah/kanan (bevel piksel 3D)
     borderStyle: 'solid',
-    borderWidth: 7,
-    borderColor: '#114A71 #195F90 #195F90 #114A71',
-    boxShadow: '0 0 0 2px #0A3556',
+    // Warna dan pola dari referensi Spidey Tracker: sisi kiri-kanan biru sedang, atas-bawah biru tua dan sedikit lebih tebal
+    borderWidth: '9px 6px',
+    borderColor: '#164C7A #2976A0 #164C7A #2976A0',
   },
   // Garis gelap tipis di sisi dalam bevel, di atas peta (tidak menangkap sentuhan)
   // Tepi dalam peta: garis gelap tipis di semua sisi (seperti layar Spidey Tracker), tanpa bayangan jatuh
-  garisDalamPeta: { position: 'absolute', inset: 0, zIndex: 1050, pointerEvents: 'none', boxShadow: 'inset 0 0 0 3px #071E30' },
+  garisDalamPeta: { position: 'absolute', inset: 0, zIndex: 1050, pointerEvents: 'none', boxShadow: 'inset 0 0 0 3px #1E1E14' },
 
   permintaanLabel: { fontSize: 13, color: '#9FC3E8' },
   misiBaruRow: {
