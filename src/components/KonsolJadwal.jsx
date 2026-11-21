@@ -14,8 +14,19 @@ const PRESET = {
   kamis: { antar: KOSONG, jemput: { aktif: true, jam: '15:00' } },
   jumat: { antar: KOSONG, jemput: KOSONG },
 }
+const MULAI_ISI = 450 // ms menunggu baris hari tampil setelah mode atur menyala
 const JEDA_HARI = 260 // ms antar hari saat terisi berurutan
 const PERCIK = [[-26, -22, 0], [0, -30, 0.03], [26, -22, 0.06], [32, 2, 0.02], [24, 26, 0.05], [-2, 32, 0.01], [-28, 24, 0.04], [-34, 0, 0.07]]
+
+// Ingatan selama app terbuka: pindah tab lalu kembali ke Schedule, jadwal yang sudah terisi (belum disimpan) tetap terisi
+// dan konsol langsung menampilkan hasilnya, tanpa harus menggeser lagi. Dihapus saat jadwal disimpan.
+const memori = { fase: 'awal', draft: null, salinan: null }
+export const jadwalSudahTerisi = () => memori.fase === 'selesai'
+export function lupakanIsiJadwal() {
+  memori.fase = 'awal'
+  memori.draft = null
+  memori.salinan = null
+}
 
 const TEKS = {
   id: {
@@ -30,10 +41,10 @@ const TEKS = {
 
 // Isi konsol bawah saat tab Schedule ojek dalam mode edit: geser untuk mengisi jadwal biasa. Hari terisi berurutan
 // (baris menyala, tik naik nada), lalu ceklis dan nada selesai. Isinya baru tersimpan setelah Save schedule ditekan.
-export default function KonsolJadwal({ jadwalRef, onHariBaru }) {
+export default function KonsolJadwal({ jadwalRef, onHariBaru, onMasukAtur }) {
   const { lang } = useLanguage()
   const x = TEKS[lang] || TEKS.id
-  const [fase, setFase] = useState('awal') // awal | isi | selesai
+  const [fase, setFase] = useState(memori.fase) // awal | isi | selesai
   const [langkah, setLangkah] = useState(0)
   const [putaran, setPutaran] = useState(0)
   const timerRef = useRef([])
@@ -41,8 +52,19 @@ export default function KonsolJadwal({ jadwalRef, onHariBaru }) {
 
   useEffect(() => () => timerRef.current.forEach(clearTimeout), [])
 
+  // Kembali ke tab ini sesudah pernah terisi: pasang lagi isi jadwal yang tadi
+  useEffect(() => {
+    if (memori.fase === 'selesai' && memori.draft) {
+      jadwalRef.current?.pasangDraft(memori.draft)
+      salinanRef.current = memori.salinan
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   function isiJadwal() {
     salinanRef.current = jadwalRef.current?.ambilDraft() ?? null
+    memori.salinan = salinanRef.current
+    onMasukAtur?.() // masuk mode atur otomatis supaya semua baris hari tampil
     setFase('isi')
     setLangkah(0)
     HARI_KERJA_KEYS.forEach((hari, i) => {
@@ -52,18 +74,22 @@ export default function KonsolJadwal({ jadwalRef, onHariBaru }) {
         setLangkah(i + 1)
         playGeserTik(2 + i * 2)
         getar(8)
-      }, 150 + i * JEDA_HARI))
+      }, MULAI_ISI + i * JEDA_HARI))
     })
     timerRef.current.push(setTimeout(() => {
+      memori.fase = 'selesai'
+      memori.draft = jadwalRef.current?.ambilDraft() ?? null
       setFase('selesai')
       onHariBaru(null)
       playLunasSemua()
       getar(25)
-    }, 150 + HARI_KERJA_KEYS.length * JEDA_HARI + 120))
+    }, MULAI_ISI + HARI_KERJA_KEYS.length * JEDA_HARI + 120))
   }
 
   function batalkan() {
     if (salinanRef.current) jadwalRef.current?.pasangDraft(salinanRef.current)
+    memori.fase = 'awal'
+    memori.draft = null
     setFase('awal')
     setPutaran((n) => n + 1) // tombol geser dipasang ulang dari awal
     playKonsolMati()

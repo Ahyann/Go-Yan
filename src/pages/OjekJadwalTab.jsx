@@ -3,21 +3,15 @@ import { createPortal } from 'react-dom'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import JadwalMingguan from '../components/JadwalMingguan.jsx'
-import KonsolJadwal from '../components/KonsolJadwal.jsx'
+import KonsolJadwal, { jadwalSudahTerisi, lupakanIsiJadwal } from '../components/KonsolJadwal.jsx'
 
-export default function OjekJadwalTab({ jadwalMingguan, onTandaiSelesai, simpanJadwal, slotKonsol, onModeAtur }) {
+export default function OjekJadwalTab({ jadwalMingguan, onTandaiSelesai, simpanJadwal, slotKonsol }) {
   const { t } = useLanguage()
   const { isDemo } = useAuth()
-  const [modeAtur, setModeAtur] = useState(false)
+  const [modeAtur, setModeAtur] = useState(jadwalSudahTerisi)
   const [hariBaru, setHariBaru] = useState(null)
   const jadwalRef = useRef(null)
 
-  // Layar konsol bawah memberi tahu OjekView supaya tampilan jam diganti tombol jadwal biasa selama mode atur
-  useEffect(() => {
-    onModeAtur?.(modeAtur)
-    return () => onModeAtur?.(false)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [modeAtur])
 
   return (
     <main style={s.wrap}>
@@ -35,7 +29,7 @@ export default function OjekJadwalTab({ jadwalMingguan, onTandaiSelesai, simpanJ
         ref={jadwalRef}
         hariBaru={hariBaru}
         jadwal={jadwalMingguan}
-        onSimpan={simpanJadwal}
+        onSimpan={async (d) => { await simpanJadwal(d); lupakanIsiJadwal() }}
         bisaEdit={modeAtur}
         bisaTandaiSelesai={!modeAtur}
         onTandaiSelesai={onTandaiSelesai}
@@ -43,7 +37,7 @@ export default function OjekJadwalTab({ jadwalMingguan, onTandaiSelesai, simpanJ
 
       <p style={s.catatan}>{isDemo ? t.jadwalCatatanOjekDemo : t.jadwalCatatanOjek}</p>
 
-      {modeAtur && slotKonsol && createPortal(<KonsolJadwal jadwalRef={jadwalRef} onHariBaru={setHariBaru} />, slotKonsol)}
+      {slotKonsol && createPortal(<KonsolJadwal jadwalRef={jadwalRef} onHariBaru={setHariBaru} onMasukAtur={() => setModeAtur(true)} />, slotKonsol)}
     </main>
   )
 }
