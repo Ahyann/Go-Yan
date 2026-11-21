@@ -4,7 +4,7 @@ import { usePesanPenumpang } from '../lib/usePesanPenumpang'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import PetaStatus from '../components/PetaStatus.jsx'
-import { useSesiFoto, FotoInput, FotoPeta } from '../components/SesiFotoOjek.jsx'
+import { useSesiFoto, FotoInput, FotoPeta, FotoKonsol } from '../components/SesiFotoOjek.jsx'
 import TombolSuara from '../components/TombolSuara.jsx'
 import DemoWelcomePopup from '../components/DemoWelcomePopup.jsx'
 import SplashLabaLaba from '../components/SplashLabaLaba.jsx'
@@ -64,7 +64,12 @@ export default function HomeTab({ permintaan, lokasiAktif, lokasiError, mulaiLok
   }
 
   // Isi kartu status saat dibuka: share lokasi, kolom ketik, foto, dan kirim.
-  const isiKartu = (
+  const isiKartu = sesiFoto.fase ? (
+    // Selama sesi foto, baris pesan di kartu berganti jadi tombol potret (batal, shutter, balik kamera) dengan efek layar menyala
+    <div style={{ fontFamily: "'Silkscreen', monospace" }}>
+      <FotoKonsol sesi={sesiFoto} />
+    </div>
+  ) : (
     <>
       <div style={s.pesanRow}>
         <button

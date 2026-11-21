@@ -176,10 +176,11 @@ export function FotoPeta({ sesi, mandiri = false }) {
   const { fase, foto, kilat, videoRef, balik } = sesi
   if (!fase) return null
   const kirim = fase === 'kirim'
-  const zl = mandiri ? 1500 : 1150
+  // mandiri (penumpang): lapisan kaca di bawah kartu status (z 900) supaya kartu tetap terlihat dan baris tombolnya berganti jadi tombol potret
+  const zl = mandiri ? 899 : 1150
   return (
     <>
-      <div className={fase === 'kamera' ? 'tv-nyala' : kirim ? 'foto-lapis-hilang' : undefined} style={{ ...s.lapis, zIndex: zl, ...(mandiri ? { padding: '0 14px', gap: 12, background: 'rgba(1, 42, 64, 0.86)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' } : null) }}>
+      <div className={fase === 'kamera' ? 'tv-nyala' : kirim ? 'foto-lapis-hilang' : undefined} style={{ ...s.lapis, zIndex: zl, ...(mandiri ? { padding: '0 14px 150px', gap: 12, background: 'rgba(1, 42, 64, 0.86)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' } : null) }}>
         {mandiri && !kirim && <span style={s.labelCam}>{fase === 'kamera' ? x.kamera : x.preview}</span>}
         <div style={s.bingkai}>
           {fase === 'kamera' && <video ref={videoRef} style={{ ...s.vfIsi, transform: balik ? 'scaleX(-1)' : undefined }} playsInline muted />}
@@ -195,7 +196,6 @@ export function FotoPeta({ sesi, mandiri = false }) {
           {fase === 'preview' && foto && <div style={s.tag}>4:3 · {Math.max(1, Math.round((foto.length * 0.75) / 1024))} KB</div>}
         </div>
         {!kirim && <div style={s.info}>{fase === 'kamera' ? x.info : x.preview}</div>}
-        {mandiri && !kirim && <div style={s.kontrolMandiri}><FotoKonsol sesi={sesi} /></div>}
       </div>
       {kirim && (
         <>
