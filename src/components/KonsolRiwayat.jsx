@@ -35,13 +35,13 @@ const TEKS = {
     belum: 'BELUM LUNAS', trip: 'TRIP', tahan: 'TAHAN UNTUK LUNASKAN SEMUA', tanya: 'LUNASKAN', bisaUndo: 'BISA DI-UNDO 24 JAM',
     batal: 'BATAL', ya: 'YA, LUNAS', ditandai: 'TRIP DITANDAI LUNAS', sisa: 'UNDO TERSEDIA · SISA', sisaUndo: 'UNDO', pada: 'LUNAS', undo: 'UNDO',
     filter: 'BELUM', semua: 'SEMUA', rekap: 'REKAP', tersalin: 'TERSALIN', tagih: 'TAGIH', terkirim: 'TERKIRIM',
-    semuaLunas: 'SEMUA SUDAH LUNAS', rekapJudul: 'Rekap Go-Yan belum lunas', tagihPesan: 'Halo Fajri, ada {n} trip yang belum ditransfer, totalnya {total}.',
+    semuaLunas: 'SEMUA SUDAH LUNAS', tanpaTagihan: 'TIDAK ADA TAGIHAN', rekapJudul: 'Rekap Go-Yan belum lunas', tagihPesan: 'Halo Fajri, ada {n} trip yang belum ditransfer, totalnya {total}.',
   },
   en: {
     belum: 'UNPAID', trip: 'TRIPS', tahan: 'HOLD TO MARK ALL PAID', tanya: 'MARK PAID', bisaUndo: 'UNDO AVAILABLE FOR 24H',
     batal: 'CANCEL', ya: 'YES, PAID', ditandai: 'TRIPS MARKED PAID', sisa: 'UNDO AVAILABLE · LEFT', sisaUndo: 'UNDO', pada: 'PAID', undo: 'UNDO',
     filter: 'UNPAID', semua: 'ALL', rekap: 'RECAP', tersalin: 'COPIED', tagih: 'REMIND', terkirim: 'SENT',
-    semuaLunas: 'ALL PAID', rekapJudul: 'Go-Yan unpaid recap', tagihPesan: 'Hi Fajri, {n} trips are not transferred yet, total {total}.',
+    semuaLunas: 'ALL TRIPS PAID', tanpaTagihan: 'NOTHING TO COLLECT', rekapJudul: 'Go-Yan unpaid recap', tagihPesan: 'Hi Fajri, {n} trips are not transferred yet, total {total}.',
   },
 }
 
@@ -205,6 +205,23 @@ export default function KonsolRiwayat({ riwayat, onEditRiwayat, hanyaBelum, onHa
         <div style={s.baris}>
           <button type="button" data-tanpa-suara className="tekan" style={{ ...s.tombol, ...s.lebar, height: 24, marginTop: 1, color: '#FFD23F', borderColor: '#FFD23F' }} onClick={batalkanLunas}><Ikon nama="undo" />{x.undo}</button>
           {TOMBOL_FUNGSI && <TombolFilter hanyaBelum={hanyaBelum} onHanyaBelum={onHanyaBelum} x={x} />}
+        </div>
+      </div>
+    )
+  }
+
+  // Semua trip sudah lunas (dan masa undo sudah lewat): tampilan tenang, kotak ceklis hijau tanpa animasi
+  if (belum.length === 0) {
+    return (
+      <div style={{ ...s.baris, gap: 12, height: 66, marginTop: -2 }}>
+        <div style={{ ...s.kotakCek, boxShadow: '0 0 10px rgba(74,222,128,0.4)' }}>
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#04192A" strokeWidth="3.4" strokeLinecap="square" aria-hidden="true">
+            <path d="M5 12.5l4.5 4.5L19 7" />
+          </svg>
+        </div>
+        <div style={{ minWidth: 0 }}>
+          <div style={{ ...s.judul, color: '#4ADE80', fontSize: 12 }}>{x.semuaLunas}</div>
+          <div style={{ ...s.redup, marginTop: 4 }}>{x.tanpaTagihan}</div>
         </div>
       </div>
     )
