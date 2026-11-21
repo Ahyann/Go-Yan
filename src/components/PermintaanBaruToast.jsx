@@ -3,17 +3,24 @@ import { createPortal } from 'react-dom'
 import { AKSI } from '../lib/constants'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
+import { playNotifPil } from '../lib/sound'
+import { getar } from '../lib/getar'
 
-const DURASI_ANIMASI = 300
+const DURASI_ANIMASI = 260
 const DURASI_TAMPIL = 6000
 
+// Notifikasi pesanan baru saat ojek sedang di tab lain: pil kaca biru kecil di tengah atas yang membal masuk,
+// titik merah berkedip, dan garis cyan di bawah yang memendek sampai pil hilang sendiri. Ketuk pil untuk ke Home.
 export default function PermintaanBaruToast({ permintaan, onTap, onDismiss }) {
-  const { t } = useLanguage()
+  const { t, lang } = useLanguage()
   const { isDemo } = useAuth()
   const [tampil, setTampil] = useState(false)
+  const nama = isDemo ? (lang === 'en' ? 'Passenger' : 'Penumpang') : 'Fajri'
 
   useEffect(() => {
     const id = requestAnimationFrame(() => setTampil(true))
+    playNotifPil()
+    getar(10)
     const timer = setTimeout(() => tutup(), DURASI_TAMPIL)
 
     return () => {
@@ -38,33 +45,19 @@ export default function PermintaanBaruToast({ permintaan, onTap, onDismiss }) {
       <div
         role="button"
         tabIndex={0}
-        style={{ ...s.card, ...(tampil ? s.cardTampil : s.cardSembunyi) }}
+        aria-label={`${isDemo ? t.permintaanBaruDemo : t.permintaanBaru}: ${permintaan.aksi === AKSI.JEMPUT ? t.jemput : t.antar} ${permintaan.waktu}`}
+        className={tampil ? 'pil-notif-masuk' : undefined}
+        style={{ ...s.pil, ...(tampil ? null : s.pilSembunyi) }}
         onClick={handleTap}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleTap() } }}
       >
-        <div style={s.ikonWrap}>
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 2a7 7 0 00-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 00-7-7z" />
-            <circle cx="12" cy="9" r="2.5" />
-          </svg>
-        </div>
-        <div style={s.isi}>
-          <div style={s.judul}>{isDemo ? t.permintaanBaruDemo : t.permintaanBaru}</div>
-          <div style={s.detail}>
-            {permintaan.aksi === AKSI.JEMPUT ? t.jemput : t.antar} · {permintaan.where} · {permintaan.waktu}
-          </div>
-        </div>
-        <button
-          style={s.tutupBtn}
-          onClick={(e) => {
-            e.stopPropagation()
-            tutup()
-          }}
-          aria-label="Tutup"
-        >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-            <path d="M6 6l12 12M18 6L6 18" />
-          </svg>
-        </button>
+        <i className="kolon-kedip" style={s.titik} aria-hidden="true" />
+        <span style={s.teks}>
+          {nama} · {permintaan.aksi === AKSI.JEMPUT ? t.jemput : t.antar} {permintaan.waktu}
+        </span>
+        <i style={s.jalur} aria-hidden="true">
+          <b className="pil-notif-waktu" style={{ ...s.sisa, animationDuration: `${DURASI_TAMPIL}ms` }} />
+        </i>
       </div>
     </div>,
     document.body
@@ -80,62 +73,32 @@ const s = {
     display: 'flex',
     justifyContent: 'center',
     padding: '0 16px',
-    paddingTop: 'calc(var(--safe-top) + 12px)',
+    paddingTop: 'calc(var(--safe-top) + 14px)',
     zIndex: 9999999,
     pointerEvents: 'none',
   },
-  card: {
+  pil: {
     pointerEvents: 'auto',
-    width: '100%',
-    maxWidth: 420,
-    background: `linear-gradient(160deg, var(--nav-red), #7A121C)`,
-    border: '1px solid rgba(255,255,255,0.25)',
-    borderRadius: 0,
-    padding: '14px 14px',
-    display: 'flex',
+    position: 'relative',
+    display: 'inline-flex',
     alignItems: 'center',
-    gap: 12,
-    boxShadow: '0 8px 24px rgba(0,0,0,0.5), 0 0 20px rgba(184,36,47,0.45)',
-    transition: `transform ${DURASI_ANIMASI}ms ease, opacity ${DURASI_ANIMASI}ms ease`,
+    gap: 9,
+    maxWidth: '100%',
+    minHeight: 44,
+    boxSizing: 'border-box',
+    padding: '9px 18px 12px',
+    background: 'rgba(2, 56, 84, 0.72)',
+    backdropFilter: 'blur(10px)',
+    WebkitBackdropFilter: 'blur(10px)',
+    border: '1px solid rgba(94, 208, 255, 0.5)',
+    borderRadius: 999,
+    boxShadow: '0 6px 16px rgba(0, 0, 0, 0.4)',
     cursor: 'pointer',
+    transition: `transform ${DURASI_ANIMASI}ms ease, opacity ${DURASI_ANIMASI}ms ease`,
   },
-  cardSembunyi: {
-    transform: 'translateY(-140%)',
-    opacity: 0,
-  },
-  cardTampil: {
-    transform: 'translateY(0)',
-    opacity: 1,
-  },
-  ikonWrap: {
-    flexShrink: 0,
-    width: 40,
-    height: 40,
-    borderRadius: 0,
-    background: 'rgba(255,255,255,0.15)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  isi: { flex: 1, minWidth: 0 },
-  judul: { fontSize: 14, fontWeight: 700, color: '#fff' },
-  detail: {
-    fontSize: 12.5,
-    color: 'rgba(255,255,255,0.85)',
-    marginTop: 2,
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
-  },
-  tutupBtn: {
-    flexShrink: 0,
-    width: 28,
-    height: 28,
-    borderRadius: 0,
-    background: 'rgba(255,255,255,0.12)',
-    color: '#fff',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  pilSembunyi: { transform: 'translateY(-12px) scale(0.6)', opacity: 0 },
+  titik: { width: 8, height: 8, background: '#ED1C24', boxShadow: '0 0 8px #ED1C24', flexShrink: 0, display: 'block' },
+  teks: { fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: '#FFFFFF', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' },
+  jalur: { position: 'absolute', left: 18, right: 18, bottom: 4, height: 2, background: 'rgba(94, 208, 255, 0.15)', display: 'block' },
+  sisa: { display: 'block', height: 2, background: '#5ED0FF' },
 }

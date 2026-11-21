@@ -811,3 +811,10 @@ button {
 @keyframes hapus-keluar { 0% { transform: translateX(0); opacity: 1; } 100% { transform: translateX(-115%); opacity: 0.6; } }
 .hapus-keluar { animation: hapus-keluar 0.32s cubic-bezier(0.6, 0, 0.4, 1) both; }
 @media (prefers-reduced-motion: reduce) { .hapus-keluar { animation: none; opacity: 0; } }
+
+/* Notifikasi pil pesanan baru (akun ojek di tab lain): pil membal masuk dan garis waktu cyan memendek */
+@keyframes pil-notif-masuk { 0% { transform: translateY(-12px) scale(0.6); opacity: 0; } 60% { transform: translateY(0) scale(1.06); opacity: 1; } 100% { transform: none; opacity: 1; } }
+.pil-notif-masuk { animation: pil-notif-masuk 0.42s cubic-bezier(0.2, 1.4, 0.4, 1) both; }
+@keyframes pil-notif-waktu { from { width: 100%; } to { width: 0; } }
+.pil-notif-waktu { animation: pil-notif-waktu linear both; }
+@media (prefers-reduced-motion: reduce) { .pil-notif-masuk { animation: none; } }

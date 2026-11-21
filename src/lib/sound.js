@@ -762,6 +762,15 @@ export function playGeserTik(langkah = 0) {
   nadaPendek(ctx, 'square', f, f, 0.035, 0.07, 0)
 }
 
+// Notifikasi pil pesanan baru (saat di tab lain): dua nada kaca bening yang naik, pendek dan lembut
+export function playNotifPil() {
+  const ctx = ctxSiapEfek()
+  if (!ctx) return
+  nadaPendek(ctx, 'sine', 1046, 1046, 0.16, 0.16, 0)
+  nadaPendek(ctx, 'sine', 1568, 1568, 0.22, 0.14, 0.09)
+  nadaPendek(ctx, 'triangle', 2093, 2093, 0.12, 0.04, 0.09)
+}
+
 // Riwayat dihapus: satu desis "swoosh" pendek yang turun saat kartu meluncur keluar ke kiri
 export function playHapusGeser() {
   const ctx = ctxSiapEfek()
