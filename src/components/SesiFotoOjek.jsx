@@ -169,15 +169,18 @@ function Siku() {
 }
 
 // Menggantikan peta di area peta Home selama sesi foto
-export function FotoPeta({ sesi }) {
+// mandiri: dipakai akun penumpang (tanpa konsol): lapisan kaca menutup seluruh Home, tombol potret ada di lapisan itu sendiri
+export function FotoPeta({ sesi, mandiri = false }) {
   const { lang } = useLanguage()
   const x = TEKS[lang] || TEKS.id
   const { fase, foto, kilat, videoRef, balik } = sesi
   if (!fase) return null
   const kirim = fase === 'kirim'
+  const zl = mandiri ? 1500 : 1150
   return (
     <>
-      <div className={fase === 'kamera' ? 'tv-nyala' : kirim ? 'foto-lapis-hilang' : undefined} style={s.lapis}>
+      <div className={fase === 'kamera' ? 'tv-nyala' : kirim ? 'foto-lapis-hilang' : undefined} style={{ ...s.lapis, zIndex: zl, ...(mandiri ? { padding: '0 14px', gap: 12, background: 'rgba(1, 42, 64, 0.86)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' } : null) }}>
+        {mandiri && !kirim && <span style={s.labelCam}>{fase === 'kamera' ? x.kamera : x.preview}</span>}
         <div style={s.bingkai}>
           {fase === 'kamera' && <video ref={videoRef} style={{ ...s.vfIsi, transform: balik ? 'scaleX(-1)' : undefined }} playsInline muted />}
           {(fase === 'preview' || kirim) && foto && <img src={foto} alt="" className={kirim ? 'foto-terbang' : undefined} style={s.vfIsi} />}
@@ -192,11 +195,12 @@ export function FotoPeta({ sesi }) {
           {fase === 'preview' && foto && <div style={s.tag}>4:3 · {Math.max(1, Math.round((foto.length * 0.75) / 1024))} KB</div>}
         </div>
         {!kirim && <div style={s.info}>{fase === 'kamera' ? x.info : x.preview}</div>}
+        {mandiri && !kirim && <div style={s.kontrolMandiri}><FotoKonsol sesi={sesi} /></div>}
       </div>
       {kirim && (
         <>
-          <span className="foto-sonar" style={s.sonar} />
-          <div className="foto-terkirim" style={s.terkirim}>✓ {x.terkirim}</div>
+          <span className="foto-sonar" style={{ ...s.sonar, zIndex: zl + 1 }} />
+          <div className="foto-terkirim" style={{ ...s.terkirim, zIndex: zl + 2 }}>✓ {x.terkirim}</div>
         </>
       )}
     </>
@@ -243,6 +247,8 @@ export function FotoKonsol({ sesi }) {
 export const labelSesiFoto = (fase, lang) => (TEKS[lang] || TEKS.id)[fase === 'kamera' ? 'kamera' : 'preview']
 
 const s = {
+  labelCam: { alignSelf: 'center', background: '#5ED0FF', color: '#04192A', fontFamily: "'Silkscreen', monospace", fontSize: 11, letterSpacing: '0.08em', padding: '4px 9px 3px', border: '2px solid #04192A' },
+  kontrolMandiri: { position: 'absolute', left: 14, right: 14, bottom: 'calc(var(--safe-bottom, 0px) + 96px)', fontFamily: "'Silkscreen', monospace" },
   lapis: { position: 'absolute', inset: 0, zIndex: 1150, background: 'rgba(1, 42, 64, 0.8)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '0 8px', boxSizing: 'border-box', transformOrigin: 'center' },
   bingkai: { position: 'relative', width: '100%', aspectRatio: '4 / 3', maxHeight: '88%', background: '#000', overflow: 'hidden', boxShadow: '0 0 0 2px #5ED0FF55' },
   vfIsi: { position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', display: 'block' },
