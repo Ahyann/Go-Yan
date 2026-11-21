@@ -695,3 +695,8 @@ button {
 /* Label kecil di atas layar (STATUS, NEW MISSION, dst.) tidak ikut glitch berkala */
 .glitch-berkala > :not(.label-konsol) { animation: glitch-berkala 0.45s steps(1) 1; }
 @media (prefers-reduced-motion: reduce) { .glitch-berkala > * { animation: none; } }
+
+/* Jam konsol ojek: titik dua berkedip tiap detik */
+@keyframes kolon-kedip { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0.15; } }
+.kolon-kedip { animation: kolon-kedip 1s steps(1) infinite; }
+@media (prefers-reduced-motion: reduce) { .kolon-kedip { animation: none; } }
