@@ -206,9 +206,9 @@ function Siku({ warna, besar = false, mini = false }) {
 
 const s = {
   kecil: {
-    kartu: { marginTop: 22, minHeight: 84, paddingLeft: 104 },
-    tombolFoto: { left: 10, width: 84, height: 104 },
-    fotoImg: { left: -10, width: 104, height: 104 },
+    kartu: { marginTop: 22, minHeight: 84, paddingLeft: 118 },
+    tombolFoto: { left: 6, width: 104, height: 104 },
+    fotoImg: { left: 0, width: 104, height: 104 },
   },
   kartu: { position: 'relative', marginTop: 46, minHeight: 100, border: '1px solid var(--blue-border)', borderRadius: 0, padding: '0 14px 0 140px', display: 'flex', alignItems: 'center' },
   tombolFoto: { position: 'absolute', left: 10, bottom: 0, width: 116, height: 146, padding: 0, background: 'transparent', border: 'none', borderRadius: 0 },
