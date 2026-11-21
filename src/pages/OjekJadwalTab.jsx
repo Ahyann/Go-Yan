@@ -1,12 +1,23 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import JadwalMingguan from '../components/JadwalMingguan.jsx'
+import KonsolJadwal from '../components/KonsolJadwal.jsx'
 
-export default function OjekJadwalTab({ jadwalMingguan, onTandaiSelesai, simpanJadwal }) {
+export default function OjekJadwalTab({ jadwalMingguan, onTandaiSelesai, simpanJadwal, slotKonsol, onModeAtur }) {
   const { t } = useLanguage()
   const { isDemo } = useAuth()
   const [modeAtur, setModeAtur] = useState(false)
+  const [hariBaru, setHariBaru] = useState(null)
+  const jadwalRef = useRef(null)
+
+  // Layar konsol bawah memberi tahu OjekView supaya tampilan jam diganti tombol jadwal biasa selama mode atur
+  useEffect(() => {
+    onModeAtur?.(modeAtur)
+    return () => onModeAtur?.(false)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [modeAtur])
 
   return (
     <main style={s.wrap}>
@@ -21,6 +32,8 @@ export default function OjekJadwalTab({ jadwalMingguan, onTandaiSelesai, simpanJ
       </header>
 
       <JadwalMingguan
+        ref={jadwalRef}
+        hariBaru={hariBaru}
         jadwal={jadwalMingguan}
         onSimpan={simpanJadwal}
         bisaEdit={modeAtur}
@@ -29,6 +42,8 @@ export default function OjekJadwalTab({ jadwalMingguan, onTandaiSelesai, simpanJ
       />
 
       <p style={s.catatan}>{isDemo ? t.jadwalCatatanOjekDemo : t.jadwalCatatanOjek}</p>
+
+      {modeAtur && slotKonsol && createPortal(<KonsolJadwal jadwalRef={jadwalRef} onHariBaru={setHariBaru} />, slotKonsol)}
     </main>
   )
 }

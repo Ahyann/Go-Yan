@@ -14,7 +14,7 @@ function buatJadwalKosong() {
 }
 
 const JadwalMingguan = forwardRef(function JadwalMingguan(
-  { jadwal, onSimpan, bisaEdit, bisaTandaiSelesai = false, onTandaiSelesai },
+  { jadwal, onSimpan, bisaEdit, bisaTandaiSelesai = false, onTandaiSelesai, hariBaru = null },
   ref
 ) {
   const { t } = useLanguage()
@@ -30,6 +30,10 @@ const JadwalMingguan = forwardRef(function JadwalMingguan(
 
   useImperativeHandle(ref, () => ({
     reset: () => setDraft(buatJadwalKosong()),
+    // Dipakai akun ojek untuk tombol jadwal biasa (opt-in): isi satu hari, baca, dan pasang kembali isi form
+    isiHari: (hari, data) => setDraft((d) => ({ ...(d || buatJadwalKosong()), [hari]: { ...(d?.[hari] || {}), ...data } })),
+    ambilDraft: () => draft,
+    pasangDraft: (d) => setDraft(d),
   }))
 
   if (!draft) return null
@@ -91,7 +95,7 @@ const JadwalMingguan = forwardRef(function JadwalMingguan(
         if (!bisaEdit && !adaJadwal) return null
 
         const isiHari = (
-          <div style={{ ...s.hariBlok, ...(selesai && bisaTandaiSelesai ? s.hariBlokSelesai : {}) }}>
+          <div className={hariBaru === key ? 'jadwal-isi' : undefined} style={{ ...s.hariBlok, ...(selesai && bisaTandaiSelesai ? s.hariBlokSelesai : {}) }}>
             {selesai && bisaTandaiSelesai && (
               <span style={s.badgeSelesai}>
                 <svg width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="#08130d" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">

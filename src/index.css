@@ -733,3 +733,7 @@ button {
 @keyframes cek-gambar { to { stroke-dashoffset: 0; } }
 @keyframes cek-percik { 0% { transform: translate(0, 0) scale(1); opacity: 1; } 100% { transform: translate(var(--dx), var(--dy)) scale(0.2); opacity: 0; } }
 @keyframes cek-teks { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: none; } }
+
+/* Jadwal ojek: baris hari yang baru diisi otomatis menyala cyan sebentar */
+.jadwal-isi { animation: jadwal-isi 0.7s ease-out both; }
+@keyframes jadwal-isi { 0% { background: rgba(94, 208, 255, 0.45); box-shadow: inset 0 0 0 1px #5ED0FF, 0 0 14px rgba(94, 208, 255, 0.5); transform: scale(1.015); } 100% { background: var(--bg); box-shadow: none; transform: none; } }

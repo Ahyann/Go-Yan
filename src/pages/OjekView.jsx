@@ -53,6 +53,7 @@ export default function OjekView({
   const [slotKonsol, setSlotKonsol] = useState(null)
   const [alarmKonsol, setAlarmKonsol] = useState(false)
   const [putaranMasuk, setPutaranMasuk] = useState(0)
+  const [jadwalAtur, setJadwalAtur] = useState(false) // tab Schedule dalam mode atur: konsol menampilkan tombol jadwal biasa
   const [hanyaBelum, setHanyaBelum] = useState(false) // filter History: hanya trip yang belum lunas
   // Glitch berkala di layar konsol: sekali tiap 9-16 detik (acak), sekitar setengah detik
   const [glitchBerkala, setGlitchBerkala] = useState(false)
@@ -261,6 +262,8 @@ export default function OjekView({
             jadwalMingguan={jadwalMingguan}
             onTandaiSelesai={onTandaiSelesaiJadwal}
             simpanJadwal={simpanJadwal}
+            slotKonsol={slotKonsol}
+            onModeAtur={setJadwalAtur}
           />
         )}
         {tabAktif === 'riwayat' && (
@@ -300,7 +303,10 @@ export default function OjekView({
               <KonsolRiwayat riwayat={riwayat} onEditRiwayat={onEditRiwayat} hanyaBelum={hanyaBelum} onHanyaBelum={setHanyaBelum} />
             </>
           )}
-          {tabAktif !== 'home' && tabAktif !== 'riwayat' && (
+          {tabAktif === 'jadwal' && jadwalAtur && (
+            <span className="label-konsol" style={s.labelStatus}>{t.jadwalEyebrow}</span>
+          )}
+          {tabAktif !== 'home' && tabAktif !== 'riwayat' && !(tabAktif === 'jadwal' && jadwalAtur) && (
             <>
               <span className="label-konsol" style={s.labelStatus}>{t.monitorStatus}</span>
               <JamKonsol lewatiSambut={!!permintaan} keterangan={permintaan?.status === STATUS_PERMINTAAN.MENUNGGU ? t.monitorMisiBaru : t.monitorStandby} bawah={<PesanBergilir teks={t.teksJalanOjek} />} />
