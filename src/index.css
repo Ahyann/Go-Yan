@@ -747,3 +747,10 @@ button {
 .titik-merah { animation: titik-merah 1s steps(1) infinite; }
 @keyframes titik-merah { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0.25; } }
 @media (prefers-reduced-motion: reduce) { .titik-merah { animation: none; } }
+
+/* Kamera akun ojek: kilat putih dan tulisan CLICK! saat jepret */
+.foto-kilat { animation: foto-kilat 0.38s ease-out both; }
+.foto-klik { animation: foto-klik 0.38s ease-out both; }
+@keyframes foto-kilat { 0% { opacity: 0.9; } 100% { opacity: 0; } }
+@keyframes foto-klik { 0% { opacity: 0; transform: rotate(-6deg) scale(0.6); } 30% { opacity: 1; transform: rotate(-6deg) scale(1.15); } 100% { opacity: 1; transform: rotate(-6deg) scale(1); } }
+@media (prefers-reduced-motion: reduce) { .foto-kilat, .foto-klik { animation: none; } }

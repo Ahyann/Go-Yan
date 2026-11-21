@@ -169,6 +169,7 @@ export default function OjekHomeTab({ slotKonsol, putaranMasuk = 0,
           />
           <div aria-hidden="true" style={s.garisDalamPeta} />
           {!lewatiSplash && <SplashLabaLaba ukuran={10} />}
+          {sedangJalan && lokasiAktif && <div className="live-masuk" style={s.toastLive}><span className="live-kedip" style={s.titikLive} />{t.liveLocationAktif}</div>}
           {sedangJalan && !transisiDiterima && (
             <KartuMisiOjek onBawah={setBawahKartu} permintaan={permintaan} lokasiAktif={lokasiAktif} mulaiLokasi={mulaiLokasi} berhentiLokasi={berhentiLokasi} />
           )}
@@ -270,6 +271,9 @@ export default function OjekHomeTab({ slotKonsol, putaranMasuk = 0,
 }
 
 const s = {
+  // Penanda "Live location active" di pojok kiri atas peta, sama seperti akun penumpang
+  toastLive: { position: 'absolute', left: 10, top: 10, zIndex: 1100, display: 'flex', alignItems: 'center', gap: 6, background: 'var(--nav-red)', color: '#fff', fontFamily: 'var(--font-data)', fontSize: 10, fontWeight: 700, letterSpacing: '0.06em', padding: '4px 8px', pointerEvents: 'none' },
+  titikLive: { width: 6, height: 6, background: '#fff', flexShrink: 0 },
   wrap: {
     height: '100%',
     padding: 0,
