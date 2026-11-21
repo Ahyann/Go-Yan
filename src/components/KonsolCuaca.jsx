@@ -102,8 +102,8 @@ export default function KonsolCuaca({ onKembali, lokasiAktif = false, jadwal = n
     if (sel) g.scrollLeft = Math.max(0, sel.offsetLeft - g.offsetLeft - 44)
   }, [idxJadwal, jam.length])
 
-  // Status tengah: cuaca di jam jadwal terdekat (kalau ada), kalau tidak cuaca sekarang
-  const sasaran = idxJadwal >= 0 ? berikut[idxJadwal] : jam[0]
+  // Cuaca di jam jadwal terdekat (kalau jam itu masuk prakiraan): emote jas hujan, botol minum, atau centang di sebelah hitung mundur
+  const sasaran = idxJadwal >= 0 ? berikut[idxJadwal] : null
   let status = null
   if (sasaran) {
     const jn = jenisCuaca(sasaran.kode)
@@ -129,14 +129,11 @@ export default function KonsolCuaca({ onKembali, lokasiAktif = false, jadwal = n
         <button type="button" onClick={onKembali} style={s.kembali} aria-label={k.kembali}>
           <span aria-hidden="true" style={{ color: '#5ED0FF' }}>◀</span> {k.kembali}
         </button>
-        {status && (
-          <span style={{ ...s.status, color: status.warna }}>
-            <span style={s.statusLabel}>{k.label}</span>
-            <EmoteStatus jenis={status.jenis} />
-            <span style={s.statusTeks}>{status.teks}</span>
-          </span>
-        )}
-        <span style={{ ...s.ringkas, color: warnaRingkas }}>{ringkas}</span>
+        <span style={s.status} aria-label={`${k.label} ${ringkas}${status ? `, ${status.teks}` : ''}`}>
+          <span style={s.statusLabel}>{k.label}</span>
+          {status && <EmoteStatus jenis={status.jenis} />}
+          <span style={{ ...s.ringkas, color: warnaRingkas }}>{ringkas}</span>
+        </span>
       </div>
       {jam.length === 0 ? (
         <div style={s.kosong}>{k.kosong}</div>
@@ -183,7 +180,6 @@ const s = {
   kepala: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, height: 18 },
   status: { display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 8, letterSpacing: '0.08em', minWidth: 0, flex: '0 1 auto' },
   statusLabel: { color: '#E8EDF9', opacity: 0.6, whiteSpace: 'nowrap' },
-  statusTeks: { whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' },
   kembali: { background: 'none', border: 'none', color: '#FFFFFF', font: 'inherit', fontSize: 8, letterSpacing: '0.1em', padding: '2px 6px 2px 0', cursor: 'pointer', whiteSpace: 'nowrap' },
   ringkas: { fontSize: 8, letterSpacing: '0.08em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0 },
   badan: { display: 'flex', alignItems: 'center', gap: 8, marginTop: 3, height: 46 },
