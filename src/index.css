@@ -788,4 +788,8 @@ button {
 .ik-motor { animation: ik-motor 0.5s steps(1) infinite; }
 .ik-tetes { animation: ik-tetes 0.9s steps(3) infinite; }
 .ik-denyut { animation: ik-denyut 1.4s steps(1) infinite; }
-@media (prefers-reduced-motion: reduce) { .ik-sinar, .ik-awan, .ik-motor, .ik-tetes, .ik-denyut { animation: none; } }
+@keyframes ik-kilap { 0%, 55% { transform: translateX(-3px); opacity: 0; } 60% { opacity: 1; } 95% { transform: translateX(14px); opacity: 1; } 100% { transform: translateX(14px); opacity: 0; } }
+@keyframes ik-kilau { 0%, 58% { opacity: 0; } 66%, 80% { opacity: 1; } 90%, 100% { opacity: 0; } }
+.ik-kilap { animation: ik-kilap 3s steps(10) infinite; }
+.ik-kilau { animation: ik-kilau 3s steps(1) infinite; }
+@media (prefers-reduced-motion: reduce) { .ik-sinar, .ik-awan, .ik-motor, .ik-tetes, .ik-denyut, .ik-kilap, .ik-kilau { animation: none; } .ik-kilau { opacity: 1; } }

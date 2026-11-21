@@ -154,16 +154,30 @@ function IkonSinyal({ tingkat }) {
   )
 }
 
+// Piala emas piksel: kilap putih menyapu badan piala sesekali dan ada kilau kecil di pojok kanan atas
 function IkonTrip() {
+  const bentuk = (
+    <>
+      <rect x="2" y="1" width="8" height="4" />
+      <rect x="3" y="5" width="6" height="1" />
+      <rect x="5" y="6" width="2" height="3" />
+      <rect x="3" y="9" width="6" height="2" />
+      <rect x="0" y="1" width="2" height="1" />
+      <rect x="0" y="2" width="1" height="2" />
+      <rect x="10" y="1" width="2" height="1" />
+      <rect x="11" y="2" width="1" height="2" />
+    </>
+  )
   return (
-    <svg width="17" height="14" viewBox="0 0 12 12" aria-hidden="true" {...svg}>
-      <rect x="1" y="0" width="1" height="12" fill="#FFFFFF" />
-      <g className="ik-motor">
-        {[0, 1, 2].map((r) => [0, 1, 2, 3].map((c) => (
-          <rect key={`${r}${c}`} x={2 + c * 2} y={r * 2} width="2" height="2" fill={(r + c) % 2 === 0 ? '#ED1C24' : '#FFFFFF'} />
-        )))}
+    <svg width="17" height="16" viewBox="0 0 14 13" aria-hidden="true" {...svg}>
+      <defs><clipPath id="ik-piala-klip">{bentuk}</clipPath></defs>
+      <g fill="#FFD84A">{bentuk}</g>
+      <rect x="3" y="2" width="1" height="2" fill="#FFF4B0" />
+      <rect x="3" y="9" width="6" height="1" fill="#C99A12" />
+      <g clipPath="url(#ik-piala-klip)">
+        <g className="ik-kilap"><rect x="-1" y="0" width="2" height="12" fill="#FFFFFF" opacity="0.9" /><rect x="2" y="0" width="1" height="12" fill="#FFFFFF" opacity="0.5" /></g>
       </g>
-      <rect x="0" y="11" width="4" height="1" fill="#5ED0FF" />
+      <g fill="#FFFFFF" className="ik-kilau"><rect x="12" y="0" width="1" height="3" /><rect x="11" y="1" width="3" height="1" /></g>
     </svg>
   )
 }
