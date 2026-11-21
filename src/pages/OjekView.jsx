@@ -279,6 +279,7 @@ export default function OjekView({
             berhentiLokasi={berhentiLokasi}
             slotKonsol={slotKonsol}
             putaranMasuk={putaranMasuk}
+            sambutBeres={sambutBeres}
             totalTrip={riwayatSiap ? riwayat.length : null}
             jadwalMingguan={jadwalMingguan}
           />
@@ -337,7 +338,7 @@ export default function OjekView({
           )}
           {tabAktif !== 'home' && !(konsolSendiri && (tabAktif === 'riwayat' || tabAktif === 'jadwal')) && (
             <>
-              <span className="label-konsol" style={s.labelStatus}>{t.monitorStatus}</span>
+              <span className="label-konsol" style={s.labelStatus}>{sambutBeres || permintaan ? t.monitorStatus : t.monitorSambut}</span>
               <JamKonsol lewatiSambut={!!permintaan} bergilir={permintaan?.status !== STATUS_PERMINTAAN.MENUNGGU} keterangan={permintaan?.status === STATUS_PERMINTAAN.MENUNGGU ? t.monitorMisiBaru : t.monitorStandby} totalTrip={riwayatSiap ? riwayat.length : null} lokasiAktif={lokasiAktif} jadwal={jadwalMingguan} />
             </>
           )}

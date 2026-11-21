@@ -31,6 +31,7 @@ export default function OjekHomeTab({ slotKonsol, putaranMasuk = 0,
   berhentiLokasi,
   totalTrip = null,
   jadwalMingguan = null,
+  sambutBeres = true,
 }) {
   const { t, lang } = useLanguage()
   const { user, isDemo } = useAuth()
@@ -200,7 +201,7 @@ export default function OjekHomeTab({ slotKonsol, putaranMasuk = 0,
         {slotKonsol && createPortal(
           <>
             <span className="label-konsol" style={{ ...s.labelMonitor, ...(sesiFoto.fase ? s.labelBiru : misiSelesai && !adaPermintaanMasuk ? s.labelHijau : adaPermintaanMasuk || transisiBatal ? s.labelMerah : s.labelBiru) }}>
-              {sesiFoto.fase ? labelSesiFoto(sesiFoto.fase, lang) : misiSelesai && !adaPermintaanMasuk ? t.monitorSelesai : adaPermintaanMasuk ? t.monitorMisiBaru : transisiBatal ? (transisiBatal === 'tolak' ? t.monitorDitolak : t.monitorDibatalkan) : sedangJalan ? t.monitorBerjalan : t.monitorStatus}
+              {sesiFoto.fase ? labelSesiFoto(sesiFoto.fase, lang) : misiSelesai && !adaPermintaanMasuk ? t.monitorSelesai : adaPermintaanMasuk ? t.monitorMisiBaru : transisiBatal ? (transisiBatal === 'tolak' ? t.monitorDitolak : t.monitorDibatalkan) : sedangJalan ? t.monitorBerjalan : sambutBeres ? t.monitorStatus : t.monitorSambut}
             </span>
             {sesiFoto.fase ? (
               <FotoKonsol sesi={sesiFoto} />
