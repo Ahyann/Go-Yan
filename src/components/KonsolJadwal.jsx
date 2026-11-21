@@ -43,11 +43,11 @@ const PERCIK = [[-26, -22, 0], [0, -30, 0.03], [26, -22, 0.06], [32, 2, 0.02], [
 const TEKS = {
   id: {
     judulJadwal: 'JADWAL MINGGUAN', belumDiisi: 'BELUM DIISI', geser: 'GESER UNTUK ISI JADWAL', mengisi: 'MENGISI JADWAL…',
-    terisi: 'JADWAL TERISI', tersimpan: 'TERSIMPAN · RESET TIAP SABTU', undo: 'UNDO',
+    terisi: 'JADWAL TERISI', tersimpan: 'TERSIMPAN · RESET TIAP SABTU', undo: 'UNDO', reset: 'RESET',
   },
   en: {
     judulJadwal: 'WEEKLY SCHEDULE', belumDiisi: 'NOT SET', geser: 'SWIPE TO FILL SCHEDULE', mengisi: 'FILLING SCHEDULE…',
-    terisi: 'SCHEDULE FILLED', tersimpan: 'SAVED · RESETS EVERY SATURDAY', undo: 'UNDO',
+    terisi: 'SCHEDULE FILLED', tersimpan: 'SAVED · RESETS EVERY SATURDAY', undo: 'UNDO', reset: 'RESET',
   },
 }
 
@@ -96,10 +96,12 @@ export default function KonsolJadwal({ jadwalRef, onHariBaru, onMasukAtur, onSel
     timerRef.current.push(setTimeout(() => onSelesaiIsi?.(), akhirAnimasi + 900))
   }
 
+  // Ada cadangan (diisi lewat slide, kurang dari 24 jam): kembali ke jadwal sebelumnya. Tidak ada cadangan (jadwal diisi manual
+  // atau sudah lama): tombolnya jadi RESET dan mengosongkan jadwal.
   function batalkanIsi() {
-    if (!undo) return
-    jadwalRef.current?.pasangDraft(undo.basis)
-    Promise.resolve(onSimpan?.(undo.basis)).catch((e) => console.error('Gagal membatalkan jadwal:', e))
+    const basis = undo?.basis ?? {}
+    jadwalRef.current?.pasangDraft(basis)
+    Promise.resolve(onSimpan?.(basis)).catch((e) => console.error('Gagal membatalkan jadwal:', e))
     simpanUndo(null)
     setUndo(null)
     setFase('awal')
@@ -134,7 +136,7 @@ export default function KonsolJadwal({ jadwalRef, onHariBaru, onMasukAtur, onSel
           <div style={{ ...s.judul, color: '#4ADE80', fontSize: 12 }}>{x.terisi}</div>
           <div style={{ ...s.redup, marginTop: 4, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{x.tersimpan}</div>
         </div>
-        {undo && <button type="button" data-tanpa-suara className="tekan" style={s.undo} onClick={batalkanIsi}>{x.undo}</button>}
+        <button type="button" data-tanpa-suara className="tekan" style={s.undo} onClick={batalkanIsi}>{undo ? x.undo : x.reset}</button>
       </div>
     )
   }
