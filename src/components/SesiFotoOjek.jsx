@@ -15,7 +15,7 @@ const TEKS = {
   en: { kamera: 'CAMERA', preview: 'PREVIEW', batal: 'CANCEL', ulangi: 'RETAKE', kirim: 'SEND', kirimFajri: 'SEND TO FAJRI', terkirim: 'SENT', balik: 'Switch camera', info: 'AIM AT THE SPOT' },
 }
 
-export function useSesiFoto({ aktif, onKirimFoto }) {
+export function useSesiFoto({ aktif, onKirimFoto, suaraKeras = false }) {
   const { t } = useLanguage()
   const [fase, setFase] = useState(null) // null | kamera | preview | kirim
   const [hadap, setHadap] = useState(layarSentuh() ? 'environment' : 'user')
@@ -90,7 +90,7 @@ export function useSesiFoto({ aktif, onKirimFoto }) {
   function jepret() {
     if (!siap || kilat || !videoRef.current) return
     const hasil = kompresVideo(videoRef.current, balik)
-    playTombolKamera()
+    playTombolKamera(suaraKeras)
     getar(15)
     setFoto(hasil)
     setKilat(true)

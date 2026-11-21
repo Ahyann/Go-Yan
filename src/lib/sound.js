@@ -671,14 +671,16 @@ export function playGantiBatal() {
 // Tombol bisa menolak dengan atribut data-tanpa-suara.
 const PILIHAN_KLIK = 'button, a, summary, [role="button"], [role="radio"], [role="tab"], [role="switch"], input[type="checkbox"], input[type="radio"], input[type="submit"]'
 
-function playKlikTombol(jenis) {
+// keras: tombol di dalam area yang ditandai data-suara-keras (Home akun penumpang: peta dan kartunya) bunyinya lebih besar
+function playKlikTombol(jenis, keras = false) {
   const ctx = ctxSiapEfek()
   if (!ctx) return
+  const v = keras ? 0.3 : 0.09
   if (jenis === 'pilih') {
-    nadaPendek(ctx, 'triangle', 660, 660, 0.05, 0.09, 0)
-    nadaPendek(ctx, 'triangle', 880, 880, 0.07, 0.09, 0.045)
+    nadaPendek(ctx, 'triangle', 660, 660, 0.05, v, 0)
+    nadaPendek(ctx, 'triangle', 880, 880, 0.07, v, 0.045)
   } else {
-    nadaPendek(ctx, 'triangle', 900, 700, 0.06, 0.09, 0)
+    nadaPendek(ctx, 'triangle', 900, 700, 0.06, v, 0)
   }
 }
 
@@ -693,10 +695,11 @@ if (typeof document !== 'undefined') {
       if (!el || el.disabled || el.getAttribute('aria-disabled') === 'true' || el.hasAttribute('data-tanpa-suara')) return
       if (el.closest('[data-tanpa-suara]')) return
       const tKlik = performance.now()
+      const keras = !!el.closest('[data-suara-keras]')
       const pilihan = el.matches('[role="radio"], [role="switch"], input[type="checkbox"], input[type="radio"]') || el.hasAttribute('aria-pressed') || el.hasAttribute('aria-checked')
       setTimeout(() => {
         if (suaraTerakhir >= tKlik) return
-        playKlikTombol(pilihan ? 'pilih' : 'tap')
+        playKlikTombol(pilihan ? 'pilih' : 'tap', keras)
       }, 0)
     },
     { passive: true, capture: true }
@@ -733,11 +736,12 @@ export function playLunasSemua() {
 }
 
 // Tombol kamera di konsol ojek: dua klik pendek seperti rana kamera
-export function playTombolKamera() {
+export function playTombolKamera(keras = false) {
   const ctx = ctxSiapEfek()
   if (!ctx) return
-  nadaPendek(ctx, 'square', 1800, 600, 0.04, 0.08, 0)
-  nadaPendek(ctx, 'square', 1400, 300, 0.05, 0.08, 0.07)
+  const v = keras ? 0.26 : 0.08
+  nadaPendek(ctx, 'square', 1800, 600, 0.04, v, 0)
+  nadaPendek(ctx, 'square', 1400, 300, 0.05, v, 0.07)
 }
 
 // Tombol suara di konsol ojek: satu nada naik seperti mikrofon menyala

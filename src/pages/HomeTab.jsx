@@ -15,7 +15,7 @@ export default function HomeTab({ permintaan, lokasiAktif, lokasiError, mulaiLok
   const { kirimPesan, kirimFoto, kirimSuara } = usePesanPenumpang()
   const sedangJalan = permintaan?.status === STATUS_PERMINTAAN.DITERIMA
   // Sesi foto: lapisan kaca menutup Home dengan viewfinder, sama seperti akun ojek
-  const sesiFoto = useSesiFoto({ aktif: sedangJalan, onKirimFoto: kirimFoto })
+  const sesiFoto = useSesiFoto({ aktif: sedangJalan, onKirimFoto: kirimFoto, suaraKeras: true })
   // Saat halaman dibuka dan permintaan masih menunggu driver, layar pembuka abu-abu dilewati.
   // Data permintaan datang dari Firebase setelah halaman terbuka, jadi statusnya diingat di localStorage.
   const [lewatiSplash] = useState(() => {
@@ -119,7 +119,7 @@ export default function HomeTab({ permintaan, lokasiAktif, lokasiError, mulaiLok
   )
 
   return (
-    <div style={s.wrap}>
+    <div style={s.wrap} data-suara-keras>
       <div style={s.headerFloat}>
         <div className="naik-masuk" style={s.salamWrap}>
           <div style={s.eyebrow}>{t.penumpangEyebrow}</div>
