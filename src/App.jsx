@@ -60,17 +60,12 @@ function AppIsi() {
     })
   }, [])
 
+  // Slide selesai: perjalanan ditutup dan penumpang diberi tahu. Catatan riwayat baru dibuat saat ojek menekan OK
+  // di kartu MISSION COMPLETE (catatRiwayatSelesai), jadi info perjalanan dikembalikan untuk disimpan sementara.
   async function selesaikanRide() {
-    if (!permintaan) return
+    if (!permintaan) return null
     const tanggal = tanggalLokalHariIni()
-    await tambahRiwayat({
-      tanggal,
-      jam: new Date().toTimeString().slice(0, 5),
-      tarif: TARIF_PER_RIDE,
-      statusBayar: STATUS_BAYAR.BELUM,
-      aksi: permintaan.aksi,
-      where: permintaan.where,
-    })
+    const info = { tanggal, jam: new Date().toTimeString().slice(0, 5), aksi: permintaan.aksi, where: permintaan.where }
     await tandaiSelesai({ tanggal, tarif: TARIF_PER_RIDE })
     kirimNotifikasi(
       'penumpang',
@@ -79,6 +74,19 @@ function AppIsi() {
       'selesai'
     )
     await selesai()
+    return info
+  }
+
+  async function catatRiwayatSelesai(info) {
+    if (!info) return
+    await tambahRiwayat({
+      tanggal: info.tanggal || tanggalLokalHariIni(),
+      jam: info.jam || new Date().toTimeString().slice(0, 5),
+      tarif: TARIF_PER_RIDE,
+      statusBayar: STATUS_BAYAR.BELUM,
+      aksi: info.aksi,
+      where: info.where,
+    })
   }
 
   if (user === undefined) {
@@ -112,6 +120,7 @@ function AppIsi() {
           onTerima={terima}
           onTolak={tolak}
           onSelesai={selesaikanRide}
+          onCatatRiwayat={catatRiwayatSelesai}
           onTandaiLunas={tandaiLunas}
           onHapusRiwayat={hapusRiwayat}
           onEditRiwayat={editRiwayat}

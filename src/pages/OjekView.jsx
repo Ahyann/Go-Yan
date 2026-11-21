@@ -44,6 +44,7 @@ export default function OjekView({
   onTerima,
   onTolak,
   onSelesai,
+  onCatatRiwayat,
   onTandaiLunas,
   onHapusRiwayat,
   onEditRiwayat,
@@ -56,6 +57,17 @@ export default function OjekView({
   // Pertama kali app dibuka, semua tab menampilkan WELCOME di konsol; baru sesudah diketuk tiap tab memakai layarnya sendiri
   const [sambutBeres, setSambutBeres] = useState(sambutSudahSelesai)
   const [tvNyala, setTvNyala] = useState(false)
+  // Misi yang sudah di-slide selesai tapi OK belum ditekan: kartu MISSION COMPLETE tetap ada walau pindah tab atau app ditutup,
+  // dan riwayatnya baru dicatat setelah OK.
+  const [misiSelesai, setMisiSelesai] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('goyan:misi-selesai') || 'null') } catch { return null }
+  })
+  useEffect(() => {
+    try {
+      if (misiSelesai) localStorage.setItem('goyan:misi-selesai', JSON.stringify(misiSelesai))
+      else localStorage.removeItem('goyan:misi-selesai')
+    } catch { /* penyimpanan diblokir: hanya berlaku selama app terbuka */ }
+  }, [misiSelesai])
   const [hanyaBelum, setHanyaBelum] = useState(false) // filter History: hanya trip yang belum lunas
   // Glitch berkala di layar konsol: sekali tiap 9-16 detik (acak), sekitar setengah detik
   const [glitchBerkala, setGlitchBerkala] = useState(false)
@@ -259,6 +271,9 @@ export default function OjekView({
             onTerima={onTerima}
             onTolak={onTolak}
             onSelesai={onSelesai}
+            misiSelesai={misiSelesai}
+            setMisiSelesai={setMisiSelesai}
+            onCatatRiwayat={onCatatRiwayat}
             lokasiAktif={lokasiAktif}
             lokasiError={lokasiError}
             mulaiLokasi={mulaiLokasi}

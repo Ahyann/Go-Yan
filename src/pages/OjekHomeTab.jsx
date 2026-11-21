@@ -23,6 +23,9 @@ export default function OjekHomeTab({ slotKonsol, putaranMasuk = 0,
   onTerima,
   onTolak,
   onSelesai,
+  misiSelesai,
+  setMisiSelesai,
+  onCatatRiwayat,
   lokasiAktif,
   lokasiError,
   mulaiLokasi,
@@ -65,7 +68,6 @@ export default function OjekHomeTab({ slotKonsol, putaranMasuk = 0,
   const [transisiDiterima, setTransisiDiterima] = useState(false)
   // Misi selesai: kartu Spiderman yang sama tampil lagi dalam mode hijau (MISSION COMPLETE), lalu menyusut dan hilang.
   // Info misi disimpan dulu karena permintaan langsung kosong setelah selesai.
-  const [misiSelesai, setMisiSelesai] = useState(null)
   const [susutSelesai, setSusutSelesai] = useState(false)
   const [keluarSelesai, setKeluarSelesai] = useState(false)
   const [transisiBatal, setTransisiBatal] = useState(null) // 'tolak' | 'batal'
@@ -98,6 +100,8 @@ export default function OjekHomeTab({ slotKonsol, putaranMasuk = 0,
   // Tombol OK di konsol: Spiderman ditarik naik keluar, lalu kartu menyusut dan hilang
   function tutupMisiSelesai() {
     if (keluarSelesai) return
+    // Riwayat dicatat sekarang (setelah OK), bukan saat slide selesai
+    Promise.resolve(onCatatRiwayat?.(misiSelesai)).catch((err) => console.error('Gagal mencatat riwayat:', err))
     setKeluarSelesai(true)
     playWhooshMasuk()
     setTimeout(() => setSusutSelesai(true), 800)
@@ -147,11 +151,15 @@ export default function OjekHomeTab({ slotKonsol, putaranMasuk = 0,
     berhentiLokasi()
     hapusLokasiPenumpangSekarang(isDemo, user?.uid)
     hapusPesan()
-    if (permintaan) setMisiSelesai({ aksi: permintaan.aksi, waktu: permintaan.waktu, where: permintaan.where, mulai: Date.now() })
+    const info = permintaan ? { aksi: permintaan.aksi, waktu: permintaan.waktu, where: permintaan.where, mulai: Date.now() } : null
+    if (info) setMisiSelesai(info)
     setSusutSelesai(false)
     setKeluarSelesai(false)
     playMissionSuccess()
-    onSelesai()
+    // Info riwayat (tanggal dan jam saat selesai) dikembalikan oleh onSelesai dan disimpan bersama misi yang menunggu OK
+    Promise.resolve(onSelesai()).then((hasil) => {
+      if (info && hasil) setMisiSelesai({ ...info, ...hasil })
+    }).catch((err) => console.error('Gagal menyelesaikan misi:', err))
   }
 
   const teksKosongPeta = adaPermintaanMasuk || sedangJalan
