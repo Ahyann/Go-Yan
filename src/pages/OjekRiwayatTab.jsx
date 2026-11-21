@@ -6,7 +6,7 @@ import MonthPickerPopup from '../components/MonthPickerPopup.jsx'
 import EditRiwayatPopup from '../components/EditRiwayatPopup.jsx'
 import SwipeableItem from '../components/SwipeableItem.jsx'
 
-export default function OjekRiwayatTab({ riwayat, onTandaiLunas, onHapusRiwayat, onEditRiwayat }) {
+export default function OjekRiwayatTab({ riwayat, onTandaiLunas, onHapusRiwayat, onEditRiwayat, hanyaBelum = false }) {
   const { t } = useLanguage()
   const { isDemo } = useAuth()
   const [showBulan, setShowBulan] = useState(false)
@@ -21,6 +21,7 @@ export default function OjekRiwayatTab({ riwayat, onTandaiLunas, onHapusRiwayat,
       const [tahun, bulan] = r.tanggal.split('-').map(Number)
       return bulan - 1 === bulanAktif && tahun === tahunAktif
     })
+    .filter((r) => !hanyaBelum || r.statusBayar === STATUS_BAYAR.BELUM) // tombol BELUM di konsol bawah
     .sort((a, b) => {
       if (a.tanggal !== b.tanggal) return b.tanggal.localeCompare(a.tanggal)
       if (a.aksi !== b.aksi) return a.aksi === 'antar' ? -1 : 1

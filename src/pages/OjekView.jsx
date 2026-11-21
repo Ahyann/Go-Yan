@@ -13,6 +13,7 @@ import PapanGoYan from '../components/PapanGoYan.jsx'
 import OjekHomeTab from './OjekHomeTab.jsx'
 import OjekJadwalTab from './OjekJadwalTab.jsx'
 import OjekRiwayatTab from './OjekRiwayatTab.jsx'
+import KonsolRiwayat from '../components/KonsolRiwayat.jsx'
 import OjekAccountTab from './OjekAccountTab.jsx'
 
 const KEY_TERAKHIR_DILIHAT = 'go-yan-riwayat-terakhir-dilihat-ojek'
@@ -52,6 +53,7 @@ export default function OjekView({
   const [slotKonsol, setSlotKonsol] = useState(null)
   const [alarmKonsol, setAlarmKonsol] = useState(false)
   const [putaranMasuk, setPutaranMasuk] = useState(0)
+  const [hanyaBelum, setHanyaBelum] = useState(false) // filter History: hanya trip yang belum lunas
   // Glitch berkala di layar konsol: sekali tiap 9-16 detik (acak), sekitar setengah detik
   const [glitchBerkala, setGlitchBerkala] = useState(false)
   useEffect(() => {
@@ -264,6 +266,7 @@ export default function OjekView({
             onTandaiLunas={onTandaiLunas}
             onHapusRiwayat={onHapusRiwayat}
             onEditRiwayat={onEditRiwayat}
+            hanyaBelum={hanyaBelum}
           />
         )}
         {tabAktif === 'akun' && <OjekAccountTab />}
@@ -288,7 +291,13 @@ export default function OjekView({
       >
         <div aria-hidden="true" style={s.garisScan} />
         <div ref={setSlotKonsol} className={glitchBerkala ? 'glitch-berkala' : undefined} style={s.areaInfo}>
-          {tabAktif !== 'home' && (
+          {tabAktif === 'riwayat' && (
+            <>
+              <span className="label-konsol" style={s.labelStatus}>{t.navRiwayat}</span>
+              <KonsolRiwayat riwayat={riwayat} onEditRiwayat={onEditRiwayat} hanyaBelum={hanyaBelum} onHanyaBelum={setHanyaBelum} />
+            </>
+          )}
+          {tabAktif !== 'home' && tabAktif !== 'riwayat' && (
             <>
               <span className="label-konsol" style={s.labelStatus}>{t.monitorStatus}</span>
               <JamKonsol lewatiSambut={!!permintaan} keterangan={permintaan?.status === STATUS_PERMINTAAN.MENUNGGU ? t.monitorMisiBaru : t.monitorStandby} bawah={<PesanBergilir teks={t.teksJalanOjek} />} />
