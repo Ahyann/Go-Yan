@@ -64,6 +64,12 @@ export default function KonsolJadwal({ jadwalRef, onHariBaru, onMasukAtur }) {
   function isiJadwal() {
     salinanRef.current = jadwalRef.current?.ambilDraft() ?? null
     memori.salinan = salinanRef.current
+    // Hasil akhirnya langsung dicatat: kalau pindah tab di tengah animasi, saat kembali jadwalnya sudah terisi semua
+    const basis = salinanRef.current || {}
+    const akhir = { ...basis }
+    HARI_KERJA_KEYS.forEach((h) => { akhir[h] = { ...(basis[h] || {}), ...PRESET[h] } })
+    memori.fase = 'selesai'
+    memori.draft = akhir
     onMasukAtur?.() // masuk mode atur otomatis supaya semua baris hari tampil
     setFase('isi')
     setLangkah(0)
@@ -102,7 +108,6 @@ export default function KonsolJadwal({ jadwalRef, onHariBaru, onMasukAtur }) {
         <div style={s.seg}>
           {HARI_KERJA_KEYS.map((h, i) => <span key={h} style={{ ...s.petak, background: i < langkah ? '#4ADE80' : '#1E3A52' }} />)}
         </div>
-        <div style={s.hari}>{x.hari.map((h) => <span key={h}>{h}</span>)}</div>
       </div>
     )
   }
@@ -128,9 +133,8 @@ export default function KonsolJadwal({ jadwalRef, onHariBaru, onMasukAtur }) {
   }
 
   return (
-    <div style={s.kolom}>
-      <div style={s.redup}>{x.ringkas}</div>
-      <SwipeToFinish key={putaran} label={x.geser} tinggi={34} konsol onConfirm={isiJadwal} />
+    <div style={{ ...s.kolom, height: 58, justifyContent: 'center' }}>
+      <SwipeToFinish key={putaran} label={x.geser} tinggi={34} konsol cyan onConfirm={isiJadwal} />
     </div>
   )
 }

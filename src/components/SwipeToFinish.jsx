@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { playGeserTik } from '../lib/sound'
 
 // tinggi: tinggi trek dalam px. konsol: gaya layar konsol (trek gelap bergaris cyan, huruf piksel).
-export default function SwipeToFinish({ label, onConfirm, tinggi = 52, konsol = false }) {
+export default function SwipeToFinish({ label, onConfirm, tinggi = 52, konsol = false, cyan = false }) {
   const trackRef = useRef(null)
   const handleRef = useRef(null)
   const labelRef = useRef(null)
@@ -119,8 +119,8 @@ export default function SwipeToFinish({ label, onConfirm, tinggi = 52, konsol = 
   }, [mengonfirmasi])
 
   return (
-    <div ref={trackRef} style={{ ...s.track, height: tinggi, ...(konsol ? s.trackKonsol : null) }}>
-      <div ref={fillRef} style={{ ...s.fill, height: tinggi, width: tinggi, ...(konsol ? s.fillKonsol : null) }} />
+    <div ref={trackRef} style={{ ...s.track, height: tinggi, ...(konsol ? s.trackKonsol : null), ...(cyan ? s.trackCyan : null) }}>
+      <div ref={fillRef} style={{ ...s.fill, height: tinggi, width: tinggi, ...(konsol ? s.fillKonsol : null), ...(cyan ? s.fillCyan : null) }} />
 
       <div ref={labelRef} style={s.labelWrap}>
         <span style={{ ...s.label, ...(konsol ? s.labelKonsol : null) }}>{mengonfirmasi ? 'Selesai! ✓' : label}</span>
@@ -133,15 +133,23 @@ export default function SwipeToFinish({ label, onConfirm, tinggi = 52, konsol = 
         )}
       </div>
 
-      <div ref={handleRef} style={{ ...s.handle, width: tinggi, height: tinggi, ...(konsol ? s.handleKonsol : null) }}>
+      <div ref={handleRef} className={cyan && !mengonfirmasi ? 'handle-denyut' : undefined} style={{ ...s.handle, width: tinggi, height: tinggi, ...(konsol ? s.handleKonsol : null), ...(cyan ? s.handleCyan : null) }}>
         {mengonfirmasi ? (
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
             <path d="M20 6L9 17l-5-5" />
           </svg>
         ) : (
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M9 18l6-6-6-6" />
-          </svg>
+          cyan ? (
+            // Dua panah gelap di kotak cyan menyala bergantian ke arah kanan
+            <svg width="22" height="16" viewBox="0 0 26 24" fill="none" stroke="#04192A" strokeWidth="4" strokeLinecap="square" aria-hidden="true">
+              <path className="panah-kedip" d="M5 5l7 7-7 7" />
+              <path className="panah-kedip" style={{ animationDelay: '0.3s' }} d="M14 5l7 7-7 7" />
+            </svg>
+          ) : (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 18l6-6-6-6" />
+            </svg>
+          )
         )}
       </div>
     </div>
@@ -149,6 +157,9 @@ export default function SwipeToFinish({ label, onConfirm, tinggi = 52, konsol = 
 }
 
 const s = {
+  trackCyan: { background: '#1E1E1E', boxShadow: 'inset 0 0 0 1px #5ED0FF' },
+  fillCyan: { background: 'rgba(94, 208, 255, 0.28)' },
+  handleCyan: { background: '#5ED0FF', boxShadow: 'inset 0 0 0 2px #04192A' },
   trackKonsol: { background: '#1E1E1E', boxShadow: 'inset 0 0 0 2px #5ED0FF' },
   fillKonsol: { background: 'rgba(188, 30, 47, 0.55)' },
   labelKonsol: { fontFamily: "'Silkscreen', monospace", fontSize: 12, fontWeight: 400, letterSpacing: '0.08em', color: '#94DDF4', textTransform: 'uppercase' },
