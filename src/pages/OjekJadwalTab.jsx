@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext.jsx'
 import JadwalMingguan from '../components/JadwalMingguan.jsx'
 import KonsolJadwal, { jadwalSudahTerisi, lupakanIsiJadwal } from '../components/KonsolJadwal.jsx'
 
-export default function OjekJadwalTab({ jadwalMingguan, onTandaiSelesai, simpanJadwal, slotKonsol }) {
+export default function OjekJadwalTab({ jadwalMingguan, onTandaiSelesai, simpanJadwal, slotKonsol, konsolSendiri = true, tvNyala = false }) {
   const { t } = useLanguage()
   const { isDemo } = useAuth()
   const [modeAtur, setModeAtur] = useState(jadwalSudahTerisi)
@@ -37,7 +37,7 @@ export default function OjekJadwalTab({ jadwalMingguan, onTandaiSelesai, simpanJ
 
       <p style={s.catatan}>{isDemo ? t.jadwalCatatanOjekDemo : t.jadwalCatatanOjek}</p>
 
-      {slotKonsol && createPortal(<KonsolJadwal jadwalRef={jadwalRef} onHariBaru={setHariBaru} onMasukAtur={() => setModeAtur(true)} />, slotKonsol)}
+      {slotKonsol && konsolSendiri && createPortal(<div className={tvNyala ? 'tv-nyala' : undefined}><KonsolJadwal jadwalRef={jadwalRef} onHariBaru={setHariBaru} onMasukAtur={() => setModeAtur(true)} /></div>, slotKonsol)}
     </main>
   )
 }

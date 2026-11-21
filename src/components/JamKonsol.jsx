@@ -6,6 +6,13 @@ import { playSambutGlitch, playKonsolMati, playSambutKonsol, bunyikanSetelahSiap
 // Status sambutan selama app terbuka: null (belum), 'tunggu' (WELCOME sudah tampil, menunggu diketuk), 'selesai'.
 // Pindah tab sebelum diketuk tetap menampilkan WELCOME + TAP HERE; sesudah diketuk langsung jam.
 let statusSambut = null
+const pendengarSelesai = new Set()
+export const sambutSudahSelesai = () => statusSambut === 'selesai'
+// OjekView memakai ini: sebelum sambutan diketuk semua tab menampilkan WELCOME; sesudahnya tiap tab memakai layarnya sendiri
+export function dengarSambutSelesai(fn) {
+  pendengarSelesai.add(fn)
+  return () => pendengarSelesai.delete(fn)
+}
 
 const KATA = 'WELCOME'
 const MULAI = 250 // ms sebelum huruf pertama
@@ -57,7 +64,7 @@ export default function JamKonsol({ keterangan, bawah = null, lewatiSambut = fal
     // Ketukan ini sering jadi sentuhan pertama di app; audio dibangunkan dulu supaya suaranya tidak hilang
     bunyikanSetelahSiap(() => { playSambutKonsol(); playSambutGlitch() })
     setTimeout(() => { setFase('mati'); playKonsolMati() }, MATI_SESUDAH_TAP)
-    setTimeout(() => { setFase('jam'); setDariSambut(true) }, SELESAI_SESUDAH_TAP)
+    setTimeout(() => { setFase('jam'); setDariSambut(true); pendengarSelesai.forEach((f) => f()) }, SELESAI_SESUDAH_TAP)
   }
 
   if (fase !== 'jam') {

@@ -3,7 +3,7 @@ import { useLokasiSaya } from '../lib/useLokasiSaya'
 import { usePesanPenumpang } from '../lib/usePesanPenumpang'
 import { playChatSound, playTabPindah, playKonsolAlarm, playKonsolMati, bunyikanSetelahSiap } from '../lib/sound'
 import { getar } from '../lib/getar'
-import JamKonsol from '../components/JamKonsol.jsx'
+import JamKonsol, { sambutSudahSelesai, dengarSambutSelesai } from '../components/JamKonsol.jsx'
 import PesanBergilir from '../components/PesanBergilir.jsx'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { useReminderKeberangkatan } from '../lib/useReminderKeberangkatan'
@@ -53,6 +53,9 @@ export default function OjekView({
   const [slotKonsol, setSlotKonsol] = useState(null)
   const [alarmKonsol, setAlarmKonsol] = useState(false)
   const [putaranMasuk, setPutaranMasuk] = useState(0)
+  // Pertama kali app dibuka, semua tab menampilkan WELCOME di konsol; baru sesudah diketuk tiap tab memakai layarnya sendiri
+  const [sambutBeres, setSambutBeres] = useState(sambutSudahSelesai)
+  const [tvNyala, setTvNyala] = useState(false)
   const [hanyaBelum, setHanyaBelum] = useState(false) // filter History: hanya trip yang belum lunas
   // Glitch berkala di layar konsol: sekali tiap 9-16 detik (acak), sekitar setengah detik
   const [glitchBerkala, setGlitchBerkala] = useState(false)
@@ -92,6 +95,8 @@ export default function OjekView({
   const statusMenungguRef = useRef(false)
   statusMenungguRef.current = permintaan?.status === STATUS_PERMINTAAN.MENUNGGU
 
+  const konsolSendiri = sambutBeres || !!permintaan
+
   const putarAlarmTertunda = (spideyBaru = true) => {
     if (!alarmTertundaRef.current) return
     alarmTertundaRef.current = false
@@ -108,6 +113,12 @@ export default function OjekView({
     if (alarmTertundaRef.current) putarAlarmTertunda(false)
     else if (statusMenungguRef.current) setAlarmKonsol(true)
   }
+
+  useEffect(() => dengarSambutSelesai(() => {
+    setSambutBeres(true)
+    setTvNyala(true)
+    setTimeout(() => setTvNyala(false), 1000)
+  }), [])
 
   useEffect(() => {
     const saatTampil = () => {
@@ -262,6 +273,8 @@ export default function OjekView({
             onTandaiSelesai={onTandaiSelesaiJadwal}
             simpanJadwal={simpanJadwal}
             slotKonsol={slotKonsol}
+            konsolSendiri={konsolSendiri}
+            tvNyala={tvNyala}
           />
         )}
         {tabAktif === 'riwayat' && (
@@ -295,16 +308,18 @@ export default function OjekView({
       >
         <div aria-hidden="true" style={s.garisScan} />
         <div ref={setSlotKonsol} className={glitchBerkala ? 'glitch-berkala' : undefined} style={s.areaInfo}>
-          {tabAktif === 'riwayat' && (
+          {tabAktif === 'riwayat' && konsolSendiri && (
             <>
               <span className="label-konsol" style={s.labelStatus}>{t.navRiwayat}</span>
-              <KonsolRiwayat riwayat={riwayat} onEditRiwayat={onEditRiwayat} hanyaBelum={hanyaBelum} onHanyaBelum={setHanyaBelum} />
+              <div className={tvNyala ? 'tv-nyala' : undefined}>
+                <KonsolRiwayat riwayat={riwayat} onEditRiwayat={onEditRiwayat} hanyaBelum={hanyaBelum} onHanyaBelum={setHanyaBelum} />
+              </div>
             </>
           )}
-          {tabAktif === 'jadwal' && (
+          {tabAktif === 'jadwal' && konsolSendiri && (
             <span className="label-konsol" style={s.labelStatus}>{t.jadwalEyebrow}</span>
           )}
-          {tabAktif !== 'home' && tabAktif !== 'riwayat' && tabAktif !== 'jadwal' && (
+          {tabAktif !== 'home' && !(konsolSendiri && (tabAktif === 'riwayat' || tabAktif === 'jadwal')) && (
             <>
               <span className="label-konsol" style={s.labelStatus}>{t.monitorStatus}</span>
               <JamKonsol lewatiSambut={!!permintaan} keterangan={permintaan?.status === STATUS_PERMINTAAN.MENUNGGU ? t.monitorMisiBaru : t.monitorStandby} bawah={<PesanBergilir teks={t.teksJalanOjek} />} />
