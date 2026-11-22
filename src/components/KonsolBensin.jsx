@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLanguage } from '../context/LanguageContext.jsx'
-import { JUMLAH_BAR, catatIsiBensin, resetBensin, sinkronBensin, useBensin, useTripBensin } from '../lib/bensin'
+import { JUMLAH_BAR, catatIsiBensin, resetBensin, sinkronBensin, useBensin, useRiwayatBensin, useTripBensin } from '../lib/bensin'
 import { playGeserHalus, playGeserTik, playKonsolMati, playLunasSemua } from '../lib/sound'
 import { getar } from '../lib/getar'
 import { IkonPompa, MeterBensin, warnaBar } from './BarisStatusSiaga.jsx'
@@ -11,12 +11,16 @@ const TEKS = {
     sinkron: 'PERLU SINKRON', belum: 'KETUK BAR DULU', isiPenuh: 'ISI PENUH ±Rp ', catat: 'CATAT ISI', spbu: 'SPBU', cari: 'CARI SPBU', penuh: 'PENUH',
     terakhir: 'SINKRON {n} HARI LALU', mingguIni: 'MINGGU INI', trip: 'TRIP', kosongTrip: 'NYALAKAN LIVE LOCATION SAAT MISI UNTUK MENGHITUNG BENSIN PER TRIP',
     hal1: 'Sisa bensin', hal2: 'Bensin per trip', bar: 'Bensin {n} dari 6 bar', mnt: 'MNT', reset: 'RESET DATA', yakin: 'YAKIN? KETUK LAGI',
+    hal3: 'Riwayat bulan', untukMisi: 'BENSIN UNTUK MISI', jarak: 'JARAK', liter: 'LITER', rataTrip: 'RATA/TRIP', hariRamai: 'HARI RAMAI', porsi: 'PORSI MISI',
+    bulanSebelum: 'Bulan sebelumnya', bulanBerikut: 'Bulan berikutnya', bln: ['JAN', 'FEB', 'MAR', 'APR', 'MEI', 'JUN', 'JUL', 'AGU', 'SEP', 'OKT', 'NOV', 'DES'],
   },
   en: {
     kembali: 'BACK', status: 'STATUS:', ketuk: 'TAP TO MATCH YOUR GAUGE', aman: 'OK ±{n} DAYS', segera: 'REFUEL SOON', sekarang: 'REFUEL NOW',
     sinkron: 'NEEDS SYNC', belum: 'TAP THE BARS', isiPenuh: 'FILL UP ±Rp ', catat: 'LOG FILL', spbu: 'GAS', cari: 'FIND GAS', penuh: 'FULL',
     terakhir: 'SYNCED {n} DAYS AGO', mingguIni: 'THIS WEEK', trip: 'TRIPS', kosongTrip: 'TURN ON LIVE LOCATION DURING MISSIONS TO COUNT FUEL PER TRIP',
     hal1: 'Fuel left', hal2: 'Fuel per trip', bar: 'Fuel {n} of 6 bars', mnt: 'MIN', reset: 'RESET DATA', yakin: 'SURE? TAP AGAIN',
+    hal3: 'Monthly history', untukMisi: 'FUEL FOR MISSIONS', jarak: 'DISTANCE', liter: 'LITERS', rataTrip: 'AVG/TRIP', hariRamai: 'BUSIEST DAY', porsi: 'MISSION SHARE',
+    bulanSebelum: 'Previous month', bulanBerikut: 'Next month', bln: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
   },
 }
 const PILIHAN_ISI = [10000, 20000, 30000, 'penuh']
@@ -63,9 +67,10 @@ function useSpbuTerdekat() {
   return spbu
 }
 
-// Halaman bensin di layar konsol ojek, dua halaman yang bisa digeser:
+// Halaman bensin di layar konsol ojek, tiga halaman yang bisa digeser:
 // 1) sisa bensin: ketuk bar sesuai speedometer (sinkron), biaya isi penuh, catat isi, SPBU terdekat
 // 2) bensin per trip dari live location: total minggu ini dan beberapa trip terakhir
+// 3) riwayat bulan: pilih bulan, total bensin untuk misi dan enam angka ringkasan
 export default function KonsolBensin({ onKembali }) {
   const { lang } = useLanguage()
   const k = TEKS[lang] || TEKS.id
@@ -73,12 +78,16 @@ export default function KonsolBensin({ onKembali }) {
   const { daftar, minggu } = useTripBensin()
   const spbu = useSpbuTerdekat()
   const [halaman, setHalaman] = useState(0)
+  const hariIni = new Date()
+  const [bulanA, setBulanA] = useState(hariIni.getMonth())
+  const [tahunA, setTahunA] = useState(hariIni.getFullYear())
+  const rb = useRiwayatBensin(bulanA, tahunA)
   const [modeCatat, setModeCatat] = useState(false)
   const [yakinReset, setYakinReset] = useState(false)
   const sentuhAwal = useRef(null)
 
   const pindah = (h) => {
-    if (h === halaman || h < 0 || h > 1) return
+    if (h === halaman || h < 0 || h > 2) return
     setHalaman(h)
     playGeserHalus()
   }
@@ -89,6 +98,13 @@ export default function KonsolBensin({ onKembali }) {
     if (d > 35) pindah(halaman + 1)
     else if (d < -35) pindah(halaman - 1)
     sentuhAwal.current = null
+  }
+
+  function gantiBulan(arah) {
+    const d = new Date(tahunA, bulanA + arah, 1)
+    setBulanA(d.getMonth())
+    setTahunA(d.getFullYear())
+    playGeserHalus()
   }
 
   function ketukBar(i) {
@@ -135,6 +151,7 @@ export default function KonsolBensin({ onKembali }) {
     else { status = k.aman.replace('{n}', b.hariAman); warna = '#4ADE80' }
   }
   if (halaman === 1) { status = `${k.mingguIni} ±Rp ${rupiah(minggu.rupiah)}`; warna = '#FF9A3C' }
+  if (halaman === 2) { status = `${k.bln[bulanA]} ${tahunA}`; warna = '#FF9A3C' }
 
   const tombol = (teks, onKlik, gaya = {}) => (
     <button type="button" className="tekan" onClick={onKlik} style={{ ...s.tombol, ...gaya }}>{teks}</button>
@@ -147,7 +164,7 @@ export default function KonsolBensin({ onKembali }) {
           <span aria-hidden="true" style={{ color: '#5ED0FF' }}>◀</span> {k.kembali}
         </button>
         <span style={s.titikRow} role="tablist">
-          {[k.hal1, k.hal2].map((nama, i) => (
+          {[k.hal1, k.hal2, k.hal3].map((nama, i) => (
             <button key={nama} type="button" role="tab" aria-selected={halaman === i} aria-label={nama} onClick={() => pindah(i)} style={s.titikTombol}>
               <i style={{ ...s.titik, width: halaman === i ? 12 : 5, background: halaman === i ? '#5ED0FF' : '#3F566E' }} />
             </button>
@@ -157,7 +174,7 @@ export default function KonsolBensin({ onKembali }) {
       </div>
 
       <div style={s.viewport} onTouchStart={sentuhMulai} onTouchEnd={sentuhSelesai}>
-        <div style={{ ...s.track, transform: `translateX(-${halaman * 50}%)` }}>
+        <div style={{ ...s.track, transform: `translateX(-${halaman * (100 / 3)}%)` }}>
           {/* Halaman 1: sisa bensin */}
           <div style={s.halaman}>
             <div style={s.kiri}>
@@ -228,9 +245,39 @@ export default function KonsolBensin({ onKembali }) {
               </button>
             </div>
           </div>
+
+          {/* Halaman 3: riwayat bulan */}
+          <div style={s.halaman}>
+            <div style={s.kiri}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                <button type="button" className="tekan" onClick={() => gantiBulan(-1)} aria-label={k.bulanSebelum} style={s.panahBulan}>◀</button>
+                <span style={{ ...s.kecil, opacity: 1, color: '#5ED0FF', fontSize: 7 }}>{k.bln[bulanA]} {tahunA}</span>
+                <button type="button" className="tekan" onClick={() => gantiBulan(1)} aria-label={k.bulanBerikut} style={s.panahBulan}>▶</button>
+              </span>
+              <span style={{ ...s.angka, fontSize: 12 }}>±Rp {rupiah(rb.rupiah)}</span>
+              <span style={s.kecil}>{k.untukMisi}</span>
+            </div>
+            <div style={s.grid}>
+              <Stat label={k.trip} nilai={rb.jumlahTrip} />
+              <Stat label={k.jarak} nilai={`${desimal(rb.km, 0)} KM`} />
+              <Stat label={k.liter} nilai={`${desimal(rb.liter, 2)} L`} />
+              <Stat label={k.rataTrip} nilai={`Rp${rupiah(rb.rataTrip)}`} warna="#FF9A3C" />
+              <Stat label={k.hariRamai} nilai={rb.hariRamai} warna="#5ED0FF" />
+              <Stat label={k.porsi} nilai={rb.porsiMisi === null ? '--' : `${rb.porsiMisi}%`} warna="#4ADE80" />
+            </div>
+          </div>
         </div>
       </div>
     </div>
+  )
+}
+
+function Stat({ label, nilai, warna = '#FFFFFF' }) {
+  return (
+    <span style={s.stat}>
+      <span style={s.kecil}>{label}</span>
+      <span style={{ ...s.angka, fontSize: 9, color: warna }}>{nilai}</span>
+    </span>
   )
 }
 
@@ -242,8 +289,8 @@ const s = {
   titik: { height: 4, display: 'block', transition: 'width 0.2s, background 0.2s' },
   status: { fontSize: 8, letterSpacing: '0.08em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0 },
   viewport: { overflow: 'hidden', marginTop: 4, touchAction: 'pan-y' },
-  track: { display: 'flex', width: '200%', transition: 'transform 0.3s cubic-bezier(0.34, 1.2, 0.64, 1)' },
-  halaman: { width: '50%', flexShrink: 0, boxSizing: 'border-box', display: 'flex', alignItems: 'center', gap: 9, height: 48 },
+  track: { display: 'flex', width: '300%', transition: 'transform 0.3s cubic-bezier(0.34, 1.2, 0.64, 1)' },
+  halaman: { width: `${100 / 3}%`, flexShrink: 0, boxSizing: 'border-box', display: 'flex', alignItems: 'center', gap: 9, height: 48 },
   kiri: { display: 'flex', flexDirection: 'column', gap: 4, flexShrink: 0, paddingRight: 9, borderRight: '1px solid rgba(94, 208, 255, 0.2)' },
   kanan: { flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 5 },
   kecil: { fontSize: 6, letterSpacing: '0.14em', opacity: 0.6, whiteSpace: 'nowrap' },
@@ -256,5 +303,8 @@ const s = {
   tombolRedup: { color: '#8FB2D0', borderColor: '#8FB2D0' },
   pilihanIsi: { display: 'flex', flexWrap: 'wrap', gap: 3 },
   reset: { alignSelf: 'flex-end', fontFamily: 'inherit', fontSize: 6, letterSpacing: '0.1em', padding: '3px 5px', background: 'transparent', border: '1px solid', borderRadius: 0, cursor: 'pointer', whiteSpace: 'nowrap' },
+  panahBulan: { background: 'none', border: 'none', color: '#5ED0FF', font: 'inherit', fontSize: 7, padding: '4px 3px', cursor: 'pointer' },
+  grid: { flex: 1, minWidth: 0, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '5px 4px', paddingRight: 6 },
+  stat: { display: 'flex', flexDirection: 'column', lineHeight: 1.15, minWidth: 0 },
   barisTrip: { display: 'flex', justifyContent: 'space-between', gap: 6, fontFamily: "'JetBrains Mono', monospace", fontSize: 8, color: '#FFFFFF', whiteSpace: 'nowrap' },
 }

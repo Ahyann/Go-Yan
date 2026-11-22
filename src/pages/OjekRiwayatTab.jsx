@@ -5,12 +5,14 @@ import { useAuth } from '../context/AuthContext.jsx'
 import MonthPickerPopup from '../components/MonthPickerPopup.jsx'
 import EditRiwayatPopup from '../components/EditRiwayatPopup.jsx'
 import SwipeableItem from '../components/SwipeableItem.jsx'
+import RiwayatBensin from '../components/RiwayatBensin.jsx'
 import { playGeserTik } from '../lib/sound'
 
 export default function OjekRiwayatTab({ riwayat, onTandaiLunas, onHapusRiwayat, onEditRiwayat, hanyaBelum = false }) {
   const { t } = useLanguage()
   const { isDemo } = useAuth()
   const [showBulan, setShowBulan] = useState(false)
+  const [mode, setMode] = useState('trip') // sakelar Trip | Bensin
   const [itemEdit, setItemEdit] = useState(null)
   // Animasi lunas: baris yang baru berubah jadi Paid menyala hijau berurutan dari atas (tahan = belum waktunya tampil lunas)
   const [tahan, setTahan] = useState(() => new Set())
@@ -81,6 +83,15 @@ export default function OjekRiwayatTab({ riwayat, onTandaiLunas, onHapusRiwayat,
         </button>
       </div>
 
+      {/* Sakelar Trip | Bensin: layar Bensin berisi riwayat bensin bulan terpilih (hanya ada di akun ojek) */}
+      <div style={s.sakelar} role="tablist">
+        {[['trip', t.sakelarTrip || 'Trip'], ['bensin', t.sakelarBensin || 'Bensin']].map(([id, nama]) => (
+          <button key={id} type="button" role="tab" aria-selected={mode === id} onClick={() => setMode(id)} style={{ ...s.sakelarTombol, ...(mode === id ? s.sakelarAktif : null) }}>{nama}</button>
+        ))}
+      </div>
+
+      {mode === 'bensin' ? <RiwayatBensin bulan={bulanAktif} tahun={tahunAktif} /> : (
+      <>
       {/* Dua kartu ringkasan bersiku piksel: kiri belum ditransfer (merah), kanan diterima (cyan) yang bisa digeser: total lalu bulan ini */}
       <div style={s.ringkasanRow}>
         <section style={s.kartuRingkas}>
@@ -142,6 +153,8 @@ export default function OjekRiwayatTab({ riwayat, onTandaiLunas, onHapusRiwayat,
       </div>
 
       {isDemo && riwayatBulanIni.length > 0 && <div style={s.tipDemo}>{t.demoTipRiwayat}</div>}
+      </>
+      )}
 
       {showBulan && (
         <MonthPickerPopup
@@ -209,6 +222,9 @@ const s = {
     flexDirection: 'column',
     gap: 20,
   },
+  sakelar: { display: 'flex', border: '1px solid var(--blue-border)', background: 'rgba(1, 26, 41, 0.6)' },
+  sakelarTombol: { flex: 1, padding: '9px 0', fontSize: 13, fontWeight: 700, letterSpacing: '0.04em', color: '#9FC3E8', background: 'transparent', border: 'none', borderRadius: 0 },
+  sakelarAktif: { background: '#5ED0FF', color: '#04192A' },
   sectionHead: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' },
   eyebrow: { fontSize: 11, letterSpacing: '0.12em', color: 'var(--text-dim)', marginBottom: 4 },
   title: {

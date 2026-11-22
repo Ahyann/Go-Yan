@@ -14,6 +14,7 @@ import OjekJadwalTab from './OjekJadwalTab.jsx'
 import OjekRiwayatTab from './OjekRiwayatTab.jsx'
 import KonsolRiwayat from '../components/KonsolRiwayat.jsx'
 import OjekAccountTab from './OjekAccountTab.jsx'
+import { useSinkronBensin } from '../lib/bensin'
 
 const KEY_TERAKHIR_DILIHAT = 'go-yan-riwayat-terakhir-dilihat-ojek'
 
@@ -86,6 +87,7 @@ export default function OjekView({
   const [adaRiwayatBaru, setAdaRiwayatBaru] = useState(false)
   const [adaPermintaanBaru, setAdaPermintaanBaru] = useState(false)
   const [toastPermintaan, setToastPermintaan] = useState(null)
+  useSinkronBensin() // data bensin tersambung ke Firebase (jalur khusus ojek)
   const tabAktifRef = useRef('home')
 
   useEffect(() => {

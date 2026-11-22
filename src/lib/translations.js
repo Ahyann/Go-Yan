@@ -166,6 +166,8 @@ export const translations = {
 
     // --- Riwayat ---
     riwayatEyebrow: 'RIWAYAT',
+    sakelarTrip: 'Trip',
+    sakelarBensin: 'Bensin',
     riwayatTitlePenumpang: 'Perjalanan & tagihan',
     riwayatTitleOjek: 'Tagihan Fajri',
     riwayatTitleOjekDemo: 'Tagihan penumpang',
@@ -414,6 +416,8 @@ export const translations = {
 
     // --- Riwayat ---
     riwayatEyebrow: 'HISTORY',
+    sakelarTrip: 'Trips',
+    sakelarBensin: 'Fuel',
     riwayatTitlePenumpang: 'Trips & billing',
     riwayatTitleOjek: "Fajri's tab",
     riwayatTitleOjekDemo: "Passenger's tab",
