@@ -94,6 +94,14 @@ export function useBensin() {
   return perkiraanBensin()
 }
 
+// Hapus semua data bensin (perkiraan sisa bensin dan daftar bensin per trip) di HP ini
+export function resetBensin() {
+  data = null
+  try { localStorage.removeItem(KUNCI); localStorage.removeItem('goyan:bensin-trip') } catch { /* penyimpanan diblokir */ }
+  pendengar.forEach((f) => f())
+  pendengarTrip.forEach((f) => f())
+}
+
 // ---------- Bensin per trip (dari live location) ----------
 // Selama live location menyala, titik GPS yang cukup akurat dijumlahkan jaraknya. Saat live location dimatikan
 // (biasanya di akhir misi), jarak dan lama perjalanan dicatat sebagai satu trip dengan perkiraan liter dan rupiah.

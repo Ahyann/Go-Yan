@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLanguage } from '../context/LanguageContext.jsx'
-import { JUMLAH_BAR, catatIsiBensin, sinkronBensin, useBensin, useTripBensin } from '../lib/bensin'
-import { playGeserHalus, playGeserTik, playLunasSemua } from '../lib/sound'
+import { JUMLAH_BAR, catatIsiBensin, resetBensin, sinkronBensin, useBensin, useTripBensin } from '../lib/bensin'
+import { playGeserHalus, playGeserTik, playKonsolMati, playLunasSemua } from '../lib/sound'
 import { getar } from '../lib/getar'
 import { IkonPompa, MeterBensin, warnaBar } from './BarisStatusSiaga.jsx'
 
@@ -10,13 +10,13 @@ const TEKS = {
     kembali: 'KEMBALI', status: 'STATUS:', ketuk: 'KETUK SESUAI SPEEDOMETER', aman: 'AMAN ±{n} HARI', segera: 'SEGERA ISI', sekarang: 'ISI SEKARANG',
     sinkron: 'PERLU SINKRON', belum: 'KETUK BAR DULU', isiPenuh: 'ISI PENUH ±Rp ', catat: 'CATAT ISI', spbu: 'SPBU', cari: 'CARI SPBU', penuh: 'PENUH',
     terakhir: 'SINKRON {n} HARI LALU', mingguIni: 'MINGGU INI', trip: 'TRIP', kosongTrip: 'NYALAKAN LIVE LOCATION SAAT MISI UNTUK MENGHITUNG BENSIN PER TRIP',
-    hal1: 'Sisa bensin', hal2: 'Bensin per trip', bar: 'Bensin {n} dari 6 bar', mnt: 'MNT',
+    hal1: 'Sisa bensin', hal2: 'Bensin per trip', bar: 'Bensin {n} dari 6 bar', mnt: 'MNT', reset: 'RESET DATA', yakin: 'YAKIN? KETUK LAGI',
   },
   en: {
     kembali: 'BACK', status: 'STATUS:', ketuk: 'TAP TO MATCH YOUR GAUGE', aman: 'OK ±{n} DAYS', segera: 'REFUEL SOON', sekarang: 'REFUEL NOW',
     sinkron: 'NEEDS SYNC', belum: 'TAP THE BARS', isiPenuh: 'FILL UP ±Rp ', catat: 'LOG FILL', spbu: 'GAS', cari: 'FIND GAS', penuh: 'FULL',
     terakhir: 'SYNCED {n} DAYS AGO', mingguIni: 'THIS WEEK', trip: 'TRIPS', kosongTrip: 'TURN ON LIVE LOCATION DURING MISSIONS TO COUNT FUEL PER TRIP',
-    hal1: 'Fuel left', hal2: 'Fuel per trip', bar: 'Fuel {n} of 6 bars', mnt: 'MIN',
+    hal1: 'Fuel left', hal2: 'Fuel per trip', bar: 'Fuel {n} of 6 bars', mnt: 'MIN', reset: 'RESET DATA', yakin: 'SURE? TAP AGAIN',
   },
 }
 const PILIHAN_ISI = [10000, 20000, 30000, 'penuh']
@@ -74,6 +74,7 @@ export default function KonsolBensin({ onKembali }) {
   const spbu = useSpbuTerdekat()
   const [halaman, setHalaman] = useState(0)
   const [modeCatat, setModeCatat] = useState(false)
+  const [yakinReset, setYakinReset] = useState(false)
   const sentuhAwal = useRef(null)
 
   const pindah = (h) => {
@@ -102,6 +103,19 @@ export default function KonsolBensin({ onKembali }) {
     setModeCatat(false)
     playLunasSemua()
     getar([15, 40, 15])
+  }
+
+  // Reset data bensin: ketuk dua kali supaya tidak terhapus tidak sengaja
+  function reset() {
+    if (!yakinReset) {
+      setYakinReset(true)
+      setTimeout(() => setYakinReset(false), 3000)
+      return
+    }
+    resetBensin()
+    setYakinReset(false)
+    playKonsolMati()
+    getar(15)
   }
 
   function bukaSpbu() {
@@ -198,7 +212,7 @@ export default function KonsolBensin({ onKembali }) {
               {daftar.length === 0 ? (
                 <span style={{ ...s.kecil, whiteSpace: 'normal', lineHeight: 1.4 }}>{k.kosongTrip}</span>
               ) : (
-                daftar.slice(0, 3).map((t) => {
+                daftar.slice(0, 2).map((t) => {
                   const tgl = new Date(t.waktu)
                   return (
                     <span key={t.waktu} style={s.barisTrip}>
@@ -209,6 +223,9 @@ export default function KonsolBensin({ onKembali }) {
                   )
                 })
               )}
+              <button type="button" data-tanpa-suara onClick={reset} style={{ ...s.reset, color: yakinReset ? '#ED1C24' : '#8FB2D0', borderColor: yakinReset ? '#ED1C24' : 'rgba(143, 178, 208, 0.4)' }}>
+                {yakinReset ? k.yakin : k.reset}
+              </button>
             </div>
           </div>
         </div>
@@ -238,5 +255,6 @@ const s = {
   tombolHijau: { color: '#04192A', background: '#4ADE80', borderColor: '#4ADE80' },
   tombolRedup: { color: '#8FB2D0', borderColor: '#8FB2D0' },
   pilihanIsi: { display: 'flex', flexWrap: 'wrap', gap: 3 },
+  reset: { alignSelf: 'flex-end', fontFamily: 'inherit', fontSize: 6, letterSpacing: '0.1em', padding: '3px 5px', background: 'transparent', border: '1px solid', borderRadius: 0, cursor: 'pointer', whiteSpace: 'nowrap' },
   barisTrip: { display: 'flex', justifyContent: 'space-between', gap: 6, fontFamily: "'JetBrains Mono', monospace", fontSize: 8, color: '#FFFFFF', whiteSpace: 'nowrap' },
 }
