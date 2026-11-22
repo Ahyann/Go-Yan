@@ -269,7 +269,7 @@ export default function KonsolBensin({ onKembali }) {
               <span style={s.angka}>±Rp {rupiah(minggu.rupiah)}</span>
               <span style={s.kecil}>{minggu.jumlah} {k.trip} · {desimal(minggu.km)} KM · {desimal(minggu.liter, 2)} L</span>
             </div>
-            <div style={{ ...s.kanan, gap: 3 }}>
+            <div style={{ ...s.kanan, gap: 3, height: 44, justifyContent: 'flex-start' }}>
               <span style={s.barisKontrol}>
                 {jumlahHal > 1 ? (
                   <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
