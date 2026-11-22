@@ -11,7 +11,7 @@ const TEKS = {
     sinkron: 'PERLU SINKRON', belum: 'KETUK BAR DULU', isiPenuh: 'ISI PENUH ±Rp ', catat: 'CATAT ISI', lain: 'LAIN', nominal: 'Nominal isi dalam ribu rupiah', spbu: 'SPBU', cari: 'CARI SPBU', penuh: 'PENUH',
     terakhir: 'SINKRON {n} HARI LALU', mingguIni: 'MINGGU INI', trip: 'TRIP', kosongTrip: 'NYALAKAN LIVE LOCATION SAAT MISI UNTUK MENGHITUNG BENSIN PER TRIP',
     hal1: 'Sisa bensin', hal2: 'Bensin per trip', bar: 'Bensin {n} dari 6 bar', mnt: 'MNT', reset: 'RESET DATA', yakin: 'YAKIN? KETUK LAGI',
-    hal3: 'Riwayat bulan', untukMisi: 'BENSIN UNTUK MISI', jarak: 'JARAK', liter: 'LITER', rataTrip: 'RATA/TRIP', hariRamai: 'HARI RAMAI', porsi: 'PORSI MISI',
+    hal3: 'Riwayat bulan', untukMisi: 'BENSIN UNTUK MISI', jarak: 'JARAK', liter: 'LITER', rataTrip: 'RATA/TRIP', hariRamai: 'HARI RAMAI', porsi: 'TERLACAK MISI',
     bulanSebelum: 'Bulan sebelumnya', bulanBerikut: 'Bulan berikutnya', bln: ['JAN', 'FEB', 'MAR', 'APR', 'MEI', 'JUN', 'JUL', 'AGU', 'SEP', 'OKT', 'NOV', 'DES'],
   },
   en: {
@@ -19,7 +19,7 @@ const TEKS = {
     sinkron: 'NEEDS SYNC', belum: 'TAP THE BARS', isiPenuh: 'FILL UP ±Rp ', catat: 'LOG FILL', lain: 'OTHER', nominal: 'Amount in thousand rupiah', spbu: 'GAS', cari: 'FIND GAS', penuh: 'FULL',
     terakhir: 'SYNCED {n} DAYS AGO', mingguIni: 'THIS WEEK', trip: 'TRIPS', kosongTrip: 'TURN ON LIVE LOCATION DURING MISSIONS TO COUNT FUEL PER TRIP',
     hal1: 'Fuel left', hal2: 'Fuel per trip', bar: 'Fuel {n} of 6 bars', mnt: 'MIN', reset: 'RESET DATA', yakin: 'SURE? TAP AGAIN',
-    hal3: 'Monthly history', untukMisi: 'FUEL FOR MISSIONS', jarak: 'DISTANCE', liter: 'LITERS', rataTrip: 'AVG/TRIP', hariRamai: 'BUSIEST DAY', porsi: 'MISSION SHARE',
+    hal3: 'Monthly history', untukMisi: 'FUEL FOR MISSIONS', jarak: 'DISTANCE', liter: 'LITERS', rataTrip: 'AVG/TRIP', hariRamai: 'BUSIEST DAY', porsi: 'MISSION TRACKED',
     bulanSebelum: 'Previous month', bulanBerikut: 'Next month', bln: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
   },
 }

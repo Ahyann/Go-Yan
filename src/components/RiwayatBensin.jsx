@@ -5,17 +5,17 @@ import SwipeableItem from './SwipeableItem.jsx'
 
 const TEKS = {
   id: {
-    untukMisi: 'Bensin untuk misi', isiBensin: 'Isi bensin', trip: 'trip', km: 'km', kali: 'kali isi', grafik: 'Bensin untuk misi per minggu',
+    untukMisi: 'Bensin untuk misi', isiBensin: 'Isi bensin (semua pemakaian)', trip: 'trip', km: 'km', kali: 'kali isi', grafik: 'Bensin untuk misi per minggu',
     catatan: 'Catatan isi bensin', kosongCatatan: 'Belum ada catatan isi bensin bulan ini. Ketuk CATAT ISI di halaman bensin setelah mengisi.',
     ubahIsi: 'Ubah catatan isi', nominal: 'Nominal (Rp)', ketUbah: 'Liter dihitung ulang dari nominal. Sisa bensin di halaman utama tidak berubah.', batal: 'Batal', simpan: 'Simpan',
-    isi: 'Isi bensin', penuh: 'Isi penuh', porsi: 'Porsi bensin untuk misi', porsiKet: 'dari bensin yang kamu beli bulan ini', minggu: 'M',
+    isi: 'Isi bensin', penuh: 'Isi penuh', porsi: 'Porsi yang terlacak sebagai misi', porsiKet: 'dari bensin yang kamu beli bulan ini. Sisanya: pemakaian pribadi + misi tanpa live location', minggu: 'M',
     bln: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'],
   },
   en: {
-    untukMisi: 'Fuel for missions', isiBensin: 'Fuel bought', trip: 'trips', km: 'km', kali: 'fill-ups', grafik: 'Fuel for missions per week',
+    untukMisi: 'Fuel for missions', isiBensin: 'Fuel bought (all use)', trip: 'trips', km: 'km', kali: 'fill-ups', grafik: 'Fuel for missions per week',
     catatan: 'Fill-up log', kosongCatatan: 'No fill-ups logged this month. Tap LOG FILL on the fuel page after refueling.',
     ubahIsi: 'Edit fill-up', nominal: 'Amount (Rp)', ketUbah: 'Liters are recalculated from the amount. The fuel level on the main page stays the same.', batal: 'Cancel', simpan: 'Save',
-    isi: 'Fill-up', penuh: 'Full tank', porsi: 'Share used for missions', porsiKet: 'of the fuel you bought this month', minggu: 'W',
+    isi: 'Fill-up', penuh: 'Full tank', porsi: 'Share tracked as missions', porsiKet: 'of the fuel you bought this month. The rest: personal use + missions without live location', minggu: 'W',
     bln: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
   },
 }
