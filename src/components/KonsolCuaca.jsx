@@ -5,8 +5,8 @@ import { playGeserHalus } from '../lib/sound'
 import { IkonCuaca } from './BarisStatusSiaga.jsx'
 
 const TEKS = {
-  id: { stJas: 'BAWA JAS HUJAN', jamS: 'J', menitS: 'M', kini: 'SEKARANG', label: 'STATUS:', tanpaJemput: 'BELUM ADA JEMPUT', stPanas: 'PANAS, MINUM!', stAman: 'AMAN', kembali: 'KEMBALI', kosong: 'NYALAKAN LOKASI UNTUK PRAKIRAAN', lokasi: 'LOKASIMU', jemput: 'JEMPUT', antar: 'ANTAR' },
-  en: { stJas: 'WEAR RAINCOAT', jamS: 'H', menitS: 'M', kini: 'NOW', label: 'STATUS:', tanpaJemput: 'NO PICKUP 24H', stPanas: 'HOT, DRINK UP', stAman: 'ALL CLEAR', kembali: 'BACK', kosong: 'TURN ON LOCATION FOR FORECAST', lokasi: 'YOUR AREA', jemput: 'PICKUP', antar: 'DROP-OFF' },
+  id: { stJas: 'JAS HUJAN', jamS: 'J', menitS: 'M', kini: 'SEKARANG', label: 'STATUS:', tanpaJemput: 'BELUM ADA JADWAL', stPanas: 'MINUM!', stAman: 'AMAN', kembali: 'KEMBALI', kosong: 'NYALAKAN LOKASI UNTUK PRAKIRAAN', lokasi: 'LOKASIMU', jemput: 'JEMPUT', antar: 'ANTAR' },
+  en: { stJas: 'RAINCOAT', jamS: 'H', menitS: 'M', kini: 'NOW', label: 'STATUS:', tanpaJemput: 'NO SCHEDULE', stPanas: 'HOT', stAman: 'CLEAR', kembali: 'BACK', kosong: 'TURN ON LOCATION FOR FORECAST', lokasi: 'YOUR AREA', jemput: 'PICKUP', antar: 'DROP-OFF' },
 }
 const AMBANG_HUJAN = 50 // persen peluang hujan yang dianggap "akan hujan"
 const HARI = ['minggu', 'senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu']
@@ -133,7 +133,7 @@ export default function KonsolCuaca({ onKembali, lokasiAktif = false, jadwal = n
   if (terdekat) {
     const jm = Math.floor(terdekat.sisa / 3600000)
     const mn = Math.max(0, Math.floor((terdekat.sisa % 3600000) / 60000))
-    ringkas = `${k[terdekat.jenis]} ${terdekat.sisa <= 0 ? k.kini : jm > 0 ? `${jm}${k.jamS} ${mn}${k.menitS}` : `${mn}${k.menitS}`}`
+    ringkas = `${k[terdekat.jenis]} ${terdekat.sisa <= 0 ? k.kini : jm > 0 ? `${jm}${k.jamS}${mn}${k.menitS}` : `${mn}${k.menitS}`}`
     warnaRingkas = '#FF7A85'
   }
 
@@ -143,11 +143,12 @@ export default function KonsolCuaca({ onKembali, lokasiAktif = false, jadwal = n
         <button type="button" onClick={onKembali} style={s.kembali} aria-label={k.kembali}>
           <span aria-hidden="true" style={{ color: '#5ED0FF' }}>◀</span> {k.kembali}
         </button>
-        {/* Hitung mundur ke jadwal terdekat di tengah kepala halaman */}
-        <span style={{ ...s.ringkas, ...s.tengah, color: warnaRingkas }}>{ringkas}</span>
+        {/* Hitung mundur ke jadwal terdekat, pendek, di sebelah tombol kembali */}
+        <span style={{ ...s.ringkas, flex: '1 1 auto', color: warnaRingkas }}>{ringkas}</span>
         {/* Status cuaca di jam jadwal: emote plus keterangannya */}
         {status && terdekat && (
           <span style={s.status} aria-label={`${k.label} ${status.teks}`}>
+            <span style={{ opacity: 0.6, color: '#E8EDF9' }}>{k.label}</span>
             <EmoteStatus jenis={status.jenis} />
             <span style={{ ...s.ringkas, color: status.warna }}>{status.teks}</span>
           </span>
@@ -196,12 +197,12 @@ export default function KonsolCuaca({ onKembali, lokasiAktif = false, jadwal = n
 }
 
 const s = {
-  kepala: { position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, height: 18 },
+  kepala: { position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, height: 16 },
   tengah: { position: 'absolute', left: '50%', transform: 'translateX(-50%)', maxWidth: '46%' },
   status: { display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 8, letterSpacing: '0.08em', minWidth: 0, flex: '0 1 auto' },
   kembali: { background: 'none', border: 'none', color: '#FFFFFF', font: 'inherit', fontSize: 8, letterSpacing: '0.1em', padding: '2px 6px 2px 0', cursor: 'pointer', whiteSpace: 'nowrap' },
   ringkas: { fontSize: 8, letterSpacing: '0.08em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0 },
-  badan: { display: 'flex', alignItems: 'center', gap: 8, marginTop: 3, height: 46 },
+  badan: { display: 'flex', alignItems: 'center', gap: 8, marginTop: 0, marginBottom: 5, height: 46 },
   kiri: { display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0, paddingRight: 8, borderRight: '1px solid rgba(94, 208, 255, 0.2)', maxWidth: 128 },
   kiriTeks: { display: 'flex', flexDirection: 'column', lineHeight: 1.15, minWidth: 0 },
   suhuBesar: { fontFamily: "'JetBrains Mono', monospace", fontSize: 18, color: '#FFFFFF' },
