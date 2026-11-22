@@ -8,7 +8,7 @@ import { IkonPompa, MeterBensin, warnaBar } from './BarisStatusSiaga.jsx'
 const TEKS = {
   id: {
     kembali: 'KEMBALI', status: 'STATUS:', ketuk: 'KETUK SESUAI SPEEDOMETER', aman: 'AMAN ±{n} HARI', segera: 'SEGERA ISI', sekarang: 'ISI SEKARANG',
-    sinkron: 'PERLU SINKRON', belum: 'KETUK BAR DULU', isiPenuh: 'ISI PENUH ±Rp ', catat: 'CATAT ISI', spbu: 'SPBU', cari: 'CARI SPBU', penuh: 'PENUH',
+    sinkron: 'PERLU SINKRON', belum: 'KETUK BAR DULU', isiPenuh: 'ISI PENUH ±Rp ', catat: 'CATAT ISI', lain: 'LAIN', nominal: 'Nominal isi dalam ribu rupiah', spbu: 'SPBU', cari: 'CARI SPBU', penuh: 'PENUH',
     terakhir: 'SINKRON {n} HARI LALU', mingguIni: 'MINGGU INI', trip: 'TRIP', kosongTrip: 'NYALAKAN LIVE LOCATION SAAT MISI UNTUK MENGHITUNG BENSIN PER TRIP',
     hal1: 'Sisa bensin', hal2: 'Bensin per trip', bar: 'Bensin {n} dari 6 bar', mnt: 'MNT', reset: 'RESET DATA', yakin: 'YAKIN? KETUK LAGI',
     hal3: 'Riwayat bulan', untukMisi: 'BENSIN UNTUK MISI', jarak: 'JARAK', liter: 'LITER', rataTrip: 'RATA/TRIP', hariRamai: 'HARI RAMAI', porsi: 'PORSI MISI',
@@ -16,7 +16,7 @@ const TEKS = {
   },
   en: {
     kembali: 'BACK', status: 'STATUS:', ketuk: 'TAP TO MATCH YOUR GAUGE', aman: 'OK ±{n} DAYS', segera: 'REFUEL SOON', sekarang: 'REFUEL NOW',
-    sinkron: 'NEEDS SYNC', belum: 'TAP THE BARS', isiPenuh: 'FILL UP ±Rp ', catat: 'LOG FILL', spbu: 'GAS', cari: 'FIND GAS', penuh: 'FULL',
+    sinkron: 'NEEDS SYNC', belum: 'TAP THE BARS', isiPenuh: 'FILL UP ±Rp ', catat: 'LOG FILL', lain: 'OTHER', nominal: 'Amount in thousand rupiah', spbu: 'GAS', cari: 'FIND GAS', penuh: 'FULL',
     terakhir: 'SYNCED {n} DAYS AGO', mingguIni: 'THIS WEEK', trip: 'TRIPS', kosongTrip: 'TURN ON LIVE LOCATION DURING MISSIONS TO COUNT FUEL PER TRIP',
     hal1: 'Fuel left', hal2: 'Fuel per trip', bar: 'Fuel {n} of 6 bars', mnt: 'MIN', reset: 'RESET DATA', yakin: 'SURE? TAP AGAIN',
     hal3: 'Monthly history', untukMisi: 'FUEL FOR MISSIONS', jarak: 'DISTANCE', liter: 'LITERS', rataTrip: 'AVG/TRIP', hariRamai: 'BUSIEST DAY', porsi: 'MISSION SHARE',
@@ -83,6 +83,7 @@ export default function KonsolBensin({ onKembali }) {
   const [tahunA, setTahunA] = useState(hariIni.getFullYear())
   const rb = useRiwayatBensin(bulanA, tahunA)
   const [modeCatat, setModeCatat] = useState(false)
+  const [isiBebas, setIsiBebas] = useState(null)
   const [yakinReset, setYakinReset] = useState(false)
   const sentuhAwal = useRef(null)
 
@@ -114,9 +115,17 @@ export default function KonsolBensin({ onKembali }) {
     getar(10)
   }
 
+  // Nominal bebas: angka di bawah 1000 dibaca ribuan (15 = Rp15.000), selebihnya rupiah penuh
+  function catatBebas() {
+    const n = parseInt(isiBebas, 10)
+    if (!n) return
+    catat(n < 1000 ? n * 1000 : n)
+  }
+
   function catat(nominal) {
     catatIsiBensin(nominal)
     setModeCatat(false)
+    setIsiBebas(null)
     playLunasSemua()
     getar([15, 40, 15])
   }
@@ -203,8 +212,29 @@ export default function KonsolBensin({ onKembali }) {
             <div style={s.kanan}>
               {modeCatat ? (
                 <span style={s.pilihanIsi}>
-                  {PILIHAN_ISI.map((n) => tombol(n === 'penuh' ? k.penuh : `${n / 1000}RB`, () => catat(n), n === 'penuh' ? s.tombolHijau : null))}
-                  {tombol('✕', () => setModeCatat(false), s.tombolRedup)}
+                  {isiBebas === null ? (
+                    <>
+                      {PILIHAN_ISI.map((n) => tombol(n === 'penuh' ? k.penuh : `${n / 1000}RB`, () => catat(n), n === 'penuh' ? s.tombolHijau : null))}
+                      {tombol(k.lain, () => setIsiBebas(''), s.tombolOranye)}
+                    </>
+                  ) : (
+                    <>
+                      <input
+                        autoFocus
+                        type="text"
+                        inputMode="numeric"
+                        value={isiBebas}
+                        onChange={(e) => setIsiBebas(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                        onKeyDown={(e) => { if (e.key === 'Enter') catatBebas() }}
+                        placeholder="15"
+                        aria-label={k.nominal}
+                        style={s.inputIsi}
+                      />
+                      <span style={{ fontSize: 7, color: '#9FC3E8' }}>RB</span>
+                      {tombol('OK', catatBebas, s.tombolHijau)}
+                    </>
+                  )}
+                  {tombol('✕', () => { setModeCatat(false); setIsiBebas(null) }, s.tombolRedup)}
                 </span>
               ) : (
                 <>
@@ -299,6 +329,7 @@ const s = {
   biaya: { fontSize: 8, letterSpacing: '0.06em', color: '#FF9A3C', whiteSpace: 'nowrap' },
   tombol: { fontFamily: 'inherit', fontSize: 7, letterSpacing: '0.08em', whiteSpace: 'nowrap', padding: '5px 6px', color: '#5ED0FF', background: 'transparent', border: '1px solid #5ED0FF', borderRadius: 0, cursor: 'pointer' },
   tombolOranye: { color: '#04192A', background: '#FF9A3C', borderColor: '#FF9A3C' },
+  inputIsi: { width: 34, fontFamily: 'var(--font-data)', fontSize: 11, textAlign: 'center', padding: '3px 2px', color: '#FFFFFF', background: '#04192A', border: '1px solid #5ED0FF', borderRadius: 0, outline: 'none', boxSizing: 'border-box' },
   tombolHijau: { color: '#04192A', background: '#4ADE80', borderColor: '#4ADE80' },
   tombolRedup: { color: '#8FB2D0', borderColor: '#8FB2D0' },
   pilihanIsi: { display: 'flex', flexWrap: 'wrap', gap: 3 },
