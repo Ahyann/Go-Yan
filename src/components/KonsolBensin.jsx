@@ -193,7 +193,7 @@ export default function KonsolBensin({ onKembali }) {
             </button>
           ))}
         </span>
-        {halaman !== 1 && <span style={s.status}><span style={{ opacity: 0.6, color: '#E8EDF9' }}>{k.status}</span> <span style={{ color: warna }}>{status}</span></span>}
+        {halaman !== 1 && <span style={{ ...s.status, marginLeft: 'auto' }}><span style={{ opacity: 0.6, color: '#E8EDF9' }}>{k.status}</span> <span style={{ color: warna }}>{status}</span></span>}
       </div>
 
       <div style={s.viewport} onTouchStart={sentuhMulai} onTouchEnd={sentuhSelesai}>
@@ -341,9 +341,9 @@ function Stat({ label, nilai, warna = '#FFFFFF' }) {
 }
 
 const s = {
-  kepala: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6, height: 18 },
+  kepala: { position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6, height: 18 },
   kembali: { background: 'none', border: 'none', color: '#FFFFFF', font: 'inherit', fontSize: 8, letterSpacing: '0.1em', padding: '2px 6px 2px 0', cursor: 'pointer', whiteSpace: 'nowrap' },
-  titikRow: { display: 'inline-flex', alignItems: 'center' },
+  titikRow: { position: 'absolute', left: '50%', transform: 'translateX(-50%)', display: 'inline-flex', alignItems: 'center' },
   titikTombol: { background: 'none', border: 'none', padding: '6px 3px', cursor: 'pointer', display: 'flex' },
   titik: { height: 4, display: 'block', transition: 'width 0.2s, background 0.2s' },
   status: { fontSize: 8, letterSpacing: '0.08em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0 },
