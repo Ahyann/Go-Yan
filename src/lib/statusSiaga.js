@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
+import { useAuth } from '../context/AuthContext.jsx'
 
 const KEY_CUACA = 'goyan:cuaca'
 const BASI_CUACA_MS = 15 * 60 * 1000 // cuaca dianggap segar selama 15 menit
 const CEK_LOKASI_MS = 60 * 1000
 const JAM_PRAKIRAAN = 24
+export const LOKASI_DEMO = { lat: -6.2088, lng: 106.8456 } // Jakarta, dipakai mode demo supaya tidak meminta izin lokasi
 let sudahMintaIzin = false // permintaan izin lokasi hanya dimunculkan sekali per sesi app
 
 export const TEKS_STATUS = {
@@ -48,6 +50,7 @@ function bacaCache() {
 // 24 jam dari Open-Meteo (tanpa kunci), memakai koordinat yang dibulatkan ke 2 desimal (±1 km) dan disimpan 15 menit.
 // cuaca: { suhu, kode, nama, jam: [{ tgl: 'YYYY-MM-DD', w: 'HH:MM', suhu, kode, hujan }] }; nama = nama tempat (kosong kalau gagal dicari)
 export function useStatusSiaga(lokasiAktif) {
+  const { isDemo } = useAuth()
   const [akurasi, setAkurasi] = useState(null) // null: GPS mati / belum ada izin
   const [cuaca, setCuaca] = useState(() => {
     const c = bacaCache()
@@ -131,6 +134,16 @@ export function useStatusSiaga(lokasiAktif) {
       if (!batal) cekLokasi()
     }
 
+    // Mode demo: tanpa pop-up izin lokasi. Memakai titik tetap di Jakarta dan sinyal GPS contoh supaya layar langsung terisi.
+    if (isDemo) {
+      setAkurasi(10)
+      ambilCuaca(LOKASI_DEMO.lat, LOKASI_DEMO.lng)
+      return () => {
+        batal = true
+        kontrol?.abort()
+      }
+    }
+
     mulai()
     const id = setInterval(cekLokasi, CEK_LOKASI_MS)
     return () => {
@@ -139,7 +152,7 @@ export function useStatusSiaga(lokasiAktif) {
       kontrol?.abort()
       if (izin) izin.onchange = null
     }
-  }, [lokasiAktif])
+  }, [lokasiAktif, isDemo])
 
   return { akurasi, cuaca }
 }

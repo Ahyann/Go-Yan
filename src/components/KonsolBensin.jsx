@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLanguage } from '../context/LanguageContext.jsx'
+import { useAuth } from '../context/AuthContext.jsx'
+import { LOKASI_DEMO } from '../lib/statusSiaga'
 import { JUMLAH_BAR, catatIsiBensin, resetBensin, sinkronBensin, useBensin, useRiwayatBensin, useTripBensin } from '../lib/bensin'
 import { playGeserHalus, playGeserTik, playKonsolMati, playLunasSemua } from '../lib/sound'
 import { getar } from '../lib/getar'
@@ -39,11 +41,16 @@ function jarakKm(a, b) {
 // SPBU terdekat dari data OpenStreetMap (Overpass, tanpa kunci), dicari sekali saat halaman bensin dibuka
 function useSpbuTerdekat() {
   const [spbu, setSpbu] = useState(null) // null: belum / gagal, { lat, lng, km }
+  const { isDemo } = useAuth()
   useEffect(() => {
-    if (!navigator.geolocation) return undefined
+    if (!isDemo && !navigator.geolocation) return undefined
     let batal = false
     const kontrol = new AbortController()
-    navigator.geolocation.getCurrentPosition(
+    // Demo memakai titik tetap di Jakarta: tidak ada pop-up izin lokasi
+    const minta = isDemo
+      ? (ok) => ok({ coords: { latitude: LOKASI_DEMO.lat, longitude: LOKASI_DEMO.lng } })
+      : (ok, gagal, opsi) => navigator.geolocation.getCurrentPosition(ok, gagal, opsi)
+    minta(
       (pos) => {
         const asal = { lat: pos.coords.latitude, lng: pos.coords.longitude }
         const q = `[out:json][timeout:10];node(around:4000,${asal.lat},${asal.lng})[amenity=fuel];out 20;`
@@ -63,7 +70,7 @@ function useSpbuTerdekat() {
       batal = true
       kontrol.abort()
     }
-  }, [])
+  }, [isDemo])
   return spbu
 }
 

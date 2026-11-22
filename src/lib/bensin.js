@@ -34,8 +34,33 @@ function bacaJson(kunci, awal) {
   }
 }
 
+let modeDemo = false // demo: data contoh hanya di memori, tidak menyentuh data asli di HP maupun Firebase
+
 function tulisJson(kunci, nilai) {
+  if (modeDemo) return
   try { localStorage.setItem(kunci, JSON.stringify(nilai)) } catch { /* penyimpanan diblokir: berlaku selama app terbuka */ }
+}
+
+// Data contoh untuk demo: bensin sekitar 4 bar, beberapa trip dan tiga kali isi di bulan berjalan
+function dataContohDemo() {
+  const sekarang = Date.now()
+  const awalBulan = new Date(new Date().getFullYear(), new Date().getMonth(), 1).getTime()
+  const pada = (hariLalu, jam = 0) => Math.max(awalBulan + jam * 3600000, sekarang - hariLalu * HARI_MS)
+  const jarak = [6.2, 9.8, 4.1, 12.4, 7.5, 5.3, 10.9, 8.2]
+  const trip = jarak.map((km, i) => {
+    const liter = Math.round((km / KM_PER_LITER) * 1.1 * 100) / 100
+    return { waktu: pada(i * 1.6 + 0.3, 9 + i), km, menit: Math.round(km * 3 + 6), liter, rupiah: Math.round(liter * HARGA_PER_LITER), kasar: false }
+  })
+  const isi = [
+    { waktu: pada(1.2, 6), rupiah: 20000, liter: 1.6, penuh: false },
+    { waktu: pada(5.5, 7), rupiah: 30000, liter: 2.4, penuh: false },
+    { waktu: pada(10, 8), rupiah: 25000, liter: 2, penuh: true },
+  ].sort((a, b) => b.waktu - a.waktu)
+  return {
+    status: { bar: 4.4, waktu: sekarang - 3 * 3600000, laju: LAJU_AWAL, setelahIsi: false },
+    trip: trip.sort((a, b) => b.waktu - a.waktu),
+    isi,
+  }
 }
 
 function bacaStatus() {
@@ -61,7 +86,7 @@ function beritahu() {
 function setStatusLokal(baru) {
   data = baru
   if (baru) tulisJson(KUNCI, baru)
-  else try { localStorage.removeItem(KUNCI) } catch { /* penyimpanan diblokir */ }
+  else if (!modeDemo) try { localStorage.removeItem(KUNCI) } catch { /* penyimpanan diblokir */ }
   beritahu()
 }
 
@@ -310,6 +335,7 @@ export async function resetBensin() {
 // Penanda per jenis data: data lama di HP hanya dipindahkan ke Firebase sekali, saat Firebase terbukti masih kosong
 const sudahMigrasi = (jenis) => { try { return localStorage.getItem(`${KUNCI_MIGRASI}-${jenis}`) === '1' } catch { return true } }
 function tandaiMigrasi(jenis) {
+  if (modeDemo) return
   try { localStorage.setItem(`${KUNCI_MIGRASI}-${jenis}`, '1') } catch { /* penyimpanan diblokir */ }
 }
 
@@ -328,8 +354,26 @@ async function hapusSemua(ref) {
 export function useSinkronBensin() {
   const { user, isDemo } = useAuth()
   useEffect(() => {
+    if (isDemo) {
+      // Demo: data contoh di memori saja. Data asli di HP disimpan lalu dikembalikan saat keluar dari demo.
+      const asli = { data, daftarTrip, daftarIsi }
+      modeDemo = true
+      const contoh = dataContohDemo()
+      data = contoh.status
+      daftarTrip = contoh.trip
+      daftarIsi = contoh.isi
+      penulis = null
+      beritahu()
+      return () => {
+        modeDemo = false
+        data = asli.data
+        daftarTrip = asli.daftarTrip
+        daftarIsi = asli.daftarIsi
+        beritahu()
+      }
+    }
     if (!user || !db) return undefined
-    const nama = isDemo ? 'bensin_ojek_demo' : 'bensin_ojek'
+    const nama = 'bensin_ojek'
     const refStatus = doc(db, nama, 'data')
     const refTrip = collection(db, nama, 'data', 'trip')
     const refIsi = collection(db, nama, 'data', 'isi')

@@ -6,7 +6,6 @@ import { useAuth } from '../context/AuthContext.jsx'
 import PetaStatus from '../components/PetaStatus.jsx'
 import { useSesiFoto, FotoInput, FotoPeta, FotoKonsol } from '../components/SesiFotoOjek.jsx'
 import TombolSuara from '../components/TombolSuara.jsx'
-import DemoWelcomePopup from '../components/DemoWelcomePopup.jsx'
 import SplashLabaLaba from '../components/SplashLabaLaba.jsx'
 
 export default function HomeTab({ permintaan, lokasiAktif, lokasiError, mulaiLokasi, berhentiLokasi, baruDibatalkan }) {
@@ -144,7 +143,6 @@ export default function HomeTab({ permintaan, lokasiAktif, lokasiError, mulaiLok
 
       {!lewatiSplash && <SplashLabaLaba />}
 
-      <DemoWelcomePopup />
     </div>
   )
 }

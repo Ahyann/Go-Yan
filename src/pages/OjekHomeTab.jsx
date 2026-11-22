@@ -15,7 +15,6 @@ import { useSesiFoto, FotoInput, FotoPeta, FotoKonsol, labelSesiFoto } from '../
 import TombolSuara from '../components/TombolSuara.jsx'
 import KartuMisiOjek from '../components/KartuMisiOjek.jsx'
 import SwipeToFinish from '../components/SwipeToFinish.jsx'
-import DemoWelcomePopup from '../components/DemoWelcomePopup.jsx'
 
 export default function OjekHomeTab({ slotKonsol, putaranMasuk = 0,
   permintaan,
@@ -284,7 +283,6 @@ export default function OjekHomeTab({ slotKonsol, putaranMasuk = 0,
       </section>
     </main>
 
-    <DemoWelcomePopup />
 
     {showMissionSuccess && (
       <MissionSuccessPopup onDismiss={() => setShowMissionSuccess(false)} />
