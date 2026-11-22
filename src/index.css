@@ -818,3 +818,8 @@ button {
 @keyframes pil-notif-waktu { from { width: 100%; } to { width: 0; } }
 .pil-notif-waktu { animation: pil-notif-waktu linear both; }
 @media (prefers-reduced-motion: reduce) { .pil-notif-masuk { animation: none; } }
+
+/* Bar bensin yang belum pasti (perkiraan) berkedip pelan */
+@keyframes bar-ragu { 0%, 100% { opacity: 0.9; } 50% { opacity: 0.35; } }
+.bar-ragu { animation: bar-ragu 1.4s steps(2) infinite; }
+@media (prefers-reduced-motion: reduce) { .bar-ragu { animation: none; } }

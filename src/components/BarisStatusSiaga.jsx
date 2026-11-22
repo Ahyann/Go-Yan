@@ -1,5 +1,6 @@
 import { useLanguage } from '../context/LanguageContext.jsx'
-import { TEKS_STATUS, jenisCuaca, tingkatSinyal, useStatusSiaga } from '../lib/statusSiaga'
+import { TEKS_STATUS, jenisCuaca, useStatusSiaga } from '../lib/statusSiaga'
+import { JUMLAH_BAR, useBensin } from '../lib/bensin'
 
 const svg = { shapeRendering: 'crispEdges', style: { flexShrink: 0, display: 'block' } }
 
@@ -25,14 +26,39 @@ export function IkonCuaca({ jenis }) {
   )
 }
 
-function IkonSinyal({ tingkat }) {
-  const warna = tingkat >= 3 ? '#4ADE80' : tingkat === 2 ? '#FFD84A' : '#ED1C24'
+// Pompa bensin piksel oranye
+export function IkonPompa() {
   return (
-    <svg width="17" height="12" viewBox="0 0 14 10" aria-hidden="true" {...svg}>
-      {[3, 5, 7, 10].map((h, i) => (
-        <rect key={i} x={i * 4} y={10 - h} width="2" height={h} fill={i < tingkat ? warna : '#2B4A63'} className={i === tingkat - 1 ? 'ik-denyut' : undefined} />
-      ))}
+    <svg width="14" height="16" viewBox="0 0 12 14" aria-hidden="true" {...svg}>
+      <g fill="#FF9A3C"><rect x="1" y="1" width="7" height="12" /><rect x="0" y="13" width="9" height="1" /></g>
+      <rect x="2" y="3" width="5" height="3" fill="#04192A" />
+      <g fill="#FFFFFF"><rect x="8" y="4" width="2" height="1" /><rect x="10" y="4" width="1" height="6" /><rect x="9" y="9" width="1" height="1" /></g>
     </svg>
+  )
+}
+
+// Kotak bar bensin seperti speedometer: padat = hampir pasti ada, bergaris berkedip = mungkin ada (perkiraan)
+export function warnaBar(n) {
+  return n <= 1 ? '#ED1C24' : n <= 2 ? '#FF9A3C' : '#4ADE80'
+}
+
+export function MeterBensin({ pasti = 0, mungkin = 0, lebar = 5, tinggi = 10, jarak = 2 }) {
+  const warna = warnaBar(pasti || mungkin)
+  return (
+    <span aria-hidden="true" style={{ display: 'inline-flex', gap: jarak, alignItems: 'flex-end' }}>
+      {Array.from({ length: JUMLAH_BAR }, (_, i) => (
+        <i
+          key={i}
+          className={i >= pasti && i < mungkin ? 'bar-ragu' : undefined}
+          style={{
+            width: lebar,
+            height: tinggi,
+            display: 'block',
+            background: i < pasti ? warna : i < mungkin ? `repeating-linear-gradient(135deg, ${warna} 0 2px, transparent 2px 4px)` : '#1E3A52',
+          }}
+        />
+      ))}
+    </span>
   )
 }
 
@@ -65,11 +91,11 @@ function IkonTrip() {
 }
 
 // Baris di bawah jam konsol ojek saat siaga: cuaca, sinyal GPS, dan total trip, dengan ikon piksel.
-export default function BarisStatusSiaga({ totalTrip = null, lokasiAktif = false, onBukaCuaca = null }) {
+export default function BarisStatusSiaga({ totalTrip = null, lokasiAktif = false, onBukaCuaca = null, onBukaBensin = null }) {
   const { lang } = useLanguage()
   const k = TEKS_STATUS[lang] || TEKS_STATUS.id
-  const { akurasi, cuaca } = useStatusSiaga(lokasiAktif)
-  const tingkat = tingkatSinyal(akurasi)
+  const { cuaca } = useStatusSiaga(lokasiAktif)
+  const bensin = useBensin()
   const jenis = cuaca ? jenisCuaca(cuaca.kode) : null
 
   const isiSlot = (ikon, nilai, label, panah = false) => (
@@ -82,16 +108,34 @@ export default function BarisStatusSiaga({ totalTrip = null, lokasiAktif = false
     </>
   )
   const slot = (ikon, nilai, label) => <span style={s.slot}>{isiSlot(ikon, nilai, label)}</span>
+  const labelBensin = !bensin || bensin.perluSinkron ? (lang === 'en' ? 'SYNC?' : 'SINKRON?') : lang === 'en' ? 'FUEL' : 'BENSIN'
+  const slotBensin = (
+    <button
+      type="button"
+      className="slot-status"
+      style={{ ...s.slot, ...s.tombolSlot }}
+      onClick={onBukaBensin || undefined}
+      aria-label={lang === 'en' ? `Fuel, about ${bensin ? Math.round(bensin.tengah) : '?'} of ${JUMLAH_BAR} bars` : `Bensin, sekitar ${bensin ? Math.round(bensin.tengah) : '?'} dari ${JUMLAH_BAR} bar`}
+    >
+      <IkonPompa />
+      <span style={s.teks}>
+        <span style={{ display: 'flex', alignItems: 'center', height: 12 }}>
+          <MeterBensin pasti={bensin ? bensin.pasti : 0} mungkin={bensin ? bensin.mungkin : JUMLAH_BAR} />
+        </span>
+        <span style={{ ...s.label, ...(!bensin || bensin.perluSinkron ? { color: '#FF9A3C', opacity: 1 } : null) }}>{labelBensin}</span>
+      </span>
+    </button>
+  )
   const slotTombol = (ikon, nilai, label, aria, onKlik) => (
     <button type="button" className="slot-status" style={{ ...s.slot, ...s.tombolSlot }} onClick={onKlik} aria-label={aria}>{isiSlot(ikon, nilai, label, true)}</button>
   )
 
   return (
-    <div role="group" aria-label={`${cuaca ? `${cuaca.suhu}°, ${k.kode[jenis]}` : k.cuaca}; ${k.gps} ${k.sinyal[tingkat]}; ${k.trip} ${totalTrip ?? '-'}`} style={s.baris}>
+    <div role="group" aria-label={`${cuaca ? `${cuaca.suhu}°, ${k.kode[jenis]}` : k.cuaca}; ${k.trip} ${totalTrip ?? '-'}`} style={s.baris}>
       {onBukaCuaca
         ? slotTombol(<IkonCuaca jenis={jenis || 'mendung'} />, cuaca ? `${cuaca.suhu}°` : '--°', jenis ? k.kode[jenis] : k.cuaca, lang === 'en' ? 'Open weather forecast' : 'Buka prakiraan cuaca', onBukaCuaca)
         : slot(<IkonCuaca jenis={jenis || 'mendung'} />, cuaca ? `${cuaca.suhu}°` : '--°', jenis ? k.kode[jenis] : k.cuaca)}
-      {slot(<IkonSinyal tingkat={tingkat} />, k.sinyal[tingkat], k.gps)}
+      {slotBensin}
       {slot(<IkonTrip />, totalTrip ?? '--', k.trip)}
     </div>
   )

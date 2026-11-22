@@ -4,6 +4,7 @@ import { rtdb } from './firebase'
 import { kirimNotifikasi } from './notifikasi'
 import { rtdbPath } from './demoPath'
 import { useAuth } from '../context/AuthContext.jsx'
+import { mulaiLacakTrip, catatTitikTrip, selesaiLacakTrip } from './bensin'
 
 const JARAK_MINIMUM_METER = 6
 
@@ -39,11 +40,13 @@ export function useLokasiSaya() {
     }
     setError('')
     posisiTerakhirRef.current = null
+    mulaiLacakTrip() // jarak trip untuk perkiraan bensin
 
     watchIdRef.current = navigator.geolocation.watchPosition(
       (pos) => {
         const lat = pos.coords.latitude
         const lng = pos.coords.longitude
+        catatTitikTrip(lat, lng, pos.coords.accuracy)
         const sebelumnya = posisiTerakhirRef.current
 
         if (sebelumnya) {
@@ -71,6 +74,7 @@ export function useLokasiSaya() {
   }
 
   function berhenti() {
+    selesaiLacakTrip()
     if (watchIdRef.current !== null) {
       navigator.geolocation.clearWatch(watchIdRef.current)
       watchIdRef.current = null

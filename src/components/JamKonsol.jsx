@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext.jsx'
 import KeteranganKetik from './KeteranganKetik.jsx'
 import BarisStatusSiaga from './BarisStatusSiaga.jsx'
 import KonsolCuaca from './KonsolCuaca.jsx'
+import KonsolBensin from './KonsolBensin.jsx'
 import { playSambutGlitch, playKonsolMati, playSambutKonsol, bunyikanSetelahSiap } from '../lib/sound'
 
 // Status sambutan selama app terbuka: null (belum), 'tunggu' (WELCOME sudah tampil, menunggu diketuk), 'selesai'.
@@ -37,7 +38,7 @@ export default function JamKonsol({ keterangan, bergilir = false, totalTrip = nu
   const [fase, setFase] = useState(() => (statusSambut === 'selesai' ? 'jam' : statusSambut === 'tunggu' ? 'tunggu' : 'ketik')) // ketik | tunggu | glitch | mati | jam
   const [huruf, setHuruf] = useState(() => (statusSambut === 'tunggu' ? KATA.length : 0))
   const [dariSambut, setDariSambut] = useState(false)
-  const [halaman, setHalaman] = useState(null) // null: jam biasa, 'cuaca': halaman prakiraan cuaca
+  const [halaman, setHalaman] = useState(null) // null: jam biasa, 'cuaca': prakiraan cuaca, 'bensin': halaman bensin
   const nama = (isDemo ? t.namaDemo : 'Ahyan').toUpperCase()
 
   // Pesanan masuk saat WELCOME masih tampil: langsung pindah ke jam
@@ -94,6 +95,7 @@ export default function JamKonsol({ keterangan, bergilir = false, totalTrip = nu
     )
   }
 
+  if (halaman === 'bensin') return <KonsolBensin onKembali={() => setHalaman(null)} />
   if (halaman === 'cuaca') return <KonsolCuaca lokasiAktif={lokasiAktif} jadwal={jadwal} onKembali={() => setHalaman(null)} />
 
   const tanggal = sekarang
@@ -118,7 +120,7 @@ export default function JamKonsol({ keterangan, bergilir = false, totalTrip = nu
           {menit}
         </div>
       </div>
-      <div style={s.bawah}><BarisStatusSiaga totalTrip={totalTrip} lokasiAktif={lokasiAktif} onBukaCuaca={() => setHalaman('cuaca')} /></div>
+      <div style={s.bawah}><BarisStatusSiaga totalTrip={totalTrip} lokasiAktif={lokasiAktif} onBukaCuaca={() => setHalaman('cuaca')} onBukaBensin={() => setHalaman('bensin')} /></div>
     </div>
   )
 }
