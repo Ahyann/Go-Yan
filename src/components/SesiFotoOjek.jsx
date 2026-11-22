@@ -222,15 +222,15 @@ export function FotoKonsol({ sesi }) {
   const { fase, siap, kilat } = sesi
   if (fase === 'kamera') {
     return (
-      <div key="kamera" className="tv-nyala" style={s.barisKonsol}>
-        <button type="button" data-tanpa-suara className="tekan" style={{ ...s.tombol, ...s.tombolBatal }} onClick={sesi.batal}><IkonX />{x.batal}</button>
+      <div key="kamera" className="tv-nyala" style={{ ...s.barisKonsol, display: 'grid', gridTemplateColumns: '1fr auto 1fr' }}>
+        <button type="button" data-tanpa-suara className="tekan" style={{ ...s.tombol, ...s.tombolBatal, ...s.tombolKecil, justifySelf: 'start' }} onClick={sesi.batal}><IkonX />{x.batal}</button>
         <button type="button" data-tanpa-suara className="tekan" style={{ ...s.potret, opacity: siap ? 1 : 0.5, transform: kilat ? 'scale(0.92)' : undefined }} disabled={!siap} onClick={sesi.jepret} aria-label="Shutter">
           <span style={{ ...s.potretIsi, background: kilat ? '#7F1820' : '#BC1E2F' }} />
         </button>
         {layarSentuh() ? (
-          <button type="button" data-tanpa-suara className="tekan" style={s.tombol} onClick={() => sesi.setHadap((h) => (h === 'environment' ? 'user' : 'environment'))} aria-label={x.balik}><IkonBalik /></button>
+          <button type="button" data-tanpa-suara className="tekan" style={{ ...s.tombol, ...s.tombolKecil, justifySelf: 'end' }} onClick={() => sesi.setHadap((h) => (h === 'environment' ? 'user' : 'environment'))} aria-label={x.balik}><IkonBalik /></button>
         ) : (
-          <span style={{ flex: 1 }} />
+          <span />
         )}
       </div>
     )
@@ -271,6 +271,7 @@ const s = {
   barisKonsol: { display: 'flex', alignItems: 'center', gap: 8, height: 56, marginTop: -2 },
   tombol: { flex: 1, minWidth: 0, height: 34, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 5, padding: '0 6px', fontFamily: 'inherit', fontSize: 9, letterSpacing: '0.06em', color: '#5ED0FF', background: 'transparent', border: '1px solid #5ED0FF', borderRadius: 0, whiteSpace: 'nowrap' },
   tombolBatal: { color: '#FF8A94', borderColor: '#FF6B78' },
+  tombolKecil: { flex: 'none', minWidth: 44, padding: '0 10px' },
   tombolKirim: { flex: 1.6, minWidth: 0, height: 34, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 5, padding: '0 6px', fontFamily: 'inherit', fontSize: 9, letterSpacing: '0.06em', color: '#fff', background: '#BC1E2F', border: 'none', borderRadius: 0, whiteSpace: 'nowrap', boxShadow: 'inset 0 -3px 0 #7F1820, inset 0 0 0 2px #FF6B78' },
   potret: { flexShrink: 0, width: 54, height: 54, boxSizing: 'border-box', padding: 0, border: '3px solid #5ED0FF', background: '#04192A', borderRadius: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', clipPath: 'polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px)', transition: 'transform 0.08s' },
   potretIsi: { width: 34, height: 34, boxShadow: 'inset 0 -3px 0 #7F1820, inset 0 0 0 2px #FF6B78' },
