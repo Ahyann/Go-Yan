@@ -259,8 +259,12 @@ export function useTripBensin() {
   const daftar = daftarTrip
   const mulai = awalMinggu()
   const minggu = daftar.filter((t) => t.waktu >= mulai)
+  // Trip minggu ini yang tidak tampil di dua baris teratas halaman bensin: ditampilkan sebagai satu baris ringkasan
+  const tampil = new Set(daftar.slice(0, 2))
+  const lain = minggu.filter((t) => !tampil.has(t))
   return {
     daftar,
+    lain: { jumlah: lain.length, rupiah: lain.reduce((n, t) => n + t.rupiah, 0) },
     minggu: {
       jumlah: minggu.length,
       km: minggu.reduce((n, t) => n + t.km, 0),

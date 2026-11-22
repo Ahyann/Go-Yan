@@ -11,7 +11,7 @@ const TEKS = {
   id: {
     kembali: 'KEMBALI', status: 'STATUS:', ketuk: 'KETUK SESUAI SPEEDOMETER', aman: 'AMAN ±{n} HARI', segera: 'SEGERA ISI', sekarang: 'ISI SEKARANG',
     sinkron: 'PERLU SINKRON', belum: 'KETUK BAR DULU', isiPenuh: 'ISI PENUH ±Rp ', catat: 'CATAT ISI', lain: 'LAIN', nominal: 'Nominal isi dalam ribu rupiah', spbu: 'SPBU', cari: 'CARI SPBU', penuh: 'PENUH',
-    terakhir: 'SINKRON {n} HARI LALU', mingguIni: 'MINGGU INI', trip: 'TRIP', kosongTrip: 'NYALAKAN LIVE LOCATION SAAT MISI UNTUK MENGHITUNG BENSIN PER TRIP',
+    terakhir: 'SINKRON {n} HARI LALU', mingguIni: 'MINGGU INI', trip: 'TRIP', lainnya: 'TRIP LAINNYA', kosongTrip: 'NYALAKAN LIVE LOCATION SAAT MISI UNTUK MENGHITUNG BENSIN PER TRIP',
     hal1: 'Sisa bensin', hal2: 'Bensin per trip', bar: 'Bensin {n} dari 6 bar', mnt: 'MNT', reset: 'RESET DATA', yakin: 'YAKIN? KETUK LAGI',
     hal3: 'Riwayat bulan', untukMisi: 'BENSIN UNTUK MISI', jarak: 'JARAK', liter: 'LITER', rataTrip: 'RATA/TRIP', hariRamai: 'HARI RAMAI', porsi: 'TERLACAK MISI',
     bulanSebelum: 'Bulan sebelumnya', bulanBerikut: 'Bulan berikutnya', bln: ['JAN', 'FEB', 'MAR', 'APR', 'MEI', 'JUN', 'JUL', 'AGU', 'SEP', 'OKT', 'NOV', 'DES'],
@@ -19,7 +19,7 @@ const TEKS = {
   en: {
     kembali: 'BACK', status: 'STATUS:', ketuk: 'TAP TO MATCH YOUR GAUGE', aman: 'OK ±{n} DAYS', segera: 'REFUEL SOON', sekarang: 'REFUEL NOW',
     sinkron: 'NEEDS SYNC', belum: 'TAP THE BARS', isiPenuh: 'FILL UP ±Rp ', catat: 'LOG FILL', lain: 'OTHER', nominal: 'Amount in thousand rupiah', spbu: 'GAS', cari: 'FIND GAS', penuh: 'FULL',
-    terakhir: 'SYNCED {n} DAYS AGO', mingguIni: 'THIS WEEK', trip: 'TRIPS', kosongTrip: 'TURN ON LIVE LOCATION DURING MISSIONS TO COUNT FUEL PER TRIP',
+    terakhir: 'SYNCED {n} DAYS AGO', mingguIni: 'THIS WEEK', trip: 'TRIPS', lainnya: 'MORE TRIPS', kosongTrip: 'TURN ON LIVE LOCATION DURING MISSIONS TO COUNT FUEL PER TRIP',
     hal1: 'Fuel left', hal2: 'Fuel per trip', bar: 'Fuel {n} of 6 bars', mnt: 'MIN', reset: 'RESET DATA', yakin: 'SURE? TAP AGAIN',
     hal3: 'Monthly history', untukMisi: 'FUEL FOR MISSIONS', jarak: 'DISTANCE', liter: 'LITERS', rataTrip: 'AVG/TRIP', hariRamai: 'BUSIEST DAY', porsi: 'MISSION TRACKED',
     bulanSebelum: 'Previous month', bulanBerikut: 'Next month', bln: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
@@ -82,7 +82,7 @@ export default function KonsolBensin({ onKembali }) {
   const { lang } = useLanguage()
   const k = TEKS[lang] || TEKS.id
   const b = useBensin()
-  const { daftar, minggu } = useTripBensin()
+  const { daftar, minggu, lain } = useTripBensin()
   const spbu = useSpbuTerdekat()
   const [halaman, setHalaman] = useState(0)
   const hariIni = new Date()
@@ -262,7 +262,7 @@ export default function KonsolBensin({ onKembali }) {
               <span style={s.angka}>±Rp {rupiah(minggu.rupiah)}</span>
               <span style={s.kecil}>{minggu.jumlah} {k.trip} · {desimal(minggu.km)} KM · {desimal(minggu.liter, 2)} L</span>
             </div>
-            <div style={{ ...s.kanan, gap: 3 }}>
+            <div style={{ ...s.kanan, gap: 1 }}>
               {daftar.length === 0 ? (
                 <span style={{ ...s.kecil, whiteSpace: 'normal', lineHeight: 1.4 }}>{k.kosongTrip}</span>
               ) : (
@@ -276,6 +276,12 @@ export default function KonsolBensin({ onKembali }) {
                     </span>
                   )
                 })
+              )}
+              {daftar.length > 0 && lain.jumlah > 0 && (
+                <span style={{ ...s.barisTrip, opacity: 0.75 }}>
+                  <span>+{lain.jumlah} {k.lainnya}</span>
+                  <span style={{ color: '#FF9A3C' }}>Rp{rupiah(lain.rupiah)}</span>
+                </span>
               )}
               <button type="button" data-tanpa-suara onClick={reset} style={{ ...s.reset, color: yakinReset ? '#ED1C24' : '#8FB2D0', borderColor: yakinReset ? '#ED1C24' : 'rgba(143, 178, 208, 0.4)' }}>
                 {yakinReset ? k.yakin : k.reset}
@@ -340,9 +346,9 @@ const s = {
   tombolHijau: { color: '#04192A', background: '#4ADE80', borderColor: '#4ADE80' },
   tombolRedup: { color: '#8FB2D0', borderColor: '#8FB2D0' },
   pilihanIsi: { display: 'flex', flexWrap: 'wrap', gap: 3 },
-  reset: { alignSelf: 'flex-end', fontFamily: 'inherit', fontSize: 6, letterSpacing: '0.1em', padding: '3px 5px', background: 'transparent', border: '1px solid', borderRadius: 0, cursor: 'pointer', whiteSpace: 'nowrap' },
+  reset: { alignSelf: 'flex-end', fontFamily: 'inherit', fontSize: 6, lineHeight: 1.2, letterSpacing: '0.1em', padding: '2px 5px', marginTop: 1, background: 'transparent', border: '1px solid', borderRadius: 0, cursor: 'pointer', whiteSpace: 'nowrap' },
   panahBulan: { background: 'none', border: 'none', color: '#5ED0FF', font: 'inherit', fontSize: 7, padding: '4px 3px', cursor: 'pointer' },
   grid: { flex: 1, minWidth: 0, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '5px 4px', paddingRight: 6 },
   stat: { display: 'flex', flexDirection: 'column', lineHeight: 1.15, minWidth: 0 },
-  barisTrip: { display: 'flex', justifyContent: 'space-between', gap: 6, fontFamily: "'JetBrains Mono', monospace", fontSize: 8, color: '#FFFFFF', whiteSpace: 'nowrap' },
+  barisTrip: { display: 'flex', justifyContent: 'space-between', gap: 6, fontFamily: "'JetBrains Mono', monospace", fontSize: 8, lineHeight: 1.2, color: '#FFFFFF', whiteSpace: 'nowrap' },
 }
