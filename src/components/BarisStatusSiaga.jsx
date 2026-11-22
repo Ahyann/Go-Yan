@@ -121,6 +121,7 @@ export default function BarisStatusSiaga({ totalTrip = null, lokasiAktif = false
       <span style={s.teks}>
         <span style={{ display: 'flex', alignItems: 'center', height: 12 }}>
           <MeterBensin pasti={bensin ? bensin.pasti : 0} mungkin={bensin ? bensin.mungkin : JUMLAH_BAR} />
+          <span aria-hidden="true" style={{ ...s.panah, fontFamily: "'JetBrains Mono', monospace", fontSize: 11, marginLeft: 5 }}>›</span>
         </span>
         <span style={{ ...s.label, ...(!bensin || bensin.perluSinkron ? { color: '#FF9A3C', opacity: 1 } : null) }}>{labelBensin}</span>
       </span>
