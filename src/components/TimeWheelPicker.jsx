@@ -9,27 +9,35 @@ const PAD = (CONTAINER_HEIGHT - ITEM_HEIGHT) / 2
 const JAM = Array.from({ length: 24 }, (_, i) => i)
 const MENIT = Array.from({ length: 60 }, (_, i) => i)
 
+// Daftar diulang beberapa salinan supaya roda berputar tanpa ujung (23 lanjut ke 00, 59 lanjut ke 00).
+// Posisi diam selalu dikembalikan ke salinan tengah, jadi tidak pernah sampai ke ujung daftar.
+const SALINAN = 7
+const TENGAH = 3
+
 export default function TimeWheelPicker({ value, onChange }) {
   const [jamAwal, menitAwal] = value.split(':').map(Number)
   const jamRef = useRef(null)
   const menitRef = useRef(null)
   const timeoutRef = useRef(null)
+  const abaikanRef = useRef(false)
+  const lompatRef = useRef(null)
   // Angka yang sedang berada di baris tengah, dipakai untuk menandai angka aktif dan membunyikan klik.
   const [pusat, setPusat] = useState({ jam: jamAwal, menit: menitAwal })
   const pusatRef = useRef(pusat)
 
   useEffect(() => {
-    if (jamRef.current) jamRef.current.scrollTop = jamAwal * ITEM_HEIGHT
-    if (menitRef.current) menitRef.current.scrollTop = menitAwal * ITEM_HEIGHT
+    if (jamRef.current) jamRef.current.scrollTop = (TENGAH * JAM.length + jamAwal) * ITEM_HEIGHT
+    if (menitRef.current) menitRef.current.scrollTop = (TENGAH * MENIT.length + menitAwal) * ITEM_HEIGHT
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   function handleScroll(ref, panjangList, tipe) {
     const el = ref.current
-    if (!el) return
+    if (!el || abaikanRef.current) return
 
     // Angka di tengah diperbarui selama menggulung, dan tiap pergantian angka berbunyi satu klik.
-    const langsung = Math.min(Math.max(Math.round(el.scrollTop / ITEM_HEIGHT), 0), panjangList - 1)
+    const mentah = Math.min(Math.max(Math.round(el.scrollTop / ITEM_HEIGHT), 0), panjangList * SALINAN - 1)
+    const langsung = mentah % panjangList
     if (pusatRef.current[tipe] !== langsung) {
       pusatRef.current = { ...pusatRef.current, [tipe]: langsung }
       setPusat(pusatRef.current)
@@ -37,8 +45,17 @@ export default function TimeWheelPicker({ value, onChange }) {
     }
 
     clearTimeout(timeoutRef.current)
+    clearTimeout(lompatRef.current)
     timeoutRef.current = setTimeout(() => {
-      el.scrollTo({ top: langsung * ITEM_HEIGHT, behavior: 'smooth' })
+      el.scrollTo({ top: mentah * ITEM_HEIGHT, behavior: 'smooth' })
+      // Setelah berhenti, lompat diam-diam ke salinan tengah supaya selalu ada ruang di atas dan di bawah
+      lompatRef.current = setTimeout(() => {
+        const sasaran = (TENGAH * panjangList + langsung) * ITEM_HEIGHT
+        if (Math.abs(el.scrollTop - sasaran) < ITEM_HEIGHT * panjangList / 2) return
+        abaikanRef.current = true
+        el.scrollTop = sasaran
+        setTimeout(() => { abaikanRef.current = false }, 80)
+      }, 320)
 
       const [jamSaatIni, menitSaatIni] = value.split(':').map(Number)
       const jamBaru = tipe === 'jam' ? langsung : jamSaatIni
@@ -61,8 +78,8 @@ export default function TimeWheelPicker({ value, onChange }) {
 function Kolom({ listRef, data, aktif, onScroll }) {
   return (
     <div className="no-scrollbar" style={s.kolom} ref={listRef} onScroll={onScroll}>
-      {data.map((n) => (
-        <div key={n} style={n === aktif ? s.itemAktif : s.item}>
+      {Array.from({ length: SALINAN }, () => data).flat().map((n, i) => (
+        <div key={i} style={n === aktif ? s.itemAktif : s.item}>
           {String(n).padStart(2, '0')}
         </div>
       ))}
