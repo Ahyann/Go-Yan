@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { addDoc, collection, doc, getDocs, limit, onSnapshot, orderBy, query, setDoc, writeBatch } from 'firebase/firestore'
+import { addDoc, collection, deleteDoc, doc, getDocs, limit, onSnapshot, orderBy, query, setDoc, updateDoc, writeBatch } from 'firebase/firestore'
 import { db } from './firebase'
 import { useAuth } from '../context/AuthContext.jsx'
 
@@ -132,6 +132,23 @@ export function catatIsiBensin(nominal) {
   const rekam = { waktu: Date.now(), rupiah, liter: Math.round(liter * 100) / 100, penuh }
   if (penulis) penulis.isi(rekam).catch(() => tambahLokal('isi', rekam))
   else tambahLokal('isi', rekam)
+}
+
+// Hapus satu catatan isi (dari HP dan dari Firebase). Catatan dikenali dari waktunya; id Firestore dipakai kalau sudah ada.
+// Sisa bensin di halaman utama tidak ikut berubah: itu berasal dari ketukan bar, bukan dari jumlah catatan.
+export function hapusIsiBensin(rek) {
+  setDaftarLokal('isi', daftarIsi.filter((x) => x.waktu !== rek.waktu))
+  if (penulis && rek.id) penulis.hapusIsi(rek.id).catch((e) => console.error('Gagal menghapus catatan isi:', e))
+}
+
+// Ubah nominal satu catatan isi; liter dihitung ulang dari harga per liter dan catatan tidak lagi dianggap isi penuh
+export function ubahIsiBensin(rek, rupiah) {
+  const baru = { ...rek, rupiah, liter: Math.round((rupiah / HARGA_PER_LITER) * 100) / 100, penuh: false }
+  setDaftarLokal('isi', daftarIsi.map((x) => (x.waktu === rek.waktu ? baru : x)))
+  if (penulis && rek.id) {
+    const { id, ...isi } = baru
+    penulis.ubahIsi(id, isi).catch((e) => console.error('Gagal mengubah catatan isi:', e))
+  }
 }
 
 // Perkiraan bensin yang diperbarui setiap menit dan setiap kali ada sinkron / isi
@@ -320,6 +337,8 @@ export function useSinkronBensin() {
       status: (d) => setDoc(refStatus, d),
       trip: (d) => addDoc(refTrip, d),
       isi: (d) => addDoc(refIsi, d),
+      hapusIsi: (id) => deleteDoc(doc(refIsi, id)),
+      ubahIsi: (id, d) => updateDoc(doc(refIsi, id), d),
       reset: async () => {
         await Promise.all([hapusSemua(refTrip), hapusSemua(refIsi)])
         await setDoc(refStatus, { bar: null, hapus: Date.now() }) // dokumen kosong tanda sudah dihapus
@@ -358,7 +377,7 @@ export function useSinkronBensin() {
         return
       }
       if (dariServer) tandaiMigrasi(jenis)
-      setDaftarLokal(jenis, snap.docs.map((x) => ({ ...x.data() })))
+      setDaftarLokal(jenis, snap.docs.map((x) => ({ ...x.data(), id: x.id })))
     }, galat)
     const berhentiTrip = dengarDaftar(refTrip, 'trip', () => daftarTrip)
     const berhentiIsi = dengarDaftar(refIsi, 'isi', () => daftarIsi)

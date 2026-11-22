@@ -1,16 +1,20 @@
+import { useState } from 'react'
 import { useLanguage } from '../context/LanguageContext.jsx'
-import { useRiwayatBensin } from '../lib/bensin'
+import { hapusIsiBensin, ubahIsiBensin, useRiwayatBensin } from '../lib/bensin'
+import SwipeableItem from './SwipeableItem.jsx'
 
 const TEKS = {
   id: {
     untukMisi: 'Bensin untuk misi', isiBensin: 'Isi bensin', trip: 'trip', km: 'km', kali: 'kali isi', grafik: 'Bensin untuk misi per minggu',
     catatan: 'Catatan isi bensin', kosongCatatan: 'Belum ada catatan isi bensin bulan ini. Ketuk CATAT ISI di halaman bensin setelah mengisi.',
+    ubahIsi: 'Ubah catatan isi', nominal: 'Nominal (Rp)', ketUbah: 'Liter dihitung ulang dari nominal. Sisa bensin di halaman utama tidak berubah.', batal: 'Batal', simpan: 'Simpan',
     isi: 'Isi bensin', penuh: 'Isi penuh', porsi: 'Porsi bensin untuk misi', porsiKet: 'dari bensin yang kamu beli bulan ini', minggu: 'M',
     bln: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'],
   },
   en: {
     untukMisi: 'Fuel for missions', isiBensin: 'Fuel bought', trip: 'trips', km: 'km', kali: 'fill-ups', grafik: 'Fuel for missions per week',
     catatan: 'Fill-up log', kosongCatatan: 'No fill-ups logged this month. Tap LOG FILL on the fuel page after refueling.',
+    ubahIsi: 'Edit fill-up', nominal: 'Amount (Rp)', ketUbah: 'Liters are recalculated from the amount. The fuel level on the main page stays the same.', batal: 'Cancel', simpan: 'Save',
     isi: 'Fill-up', penuh: 'Full tank', porsi: 'Share used for missions', porsiKet: 'of the fuel you bought this month', minggu: 'W',
     bln: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
   },
@@ -28,6 +32,15 @@ export default function RiwayatBensin({ bulan, tahun }) {
   const maks = Math.max(1, ...r.perMinggu)
   const terboros = r.perMinggu.indexOf(Math.max(...r.perMinggu))
   const adaData = r.jumlahTrip > 0
+  const [itemEdit, setItemEdit] = useState(null)
+  const [nominal, setNominal] = useState('')
+
+  function simpan() {
+    const n = parseInt(nominal, 10)
+    if (!n || !itemEdit) return
+    ubahIsiBensin(itemEdit, n)
+    setItemEdit(null)
+  }
 
   return (
     <div style={s.wrap}>
@@ -72,21 +85,55 @@ export default function RiwayatBensin({ bulan, tahun }) {
           r.isiBulan.slice(0, 12).map((t) => {
             const d = new Date(t.waktu)
             return (
-              <div key={t.waktu} style={s.barisIsi}>
-                <span style={s.tgl}>{String(d.getDate()).padStart(2, '0')}/{String(d.getMonth() + 1).padStart(2, '0')}</span>
-                <span style={s.ket}>{t.penuh ? k.penuh : k.isi}</span>
-                <span style={s.liter}>±{desimal(t.liter)} L</span>
-                <span style={s.rp}>Rp {rupiah(t.rupiah)}</span>
-              </div>
+              <SwipeableItem key={t.waktu} onDelete={() => hapusIsiBensin(t)} onEdit={() => { setNominal(String(t.rupiah)); setItemEdit(t) }}>
+                <div style={s.barisIsi}>
+                  <span style={s.tgl}>{String(d.getDate()).padStart(2, '0')}/{String(d.getMonth() + 1).padStart(2, '0')}</span>
+                  <span style={s.ket}>{t.penuh ? k.penuh : k.isi}</span>
+                  <span style={s.liter}>±{desimal(t.liter)} L</span>
+                  <span style={s.rp}>Rp {rupiah(t.rupiah)}</span>
+                </div>
+              </SwipeableItem>
             )
           })
         )}
       </section>
+
+      {itemEdit && (
+        <div style={s.overlay} onClick={() => setItemEdit(null)}>
+          <div style={s.sheet} onClick={(e) => e.stopPropagation()}>
+            <div style={s.judulPopup}>{k.ubahIsi}</div>
+            <label style={s.labelPopup}>
+              {k.nominal}
+              <input
+                autoFocus
+                style={s.inputPopup}
+                type="text"
+                inputMode="numeric"
+                value={nominal}
+                onChange={(e) => setNominal(e.target.value.replace(/\D/g, '').slice(0, 7))}
+                onKeyDown={(e) => { if (e.key === 'Enter') simpan() }}
+              />
+            </label>
+            <div style={s.sub}>{k.ketUbah}</div>
+            <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
+              <button type="button" style={s.btnBatal} onClick={() => setItemEdit(null)}>{k.batal}</button>
+              <button type="button" style={s.btnSimpan} onClick={simpan}>{k.simpan}</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
 
 const s = {
+  overlay: { position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, zIndex: 9999 },
+  sheet: { width: '100%', maxWidth: 360, background: 'linear-gradient(160deg, var(--card-blue-grad-a), var(--card-blue-grad-b))', border: '1px solid var(--blue-border)', padding: 20, display: 'flex', flexDirection: 'column', gap: 12, boxSizing: 'border-box' },
+  judulPopup: { fontFamily: 'var(--font-judul)', fontSize: 18, color: 'var(--text)', letterSpacing: '0.5px' },
+  labelPopup: { display: 'flex', flexDirection: 'column', gap: 6, fontSize: 12.5, color: '#9FC3E8' },
+  inputPopup: { background: 'rgba(255,255,255,0.06)', border: '1px solid var(--blue-border)', borderRadius: 0, padding: '10px 12px', color: 'var(--text)', fontSize: 16, fontFamily: 'var(--font-data)' },
+  btnBatal: { flex: 1, padding: '12px 0', background: 'rgba(255,255,255,0.06)', color: 'var(--text)', fontSize: 14, border: '1px solid var(--blue-border)', borderRadius: 0 },
+  btnSimpan: { flex: 1, padding: '12px 0', background: 'var(--nav-red)', color: '#fff', fontSize: 14, fontWeight: 600, border: 'none', borderRadius: 0 },
   wrap: { display: 'flex', flexDirection: 'column', gap: 12 },
   baris: { display: 'flex', gap: 10 },
   kartu: { flex: 1, minWidth: 0, background: 'var(--card-blue)', border: '1px solid var(--blue-border)', padding: '12px 14px', boxSizing: 'border-box' },
@@ -102,7 +149,7 @@ const s = {
   porsiBar: { flex: 1, height: 8, background: '#1E3A52' },
   porsiIsi: { display: 'block', height: 8, background: '#5ED0FF' },
   porsiAngka: { fontFamily: 'var(--font-data)', fontSize: 15, fontWeight: 700, color: '#5ED0FF' },
-  barisIsi: { display: 'flex', alignItems: 'center', gap: 10, padding: '9px 0', borderBottom: '1px solid rgba(44, 106, 143, 0.5)' },
+  barisIsi: { display: 'flex', alignItems: 'center', gap: 10, padding: '19px 0', background: 'var(--card-blue)', borderBottom: '1px solid rgba(44, 106, 143, 0.5)' },
   tgl: { width: 40, fontSize: 12, color: '#9FC3E8', flexShrink: 0 },
   ket: { flex: 1, minWidth: 0, fontSize: 13, color: '#FFFFFF' },
   liter: { fontFamily: 'var(--font-data)', fontSize: 12, color: '#8FB4DC', whiteSpace: 'nowrap' },
