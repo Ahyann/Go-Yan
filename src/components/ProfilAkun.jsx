@@ -215,7 +215,7 @@ const s = {
   potong: { position: 'absolute', inset: 0, overflow: 'hidden', clipPath: 'inset(0 0 2px 0)' },
   fotoImg: { position: 'absolute', left: -14, top: 0, width: 150, height: 150, objectFit: 'contain', objectPosition: '50% 0%', imageRendering: 'pixelated', pointerEvents: 'none' },
   teksBlok: { minWidth: 0, padding: '14px 0' },
-  ubah: { position: 'absolute', right: 10, top: 10, display: 'inline-flex', alignItems: 'center', gap: 5, padding: '5px 8px', background: 'rgba(1,26,41,0.7)', border: '1px solid', borderRadius: 0, fontFamily: 'var(--font-data)', fontSize: 9.5, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase' },
+  ubah: { position: 'absolute', right: 10, bottom: 5, display: 'inline-flex', alignItems: 'center', gap: 5, padding: '5px 8px', background: 'rgba(1,26,41,0.7)', border: '1px solid', borderRadius: 0, fontFamily: 'var(--font-data)', fontSize: 9.5, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase' },
   garis: { position: 'absolute', left: 0, right: 0, bottom: 0, height: 2, pointerEvents: 'none' },
   masuk: { fontFamily: 'var(--font-data)', fontSize: 10, letterSpacing: '0.14em', color: '#9FC3E8', textTransform: 'uppercase' },
   nama: { fontFamily: 'var(--font-judul)', fontSize: 28, letterSpacing: 1, color: '#fff', lineHeight: 1.1 },
