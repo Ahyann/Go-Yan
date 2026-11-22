@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react'
 import { LOKASI_POI } from './lokasiPOI'
 import { unduhCuaca } from './statusSiaga'
 
-// Cuaca untuk Kantor (tempat jemput), supaya cuacanya bisa dilihat walaupun kamu sedang berada di tempat lain. Disimpan 15 menit di HP dan dibagi antar komponen.
-export const NAMA_TITIK = { kantor: 'KANTOR' }
+// Cuaca untuk titik-titik yang sudah tersimpan di app (Kantor, Kampus, Rumah Fajri), supaya cuaca tempat jemput bisa
+// dilihat walaupun kamu sedang berada di tempat lain. Disimpan 15 menit di HP dan dibagi antar komponen.
+export const NAMA_TITIK = { kantor: 'KANTOR', kampus: 'KAMPUS', rumah: 'RUMAH FAJRI' }
 export const TITIK = LOKASI_POI.filter((p) => NAMA_TITIK[p.id]).map((p) => ({ id: p.id, nama: NAMA_TITIK[p.id], lat: p.lat, lng: p.lng }))
 const KUNCI = 'goyan:cuaca-titik'
 const BASI_MS = 15 * 60 * 1000
@@ -43,7 +44,7 @@ export function jarakMeter(a, b) {
   return 2 * R * Math.atan2(Math.sqrt(x), Math.sqrt(1 - x))
 }
 
-// Kantor kalau posisimu dekat dengannya (kalau kurang dari 400 m), atau null
+// Titik tersimpan yang paling dekat dengan posisimu (kalau kurang dari 400 m), atau null
 export function titikDekat(posisi) {
   if (!posisi) return null
   let terbaik = null
@@ -54,7 +55,7 @@ export function titikDekat(posisi) {
   return terbaik
 }
 
-// { kantor: { suhu, kode, jam } }; kosong sampai datanya terunduh
+// { kantor: { suhu, kode, jam }, kampus: ..., rumah: ... }; kosong sampai datanya terunduh
 export function useCuacaTitik() {
   const [, setDetak] = useState(0)
   useEffect(() => {
