@@ -824,3 +824,6 @@ button {
 .bar-ragu { animation: bar-ragu 1.4s steps(2) infinite; }
 @media (prefers-reduced-motion: reduce) { .bar-ragu { animation: none; } }
 
+
+/* Tombol panah daftar trip bensin yang sudah mentok */
+button:disabled[aria-label="◀"], button:disabled[aria-label="▶"] { opacity: 0.3; cursor: default; }
