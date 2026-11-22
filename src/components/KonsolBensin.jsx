@@ -169,7 +169,6 @@ export default function KonsolBensin({ onKembali }) {
     else if (b.perluSinkron) { status = k.sinkron; warna = '#FF9A3C' }
     else { status = k.aman.replace('{n}', b.hariAman); warna = '#4ADE80' }
   }
-  if (halaman === 1) { status = `${k.mingguIni} ±Rp ${rupiah(minggu.rupiah)}`; warna = '#FF9A3C' }
   if (halaman === 2) { status = `${k.bln[bulanA]} ${tahunA}`; warna = '#FF9A3C' }
 
   const tombol = (teks, onKlik, gaya = {}) => (
@@ -189,7 +188,7 @@ export default function KonsolBensin({ onKembali }) {
             </button>
           ))}
         </span>
-        <span style={s.status}><span style={{ opacity: 0.6, color: '#E8EDF9' }}>{k.status}</span> <span style={{ color: warna }}>{status}</span></span>
+        {halaman !== 1 && <span style={s.status}><span style={{ opacity: 0.6, color: '#E8EDF9' }}>{k.status}</span> <span style={{ color: warna }}>{status}</span></span>}
       </div>
 
       <div style={s.viewport} onTouchStart={sentuhMulai} onTouchEnd={sentuhSelesai}>
