@@ -120,7 +120,7 @@ export default function JamKonsol({ keterangan, bergilir = false, totalTrip = nu
           {menit}
         </div>
       </div>
-      <div style={s.bawah}><BarisStatusSiaga totalTrip={totalTrip} lokasiAktif={lokasiAktif} onBukaCuaca={() => setHalaman('cuaca')} onBukaBensin={() => setHalaman('bensin')} jadwal={jadwal} /></div>
+      <div style={s.bawah}><BarisStatusSiaga totalTrip={totalTrip} lokasiAktif={lokasiAktif} onBukaCuaca={() => setHalaman('cuaca')} onBukaBensin={() => setHalaman('bensin')} /></div>
     </div>
   )
 }

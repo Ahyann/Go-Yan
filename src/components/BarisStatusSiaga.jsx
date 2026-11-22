@@ -1,8 +1,6 @@
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { TEKS_STATUS, jenisCuaca, useStatusSiaga } from '../lib/statusSiaga'
 import { JUMLAH_BAR, useBensin } from '../lib/bensin'
-import { useCuacaTitik } from '../lib/cuacaTitik'
-import { cuacaPadaJadwal, jadwalTerdekat } from '../lib/jadwalTerdekat'
 
 const svg = { shapeRendering: 'crispEdges', style: { flexShrink: 0, display: 'block' } }
 
@@ -93,15 +91,11 @@ function IkonTrip() {
 }
 
 // Baris di bawah jam konsol ojek saat siaga: cuaca, sinyal GPS, dan total trip, dengan ikon piksel.
-export default function BarisStatusSiaga({ totalTrip = null, lokasiAktif = false, onBukaCuaca = null, onBukaBensin = null, jadwal = null }) {
+export default function BarisStatusSiaga({ totalTrip = null, lokasiAktif = false, onBukaCuaca = null, onBukaBensin = null }) {
   const { lang } = useLanguage()
   const k = TEKS_STATUS[lang] || TEKS_STATUS.id
   const { cuaca } = useStatusSiaga(lokasiAktif)
   const bensin = useBensin()
-  const dataTitik = useCuacaTitik()
-  // Kalau ada jadwal jemput/antar dalam 24 jam, slot cuaca menampilkan cuaca di tempat jemput (Kantor) pada jam itu
-  const terdekat = jadwalTerdekat(jadwal, Date.now())
-  const cuacaJemput = cuacaPadaJadwal(dataTitik.kantor?.jam, terdekat)
   const jenis = cuaca ? jenisCuaca(cuaca.kode) : null
 
   const isiSlot = (ikon, nilai, label, panah = false) => (
@@ -137,16 +131,11 @@ export default function BarisStatusSiaga({ totalTrip = null, lokasiAktif = false
     <button type="button" className="slot-status" style={{ ...s.slot, ...s.tombolSlot }} onClick={onKlik} aria-label={aria}>{isiSlot(ikon, nilai, label, true)}</button>
   )
 
-  // Slot cuaca: cuaca tempat jemput (label KANTOR 15:00) kalau ada jadwal terdekat, kalau tidak cuaca di posisimu
-  const jenisSlot = cuacaJemput ? jenisCuaca(cuacaJemput.kode) : jenis || 'mendung'
-  const suhuSlot = cuacaJemput ? `${cuacaJemput.suhu}°` : cuaca ? `${cuaca.suhu}°` : '--°'
-  const labelSlot = cuacaJemput ? `${lang === 'en' ? 'OFFICE' : 'KANTOR'} ${terdekat.jam}` : jenis ? k.kode[jenis] : k.cuaca
-
   return (
     <div role="group" aria-label={`${cuaca ? `${cuaca.suhu}°, ${k.kode[jenis]}` : k.cuaca}; ${k.trip} ${totalTrip ?? '-'}`} style={s.baris}>
       {onBukaCuaca
-        ? slotTombol(<IkonCuaca jenis={jenisSlot} />, suhuSlot, labelSlot, lang === 'en' ? 'Open weather forecast' : 'Buka prakiraan cuaca', onBukaCuaca)
-        : slot(<IkonCuaca jenis={jenisSlot} />, suhuSlot, labelSlot)}
+        ? slotTombol(<IkonCuaca jenis={jenis || 'mendung'} />, cuaca ? `${cuaca.suhu}°` : '--°', jenis ? k.kode[jenis] : k.cuaca, lang === 'en' ? 'Open weather forecast' : 'Buka prakiraan cuaca', onBukaCuaca)
+        : slot(<IkonCuaca jenis={jenis || 'mendung'} />, cuaca ? `${cuaca.suhu}°` : '--°', jenis ? k.kode[jenis] : k.cuaca)}
       {slotBensin}
       {slot(<IkonTrip />, totalTrip ?? '--', k.trip)}
     </div>
