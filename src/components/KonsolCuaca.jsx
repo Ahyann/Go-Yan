@@ -143,11 +143,15 @@ export default function KonsolCuaca({ onKembali, lokasiAktif = false, jadwal = n
         <button type="button" onClick={onKembali} style={s.kembali} aria-label={k.kembali}>
           <span aria-hidden="true" style={{ color: '#5ED0FF' }}>◀</span> {k.kembali}
         </button>
-        <span style={s.status} aria-label={`${k.label} ${ringkas}${status && terdekat ? `, ${status.teks}` : ''}`}>
-          <span style={s.statusLabel}>{k.label}</span>
-          {status && terdekat && <EmoteStatus jenis={status.jenis} />}
-          <span style={{ ...s.ringkas, color: warnaRingkas }}>{ringkas}</span>
-        </span>
+        {/* Hitung mundur ke jadwal terdekat di tengah kepala halaman */}
+        <span style={{ ...s.ringkas, ...s.tengah, color: warnaRingkas }}>{ringkas}</span>
+        {/* Status cuaca di jam jadwal: emote plus keterangannya */}
+        {status && terdekat && (
+          <span style={s.status} aria-label={`${k.label} ${status.teks}`}>
+            <EmoteStatus jenis={status.jenis} />
+            <span style={{ ...s.ringkas, color: status.warna }}>{status.teks}</span>
+          </span>
+        )}
       </div>
       {jam.length === 0 ? (
         <div style={s.kosong}>{k.kosong}</div>
@@ -192,9 +196,9 @@ export default function KonsolCuaca({ onKembali, lokasiAktif = false, jadwal = n
 }
 
 const s = {
-  kepala: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, height: 18 },
+  kepala: { position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, height: 18 },
+  tengah: { position: 'absolute', left: '50%', transform: 'translateX(-50%)', maxWidth: '46%' },
   status: { display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 8, letterSpacing: '0.08em', minWidth: 0, flex: '0 1 auto' },
-  statusLabel: { color: '#E8EDF9', opacity: 0.6, whiteSpace: 'nowrap' },
   kembali: { background: 'none', border: 'none', color: '#FFFFFF', font: 'inherit', fontSize: 8, letterSpacing: '0.1em', padding: '2px 6px 2px 0', cursor: 'pointer', whiteSpace: 'nowrap' },
   ringkas: { fontSize: 8, letterSpacing: '0.08em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0 },
   badan: { display: 'flex', alignItems: 'center', gap: 8, marginTop: 3, height: 46 },
