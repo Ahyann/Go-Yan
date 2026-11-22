@@ -85,6 +85,9 @@ export default function KonsolBensin({ onKembali }) {
   const { minggu, tripMinggu } = useTripBensin()
   const spbu = useSpbuTerdekat()
   const [halaman, setHalaman] = useState(0)
+  const [halTripRaw, setHalTrip] = useState(0)
+  const jumlahHal = Math.max(1, Math.ceil(tripMinggu.length / 2))
+  const halTrip = Math.min(halTripRaw, jumlahHal - 1)
   const hariIni = new Date()
   const [bulanA, setBulanA] = useState(hariIni.getMonth())
   const [tahunA, setTahunA] = useState(hariIni.getFullYear())
@@ -263,11 +266,14 @@ export default function KonsolBensin({ onKembali }) {
               <span style={s.kecil}>{minggu.jumlah} {k.trip} · {desimal(minggu.km)} KM · {desimal(minggu.liter, 2)} L</span>
             </div>
             <div style={{ ...s.kanan, gap: 1 }}>
+              <button type="button" data-tanpa-suara onClick={reset} style={{ ...s.reset, color: yakinReset ? '#ED1C24' : '#8FB2D0', borderColor: yakinReset ? '#ED1C24' : 'rgba(143, 178, 208, 0.4)' }}>
+                {yakinReset ? k.yakin : k.reset}
+              </button>
               {tripMinggu.length === 0 ? (
                 <span style={{ ...s.kecil, whiteSpace: 'normal', lineHeight: 1.4 }}>{k.kosongTrip}</span>
               ) : (
-                <div className="daftar-trip-gulir" style={s.gulirTrip}>
-                  {tripMinggu.map((t) => {
+                <>
+                  {tripMinggu.slice(halTrip * 2, halTrip * 2 + 2).map((t) => {
                     const tgl = new Date(t.waktu)
                     return (
                       <span key={t.waktu} style={s.barisTrip}>
@@ -277,11 +283,15 @@ export default function KonsolBensin({ onKembali }) {
                       </span>
                     )
                   })}
-                </div>
+                  {jumlahHal > 1 && (
+                    <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 6 }}>
+                      <button type="button" aria-label="◀" disabled={halTrip === 0} onClick={() => setHalTrip(halTrip - 1)} style={s.panah}>◀</button>
+                      <span style={s.kecil}>{halTrip + 1}/{jumlahHal}</span>
+                      <button type="button" aria-label="▶" disabled={halTrip >= jumlahHal - 1} onClick={() => setHalTrip(halTrip + 1)} style={s.panah}>▶</button>
+                    </span>
+                  )}
+                </>
               )}
-              <button type="button" data-tanpa-suara onClick={reset} style={{ ...s.reset, color: yakinReset ? '#ED1C24' : '#8FB2D0', borderColor: yakinReset ? '#ED1C24' : 'rgba(143, 178, 208, 0.4)' }}>
-                {yakinReset ? k.yakin : k.reset}
-              </button>
             </div>
           </div>
 
@@ -342,10 +352,10 @@ const s = {
   tombolHijau: { color: '#04192A', background: '#4ADE80', borderColor: '#4ADE80' },
   tombolRedup: { color: '#8FB2D0', borderColor: '#8FB2D0' },
   pilihanIsi: { display: 'flex', flexWrap: 'wrap', gap: 3 },
-  reset: { alignSelf: 'flex-end', fontFamily: 'inherit', fontSize: 6, lineHeight: 1.2, letterSpacing: '0.1em', padding: '2px 5px', marginTop: 1, background: 'transparent', border: '1px solid', borderRadius: 0, cursor: 'pointer', whiteSpace: 'nowrap' },
+  reset: { alignSelf: 'flex-end', fontFamily: 'inherit', fontSize: 6, lineHeight: 1.2, letterSpacing: '0.1em', padding: '2px 5px', marginBottom: 1, background: 'transparent', border: '1px solid', borderRadius: 0, cursor: 'pointer', whiteSpace: 'nowrap' },
   panahBulan: { background: 'none', border: 'none', color: '#5ED0FF', font: 'inherit', fontSize: 7, padding: '4px 3px', cursor: 'pointer' },
   grid: { flex: 1, minWidth: 0, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '5px 4px', paddingRight: 6 },
   stat: { display: 'flex', flexDirection: 'column', lineHeight: 1.15, minWidth: 0 },
-  gulirTrip: { display: 'flex', flexDirection: 'column', gap: 1, maxHeight: 22, overflowY: 'auto', overscrollBehavior: 'contain', touchAction: 'pan-y', paddingRight: 3 },
+  panah: { fontFamily: 'inherit', fontSize: 9, lineHeight: 1, minWidth: 24, minHeight: 22, padding: 0, background: 'transparent', color: '#FF9A3C', border: '1px solid rgba(255, 154, 60, 0.5)', borderRadius: 0, cursor: 'pointer' },
   barisTrip: { display: 'flex', justifyContent: 'space-between', gap: 6, fontFamily: "'JetBrains Mono', monospace", fontSize: 8, lineHeight: 1.2, color: '#FFFFFF', whiteSpace: 'nowrap' },
 }

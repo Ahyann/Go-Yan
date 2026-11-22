@@ -824,8 +824,3 @@ button {
 .bar-ragu { animation: bar-ragu 1.4s steps(2) infinite; }
 @media (prefers-reduced-motion: reduce) { .bar-ragu { animation: none; } }
 
-/* Daftar trip minggu ini di konsol bensin: bisa digulir, dengan bar tipis supaya kelihatan masih ada isinya */
-.daftar-trip-gulir { scrollbar-width: thin; scrollbar-color: #FF9A3C rgba(143, 178, 208, 0.2); }
-.daftar-trip-gulir::-webkit-scrollbar { width: 3px; }
-.daftar-trip-gulir::-webkit-scrollbar-track { background: rgba(143, 178, 208, 0.2); }
-.daftar-trip-gulir::-webkit-scrollbar-thumb { background: #FF9A3C; }
