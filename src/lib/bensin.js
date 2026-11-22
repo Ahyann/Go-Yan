@@ -321,15 +321,40 @@ export function useRiwayatBensin(bulan, tahun) {
 
 // ---------- Reset dan sinkron Firebase ----------
 // Hapus semua data bensin (perkiraan sisa bensin, catatan trip, dan catatan isi) di Firebase dan di HP ini
+let resetBerjalan = Promise.resolve()
+let cadanganReset = null // isi data sebelum reset terakhir, dipakai untuk urungkan
+
 export async function resetBensin() {
+  cadanganReset = data || daftarTrip.length || daftarIsi.length ? { data, trip: daftarTrip, isi: daftarIsi } : null
   setStatusLokal(null)
   setDaftarLokal('trip', [])
   setDaftarLokal('isi', [])
   ;['status', 'trip', 'isi'].forEach(tandaiMigrasi)
+  resetBerjalan = (async () => {
+    try {
+      await penulis?.reset()
+    } catch (e) {
+      console.error('Gagal menghapus data bensin di Firebase:', e)
+    }
+  })()
+  await resetBerjalan
+}
+
+export const bisaUrungReset = () => cadanganReset !== null
+
+// Kembalikan data yang baru di-reset, di HP dan di Firebase
+export async function urungResetBensin() {
+  const c = cadanganReset
+  if (!c) return
+  cadanganReset = null
+  if (c.data) setStatusLokal(c.data)
+  setDaftarLokal('trip', c.trip)
+  setDaftarLokal('isi', c.isi)
+  await resetBerjalan // tunggu penghapusan di Firebase selesai dulu supaya tidak menimpa data yang dipulihkan
   try {
-    await penulis?.reset()
+    await penulis?.pulihkan(c.data, c.trip, c.isi)
   } catch (e) {
-    console.error('Gagal menghapus data bensin di Firebase:', e)
+    console.error('Gagal memulihkan data bensin di Firebase:', e)
   }
 }
 
@@ -387,6 +412,11 @@ export function useSinkronBensin() {
       reset: async () => {
         await Promise.all([hapusSemua(refTrip), hapusSemua(refIsi)])
         await setDoc(refStatus, { bar: null, hapus: Date.now() }) // dokumen kosong tanda sudah dihapus
+      },
+      pulihkan: async (st, trip, isi) => {
+        if (st) await setDoc(refStatus, st)
+        const tanpaId = ({ id, ...sisa }) => sisa
+        await Promise.all([...trip.map((x) => addDoc(refTrip, tanpaId(x))), ...isi.map((x) => addDoc(refIsi, tanpaId(x)))])
       },
     }
     const galat = (e) => console.error('Sinkron bensin gagal, memakai data di HP:', e)

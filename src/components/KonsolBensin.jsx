@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLanguage } from '../context/LanguageContext.jsx'
-import { JUMLAH_BAR, catatIsiBensin, resetBensin, sinkronBensin, useBensin, useRiwayatBensin, useTripBensin } from '../lib/bensin'
+import { JUMLAH_BAR, bisaUrungReset, catatIsiBensin, resetBensin, urungResetBensin, sinkronBensin, useBensin, useRiwayatBensin, useTripBensin } from '../lib/bensin'
 import { playGeserHalus, playGeserTik, playKonsolMati, playLunasSemua } from '../lib/sound'
 import { getar } from '../lib/getar'
 import { IkonPompa, MeterBensin, warnaBar } from './BarisStatusSiaga.jsx'
@@ -10,7 +10,7 @@ const TEKS = {
     kembali: 'KEMBALI', status: 'STATUS:', ketuk: 'KETUK SESUAI SPEEDOMETER', aman: 'AMAN ±{n} HARI', segera: 'SEGERA ISI', sekarang: 'ISI SEKARANG',
     sinkron: 'PERLU SINKRON', belum: 'KETUK BAR DULU', isiPenuh: 'ISI PENUH ±Rp ', catat: 'CATAT ISI', lain: 'LAIN', nominal: 'Nominal isi dalam ribu rupiah', spbu: 'SPBU', cari: 'CARI SPBU', penuh: 'PENUH',
     terakhir: 'SINKRON {n} HARI LALU', mingguIni: 'MINGGU INI', trip: 'TRIP', lainnya: 'TRIP LAINNYA', kosongTrip: 'NYALAKAN LIVE LOCATION SAAT MISI UNTUK MENGHITUNG BENSIN PER TRIP',
-    hal1: 'Sisa bensin', hal2: 'Bensin per trip', bar: 'Bensin {n} dari 6 bar', mnt: 'MNT', reset: 'RESET DATA', yakin: 'YAKIN? KETUK LAGI',
+    hal1: 'Sisa bensin', hal2: 'Bensin per trip', bar: 'Bensin {n} dari 6 bar', mnt: 'MNT', reset: 'RESET DATA', urung: '↶ URUNGKAN RESET', yakin: 'YAKIN? KETUK LAGI',
     hal3: 'Riwayat bulan', untukMisi: 'BENSIN UNTUK MISI', jarak: 'JARAK', liter: 'LITER', rataTrip: 'RATA/TRIP', hariRamai: 'HARI RAMAI', porsi: 'TERLACAK MISI',
     bulanSebelum: 'Bulan sebelumnya', bulanBerikut: 'Bulan berikutnya', bln: ['JAN', 'FEB', 'MAR', 'APR', 'MEI', 'JUN', 'JUL', 'AGU', 'SEP', 'OKT', 'NOV', 'DES'],
   },
@@ -18,7 +18,7 @@ const TEKS = {
     kembali: 'BACK', status: 'STATUS:', ketuk: 'TAP TO MATCH YOUR GAUGE', aman: 'OK ±{n} DAYS', segera: 'REFUEL SOON', sekarang: 'REFUEL NOW',
     sinkron: 'NEEDS SYNC', belum: 'TAP THE BARS', isiPenuh: 'FILL UP ±Rp ', catat: 'LOG FILL', lain: 'OTHER', nominal: 'Amount in thousand rupiah', spbu: 'GAS', cari: 'FIND GAS', penuh: 'FULL',
     terakhir: 'SYNCED {n} DAYS AGO', mingguIni: 'THIS WEEK', trip: 'TRIPS', lainnya: 'MORE TRIPS', kosongTrip: 'TURN ON LIVE LOCATION DURING MISSIONS TO COUNT FUEL PER TRIP',
-    hal1: 'Fuel left', hal2: 'Fuel per trip', bar: 'Fuel {n} of 6 bars', mnt: 'MIN', reset: 'RESET DATA', yakin: 'SURE? TAP AGAIN',
+    hal1: 'Fuel left', hal2: 'Fuel per trip', bar: 'Fuel {n} of 6 bars', mnt: 'MIN', reset: 'RESET DATA', urung: '↶ UNDO RESET', yakin: 'SURE? TAP AGAIN',
     hal3: 'Monthly history', untukMisi: 'FUEL FOR MISSIONS', jarak: 'DISTANCE', liter: 'LITERS', rataTrip: 'AVG/TRIP', hariRamai: 'BUSIEST DAY', porsi: 'MISSION TRACKED',
     bulanSebelum: 'Previous month', bulanBerikut: 'Next month', bln: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
   },
@@ -88,6 +88,7 @@ export default function KonsolBensin({ onKembali }) {
   const [modeCatat, setModeCatat] = useState(false)
   const [isiBebas, setIsiBebas] = useState(null)
   const [yakinReset, setYakinReset] = useState(false)
+  const [bisaUrung, setBisaUrung] = useState(false)
   const sentuhAwal = useRef(null)
 
   const pindah = (h) => {
@@ -144,6 +145,17 @@ export default function KonsolBensin({ onKembali }) {
     setYakinReset(false)
     playKonsolMati()
     getar(15)
+    if (bisaUrungReset()) {
+      setBisaUrung(true)
+      setTimeout(() => setBisaUrung(false), 10000)
+    }
+  }
+
+  function urung() {
+    urungResetBensin()
+    setBisaUrung(false)
+    playLunasSemua()
+    getar([15, 40, 15])
   }
 
   function bukaSpbu() {
@@ -258,9 +270,13 @@ export default function KonsolBensin({ onKembali }) {
               <span style={s.kecil}>{minggu.jumlah} {k.trip} · {desimal(minggu.km)} KM · {desimal(minggu.liter, 2)} L</span>
             </div>
             <div style={{ ...s.kanan, gap: 1 }}>
-              <button type="button" data-tanpa-suara onClick={reset} style={{ ...s.reset, color: yakinReset ? '#ED1C24' : '#8FB2D0', borderColor: yakinReset ? '#ED1C24' : 'rgba(143, 178, 208, 0.4)' }}>
-                {yakinReset ? k.yakin : k.reset}
-              </button>
+              {bisaUrung ? (
+                <button type="button" data-tanpa-suara onClick={urung} style={{ ...s.reset, color: '#4ADE80', borderColor: '#4ADE80' }}>{k.urung}</button>
+              ) : (
+                <button type="button" data-tanpa-suara onClick={reset} style={{ ...s.reset, color: yakinReset ? '#ED1C24' : '#8FB2D0', borderColor: yakinReset ? '#ED1C24' : 'rgba(143, 178, 208, 0.4)' }}>
+                  {yakinReset ? k.yakin : k.reset}
+                </button>
+              )}
               {tripMinggu.length === 0 ? (
                 <span style={{ ...s.kecil, whiteSpace: 'normal', lineHeight: 1.4 }}>{k.kosongTrip}</span>
               ) : (
