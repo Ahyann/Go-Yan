@@ -5,8 +5,8 @@ import { playGeserHalus } from '../lib/sound'
 import { IkonCuaca } from './BarisStatusSiaga.jsx'
 
 const TEKS = {
-  id: { stJas: 'JAS HUJAN', jamS: 'J', menitS: 'M', kini: 'SEKARANG', label: 'STATUS:', tanpaJemput: 'BELUM ADA JADWAL', stPanas: 'MINUM!', stAman: 'AMAN', kembali: 'KEMBALI', kosong: 'NYALAKAN LOKASI UNTUK PRAKIRAAN', lokasi: 'LOKASIMU', jemput: 'JEMPUT', antar: 'ANTAR' },
-  en: { stJas: 'RAINCOAT', jamS: 'H', menitS: 'M', kini: 'NOW', label: 'STATUS:', tanpaJemput: 'NO SCHEDULE', stPanas: 'HOT', stAman: 'CLEAR', kembali: 'BACK', kosong: 'TURN ON LOCATION FOR FORECAST', lokasi: 'YOUR AREA', jemput: 'PICKUP', antar: 'DROP-OFF' },
+  id: { stJas: 'JAS HUJAN', jamS: 'J', menitS: 'M', kini: 'SEKARANG', label: 'STATUS:', tanpaJemput: 'BELUM ADA JADWAL', stPanas: 'MINUM!', stAman: 'AMAN', stKosong: 'TIDAK ADA TRIP 24J', kembali: 'KEMBALI', kosong: 'NYALAKAN LOKASI UNTUK PRAKIRAAN', lokasi: 'LOKASIMU', jemput: 'JEMPUT', antar: 'ANTAR' },
+  en: { stJas: 'RAINCOAT', jamS: 'H', menitS: 'M', kini: 'NOW', label: 'STATUS:', tanpaJemput: 'NO SCHEDULE', stPanas: 'HOT', stAman: 'CLEAR', stKosong: 'NO TRIPS NEXT 24H', kembali: 'BACK', kosong: 'TURN ON LOCATION FOR FORECAST', lokasi: 'YOUR AREA', jemput: 'PICKUP', antar: 'DROP-OFF' },
 }
 const AMBANG_HUJAN = 50 // persen peluang hujan yang dianggap "akan hujan"
 const HARI = ['minggu', 'senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu']
@@ -134,12 +134,17 @@ export default function KonsolCuaca({ onKembali, lokasiAktif = false, jadwal = n
         <button type="button" onClick={onKembali} style={s.kembali} aria-label={k.kembali}>
           <span aria-hidden="true" style={{ color: '#5ED0FF' }}>◀</span> {k.kembali}
         </button>
-                {/* Status cuaca di jam jadwal: emote plus keterangannya */}
-        {status && terdekat && (
+        {/* Status cuaca di jam jadwal: emote plus keterangannya */}
+        {status && terdekat ? (
           <span style={{ ...s.status, marginLeft: 'auto' }} aria-label={`${k.label} ${status.teks}`}>
             <span style={{ opacity: 0.6, color: '#E8EDF9' }}>{k.label}</span>
             <EmoteStatus jenis={status.jenis} />
             <span style={{ ...s.ringkas, color: status.warna }}>{status.teks}</span>
+          </span>
+        ) : (
+          <span style={{ ...s.status, marginLeft: 'auto' }}>
+            <span style={{ opacity: 0.6, color: '#E8EDF9' }}>{k.label}</span>
+            <span style={{ ...s.ringkas, color: 'rgba(232, 237, 249, 0.7)' }}>{k.stKosong}</span>
           </span>
         )}
       </div>
