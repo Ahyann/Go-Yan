@@ -246,7 +246,6 @@ export default function KonsolBensin({ onKembali }) {
                           aria-label={k.nominal}
                           style={s.inputIsi}
                         />
-                        <span style={s.akhiranNominal}>RB</span>
                       </span>
                       {tombol('OK', catatBebas, s.tombolHijau)}
                     </>
@@ -361,7 +360,6 @@ const s = {
   tombolOranye: { color: '#04192A', background: '#FF9A3C', borderColor: '#FF9A3C' },
   kolomNominal: { flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: 4, padding: '0 8px', background: 'rgba(255, 255, 255, 0.07)', borderBottom: '2px solid #FF9A3C' },
   awalanNominal: { fontSize: 8, letterSpacing: '0.1em', color: '#9FC3E8' },
-  akhiranNominal: { fontSize: 8, letterSpacing: '0.1em', color: '#9FC3E8' },
   inputIsi: { flex: 1, minWidth: 0, width: '100%', fontFamily: 'var(--font-data)', fontSize: 14, textAlign: 'center', padding: '4px 0', color: '#FFFFFF', background: 'transparent', border: 'none', borderRadius: 0, outline: 'none', boxSizing: 'border-box' },
   tombolHijau: { color: '#04192A', background: '#4ADE80', borderColor: '#4ADE80' },
   tombolRedup: { color: '#8FB2D0', borderColor: '#8FB2D0' },
