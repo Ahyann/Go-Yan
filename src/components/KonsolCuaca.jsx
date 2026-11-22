@@ -44,8 +44,7 @@ function EmoteStatus({ jenis }) {
 }
 
 // Halaman prakiraan cuaca di layar konsol ojek: cuaca sekarang besar di kiri beserta nama tempat, jam-jam berikutnya di kanan
-// (bisa digeser). Ketuk nama titik untuk berpindah: posisimu (atau nama tempat tersimpan kalau kamu sedang di sana, misalnya
-// KAMPUS), lalu Kantor, Kampus, dan Rumah Fajri. Jam yang cocok dengan jadwal jemput/antar ditandai merah, dan status jas hujan
+// (bisa digeser). Ketuk nama titik untuk berpindah antara posisimu dan Kantor (kalau kamu sedang di Kantor, hanya satu titik). Jam yang cocok dengan jadwal jemput/antar ditandai merah, dan status jas hujan
 // memakai cuaca di Kantor (tempat jemput bawaan) pada jam jadwal terdekat.
 export default function KonsolCuaca({ onKembali, lokasiAktif = false, jadwal = null }) {
   const { lang } = useLanguage()
@@ -55,7 +54,7 @@ export default function KonsolCuaca({ onKembali, lokasiAktif = false, jadwal = n
   const dataTitik = useCuacaTitik()
   const [idxTitik, setIdxTitik] = useState(0)
 
-  // Titik pertama = posisimu. Kalau kamu sedang di salah satu tempat tersimpan, titik itu memakai namanya dan tidak diulang lagi.
+  // Titik pertama = posisimu. Kalau kamu sedang di Kantor, titik itu memakai nama KANTOR dan tidak diulang lagi.
   const dekat = titikDekat(posisi)
   const daftarTitik = [
     { id: 'kamu', nama: dekat ? dekat.nama : k.lokasi, data: cuacaKamu, pusatNama: cuacaKamu?.nama },
@@ -150,12 +149,18 @@ export default function KonsolCuaca({ onKembali, lokasiAktif = false, jadwal = n
             <span style={s.kiriTeks}>
               <span style={s.suhuBesar}>{cuaca.suhu}°</span>
               <span style={s.kondisi}>{kode[jenisSkrg]}</span>
-              <button type="button" className="slot-status" onClick={gantiTitik} style={s.tempatTombol} aria-label={`${k.ganti}: ${titikAktif.nama}`}>
-                <span style={s.tempat}>{titikAktif.nama} ↻</span>
-              </button>
-              <span style={s.titikRow} aria-hidden="true">
-                {daftarTitik.map((t, i) => <i key={t.id} style={{ ...s.titikKecil, width: i === idxTitik % daftarTitik.length ? 9 : 4, background: i === idxTitik % daftarTitik.length ? '#5ED0FF' : '#3F566E' }} />)}
-              </span>
+              {daftarTitik.length > 1 ? (
+                <>
+                  <button type="button" className="slot-status" onClick={gantiTitik} style={s.tempatTombol} aria-label={`${k.ganti}: ${titikAktif.nama}`}>
+                    <span style={s.tempat}>{titikAktif.nama} ↻</span>
+                  </button>
+                  <span style={s.titikRow} aria-hidden="true">
+                    {daftarTitik.map((t, i) => <i key={t.id} style={{ ...s.titikKecil, width: i === idxTitik % daftarTitik.length ? 9 : 4, background: i === idxTitik % daftarTitik.length ? '#5ED0FF' : '#3F566E' }} />)}
+                  </span>
+                </>
+              ) : (
+                <span style={s.tempat}>{titikAktif.nama}</span>
+              )}
             </span>
           </div>
           <div ref={gulirRef} onScroll={saatGulir} className="gulir-sembunyi" style={s.gulir} role="list" aria-label={lang === 'en' ? 'Next hours, swipe sideways' : 'Jam berikutnya, geser ke samping'}>
