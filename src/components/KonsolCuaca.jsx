@@ -126,16 +126,7 @@ export default function KonsolCuaca({ onKembali, lokasiAktif = false, jadwal = n
     else status = { jenis: 'aman', teks: k.stAman, warna: '#4ADE80' }
   }
 
-  // Pojok kanan: hitung mundur ke jadwal terdekat dalam 24 jam, atau keterangan belum ada jemputan
   const terdekat = jadwalTerdekat(jadwal, sekarang)
-  let ringkas = k.tanpaJemput
-  let warnaRingkas = 'rgba(232, 237, 249, 0.55)'
-  if (terdekat) {
-    const jm = Math.floor(terdekat.sisa / 3600000)
-    const mn = Math.max(0, Math.floor((terdekat.sisa % 3600000) / 60000))
-    ringkas = `${k[terdekat.jenis]} ${terdekat.sisa <= 0 ? k.kini : jm > 0 ? `${jm}${k.jamS}${mn}${k.menitS}` : `${mn}${k.menitS}`}`
-    warnaRingkas = '#FF7A85'
-  }
 
   return (
     <div className="tv-nyala">
@@ -143,11 +134,9 @@ export default function KonsolCuaca({ onKembali, lokasiAktif = false, jadwal = n
         <button type="button" onClick={onKembali} style={s.kembali} aria-label={k.kembali}>
           <span aria-hidden="true" style={{ color: '#5ED0FF' }}>◀</span> {k.kembali}
         </button>
-        {/* Hitung mundur ke jadwal terdekat, pendek, di sebelah tombol kembali */}
-        <span style={{ ...s.ringkas, flex: '1 1 auto', color: warnaRingkas }}>{ringkas}</span>
-        {/* Status cuaca di jam jadwal: emote plus keterangannya */}
+                {/* Status cuaca di jam jadwal: emote plus keterangannya */}
         {status && terdekat && (
-          <span style={s.status} aria-label={`${k.label} ${status.teks}`}>
+          <span style={{ ...s.status, marginLeft: 'auto' }} aria-label={`${k.label} ${status.teks}`}>
             <span style={{ opacity: 0.6, color: '#E8EDF9' }}>{k.label}</span>
             <EmoteStatus jenis={status.jenis} />
             <span style={{ ...s.ringkas, color: status.warna }}>{status.teks}</span>
@@ -211,7 +200,7 @@ const s = {
   gulir: { flex: 1, minWidth: 0, display: 'flex', gap: 2, overflowX: 'auto', touchAction: 'pan-x', WebkitOverflowScrolling: 'touch', WebkitMaskImage: 'linear-gradient(90deg, #000 82%, transparent)', maskImage: 'linear-gradient(90deg, #000 82%, transparent)' },
   sel: { flex: '0 0 42px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1, padding: '1px 0', borderTop: '2px solid transparent', borderBottom: '2px solid transparent' },
   // Kolom jam jemput/antar: bingkai merah tipis di keempat sisi (berkedip lewat kelas bingkai-jemput)
-  selJemput: { borderTop: `1px solid ${MERAH}`, borderLeft: `1px solid ${MERAH}`, borderRight: `1px solid ${MERAH}`, paddingTop: 2 },
+  selJemput: { borderTop: `1px solid ${MERAH}`, borderLeft: `1px solid ${MERAH}`, borderRight: `1px solid ${MERAH}`, paddingTop: 2, backgroundColor: 'rgba(237, 28, 36, 0.18)' },
   penanda: { fontSize: 6, letterSpacing: '0.1em', color: '#FF7A85', whiteSpace: 'nowrap', lineHeight: 1 },
   waktu: { fontSize: 7, letterSpacing: '0.06em', opacity: 0.8 },
   baris3: { display: 'flex', alignItems: 'baseline', gap: 2 },
