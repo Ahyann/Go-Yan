@@ -191,7 +191,7 @@ const s = {
   status: { display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 8, letterSpacing: '0.08em', minWidth: 0, flex: '0 1 auto' },
   kembali: { background: 'none', border: 'none', color: '#FFFFFF', font: 'inherit', fontSize: 8, letterSpacing: '0.1em', padding: '2px 6px 2px 0', cursor: 'pointer', whiteSpace: 'nowrap' },
   ringkas: { fontSize: 8, letterSpacing: '0.08em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0 },
-  badan: { display: 'flex', alignItems: 'center', gap: 8, marginTop: 0, marginBottom: 5, height: 46 },
+  badan: { display: 'flex', alignItems: 'center', gap: 8, marginTop: 5, marginBottom: 0, height: 46 },
   kiri: { display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0, paddingRight: 8, borderRight: '1px solid rgba(94, 208, 255, 0.2)', maxWidth: 128 },
   kiriTeks: { display: 'flex', flexDirection: 'column', lineHeight: 1.15, minWidth: 0 },
   suhuBesar: { fontFamily: "'JetBrains Mono', monospace", fontSize: 18, color: '#FFFFFF' },
@@ -200,7 +200,7 @@ const s = {
   gulir: { flex: 1, minWidth: 0, display: 'flex', gap: 2, overflowX: 'auto', touchAction: 'pan-x', WebkitOverflowScrolling: 'touch', WebkitMaskImage: 'linear-gradient(90deg, #000 82%, transparent)', maskImage: 'linear-gradient(90deg, #000 82%, transparent)' },
   sel: { flex: '0 0 42px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1, padding: '1px 0', borderTop: '2px solid transparent', borderBottom: '2px solid transparent' },
   // Kolom jam jemput/antar: bingkai merah tipis di keempat sisi (berkedip lewat kelas bingkai-jemput)
-  selJemput: { borderTop: `1px solid ${MERAH}`, borderLeft: `1px solid ${MERAH}`, borderRight: `1px solid ${MERAH}`, paddingTop: 2, backgroundColor: 'rgba(237, 28, 36, 0.18)' },
+  selJemput: { borderTop: `1px solid ${MERAH}`, borderLeft: `1px solid ${MERAH}`, borderRight: `1px solid ${MERAH}`, paddingTop: 2, backgroundColor: 'rgba(237, 28, 36, 0.1)' },
   penanda: { fontSize: 6, letterSpacing: '0.1em', color: '#FF7A85', whiteSpace: 'nowrap', lineHeight: 1 },
   waktu: { fontSize: 7, letterSpacing: '0.06em', opacity: 0.8 },
   baris3: { display: 'flex', alignItems: 'baseline', gap: 2 },
