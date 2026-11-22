@@ -717,11 +717,11 @@ button {
   60% { transform: translateX(2px); filter: drop-shadow(2px 0 #FF4C4C) drop-shadow(-2px 0 #5ED0FF); clip-path: none; }
   80%, 100% { transform: none; filter: none; clip-path: none; }
 }
-.sambut-glitch { animation: sambut-glitch 0.45s steps(1) both; }
+.sambut-glitch { animation: sambut-glitch 0.22s steps(1) both; }
 @keyframes tv-mati { 0% { transform: none; filter: none; } 55% { transform: scaleY(0.04) scaleX(1); filter: brightness(2.5); } 100% { transform: scaleY(0.04) scaleX(0); filter: brightness(3); opacity: 0; } }
-.tv-mati { animation: tv-mati 0.38s ease-in both; transform-origin: center; }
+.tv-mati { animation: tv-mati 0.22s ease-in both; transform-origin: center; }
 @keyframes tv-nyala { 0% { transform: scaleY(0.04) scaleX(0); filter: brightness(3); opacity: 0; } 40% { transform: scaleY(0.04) scaleX(1); opacity: 1; } 100% { transform: none; filter: none; opacity: 1; } }
-.tv-nyala { animation: tv-nyala 0.4s ease-out both; transform-origin: center; }
+.tv-nyala { animation: tv-nyala 0.26s ease-out both; transform-origin: center; }
 @media (prefers-reduced-motion: reduce) { .sambut-nama, .sambut-glitch, .tv-mati, .tv-nyala { animation: none; } }
 
 /* Konsol History ojek: animasi ceklis saat semua trip dilunaskan */

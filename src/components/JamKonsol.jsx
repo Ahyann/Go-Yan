@@ -23,8 +23,8 @@ const MULAI = 100 // ms sebelum huruf pertama
 const PER_HURUF = 50 // ms tiap huruf diketik
 const NAMA_PADA = MULAI + KATA.length * PER_HURUF + 60 // nama muncul sesudah WELCOME lengkap
 const TAP_PADA = NAMA_PADA + 250 // tulisan TAP HERE muncul; sambutan menunggu sampai layar diketuk
-const MATI_SESUDAH_TAP = 700 // glitch dulu, lalu layar "dimatikan" jadi garis tipis
-const SELESAI_SESUDAH_TAP = MATI_SESUDAH_TAP + 380 // lalu tampilan jam "dinyalakan" dari garis tipis
+const MATI_SESUDAH_TAP = 220 // glitch singkat dulu, lalu layar "dimatikan" jadi garis tipis
+const SELESAI_SESUDAH_TAP = MATI_SESUDAH_TAP + 220 // lalu tampilan jam "dinyalakan" dari garis tipis
 
 // Layar konsol ojek saat siaga. Pertama kali app dibuka: WELCOME diketik huruf demi huruf (tanpa suara), nama naik
 // menyusul, lalu muncul TAP HERE. Saat layar diketuk (baru di sini ada suara) keduanya glitch sekali. Sesudah itu layar mengecil jadi garis seperti TV dimatikan, dan tampilan jam
@@ -57,14 +57,21 @@ export default function JamKonsol({ keterangan, bergilir = false, totalTrip = nu
     for (let i = 1; i <= KATA.length; i++) {
       timer.push(setTimeout(() => setHuruf(i), MULAI + (i - 1) * PER_HURUF))
     }
-    timer.push(setTimeout(() => { setFase('tunggu'); statusSambut = 'tunggu' }, TAP_PADA))
+    // Kalau layar sudah diketuk sebelum selesai diketik, fase sudah pindah dan timer ini tidak boleh menariknya kembali
+    timer.push(setTimeout(() => setFase((f) => {
+      if (f !== 'ketik') return f
+      statusSambut = 'tunggu'
+      return 'tunggu'
+    }), TAP_PADA))
     return () => timer.forEach(clearTimeout)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // Layar bisa diketuk kapan saja, juga saat WELCOME masih diketik
   function lanjut() {
-    if (fase !== 'tunggu') return
+    if (fase !== 'tunggu' && fase !== 'ketik') return
     statusSambut = 'selesai'
+    setHuruf(KATA.length)
     setFase('glitch')
     // Ketukan ini sering jadi sentuhan pertama di app; audio dibangunkan dulu supaya suaranya tidak hilang
     bunyikanSetelahSiap(() => { playSambutKonsol(); playSambutGlitch() })
@@ -77,9 +84,9 @@ export default function JamKonsol({ keterangan, bergilir = false, totalTrip = nu
     return (
       <div
         className={fase === 'mati' ? 'tv-mati' : undefined}
-        style={{ ...s.sambut, cursor: fase === 'tunggu' ? 'pointer' : 'default' }}
+        style={{ ...s.sambut, cursor: fase === 'tunggu' || fase === 'ketik' ? 'pointer' : 'default' }}
         onClick={lanjut}
-        role={fase === 'tunggu' ? 'button' : undefined}
+        role={fase === 'tunggu' || fase === 'ketik' ? 'button' : undefined}
         data-tanpa-suara
       >
         {fase === 'tunggu' && <span className="kolon-kedip" style={s.tap}>{t.tapLanjut} ▸</span>}
