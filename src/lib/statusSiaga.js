@@ -43,12 +43,40 @@ function bacaCache() {
   try { return JSON.parse(localStorage.getItem(KEY_CUACA) || 'null') } catch { return null }
 }
 
+// Unduh cuaca sekarang dan prakiraan per jam untuk satu titik dari Open-Meteo (tanpa kunci). Kembalian null kalau datanya tidak lengkap.
+export function unduhCuaca(lat, lng, signal) {
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,weather_code&hourly=temperature_2m,precipitation_probability,weather_code&forecast_days=2&timezone=auto`
+  return fetch(url, { signal })
+    .then((r) => (r.ok ? r.json() : Promise.reject(new Error('cuaca ' + r.status))))
+    .then((d) => {
+      const suhu = Math.round(d?.current?.temperature_2m)
+      const kode = d?.current?.weather_code
+      if (!Number.isFinite(suhu) || typeof kode !== 'number') return null
+      const h = d?.hourly
+      const sekarangJam = String(d?.current?.time || '').slice(0, 13) // 'YYYY-MM-DDTHH' menurut zona waktu lokasi
+      let jam = []
+      if (h && Array.isArray(h.time)) {
+        let i0 = h.time.findIndex((t) => t.slice(0, 13) >= sekarangJam)
+        if (i0 < 0) i0 = 0
+        jam = h.time.slice(i0, i0 + JAM_PRAKIRAAN).map((t, i) => ({
+          tgl: t.slice(0, 10),
+          w: t.slice(11, 16),
+          suhu: Math.round(h.temperature_2m?.[i0 + i]),
+          kode: h.weather_code?.[i0 + i],
+          hujan: h.precipitation_probability?.[i0 + i] ?? 0,
+        }))
+      }
+      return { suhu, kode, jam }
+    })
+}
+
 // Posisi diminta sekali saat app dibuka (izin lokasi memang dibutuhkan ojek); sesudahnya dicek tiap menit selama izin ada
 // dan tidak ditolak. Akurasi posisi dipakai sebagai kekuatan sinyal GPS: makin kecil meter, makin kuat. Cuaca dan prakiraan
 // 24 jam dari Open-Meteo (tanpa kunci), memakai koordinat yang dibulatkan ke 2 desimal (±1 km) dan disimpan 15 menit.
 // cuaca: { suhu, kode, nama, jam: [{ tgl: 'YYYY-MM-DD', w: 'HH:MM', suhu, kode, hujan }] }; nama = nama tempat (kosong kalau gagal dicari)
 export function useStatusSiaga(lokasiAktif) {
   const [akurasi, setAkurasi] = useState(null) // null: GPS mati / belum ada izin
+  const [posisi, setPosisi] = useState(null) // { lat, lng } terakhir yang terbaca, dipakai untuk mengenali kalau kamu sedang di Kantor/Kampus/Rumah
   const [cuaca, setCuaca] = useState(() => {
     const c = bacaCache()
     return c ? { suhu: c.suhu, kode: c.kode, nama: c.nama || '', jam: Array.isArray(c.jam) ? c.jam : [] } : null
@@ -67,27 +95,10 @@ export function useStatusSiaga(lokasiAktif) {
       if (cache && Array.isArray(cache.jam) && cache.jam.length >= JAM_PRAKIRAAN && typeof cache.nama === 'string' && Date.now() - cache.waktu < BASI_CUACA_MS && cache.lat === la && cache.lng === lo) return
       kontrol?.abort()
       kontrol = new AbortController()
-      const url = `https://api.open-meteo.com/v1/forecast?latitude=${la}&longitude=${lo}&current=temperature_2m,weather_code&hourly=temperature_2m,precipitation_probability,weather_code&forecast_days=2&timezone=auto`
-      fetch(url, { signal: kontrol.signal })
-        .then((r) => (r.ok ? r.json() : Promise.reject(new Error('cuaca ' + r.status))))
-        .then((d) => {
-          const suhu = Math.round(d?.current?.temperature_2m)
-          const kode = d?.current?.weather_code
-          if (batal || !Number.isFinite(suhu) || typeof kode !== 'number') return
-          const h = d?.hourly
-          const sekarangJam = String(d?.current?.time || '').slice(0, 13) // 'YYYY-MM-DDTHH' menurut zona waktu lokasi
-          let jam = []
-          if (h && Array.isArray(h.time)) {
-            let i0 = h.time.findIndex((t) => t.slice(0, 13) >= sekarangJam)
-            if (i0 < 0) i0 = 0
-            jam = h.time.slice(i0, i0 + JAM_PRAKIRAAN).map((t, i) => ({
-              tgl: t.slice(0, 10),
-              w: t.slice(11, 16),
-              suhu: Math.round(h.temperature_2m?.[i0 + i]),
-              kode: h.weather_code?.[i0 + i],
-              hujan: h.precipitation_probability?.[i0 + i] ?? 0,
-            }))
-          }
+      unduhCuaca(la, lo, kontrol.signal)
+        .then((hasil) => {
+          if (batal || !hasil) return
+          const { suhu, kode, jam } = hasil
           setCuaca((lama) => ({ suhu, kode, jam, nama: lama?.nama || '' }))
           const simpan = (nama) => {
             if (batal) return
@@ -114,6 +125,7 @@ export function useStatusSiaga(lokasiAktif) {
         (pos) => {
           if (batal) return
           setAkurasi(pos.coords.accuracy)
+          setPosisi({ lat: pos.coords.latitude, lng: pos.coords.longitude })
           ambilCuaca(pos.coords.latitude, pos.coords.longitude)
         },
         () => { if (!batal) setAkurasi(null) },
@@ -141,5 +153,5 @@ export function useStatusSiaga(lokasiAktif) {
     }
   }, [lokasiAktif])
 
-  return { akurasi, cuaca }
+  return { akurasi, cuaca, posisi }
 }
