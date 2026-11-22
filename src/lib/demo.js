@@ -13,8 +13,8 @@ function tanggalLaluISO(hariLalu) {
 }
 
 const RIWAYAT_CONTOH = [
-  { tanggal: tanggalLaluISO(1), jam: '07:15', tarif: 32000, statusBayar: STATUS_BAYAR.LUNAS, aksi: AKSI.JEMPUT, where: 'Kampus UPN' },
-  { tanggal: tanggalLaluISO(1), jam: '16:40', tarif: 32000, statusBayar: STATUS_BAYAR.LUNAS, aksi: AKSI.ANTAR, where: 'Kantor' },
+  { tanggal: tanggalLaluISO(1), jam: '07:15', tarif: 32000, statusBayar: STATUS_BAYAR.BELUM, aksi: AKSI.JEMPUT, where: 'Kampus UPN' },
+  { tanggal: tanggalLaluISO(1), jam: '16:40', tarif: 32000, statusBayar: STATUS_BAYAR.BELUM, aksi: AKSI.ANTAR, where: 'Kantor' },
   { tanggal: tanggalLaluISO(3), jam: '07:20', tarif: 32000, statusBayar: STATUS_BAYAR.BELUM, aksi: AKSI.JEMPUT, where: 'Kampus UPN' },
 ]
 
