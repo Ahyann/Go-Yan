@@ -82,7 +82,7 @@ export default function KonsolBensin({ onKembali }) {
   const { lang } = useLanguage()
   const k = TEKS[lang] || TEKS.id
   const b = useBensin()
-  const { daftar, minggu, lain } = useTripBensin()
+  const { minggu, tripMinggu } = useTripBensin()
   const spbu = useSpbuTerdekat()
   const [halaman, setHalaman] = useState(0)
   const hariIni = new Date()
@@ -263,25 +263,21 @@ export default function KonsolBensin({ onKembali }) {
               <span style={s.kecil}>{minggu.jumlah} {k.trip} · {desimal(minggu.km)} KM · {desimal(minggu.liter, 2)} L</span>
             </div>
             <div style={{ ...s.kanan, gap: 1 }}>
-              {daftar.length === 0 ? (
+              {tripMinggu.length === 0 ? (
                 <span style={{ ...s.kecil, whiteSpace: 'normal', lineHeight: 1.4 }}>{k.kosongTrip}</span>
               ) : (
-                daftar.slice(0, 2).map((t) => {
-                  const tgl = new Date(t.waktu)
-                  return (
-                    <span key={t.waktu} style={s.barisTrip}>
-                      <span style={{ opacity: 0.65 }}>{String(tgl.getDate()).padStart(2, '0')}/{String(tgl.getMonth() + 1).padStart(2, '0')}</span>
-                      <span>{t.kasar ? '±' : ''}{desimal(t.km)}KM · {Math.round(t.menit)}{k.mnt}</span>
-                      <span style={{ color: '#FF9A3C' }}>Rp{rupiah(t.rupiah)}</span>
-                    </span>
-                  )
-                })
-              )}
-              {daftar.length > 0 && lain.jumlah > 0 && (
-                <span style={{ ...s.barisTrip, opacity: 0.75 }}>
-                  <span>+{lain.jumlah} {k.lainnya}</span>
-                  <span style={{ color: '#FF9A3C' }}>Rp{rupiah(lain.rupiah)}</span>
-                </span>
+                <div className="daftar-trip-gulir" style={s.gulirTrip}>
+                  {tripMinggu.map((t) => {
+                    const tgl = new Date(t.waktu)
+                    return (
+                      <span key={t.waktu} style={s.barisTrip}>
+                        <span style={{ opacity: 0.65 }}>{String(tgl.getDate()).padStart(2, '0')}/{String(tgl.getMonth() + 1).padStart(2, '0')}</span>
+                        <span>{t.kasar ? '±' : ''}{desimal(t.km)}KM · {Math.round(t.menit)}{k.mnt}</span>
+                        <span style={{ color: '#FF9A3C' }}>Rp{rupiah(t.rupiah)}</span>
+                      </span>
+                    )
+                  })}
+                </div>
               )}
               <button type="button" data-tanpa-suara onClick={reset} style={{ ...s.reset, color: yakinReset ? '#ED1C24' : '#8FB2D0', borderColor: yakinReset ? '#ED1C24' : 'rgba(143, 178, 208, 0.4)' }}>
                 {yakinReset ? k.yakin : k.reset}
@@ -350,5 +346,6 @@ const s = {
   panahBulan: { background: 'none', border: 'none', color: '#5ED0FF', font: 'inherit', fontSize: 7, padding: '4px 3px', cursor: 'pointer' },
   grid: { flex: 1, minWidth: 0, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '5px 4px', paddingRight: 6 },
   stat: { display: 'flex', flexDirection: 'column', lineHeight: 1.15, minWidth: 0 },
+  gulirTrip: { display: 'flex', flexDirection: 'column', gap: 1, maxHeight: 22, overflowY: 'auto', overscrollBehavior: 'contain', touchAction: 'pan-y', paddingRight: 3 },
   barisTrip: { display: 'flex', justifyContent: 'space-between', gap: 6, fontFamily: "'JetBrains Mono', monospace", fontSize: 8, lineHeight: 1.2, color: '#FFFFFF', whiteSpace: 'nowrap' },
 }
