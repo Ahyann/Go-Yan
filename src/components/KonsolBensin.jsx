@@ -233,18 +233,21 @@ export default function KonsolBensin({ onKembali }) {
                     </>
                   ) : (
                     <>
-                      <input
-                        autoFocus
-                        type="text"
-                        inputMode="numeric"
-                        value={isiBebas}
-                        onChange={(e) => setIsiBebas(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                        onKeyDown={(e) => { if (e.key === 'Enter') catatBebas() }}
-                        placeholder="15"
-                        aria-label={k.nominal}
-                        style={s.inputIsi}
-                      />
-                      <span style={{ fontSize: 7, color: '#9FC3E8' }}>RB</span>
+                      <span style={s.kolomNominal}>
+                        <span style={s.awalanNominal}>Rp</span>
+                        <input
+                          autoFocus
+                          type="text"
+                          inputMode="numeric"
+                          value={isiBebas}
+                          onChange={(e) => setIsiBebas(e.target.value.replace(/D/g, '').slice(0, 6))}
+                          onKeyDown={(e) => { if (e.key === 'Enter') catatBebas() }}
+                          placeholder="15"
+                          aria-label={k.nominal}
+                          style={s.inputIsi}
+                        />
+                        <span style={s.akhiranNominal}>RB</span>
+                      </span>
                       {tombol('OK', catatBebas, s.tombolHijau)}
                     </>
                   )}
@@ -356,10 +359,13 @@ const s = {
   biaya: { fontSize: 8, letterSpacing: '0.06em', color: '#FF9A3C', whiteSpace: 'nowrap' },
   tombol: { fontFamily: 'inherit', fontSize: 7, letterSpacing: '0.08em', whiteSpace: 'nowrap', padding: '5px 6px', color: '#5ED0FF', background: 'transparent', border: '1px solid #5ED0FF', borderRadius: 0, cursor: 'pointer' },
   tombolOranye: { color: '#04192A', background: '#FF9A3C', borderColor: '#FF9A3C' },
-  inputIsi: { width: 34, fontFamily: 'var(--font-data)', fontSize: 11, textAlign: 'center', padding: '3px 2px', color: '#FFFFFF', background: '#04192A', border: '1px solid #5ED0FF', borderRadius: 0, outline: 'none', boxSizing: 'border-box' },
+  kolomNominal: { flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: 4, padding: '0 8px', background: 'rgba(255, 255, 255, 0.07)', borderBottom: '2px solid #FF9A3C' },
+  awalanNominal: { fontSize: 8, letterSpacing: '0.1em', color: '#9FC3E8' },
+  akhiranNominal: { fontSize: 8, letterSpacing: '0.1em', color: '#9FC3E8' },
+  inputIsi: { flex: 1, minWidth: 0, width: '100%', fontFamily: 'var(--font-data)', fontSize: 14, textAlign: 'center', padding: '4px 0', color: '#FFFFFF', background: 'transparent', border: 'none', borderRadius: 0, outline: 'none', boxSizing: 'border-box' },
   tombolHijau: { color: '#04192A', background: '#4ADE80', borderColor: '#4ADE80' },
   tombolRedup: { color: '#8FB2D0', borderColor: '#8FB2D0' },
-  pilihanIsi: { display: 'flex', flexWrap: 'wrap', gap: 3 },
+  pilihanIsi: { display: 'flex', flexWrap: 'wrap', alignItems: 'stretch', gap: 3 },
   reset: { fontFamily: 'inherit', fontSize: 6, lineHeight: 1.2, letterSpacing: '0.1em', padding: '2px 5px', background: 'transparent', border: '1px solid', borderRadius: 0, cursor: 'pointer', whiteSpace: 'nowrap' },
   panahBulan: { background: 'none', border: 'none', color: '#5ED0FF', font: 'inherit', fontSize: 7, padding: '4px 3px', cursor: 'pointer' },
   grid: { flex: 1, minWidth: 0, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '5px 4px', paddingRight: 6 },
