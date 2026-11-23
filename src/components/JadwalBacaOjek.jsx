@@ -38,7 +38,7 @@ export default function JadwalBacaOjek({ hari, onTandaiSelesai }) {
       <div key={aksi} style={{ ...s.slot, ...(ukuran === 'besar' ? s.slotBesar : null) }}>
         <span style={s.slotLabel}>{aksi === 'antar' ? t.antar : t.jemput}</span>
         <span className="jam-nyala" style={{ ...s.slotJam, fontSize: ukuran === 'besar' ? 34 : ukuran === 'sedang' ? 26 : 20, '--tunda': `${tunda}ms` }}>
-          {data.jam || t.jamOpsional}
+          {data.jam || '--:--'}
         </span>
         <span className="garis-isi" style={{ ...s.slotGaris, '--tunda': `${tunda + 120}ms` }} />
       </div>

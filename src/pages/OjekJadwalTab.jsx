@@ -32,7 +32,7 @@ export default function OjekJadwalTab({ jadwalMingguan, onTandaiSelesai, simpanJ
         hariBaru={hariBaru}
         tahanSinkron={sedangIsi}
         jadwal={jadwalMingguan}
-        onSimpan={simpanJadwal}
+        onSimpan={async (d) => { await simpanJadwal(d); setModeAtur(false) }} // simpan manual juga kembali ke tampilan kartu, sama seperti hasil isi lewat konsol
         bisaEdit={modeAtur}
         bisaTandaiSelesai={!modeAtur}
         onTandaiSelesai={onTandaiSelesai}
