@@ -88,14 +88,14 @@ export default function LogoLabaSentuh({ style, pemicu = 0, terbang = false }) {
     )
   }, [terbang, sk, kotak])
 
-  // glitch sesekali (tiap 9-15 dtk acak): beberapa pita baris kotak bergeser ke samping dan berkedip merah/putih
+  // glitch sesekali (tiap 5-8 dtk acak): beberapa pita baris kotak bergeser ke samping dan berkedip merah/putih
   // sebentar, seperti sinyal TV yang terganggu. Hanya transform dan opacity, jadi ringan. Berhenti saat logo terbang.
   useEffect(() => {
     if (!sk || terbang) return undefined
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return undefined
     let id
     const jadwal = () => {
-      id = setTimeout(() => { glitch(); jadwal() }, 9000 + Math.random() * 6000)
+      id = setTimeout(() => { glitch(); jadwal() }, 5000 + Math.random() * 3000)
     }
     jadwal()
     return () => clearTimeout(id)
@@ -105,29 +105,29 @@ export default function LogoLabaSentuh({ style, pemicu = 0, terbang = false }) {
   function glitch() {
     if (document.hidden) return
     const pita = []
-    const jumlah = 2 + Math.floor(Math.random() * 2)
+    const jumlah = 3 + Math.floor(Math.random() * 3)
     for (let i = 0; i < jumlah; i++) {
       const mulai = Math.floor(Math.random() * BARIS)
-      pita.push({ dari: mulai, sampai: mulai + 1 + Math.floor(Math.random() * 3), geser: (Math.random() < 0.5 ? -1 : 1) * (1 + Math.floor(Math.random() * 2)), warna: Math.random() < 0.5 ? '#FF5A5A' : '#FFFFFF' })
+      pita.push({ dari: mulai, sampai: mulai + 1 + Math.floor(Math.random() * 4), geser: (Math.random() < 0.5 ? -1 : 1) * (2 + Math.floor(Math.random() * 3)), warna: Math.random() < 0.5 ? '#FF5A5A' : '#FFFFFF' })
     }
     kotak.forEach((k, i) => {
       const node = refKotak.current[i]
       if (!node) return
       const p = pita.find((x) => k.r >= x.dari && k.r < x.sampai)
       if (!p) {
-        node.animate([{ opacity: 0.35 }, { opacity: 0.15, offset: 0.3 }, { opacity: 0.35 }], { duration: 260 })
+        node.animate([{ opacity: 0.35 }, { opacity: 0.08, offset: 0.25 }, { opacity: 0.6, offset: 0.5 }, { opacity: 0.35 }], { duration: 340, easing: 'steps(1, end)' })
         return
       }
       const g = p.geser * sk
       node.animate(
         [
           { transform: 'translateX(0)', background: '#5ED0FF', opacity: 0.35 },
-          { transform: `translateX(${g}px)`, background: p.warna, opacity: 0.9, offset: 0.2 },
+          { transform: `translateX(${g}px)`, background: p.warna, opacity: 1, offset: 0.15 },
           { transform: `translateX(${-g / 2}px)`, background: '#5ED0FF', opacity: 0.6, offset: 0.5 },
           { transform: `translateX(${g / 2}px)`, background: p.warna, opacity: 0.8, offset: 0.7 },
           { transform: 'translateX(0)', background: '#5ED0FF', opacity: 0.35 },
         ],
-        { duration: 300, easing: 'steps(1, end)' },
+        { duration: 340, easing: 'steps(1, end)' },
       )
     })
   }
