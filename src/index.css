@@ -899,7 +899,7 @@ button:disabled[aria-label="◀"], button:disabled[aria-label="▶"] { opacity: 
   animation: login-garis 0.6s cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0ms) both;
 }
 .login-kursor { animation: login-kursor 0.9s steps(1) infinite; }
-.login-masuk-btn:not(:disabled) { animation: login-denyut 2.2s ease-out 1.6s infinite; }
+.login-masuk-btn:not(:disabled) { animation: login-naik 0.45s cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0ms) both, login-denyut 2.2s ease-out 2.4s infinite; }
 .login-masuk-btn:focus-visible,
 .login-input:focus-visible {
   outline: 2px solid var(--glow-blue);
@@ -907,3 +907,30 @@ button:disabled[aria-label="◀"], button:disabled[aria-label="▶"] { opacity: 
 }
 .login-input { transition: border-color 0.15s, box-shadow 0.15s; }
 .login-input:focus { border-color: var(--glow-blue) !important; box-shadow: 0 0 8px rgba(94, 208, 255, 0.35); }
+
+/* Login gaya TV CRT: garis putih tipis melebar jadi layar penuh, logo berkedip, lalu isi muncul. */
+@keyframes login-tv {
+  0% { transform: scaleY(0.006) scaleX(0); filter: brightness(3); }
+  35% { transform: scaleY(0.006) scaleX(1); filter: brightness(3); }
+  100% { transform: none; filter: none; }
+}
+@keyframes login-kedip {
+  0%, 100% { opacity: 1; }
+  8% { opacity: 0.35; }
+  12% { opacity: 1; }
+  40% { opacity: 0.7; }
+  44% { opacity: 1; }
+}
+@keyframes login-garis-layar {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+.login-tv { animation: login-tv 0.75s cubic-bezier(0.2, 0.8, 0.3, 1) 0.1s both; transform-origin: center; }
+.login-kedip { opacity: 0; animation: login-kedip 0.9s linear 0.85s both; }
+.login-garis-layar {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(180deg, transparent 0 2px, rgba(0, 0, 0, 0.16) 2px 3px);
+  animation: login-garis-layar 0.5s ease-out 1.8s forwards;
+}

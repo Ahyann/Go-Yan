@@ -13,8 +13,6 @@ function usernameKeEmail(input) {
   return `${bersih}@gmail.com`
 }
 
-const HURUF_JUDUL = 'GO-YAN'.split('')
-
 // Teks sambutan diketik huruf demi huruf setelah judul selesai jatuh.
 function useKetik(teks, mulaiMs = 750, jedaMs = 38) {
   const [jumlah, setJumlah] = useState(0)
@@ -46,7 +44,7 @@ export default function LoginPage() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [demoLoading, setDemoLoading] = useState('')
-  const sambutan = useKetik(t.demoSelamatDatangJudul)
+  const sambutan = useKetik(t.demoSelamatDatangJudul, 1150)
 
   useEffect(() => {
     bunyikanSetelahSiap(playSambutKonsol)
@@ -85,28 +83,24 @@ export default function LoginPage() {
   }
 
   return (
-    <main style={s.wrap}>
-      <div className="login-sapu" aria-hidden="true" />
+    <main className="login-tv" style={s.wrap}>
+      <div className="login-garis-layar" aria-hidden="true" />
       <PilihBahasa style={s.bahasa} />
 
       <div style={s.brand}>
         <div style={s.logo} aria-label="GO-YAN">
-          {HURUF_JUDUL.map((h, i) => (
-            <span key={i} className="login-huruf" style={{ '--d': `${150 + i * 90}ms` }} aria-hidden="true">
-              {h}
-            </span>
-          ))}
+          <span className="login-kedip">GO-YAN</span>
         </div>
-        <div className="login-garis" style={{ '--d': '700ms', marginBottom: 10 }} aria-hidden="true" />
+        <div className="login-garis" style={{ '--d': '1000ms', marginBottom: 10 }} aria-hidden="true" />
         <div style={s.sambutan} aria-live="off">
           {sambutan}
           <span className="login-kursor" aria-hidden="true">_</span>
         </div>
-        <h1 className="login-naik" style={{ ...s.title, '--d': '900ms' }}>{t.loginTitle}</h1>
+        <h1 className="login-naik" style={{ ...s.title, '--d': '1250ms' }}>{t.loginTitle}</h1>
       </div>
 
       <form style={s.form} onSubmit={handleSubmit}>
-        <label className="login-naik" style={{ ...s.label, '--d': '1000ms' }}>
+        <label className="login-naik" style={{ ...s.label, '--d': '1400ms' }}>
           {t.loginUsername}
           <input
             className="login-input"
@@ -121,7 +115,7 @@ export default function LoginPage() {
           />
         </label>
 
-        <label className="login-naik" style={{ ...s.label, '--d': '1100ms' }}>
+        <label className="login-naik" style={{ ...s.label, '--d': '1500ms' }}>
           {t.loginPassword}
           <div style={s.pwWrap}>
             <input
@@ -156,12 +150,12 @@ export default function LoginPage() {
 
         {error && <div style={s.error}>{error}</div>}
 
-        <button className="login-naik login-masuk-btn tekan" style={{ ...s.submit, '--d': '1200ms' }} type="submit" disabled={loading}>
+        <button className="login-naik login-masuk-btn tekan" style={{ ...s.submit, '--d': '1600ms' }} type="submit" disabled={loading}>
           {loading ? t.loginMemproses : t.loginSubmit}
         </button>
       </form>
 
-      <div className="login-naik" style={{ ...s.demoWrap, '--d': '1350ms' }}>
+      <div className="login-naik" style={{ ...s.demoWrap, '--d': '1750ms' }}>
         <div style={s.demoDivider}>
           <span style={s.demoDividerGaris} />
           <span style={s.demoDividerTeks}>{t.demoAtau}</span>
