@@ -4,7 +4,7 @@ import { auth } from '../lib/firebase'
 import PilihBahasa from '../components/PilihBahasa.jsx'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
-import { bunyikanSetelahSiap, playTingMasuk, playGoBuka, playPesananBatal } from '../lib/sound'
+import { playTingMasuk, playGoBuka, playPesananBatal } from '../lib/sound'
 import { getar, POLA_GETAR } from '../lib/getar'
 import SpideyMenunggu from '../components/SpideyMenunggu.jsx'
 import LogoLabaSentuh from '../components/LogoLabaSentuh.jsx'
@@ -106,10 +106,6 @@ export default function LoginPage() {
     getar(POLA_GETAR.kaget)
   }
 
-  useEffect(() => {
-    bunyikanSetelahSiap(playTingMasuk)
-  }, [])
-
   const PESAN_ERROR = {
     'auth/invalid-email': t.errInvalidCredential,
     'auth/invalid-credential': t.errInvalidCredential,
@@ -141,6 +137,7 @@ export default function LoginPage() {
   function pilihDemo(peran, jalankan) {
     if (demoLoading || transisi) return
     getar(8)
+    playTingMasuk()
     setDemoLoading(peran)
     setPemicuLogo((n) => n + 1)
     // 0,15 dtk: isi halaman menghilang dan logo terbang ke tengah (0,6 dtk). 0,75 dtk: layar welcome (TransisiDemo, di
@@ -149,7 +146,6 @@ export default function LoginPage() {
     setTimeout(() => setTransisi({ peran, tahap: 'terbang' }), 150)
     setTimeout(() => {
       mulaiTransisiDemo(peran)
-      playTingMasuk()
       handleDemo(peran, jalankan)
     }, 750)
   }
