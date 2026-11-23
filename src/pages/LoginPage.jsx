@@ -84,6 +84,7 @@ export default function LoginPage() {
 
   return (
     <main className="login-tv" style={s.wrap}>
+      <div className="login-latar-crt" aria-hidden="true" />
       <div className="login-garis-layar" aria-hidden="true" />
       <PilihBahasa style={s.bahasa} />
 
@@ -195,6 +196,7 @@ export default function LoginPage() {
 const s = {
   wrap: {
     position: 'relative',
+    isolation: 'isolate', // latar CRT (z-index -1) tetap di atas warna body, di belakang isi
     minHeight: 'var(--app-height, 100dvh)',
     display: 'flex',
     flexDirection: 'column',

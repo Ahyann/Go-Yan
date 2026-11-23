@@ -953,3 +953,14 @@ button:disabled[aria-label="◀"], button:disabled[aria-label="▶"] { opacity: 
 @media (hover: hover) {
   .login-demo-btn:hover:not(:disabled) { background-color: rgba(94, 208, 255, 0.12) !important; }
 }
+
+/* Latar login bergaya layar CRT: garis layar tipis dan pinggir layar sedikit gelap, tetap ada setelah animasi pembuka. */
+.login-latar-crt {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(180deg, rgba(0, 0, 0, 0.22) 0 2px, transparent 2px 5px),
+    radial-gradient(ellipse at 50% 40%, rgba(94, 208, 255, 0.12), rgba(0, 0, 0, 0.35));
+}
