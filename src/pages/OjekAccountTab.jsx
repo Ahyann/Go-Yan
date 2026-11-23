@@ -7,6 +7,7 @@ import { ROLE } from '../lib/constants'
 import { useProfilIkon } from '../lib/useProfilIkon'
 import { useWarnaGlow } from '../lib/useWarnaGlow'
 import ProfilAkun from '../components/ProfilAkun.jsx'
+import TombolPindahPeran from '../components/TombolPindahPeran.jsx'
 
 const PILIHAN_IKON = ['spidericon.png', 'preset_biru.png', 'preset_merah.png', 'preset_hijau.png']
 
@@ -49,6 +50,8 @@ export default function OjekAccountTab() {
       />
 
       <PengaturanSuara />
+
+      <TombolPindahPeran />
 
       <button style={s.logoutBtn} onClick={logout}>
         {t.keluar}

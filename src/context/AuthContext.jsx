@@ -39,6 +39,17 @@ export function AuthProvider({ children }) {
     seedDataDemo()
   }
 
+  // Pindah ke peran demo yang lain tanpa logout: sesi anonim dan data demo (yang dipakai bersama) tetap, hanya perannya
+  // yang ditukar.
+  function gantiPeranDemo() {
+    if (!isDemo) return
+    const baru = demoRole === ROLE.OJEK ? ROLE.PENUMPANG : ROLE.OJEK
+    try {
+      localStorage.setItem(KEY_DEMO_ROLE, baru)
+    } catch {}
+    setDemoRole(baru)
+  }
+
   async function logout() {
     if (isDemo) {
       await resetDataDemo()
@@ -56,6 +67,7 @@ export function AuthProvider({ children }) {
     isDemo,
     masukDemoOjek: () => masukDemo(ROLE.OJEK),
     masukDemoPenumpang: () => masukDemo(ROLE.PENUMPANG),
+    gantiPeranDemo,
     logout,
   }
 

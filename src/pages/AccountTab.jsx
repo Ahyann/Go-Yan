@@ -7,6 +7,7 @@ import { ROLE } from '../lib/constants'
 import { useProfilIkon } from '../lib/useProfilIkon'
 import { useWarnaGlow } from '../lib/useWarnaGlow'
 import ProfilAkun from '../components/ProfilAkun.jsx'
+import TombolPindahPeran from '../components/TombolPindahPeran.jsx'
 
 const PILIHAN_IKON_FAJRI = ['fajri.png', 'fajri2.png', 'fajri3.png']
 
@@ -48,6 +49,8 @@ export default function AccountTab() {
       />
 
       <PengaturanSuara />
+
+      <TombolPindahPeran />
 
       <button style={s.logoutBtn} onClick={logout}>
         {t.keluar}

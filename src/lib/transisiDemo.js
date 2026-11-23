@@ -9,8 +9,11 @@ function kabari() {
   pendengar.forEach((fn) => fn())
 }
 
-export function mulaiTransisiDemo(peran) {
-  keadaan = { peran, mulai: Date.now() }
+// minMs: lama minimal layar tampil sebelum fokus ke app. Dipakai saat pindah peran demo (app sudah ada, jadi tanpa ini
+// kacanya langsung memudar dan terasa mendadak). Masuk demo dan login biasa memakai 0: fokus begitu app siap.
+export function mulaiTransisiDemo(peran, minMs = 0) {
+  const sekarang = Date.now()
+  keadaan = { peran, mulai: sekarang, fokusSetelah: sekarang + minMs }
   kabari()
 }
 
