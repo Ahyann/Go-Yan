@@ -4,9 +4,9 @@ import { useLanguage } from '../context/LanguageContext.jsx'
 import { getar, POLA_GETAR } from '../lib/getar'
 import { playGoTutup } from '../lib/sound'
 
-const LAMA_TAHAN = 1200 // ms tombol harus ditahan sampai penuh
+const LAMA_TAHAN = 600 // ms tombol harus ditahan sampai penuh
 
-// Logout dengan ditahan: isi merah mengalir dari kiri selama ditahan, dan baru keluar kalau sudah penuh. Dilepas
+// Logout dengan ditahan: isi merah mengalir dari kiri selama ditahan (0,6 detik), dan baru keluar kalau sudah penuh. Dilepas
 // sebelum penuh = batal (isi menyusut balik). Mencegah kepencet tak sengaja, apalagi di akun demo yang datanya direset
 // saat logout.
 export default function TombolLogout() {
