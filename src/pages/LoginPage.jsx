@@ -83,8 +83,11 @@ export default function LoginPage() {
   }
 
   return (
+    <>
+    {/* Latar CRT sengaja di luar <main>: selama animasi TV menyala <main> punya transform, dan elemen fixed di dalamnya
+        jadi terkurung seukuran <main>, sehingga bagian bawah layar HP tampak kosong. */}
+    <div className="login-latar-crt" aria-hidden="true" />
     <main className="login-tv" style={s.wrap}>
-      <div className="login-latar-crt" aria-hidden="true" />
       <div className="login-garis-layar" aria-hidden="true" />
       <PilihBahasa style={s.bahasa} />
 
@@ -190,13 +193,14 @@ export default function LoginPage() {
         </div>
       </div>
     </main>
+    </>
   )
 }
 
 const s = {
   wrap: {
     position: 'relative',
-    isolation: 'isolate', // latar CRT (z-index -1) tetap di atas warna body, di belakang isi
+    zIndex: 1, // di atas latar CRT
     minHeight: 'var(--app-height, 100dvh)',
     display: 'flex',
     flexDirection: 'column',

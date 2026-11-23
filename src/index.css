@@ -958,7 +958,7 @@ button:disabled[aria-label="◀"], button:disabled[aria-label="▶"] { opacity: 
 .login-latar-crt {
   position: fixed;
   inset: 0;
-  z-index: -1;
+  z-index: 0;
   pointer-events: none;
   background-image:
     repeating-linear-gradient(180deg, rgba(0, 0, 0, 0.22) 0 2px, transparent 2px 5px),
