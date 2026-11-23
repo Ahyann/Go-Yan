@@ -809,6 +809,13 @@ export function playSambutKonsol() {
   ;[523, 659, 784, 1046].forEach((f, i) => nadaPendek(ctx, 'square', f, f, 0.08, 0.06, i * 0.09))
 }
 
+// Sambutan simpel: satu nada jernih yang memudar. Dipakai saat halaman login terbuka dan saat masuk akun demo.
+export function playTingMasuk() {
+  const ctx = ctxSiapEfek()
+  if (!ctx) return
+  nadaPendek(ctx, 'sine', 1318, 1318, 0.45, 0.12, 0)
+}
+
 // Glitch sambutan konsol: tiga desis kotak acak pendek
 export function playSambutGlitch() {
   const ctx = ctxSiapEfek()

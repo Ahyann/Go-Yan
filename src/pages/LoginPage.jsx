@@ -4,7 +4,7 @@ import { auth } from '../lib/firebase'
 import PilihBahasa from '../components/PilihBahasa.jsx'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
-import { bunyikanSetelahSiap, playSambutKonsol, playGoBuka, playPesananBatal } from '../lib/sound'
+import { bunyikanSetelahSiap, playTingMasuk, playGoBuka, playPesananBatal } from '../lib/sound'
 import { getar, POLA_GETAR } from '../lib/getar'
 import SpideyMenunggu from '../components/SpideyMenunggu.jsx'
 import LogoLabaSentuh from '../components/LogoLabaSentuh.jsx'
@@ -107,7 +107,7 @@ export default function LoginPage() {
   }
 
   useEffect(() => {
-    bunyikanSetelahSiap(playSambutKonsol)
+    bunyikanSetelahSiap(playTingMasuk)
   }, [])
 
   const PESAN_ERROR = {
@@ -149,7 +149,7 @@ export default function LoginPage() {
     setTimeout(() => setTransisi({ peran, tahap: 'terbang' }), 150)
     setTimeout(() => {
       mulaiTransisiDemo(peran)
-      playSambutKonsol()
+      playTingMasuk()
       handleDemo(peran, jalankan)
     }, 750)
   }
