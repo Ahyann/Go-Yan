@@ -262,8 +262,8 @@ export const translations = {
     penumpangEyebrow: 'GO-YAN',
     penumpangHalo: 'Hi, Fajri',
     haloDemo: 'Hi, Demo Account',
-    demoIsiPenumpang: "You're logged in as the Passenger. Try ordering a pickup or drop-off with the GO button, share your live location, and send chats or photos to the Driver. Open another window and log in as the Driver to accept your order.",
-    demoIsiDriver: "You're logged in as the Driver. Try accepting incoming orders, turning on live location, sending chats or photos to the Passenger, and managing the schedule and history. Open another window and log in as the Passenger to place an order.",
+    demoIsiPenumpang: "You're signed in as the Passenger. Try ordering a pickup or drop-off with the GO button, share your live location, and send chats or photos to the Driver. Open another window and sign in as the Driver to accept your order.",
+    demoIsiDriver: "You're signed in as the Driver. Try accepting incoming orders, turning on live location, sending chats or photos to the Passenger, and managing the schedule and history. Open another window and sign in as the Passenger to place an order.",
     demoCatatanRiwayatPenumpang: 'Only the Driver can edit the history.',
     demoOke: 'Okay',
     demoTipRiwayat: 'Tip: swipe a card to the left to edit or delete it.',
@@ -362,7 +362,7 @@ export const translations = {
     // --- Akun / Settings (baru) ---
     akunEyebrow: 'ACCOUNT',
     akunTitle: 'Settings',
-    masukSebagai: 'Logged in as',
+    masukSebagai: 'Signed in as',
     akunKarakter: 'Character',
     akunWarna: 'Glow color',
     akunSimpan: 'Save',
@@ -401,8 +401,8 @@ export const translations = {
     notifikasiAktif: '✓ Notifications on',
     memproses: 'Processing…',
     bahasaLabel: 'Bahasa / Language',
-    keluar: 'Log out',
-    keluarTahan: 'Hold to log out',
+    keluar: 'Sign out',
+    keluarTahan: 'Hold to sign out',
 
     // --- Jadwal ---
     jadwalEyebrow: 'SCHEDULE',
@@ -453,13 +453,13 @@ export const translations = {
     ariaTahunBerikutnya: 'Next year',
 
     // --- Login ---
-    loginTitle: 'Log in',
+    loginTitle: 'Sign in',
     loginUsername: 'Username',
     loginPassword: 'Password',
     tampilkanPw: 'Show password',
     sembunyikanPw: 'Hide password',
     loginMemproses: 'Signing in…',
-    loginSubmit: 'Log in',
+    loginSubmit: 'Sign in',
     demoAtau: 'OR TRY THE DEMO',
     demoSelamatDatangJudul: 'WELCOME TO GO-YAN',
     demoOjek: 'Demo as Driver',
@@ -474,7 +474,7 @@ export const translations = {
     blokSub: 'SIGN-IN TEMPORARILY LOCKED',
     blokPesan: ['WHOA!', 'Easy now...', 'Hold on', 'ERROR 403', 'Hmm, suspicious...', 'Try again later'],
     errNetworkFailed: 'No internet connection.',
-    errGeneric: 'Log in failed, please try again.',
+    errGeneric: 'Sign in failed, please try again.',
 
     // --- Nav ---
     navHome: 'Home',
