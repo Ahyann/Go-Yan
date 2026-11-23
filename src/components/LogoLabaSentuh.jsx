@@ -67,7 +67,7 @@ export default function LogoLabaSentuh({ style, pemicu = 0, terbang = false }) {
     const lebar = kolom ? kolom.clientWidth : window.innerWidth
     const kiriKolom = kolom ? kolom.getBoundingClientRect().left : 0
     const tinggi = window.innerHeight
-    const skTujuan = Math.max(8, Math.min(Math.floor((lebar * 0.9) / KOLOM), Math.floor((tinggi * 0.62) / BARIS)))
+    const skTujuan = Math.max(8, Math.min(Math.floor((lebar * 0.8) / KOLOM), Math.floor((tinggi * 0.62) / BARIS)))
     const geserX = Math.round(kiriKolom + lebar / 2 - (w.left + w.width / 2))
     const geserY = Math.round(tinggi * 0.47 - (w.top + w.height / 2))
     const px = (n) => n + "px"
