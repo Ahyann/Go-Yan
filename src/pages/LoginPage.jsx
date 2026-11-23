@@ -7,6 +7,7 @@ import { useAuth } from '../context/AuthContext.jsx'
 import { bunyikanSetelahSiap, playSambutKonsol, playGoBuka, playPesananBatal } from '../lib/sound'
 import { getar, POLA_GETAR } from '../lib/getar'
 import SpideyMenunggu from '../components/SpideyMenunggu.jsx'
+import LogoLabaSentuh from '../components/LogoLabaSentuh.jsx'
 
 // Blokir login setelah salah password berkali-kali. Disimpan di localStorage supaya refresh halaman tidak membuka blokir.
 // Setelah blokir pertama (3 kali salah), SETIAP salah lagi langsung memblokir dengan waktu yang makin lama.
@@ -257,6 +258,11 @@ export default function LoginPage() {
         </div>
         {barDemo}
       </div>
+
+      {/* logo laba-laba besar mengisi ruang kosong di bawah; dipencet memancarkan gelombang cahaya */}
+      <div className="login-naik" style={{ ...s.logoBawah, '--d': '1900ms' }}>
+        <LogoLabaSentuh />
+      </div>
     </main>
     {terblokir && (
       <div style={s.blokLayar}>
@@ -280,6 +286,7 @@ export default function LoginPage() {
 }
 
 const s = {
+  logoBawah: { flex: '1 1 auto', minHeight: 0, display: 'flex', marginTop: 12 },
   // layar blokir menutup seluruh layar di atas halaman login; dua lapis karena SpideyMenunggu mengukur ukurannya dari dua induk
   // tanpa warna latar: kartu Spidey sendiri setengah transparan, jadi halaman login terlihat samar di belakangnya (efek kaca seperti kartu menunggu ojek di atas peta)
   blokLayar: { position: 'fixed', inset: 0, zIndex: 50, overflow: 'hidden', WebkitBackdropFilter: 'blur(5px)', backdropFilter: 'blur(5px)' },
@@ -294,7 +301,7 @@ const s = {
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
-    padding: '24px 24px calc(var(--safe-bottom) + 24px)',
+    padding: 'calc(var(--safe-top) + 64px) 24px calc(var(--safe-bottom) + 16px)',
     maxWidth: 400,
     margin: '0 auto',
   },
