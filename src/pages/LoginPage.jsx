@@ -8,6 +8,7 @@ import { bunyikanSetelahSiap, playSambutKonsol, playGoBuka, playPesananBatal } f
 import { getar, POLA_GETAR } from '../lib/getar'
 import SpideyMenunggu from '../components/SpideyMenunggu.jsx'
 import LogoLabaSentuh from '../components/LogoLabaSentuh.jsx'
+import { mulaiTransisiDemo, selesaiTransisiDemo } from '../lib/transisiDemo'
 
 // Blokir login setelah salah password berkali-kali. Disimpan di localStorage supaya refresh halaman tidak membuka blokir.
 // Setelah blokir pertama (3 kali salah), SETIAP salah lagi langsung memblokir dengan waktu yang makin lama.
@@ -134,10 +135,6 @@ export default function LoginPage() {
   }
 
   const [pemicuLogo, setPemicuLogo] = useState(0)
-  function posisiTeksWelcome() {
-    const sk = Math.max(8, Math.min(Math.floor((window.innerWidth * 0.9) / 18), Math.floor((window.innerHeight * 0.62) / 23)))
-    return Math.min(window.innerHeight * 0.47 + (23 * sk) / 2 + 18, window.innerHeight - 110)
-  }
   // Alur masuk demo: 'terbang' (isi halaman menghilang, logo meluncur ke tengah dan membesar), lalu 'welcome'
   // (layar penuh bergaya layar menunggu ojek), baru setelah itu benar-benar login ke akun demo.
   const [transisi, setTransisi] = useState(null)
@@ -146,12 +143,15 @@ export default function LoginPage() {
     getar(8)
     setDemoLoading(peran)
     setPemicuLogo((n) => n + 1)
-    // 0,15 dtk: logo terbang ke tengah (0,6 dtk) -> 0,75 dtk: kaca + tulisan welcome -> 2,05 dtk: logo dan tulisan
-    // memudar sambil sedikit membesar (0,35 dtk) -> 2,4 dtk: login ke akun demo, lalu halaman ini diganti app demo
+    // 0,15 dtk: isi halaman menghilang dan logo terbang ke tengah (0,6 dtk). 0,75 dtk: layar welcome (TransisiDemo, di
+    // tingkat App) mengambil alih dengan logo di posisi yang sama, dan login demo dimulai di baliknya. Begitu app demo
+    // siap, layar welcome berubah dari buram ke bening memperlihatkan app.
     setTimeout(() => setTransisi({ peran, tahap: 'terbang' }), 150)
-    setTimeout(() => { setTransisi({ peran, tahap: 'welcome' }); playSambutKonsol() }, 750)
-    setTimeout(() => setTransisi({ peran, tahap: 'keluar' }), 2050)
-    setTimeout(() => handleDemo(peran, jalankan), 2400)
+    setTimeout(() => {
+      mulaiTransisiDemo(peran)
+      playSambutKonsol()
+      handleDemo(peran, jalankan)
+    }, 750)
   }
 
   async function handleDemo(peran, jalankan) {
@@ -163,6 +163,7 @@ export default function LoginPage() {
       setError(t.errGeneric)
       setDemoLoading('')
       setTransisi(null)
+      selesaiTransisiDemo()
     }
   }
 
@@ -194,7 +195,7 @@ export default function LoginPage() {
     {/* Latar CRT sengaja di luar <main>: selama animasi TV menyala <main> punya transform, dan elemen fixed di dalamnya
         jadi terkurung seukuran <main>, sehingga bagian bawah layar HP tampak kosong. */}
     <div className="login-latar-crt" aria-hidden="true" />
-    <main className={`login-tv${transisi ? ' login-keluar' : ''}${transisi?.tahap === 'keluar' ? ' login-pergi' : ''}`} style={s.wrap}>
+    <main className={`login-tv${transisi ? ' login-keluar' : ''}`} style={s.wrap}>
       <div className="login-garis-layar" aria-hidden="true" />
       <PilihBahasa style={s.bahasa} />
 
@@ -282,16 +283,6 @@ export default function LoginPage() {
         {barDemo}
       </div>
     </main>
-    {(transisi?.tahap === 'welcome' || transisi?.tahap === 'keluar') && (
-      <>
-        {/* kaca: latar di belakang logo pelan-pelan buram dan menggelap; ada di bawah <main>, jadi logo tetap tajam di atasnya */}
-        <div className={`login-welcome-kaca${transisi.tahap === 'keluar' ? ' login-welcome-gelap' : ''}`} aria-hidden="true" />
-        <div className={`login-welcome-teks${transisi.tahap === 'keluar' ? ' login-welcome-pergi' : ''}`} style={{ ...s.welcomeTeks, top: posisiTeksWelcome() }} role="status">
-          <div style={s.welcomeJudul}>{t.demoSelamatDatangJudul}</div>
-          <div style={s.welcomeSub}>{(transisi.peran === 'ojek' ? t.demoOjek : t.demoPenumpang).toUpperCase()}</div>
-        </div>
-      </>
-    )}
     {terblokir && (
       <div style={s.blokLayar}>
         {/* demo tidak butuh password, jadi tetap bisa dipakai selama login dikunci */}
@@ -321,10 +312,6 @@ const s = {
   // kartu SpideyMenunggu melebar 14px ke kiri dan kanan dari induknya (dibuat untuk peta), jadi induknya disempitkan 14px
   // supaya kartu pas selebar layar dan logo laba-laba di latar tepat di tengah
   blokDemo: { position: 'absolute', left: 24, right: 24, bottom: 'calc(var(--safe-bottom) + 14px)', zIndex: 2 },
-  welcomeTeks: { position: 'fixed', left: 16, right: 16, zIndex: 2, textAlign: 'center', pointerEvents: 'none' },
-  // sama dengan judul dan sub di layar menunggu ojek (SpideyMenunggu)
-  welcomeJudul: { fontFamily: 'var(--font-judul)', fontSize: 32, letterSpacing: 1, lineHeight: 1, color: '#FFFFFF', textShadow: '0 1px 3px rgba(0, 0, 0, 0.9), 0 0 2px rgba(0, 0, 0, 0.9)' },
-  welcomeSub: { fontFamily: 'var(--font-data)', fontSize: 12, letterSpacing: '0.08em', color: '#E8EDF9', marginTop: 8, textShadow: '0 1px 3px rgba(0, 0, 0, 0.9), 0 0 2px rgba(0, 0, 0, 0.9)' },
   blokOverlay: { position: 'absolute', top: 0, bottom: 0, left: 14, right: 14 },
   wrap: {
     position: 'relative',

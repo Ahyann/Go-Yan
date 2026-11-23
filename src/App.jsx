@@ -8,6 +8,7 @@ import { dengarkanNotifForeground, kirimNotifikasi } from './lib/notifikasi'
 import { usePresence } from './lib/usePresence'
 import { usePesananSelesai } from './lib/usePesananSelesai'
 import LoginPage from './pages/LoginPage.jsx'
+import TransisiDemo from './components/TransisiDemo.jsx'
 import { ROLE, TARIF_PER_RIDE, STATUS_BAYAR, STATUS_PERMINTAAN } from './lib/constants'
 import { kosongkanRiwayatChat } from './lib/useRiwayatChat'
 
@@ -31,6 +32,8 @@ export default function App() {
     <AuthProvider>
       <LanguageProvider>
         <AppIsi />
+        {/* layar welcome akun demo: di atas halaman login maupun app demo, jadi tetap tampil saat halamannya berganti */}
+        <TransisiDemo />
       </LanguageProvider>
     </AuthProvider>
   )
