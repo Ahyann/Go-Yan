@@ -27,7 +27,11 @@ export default function LogoLabaSentuh({ style }) {
     const el = refWadah.current
     if (!el) return undefined
     const ukur = () => {
-      const { width, height } = el.getBoundingClientRect()
+      // clientWidth/clientHeight = ukuran tata letak, tidak ikut transform. getBoundingClientRect ikut transform,
+      // jadi kalau diukur saat animasi TV menyala (halaman masih gepeng setinggi garis) hasilnya hampir nol dan logo
+      // tersembunyi; ResizeObserver juga tidak terpicu saat transform selesai, jadi logo tetap tidak muncul.
+      const width = el.clientWidth
+      const height = el.clientHeight
       const ukuran = Math.floor(Math.min((width * 0.8) / KOLOM, (height * 0.86) / BARIS, 12))
       setSk(ukuran >= 5 ? ukuran : 0)
     }
