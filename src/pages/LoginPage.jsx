@@ -130,7 +130,7 @@ export default function LoginPage() {
     setError('')
     setLoading(true)
     // Animasi masuk berjalan bersamaan dengan permintaan login, sama seperti akun demo: logo terbang ke tengah (0,15 dtk),
-    // lalu layar welcome (0,75 dtk). Kalau login lebih cepat dari itu, layar welcome langsung tampil. Kalau gagal,
+    // lalu layar welcome (0,9 dtk, setelah logo mendarat). Kalau login lebih cepat dari itu, layar welcome langsung tampil. Kalau gagal,
     // semuanya dibatalkan dan logo kembali ke tempatnya.
     let layarMulai = false
     const mulaiLayar = () => {
@@ -140,7 +140,7 @@ export default function LoginPage() {
     }
     setPemicuLogo((n) => n + 1)
     const tTerbang = setTimeout(() => setTransisi({ peran: 'masuk', tahap: 'terbang' }), 150)
-    const tLayar = setTimeout(mulaiLayar, 750)
+    const tLayar = setTimeout(mulaiLayar, 900)
     try {
       await signInWithEmailAndPassword(auth, usernameKeEmail(username), password)
       simpanBlok({ gagal: 0, ke: 0, sampai: 0 }) // berhasil masuk: hitungan salah dan tingkat blokir dimulai dari awal
@@ -166,14 +166,14 @@ export default function LoginPage() {
     getar(8)
     setDemoLoading(peran)
     setPemicuLogo((n) => n + 1)
-    // 0,15 dtk: isi halaman menghilang dan logo terbang ke tengah (0,6 dtk). 0,75 dtk: layar welcome (TransisiDemo, di
+    // 0,15 dtk: isi halaman menghilang dan logo terbang ke tengah (0,75 dtk, memanjang lalu gepeng saat mendarat). 0,9 dtk: layar welcome (TransisiDemo, di
     // tingkat App) mengambil alih dengan logo di posisi yang sama, dan login demo dimulai di baliknya. Begitu app demo
     // siap, layar welcome berubah dari buram ke bening memperlihatkan app.
     setTimeout(() => setTransisi({ peran, tahap: 'terbang' }), 150)
     setTimeout(() => {
       mulaiTransisiDemo(peran)
       handleDemo(peran, jalankan)
-    }, 750)
+    }, 900)
   }
 
   async function handleDemo(peran, jalankan) {

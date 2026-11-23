@@ -104,12 +104,20 @@ export default function LogoLabaSentuh({ style, pemicu = 0, terbang = false }) {
       n.style.height = px(skTujuan)
     })
     const kurangGerak = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    // Gaya kartun (squash & stretch): memanjang ke atas saat meluncur, gepeng sebentar saat mendarat, memantul
+    // sedikit, lalu diam di skala 1 (tetap tajam di akhir).
+    const k = sk / skTujuan
+    const tengahJalan = k + (1 - k) * 0.45
+    const posisi = (p) => 'translate(-50%, -50%) translate(' + px(Math.round(geserX * p)) + ', ' + px(Math.round(geserY * p)) + ')'
     refTerbang.current = el.animate(
       [
-        { transform: 'translate(-50%, -50%) scale(' + sk / skTujuan + ')' },
-        { transform: 'translate(-50%, -50%) translate(' + px(geserX) + ', ' + px(geserY) + ') scale(1)' },
+        { transform: posisi(0) + ' scale(' + k + ')' },
+        { transform: posisi(0.65) + ' scale(' + tengahJalan * 0.9 + ', ' + tengahJalan * 1.19 + ')', offset: 0.45 },
+        { transform: posisi(1) + ' scale(1.14, 0.86)', offset: 0.8 },
+        { transform: posisi(1) + ' scale(0.96, 1.04)', offset: 0.9 },
+        { transform: posisi(1) + ' scale(1)' },
       ],
-      { duration: kurangGerak ? 1 : 600, easing: 'cubic-bezier(0.65, 0, 0.35, 1)', fill: 'forwards' },
+      { duration: kurangGerak ? 1 : 750, easing: 'ease-out', fill: 'forwards' },
     )
   }, [terbang, sk, kotak])
 

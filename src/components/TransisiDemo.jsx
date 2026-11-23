@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { GAMBAR, KOLOM } from './SplashLabaLaba.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useLanguage } from '../context/LanguageContext.jsx'
@@ -30,6 +30,29 @@ export default function TransisiDemo() {
   useEffect(() => {
     setFokus(false)
   }, [transisi])
+
+  // gelombang cahaya saat logo "mendarat": dari tengah logo menyebar ke seluruh kotak (sama seperti saat logo disentuh)
+  const refKotak = useRef([])
+  const mulaiTransisi = transisi?.mulai
+  useEffect(() => {
+    if (!mulaiTransisi) return
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return
+    const cx = KOLOM / 2
+    const cy = BARIS / 2
+    kotak.forEach((k, i) => {
+      const n = refKotak.current[i]
+      if (!n) return
+      const jarak = Math.hypot(k.c + 0.5 - cx, k.r + 0.5 - cy)
+      n.animate(
+        [
+          { background: '#5ED0FF', opacity: 0.35, transform: 'scale(1)' },
+          { background: '#FFFFFF', opacity: 1, transform: 'scale(1.25)', offset: 0.35 },
+          { background: '#5ED0FF', opacity: 0.35, transform: 'scale(1)' },
+        ],
+        { duration: 520, delay: jarak * 28, easing: 'ease-out' },
+      )
+    })
+  }, [mulaiTransisi, kotak])
 
   // begitu akun demo sudah login (app demo sudah ada di balik kaca), langsung masuk ke transisi fokus, tanpa menunggu
   useEffect(() => {
@@ -73,8 +96,8 @@ export default function TransisiDemo() {
     <div className={`td-lapis${fokus ? ' td-fokus' : ''}${gagal ? ' td-gagal' : ''}`} role="status">
       <div className="td-kaca" />
       <div className="td-isi" aria-hidden="true" style={{ position: 'absolute', left: kiri, top: atas, width: KOLOM * sk, height: BARIS * sk }}>
-        {kotak.map((k) => (
-          <span key={`${k.r}-${k.c}`} style={{ ...s.kotak, left: k.c * sk, top: k.r * sk, width: sk, height: sk }} />
+        {kotak.map((k, i) => (
+          <span key={`${k.r}-${k.c}`} ref={(n) => { refKotak.current[i] = n }} style={{ ...s.kotak, left: k.c * sk, top: k.r * sk, width: sk, height: sk }} />
         ))}
       </div>
       <div className="td-isi td-teks" style={{ ...s.teks, top: atasTeks }}>
