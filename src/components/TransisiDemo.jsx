@@ -36,8 +36,18 @@ export default function TransisiDemo() {
     if (transisi && !fokus && user) setFokus(true)
   }, [transisi, user, fokus])
 
+  // persen ala konsol: naik cepat lalu melambat mendekati 90% selama login berjalan, lalu langsung 100% begitu app siap
+  const [persen, setPersen] = useState(0)
+  useEffect(() => {
+    setPersen(0)
+    if (!transisi) return undefined
+    const id = setInterval(() => setPersen((p) => (p >= 90 ? p : p + Math.max(1, Math.round((90 - p) / 6)))), 70)
+    return () => clearInterval(id)
+  }, [transisi])
+
   useEffect(() => {
     if (!fokus) return undefined
+    setPersen(100)
     const id = setTimeout(selesaiTransisiDemo, LAMA_FOKUS + 50)
     return () => clearTimeout(id)
   }, [fokus])
@@ -49,7 +59,7 @@ export default function TransisiDemo() {
   const sk = Math.max(8, Math.min(Math.floor((lebar * 0.9) / KOLOM), Math.floor((tinggi * 0.62) / BARIS)))
   const kiri = Math.round(lebar / 2 - (KOLOM * sk) / 2)
   const atas = Math.round(tinggi * 0.47 - (BARIS * sk) / 2)
-  const atasTeks = Math.min(atas + BARIS * sk + 18, tinggi - 110)
+  const atasTeks = Math.min(atas + BARIS * sk + 34, tinggi - 130)
   const peran = (transisi.peran === 'ojek' ? t.demoOjek : t.demoPenumpang).toUpperCase()
 
   return (
@@ -63,6 +73,7 @@ export default function TransisiDemo() {
       <div className="td-isi td-teks" style={{ ...s.teks, top: atasTeks }}>
         <div style={s.judul}>{t.demoSelamatDatangJudul}</div>
         <div style={s.sub}>{peran}</div>
+        <div style={s.memuat}>&gt; {t.demoMemuat} {persen}%</div>
       </div>
     </div>
   )
@@ -74,5 +85,6 @@ const s = {
   teks: { position: 'absolute', left: 16, right: 16, textAlign: 'center' },
   // sama dengan judul dan sub di layar menunggu ojek (SpideyMenunggu)
   judul: { fontFamily: 'var(--font-judul)', fontSize: 32, letterSpacing: 1, lineHeight: 1, color: '#FFFFFF', textShadow: bayang },
+  memuat: { fontFamily: 'var(--font-data)', fontSize: 12, letterSpacing: '0.08em', color: '#5ED0FF', marginTop: 18, fontVariantNumeric: 'tabular-nums', textShadow: bayang },
   sub: { fontFamily: 'var(--font-data)', fontSize: 12, letterSpacing: '0.08em', color: '#E8EDF9', marginTop: 8, textShadow: bayang },
 }
