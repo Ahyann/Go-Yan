@@ -24,16 +24,31 @@ export default async function handler(req, res) {
     return res.status(401).json({ error: 'Gak ada token' })
   }
 
+  let pengirim
   try {
-    await getAuth().verifyIdToken(idToken)
+    pengirim = await getAuth().verifyIdToken(idToken)
   } catch {
     return res.status(401).json({ error: 'Token gak valid' })
   }
 
-  const { targetRole, title, body, type = 'umum', tag = type } = req.body
+  // Akun demo (login anonim) bisa dibuat siapa saja lewat tombol demo, jadi tidak boleh mengirim notifikasi
+  // ke HP asli. Hanya akun terdaftar yang boleh.
+  if (pengirim.firebase?.sign_in_provider === 'anonymous') {
+    return res.status(403).json({ error: 'Akun demo tidak boleh mengirim notifikasi' })
+  }
+
+  const { targetRole, title, body, type = 'umum', tag = type } = req.body || {}
 
   if (!targetRole || !title || !body) {
     return res.status(400).json({ error: 'targetRole, title, dan body wajib diisi' })
+  }
+
+  // Isi dibatasi: hanya dua peran yang ada, dan teks berupa string dengan panjang wajar
+  if (!['ojek', 'penumpang'].includes(targetRole)) {
+    return res.status(400).json({ error: 'targetRole tidak dikenal' })
+  }
+  if (typeof title !== 'string' || typeof body !== 'string' || title.length > 200 || body.length > 1000) {
+    return res.status(400).json({ error: 'title atau body tidak valid' })
   }
 
   try {
