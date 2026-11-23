@@ -44,7 +44,8 @@ export default function TransisiDemo() {
 
   if (!transisi) return null
 
-  const lebar = window.innerWidth
+  // lebar kolom app (di layar lebar app hanya 430px di tengah, dan lapisan fixed ini mengikuti kolom itu)
+  const lebar = document.getElementById('root')?.clientWidth || window.innerWidth
   const tinggi = window.innerHeight
   const sk = Math.max(8, Math.min(Math.floor((lebar * 0.9) / KOLOM), Math.floor((tinggi * 0.62) / BARIS)))
   const kiri = Math.round(lebar / 2 - (KOLOM * sk) / 2)

@@ -61,10 +61,13 @@ export default function LogoLabaSentuh({ style, pemicu = 0, terbang = false }) {
     if (!terbang || !el || !sk) return
     // logo melayang di tengah wadahnya, jadi geseran dihitung dari titik tengah wadah ke titik tujuan
     const w = refWadah.current.getBoundingClientRect()
-    const lebar = window.innerWidth
+    // di layar lebar app tampil sebagai kolom 430px; layar loading (position: fixed) mengikuti kolom itu, bukan jendela
+    const kolom = document.getElementById('root')
+    const lebar = kolom ? kolom.clientWidth : window.innerWidth
+    const kiriKolom = kolom ? kolom.getBoundingClientRect().left : 0
     const tinggi = window.innerHeight
     const skTujuan = Math.max(8, Math.min(Math.floor((lebar * 0.9) / KOLOM), Math.floor((tinggi * 0.62) / BARIS)))
-    const geserX = Math.round(lebar / 2 - (w.left + w.width / 2))
+    const geserX = Math.round(kiriKolom + lebar / 2 - (w.left + w.width / 2))
     const geserY = Math.round(tinggi * 0.47 - (w.top + w.height / 2))
     const px = (n) => n + "px"
     el.style.width = px(KOLOM * skTujuan)
