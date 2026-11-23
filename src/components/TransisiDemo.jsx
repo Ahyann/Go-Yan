@@ -36,18 +36,8 @@ export default function TransisiDemo() {
     if (transisi && !fokus && user) setFokus(true)
   }, [transisi, user, fokus])
 
-  // persen ala konsol: naik cepat lalu melambat mendekati 90% selama login berjalan, lalu langsung 100% begitu app siap
-  const [persen, setPersen] = useState(0)
-  useEffect(() => {
-    setPersen(0)
-    if (!transisi) return undefined
-    const id = setInterval(() => setPersen((p) => (p >= 90 ? p : p + Math.max(1, Math.round((90 - p) / 6)))), 70)
-    return () => clearInterval(id)
-  }, [transisi])
-
   useEffect(() => {
     if (!fokus) return undefined
-    setPersen(100)
     const id = setTimeout(selesaiTransisiDemo, LAMA_FOKUS + 50)
     return () => clearTimeout(id)
   }, [fokus])
@@ -73,7 +63,7 @@ export default function TransisiDemo() {
       <div className="td-isi td-teks" style={{ ...s.teks, top: atasTeks }}>
         <div style={s.judul}>{t.demoSelamatDatangJudul}</div>
         <div style={s.sub}>{peran}</div>
-        <div style={s.memuat}>&gt; {t.demoMemuat} {persen}%</div>
+        <div className="td-titik" aria-hidden="true"><i /><i /><i /></div>
       </div>
     </div>
   )
@@ -85,6 +75,5 @@ const s = {
   teks: { position: 'absolute', left: 16, right: 16, textAlign: 'center' },
   // sama dengan judul dan sub di layar menunggu ojek (SpideyMenunggu)
   judul: { fontFamily: 'var(--font-judul)', fontSize: 32, letterSpacing: 1, lineHeight: 1, color: '#FFFFFF', textShadow: bayang },
-  memuat: { fontFamily: 'var(--font-data)', fontSize: 12, letterSpacing: '0.08em', color: '#5ED0FF', marginTop: 18, fontVariantNumeric: 'tabular-nums', textShadow: bayang },
   sub: { fontFamily: 'var(--font-data)', fontSize: 12, letterSpacing: '0.08em', color: '#E8EDF9', marginTop: 8, textShadow: bayang },
 }

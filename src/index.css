@@ -1024,3 +1024,10 @@ button:disabled[aria-label="◀"], button:disabled[aria-label="▶"] { opacity: 
 /* Selama transisi masuk demo, denyut tombol Sign in dihentikan: bayangannya digambar ulang tiap frame dan ikut membebani
    animasi, padahal tombolnya sedang menghilang. */
 .login-keluar .login-masuk-btn { animation: none !important; }
+
+/* loading tiga titik kotak melompat di bawah tulisan welcome demo */
+.td-titik { display: flex; justify-content: center; gap: 6px; margin-top: 20px; height: 14px; align-items: flex-end; }
+.td-titik i { width: 6px; height: 6px; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.9); animation: td-lompat 0.9s ease-in-out infinite; }
+.td-titik i:nth-child(2) { animation-delay: 0.15s; }
+.td-titik i:nth-child(3) { animation-delay: 0.3s; }
+@keyframes td-lompat { 0%, 100% { transform: translateY(0); opacity: .4; } 40% { transform: translateY(-6px); opacity: 1; } }
