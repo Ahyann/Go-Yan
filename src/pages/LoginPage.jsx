@@ -137,7 +137,6 @@ export default function LoginPage() {
   function pilihDemo(peran, jalankan) {
     if (demoLoading || transisi) return
     getar(8)
-    playTingMasuk()
     setDemoLoading(peran)
     setPemicuLogo((n) => n + 1)
     // 0,15 dtk: isi halaman menghilang dan logo terbang ke tengah (0,6 dtk). 0,75 dtk: layar welcome (TransisiDemo, di
@@ -146,6 +145,7 @@ export default function LoginPage() {
     setTimeout(() => setTransisi({ peran, tahap: 'terbang' }), 150)
     setTimeout(() => {
       mulaiTransisiDemo(peran)
+      playTingMasuk() // ting hanya di sini: begitu layar loading demo muncul
       handleDemo(peran, jalankan)
     }, 750)
   }
