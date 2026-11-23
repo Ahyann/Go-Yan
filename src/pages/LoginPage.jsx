@@ -1,14 +1,40 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import { auth } from '../lib/firebase'
 import PilihBahasa from '../components/PilihBahasa.jsx'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
+import { bunyikanSetelahSiap, playSambutKonsol, playGoBuka } from '../lib/sound'
+import { getar } from '../lib/getar'
 
 function usernameKeEmail(input) {
   const bersih = input.trim().toLowerCase().replace(/\s+/g, '')
   if (bersih.includes('@')) return bersih
   return `${bersih}@gmail.com`
+}
+
+const HURUF_JUDUL = 'GO-YAN'.split('')
+
+// Teks sambutan diketik huruf demi huruf setelah judul selesai jatuh.
+function useKetik(teks, mulaiMs = 750, jedaMs = 38) {
+  const [jumlah, setJumlah] = useState(0)
+  useEffect(() => {
+    setJumlah(0)
+    let tick
+    const mulai = setTimeout(() => {
+      let i = 0
+      tick = setInterval(() => {
+        i += 1
+        setJumlah(i)
+        if (i >= teks.length) clearInterval(tick)
+      }, jedaMs)
+    }, mulaiMs)
+    return () => {
+      clearTimeout(mulai)
+      clearInterval(tick)
+    }
+  }, [teks, mulaiMs, jedaMs])
+  return teks.slice(0, jumlah)
 }
 
 export default function LoginPage() {
@@ -20,6 +46,11 @@ export default function LoginPage() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [demoLoading, setDemoLoading] = useState('')
+  const sambutan = useKetik(t.demoSelamatDatangJudul)
+
+  useEffect(() => {
+    bunyikanSetelahSiap(playSambutKonsol)
+  }, [])
 
   const PESAN_ERROR = {
     'auth/invalid-email': t.errInvalidCredential,
@@ -30,6 +61,8 @@ export default function LoginPage() {
 
   async function handleSubmit(e) {
     e.preventDefault()
+    getar(12)
+    playGoBuka()
     setError('')
     setLoading(true)
     try {
@@ -53,17 +86,30 @@ export default function LoginPage() {
 
   return (
     <main style={s.wrap}>
+      <div className="login-sapu" aria-hidden="true" />
       <PilihBahasa style={s.bahasa} />
 
       <div style={s.brand}>
-        <div style={s.eyebrow}>GO-YAN</div>
-        <h1 style={s.title}>{t.loginTitle}</h1>
+        <div style={s.logo} aria-label="GO-YAN">
+          {HURUF_JUDUL.map((h, i) => (
+            <span key={i} className="login-huruf" style={{ '--d': `${150 + i * 90}ms` }} aria-hidden="true">
+              {h}
+            </span>
+          ))}
+        </div>
+        <div className="login-garis" style={{ '--d': '700ms', marginBottom: 10 }} aria-hidden="true" />
+        <div style={s.sambutan} aria-live="off">
+          {sambutan}
+          <span className="login-kursor" aria-hidden="true">_</span>
+        </div>
+        <h1 className="login-naik" style={{ ...s.title, '--d': '900ms' }}>{t.loginTitle}</h1>
       </div>
 
       <form style={s.form} onSubmit={handleSubmit}>
-        <label style={s.label}>
+        <label className="login-naik" style={{ ...s.label, '--d': '1000ms' }}>
           {t.loginUsername}
           <input
+            className="login-input"
             style={s.input}
             type="text"
             value={username}
@@ -75,10 +121,11 @@ export default function LoginPage() {
           />
         </label>
 
-        <label style={s.label}>
+        <label className="login-naik" style={{ ...s.label, '--d': '1100ms' }}>
           {t.loginPassword}
           <div style={s.pwWrap}>
             <input
+              className="login-input"
               style={s.inputPw}
               type={tampilkanPw ? 'text' : 'password'}
               value={password}
@@ -109,12 +156,12 @@ export default function LoginPage() {
 
         {error && <div style={s.error}>{error}</div>}
 
-        <button style={s.submit} type="submit" disabled={loading}>
+        <button className="login-naik login-masuk-btn tekan" style={{ ...s.submit, '--d': '1200ms' }} type="submit" disabled={loading}>
           {loading ? t.loginMemproses : t.loginSubmit}
         </button>
       </form>
 
-      <div style={s.demoWrap}>
+      <div className="login-naik" style={{ ...s.demoWrap, '--d': '1350ms' }}>
         <div style={s.demoDivider}>
           <span style={s.demoDividerGaris} />
           <span style={s.demoDividerTeks}>{t.demoAtau}</span>
@@ -161,6 +208,23 @@ const s = {
     right: 24,
   },
   brand: { marginBottom: 32 },
+  logo: {
+    fontFamily: 'var(--font-judul)',
+    fontSize: 64,
+    lineHeight: 1,
+    letterSpacing: '3px',
+    color: 'var(--glow-blue)',
+    textShadow: '0 0 14px var(--glow-blue-mid), 3px 3px 0 var(--nav-red)',
+    marginBottom: 8,
+  },
+  sambutan: {
+    minHeight: 18,
+    fontFamily: 'var(--font-data)',
+    fontSize: 12,
+    letterSpacing: '0.12em',
+    color: '#9FC3E8',
+    marginBottom: 14,
+  },
   eyebrow: { fontSize: 11, letterSpacing: '0.16em', color: 'var(--glow-blue)', marginBottom: 6, fontWeight: 700, textShadow: '0 0 6px var(--glow-blue-mid)' },
   title: {
     fontFamily: 'var(--font-judul)',
