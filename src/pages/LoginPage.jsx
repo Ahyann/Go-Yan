@@ -169,7 +169,7 @@ export default function LoginPage() {
             onClick={() => { getar(8); handleDemo('ojek', masukDemoOjek) }}
             disabled={Boolean(demoLoading)}
           >
-            <svg width="22" height="16" viewBox="0 0 22 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="4" cy="12" r="3"/><circle cx="18" cy="12" r="3"/><path d="M4 12l5-7h5l4 7M9 5L8 2h3M14 5l2-2"/></svg>
+            <img src={`${import.meta.env.BASE_URL}icons/spidericon.png`} alt="" aria-hidden="true" style={s.ikonSpidey} />
             <span style={s.demoTeks}>{demoLoading === 'ojek' ? t.loginMemproses : t.demoOjek}</span>
           </button>
           <button
@@ -179,7 +179,7 @@ export default function LoginPage() {
             onClick={() => { getar(8); handleDemo('penumpang', masukDemoPenumpang) }}
             disabled={Boolean(demoLoading)}
           >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="8" cy="5" r="3"/><path d="M2 15c0-3.3 2.7-5 6-5s6 1.7 6 5"/></svg>
+            <svg width="24" height="24" viewBox="-2 -2 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="8" cy="5" r="3"/><path d="M2 15c0-3.3 2.7-5 6-5s6 1.7 6 5"/></svg>
             <span style={s.demoTeks}>{demoLoading === 'penumpang' ? t.loginMemproses : t.demoPenumpang}</span>
           </button>
         </div>
@@ -320,6 +320,8 @@ const s = {
     borderRadius: 0,
     border: '1px solid var(--glow-blue-mid)',
   },
+  // spidericon.png asli app, merahnya diputar jadi biru; tajam kotak-kotak seperti di bagian lain app
+  ikonSpidey: { width: 24, height: 24, imageRendering: 'pixelated', filter: 'hue-rotate(205deg) saturate(1.3) brightness(1.1)' },
   demoTeks: {
     maxWidth: '100%',
     whiteSpace: 'nowrap', // satu baris, tinggi tombol sama di semua bahasa
