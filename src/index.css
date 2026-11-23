@@ -1038,3 +1038,12 @@ button:disabled[aria-label="◀"], button:disabled[aria-label="▶"] { opacity: 
 .td-titik i:nth-child(2) { animation-delay: 0.15s; }
 .td-titik i:nth-child(3) { animation-delay: 0.3s; }
 @keyframes td-lompat { 0%, 100% { transform: translateY(0); opacity: .4; } 40% { transform: translateY(-6px); opacity: 1; } }
+
+/* Logo spider di halaman login bernapas pelan. Memakai properti scale (terpisah dari transform), jadi tidak bentrok
+   dengan posisi tengah dan animasi terbang ke layar demo; saat terbang kelasnya dilepas. */
+@keyframes logo-napas {
+  0%, 100% { scale: 1; opacity: 0.8; }
+  50% { scale: 1.04; opacity: 1; }
+}
+.logo-napas { animation: logo-napas 3.6s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .logo-napas { animation: none; } }

@@ -165,6 +165,7 @@ export default function LogoLabaSentuh({ style, pemicu = 0, terbang = false }) {
       {sk > 0 && (
         <div
           ref={refGrid}
+          className={terbang ? undefined : 'logo-napas'}
           role="img"
           aria-label="Go-Yan"
           onPointerDown={sentuh}
