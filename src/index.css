@@ -1027,6 +1027,8 @@ button:disabled[aria-label="◀"], button:disabled[aria-label="▶"] { opacity: 
 }
 @keyframes login-pergi { to { opacity: 0; transform: scale(1.06); } }
 .td-fokus .td-isi { animation: login-pergi 0.3s ease-in forwards; }
+.td-gagal { animation: td-gagal 0.28s ease-out forwards; pointer-events: none; }
+@keyframes td-gagal { to { opacity: 0; } }
 .td-fokus .td-kaca { animation: td-fokus 0.65s ease-out 0.1s both; }
 /* Selama transisi masuk demo, denyut tombol Sign in dihentikan: bayangannya digambar ulang tiap frame dan ikut membebani
    animasi, padahal tombolnya sedang menghilang. */
@@ -1045,5 +1047,5 @@ button:disabled[aria-label="◀"], button:disabled[aria-label="▶"] { opacity: 
   0%, 100% { background: #5ED0FF; opacity: 0.35; }
   50% { background: #CFF1FF; opacity: 0.75; }
 }
-.logo-napas span { animation: logo-napas 3.6s ease-in-out infinite; }
+.logo-napas span { animation: logo-napas 7s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) { .logo-napas span { animation: none; } }
