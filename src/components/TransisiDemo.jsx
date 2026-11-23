@@ -5,7 +5,6 @@ import { useLanguage } from '../context/LanguageContext.jsx'
 import { useTransisiDemo, selesaiTransisiDemo } from '../lib/transisiDemo'
 
 const BARIS = GAMBAR.length
-const TAMPIL_MINIMAL = 1300 // layar welcome tampil paling sedikit selama ini, walau login demo sudah selesai lebih cepat
 const LAMA_FOKUS = 650 // kaca dari buram ke bening
 
 // Layar welcome akun demo, dipasang di tingkat App (di atas halaman login maupun app demo). Logo laba-laba besar di
@@ -32,12 +31,9 @@ export default function TransisiDemo() {
     setFokus(false)
   }, [transisi])
 
-  // app demo dianggap siap begitu akun demo sudah login; tunggu juga sampai welcome tampil cukup lama
+  // begitu akun demo sudah login (app demo sudah ada di balik kaca), langsung masuk ke transisi fokus, tanpa menunggu
   useEffect(() => {
-    if (!transisi || fokus || !user) return undefined
-    const sisa = Math.max(0, transisi.mulai + TAMPIL_MINIMAL - Date.now())
-    const id = setTimeout(() => setFokus(true), sisa)
-    return () => clearTimeout(id)
+    if (transisi && !fokus && user) setFokus(true)
   }, [transisi, user, fokus])
 
   useEffect(() => {
