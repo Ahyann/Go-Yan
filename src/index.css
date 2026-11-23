@@ -988,7 +988,7 @@ button:disabled[aria-label="◀"], button:disabled[aria-label="▶"] { opacity: 
 
 /* Masuk demo: semua isi halaman login selain logo laba-laba menghilang bergantian (naik sedikit sambil memudar). */
 @keyframes login-hilang {
-  to { opacity: 0; transform: translateY(-14px) scale(0.97); filter: blur(3px); }
+  to { opacity: 0; transform: translateY(-14px) scale(0.97); }
 }
 .login-keluar > :not(.login-logo-wadah) { animation: login-hilang 0.38s ease-in forwards !important; pointer-events: none; }
 .login-keluar > :nth-child(2) { animation-delay: 0.04s !important; }
@@ -998,19 +998,31 @@ button:disabled[aria-label="◀"], button:disabled[aria-label="▶"] { opacity: 
 .login-keluar > :nth-child(6) { animation-delay: 0.2s !important; }
 .login-keluar > :nth-child(7) { animation-delay: 0.24s !important; }
 
-/* Layar welcome demo: latar di belakang logo pelan-pelan jadi kaca (buram + sedikit gelap + garis neon tipis di tepi),
-   lalu tulisan welcome muncul huruf demi huruf di bawah logo. */
-@keyframes login-kaca-masuk {
-  from { -webkit-backdrop-filter: blur(0); backdrop-filter: blur(0); background-color: rgba(2, 30, 46, 0); box-shadow: inset 0 0 0 0 rgba(94, 208, 255, 0); }
-  to { -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); background-color: rgba(2, 30, 46, 0.45); box-shadow: inset 0 0 0 2px rgba(94, 208, 255, 0.55), inset 0 0 40px rgba(94, 208, 255, 0.15); }
-}
+/* Layar welcome demo: kaca (buram + sedikit gelap + garis neon tipis di tepi) di belakang logo. Blurnya TETAP 10px;
+   yang dianimasikan hanya opacity, karena menganimasikan besar blur sangat berat di HP (terutama Safari) dan membuat
+   animasi patah-patah. */
+@keyframes login-muncul { from { opacity: 0; } to { opacity: 1; } }
 .login-welcome-kaca {
   position: fixed;
   inset: 0;
   z-index: 0;
   pointer-events: auto;
-  animation: login-kaca-masuk 0.7s ease-out forwards;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  background-color: rgba(2, 30, 46, 0.45);
+  box-shadow: inset 0 0 0 2px rgba(94, 208, 255, 0.55), inset 0 0 40px rgba(94, 208, 255, 0.15);
+  animation: login-muncul 0.5s ease-out both;
 }
+/* lapisan gelap untuk keluar ke app; juga hanya opacity */
+.login-welcome-kaca::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(2, 30, 46, 0.85);
+  opacity: 0;
+  transition: opacity 0.35s ease-in;
+}
+.login-welcome-kaca.login-welcome-gelap::after { opacity: 1; }
 /* Tulisan welcome muncul memudar, sama seperti tulisan di layar menunggu ojek */
 .login-welcome-teks { animation: sp-isi-muncul 0.3s ease 0.15s backwards; }
 
@@ -1018,5 +1030,6 @@ button:disabled[aria-label="◀"], button:disabled[aria-label="▶"] { opacity: 
 @keyframes login-pergi { to { opacity: 0; transform: scale(1.06); } }
 .login-pergi .login-logo-wadah { animation: login-pergi 0.35s ease-in forwards !important; }
 .login-welcome-teks.login-welcome-pergi { animation: login-pergi 0.3s ease-in forwards; }
-@keyframes login-welcome-gelap { from { background-color: rgba(2, 30, 46, 0.45); } to { background-color: rgba(2, 30, 46, 0.92); } }
-.login-welcome-kaca.login-welcome-gelap { animation: login-kaca-masuk 0.01s forwards, login-welcome-gelap 0.35s ease-in forwards; }
+/* Selama transisi masuk demo, denyut tombol Sign in dihentikan: bayangannya digambar ulang tiap frame dan ikut membebani
+   animasi, padahal tombolnya sedang menghilang. */
+.login-keluar .login-masuk-btn { animation: none !important; }

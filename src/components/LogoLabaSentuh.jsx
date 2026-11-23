@@ -53,42 +53,39 @@ export default function LogoLabaSentuh({ style, pemicu = 0, terbang = false }) {
     gelombang(pc, pr)
   }
 
-  // terbang: logo meluncur ke tengah layar sambil membesar. Yang dianimasikan posisi dan ukuran ASLI tiap kotak
-  // (left/top/width/height), bukan transform scale. Scale membuat tepi tiap kotak dihaluskan browser, sehingga muncul
-  // garis tipis di sambungan antarkotak dan logonya terlihat bertekstur aneh.
+  // terbang: logo meluncur ke tengah layar sambil membesar. Supaya halus di HP, yang dianimasikan hanya transform
+  // (dikerjakan GPU). Supaya tajam, logo langsung digambar ulang di ukuran AKHIR, lalu dimulai dari skala kecil
+  // (sama persis dengan ukuran semula) dan berakhir di skala 1, jadi di akhir tidak ada garis sambungan antarkotak.
   useEffect(() => {
     const el = refGrid.current
     if (!terbang || !el || !sk) return
-    // Logo selalu dipusatkan oleh wadahnya, jadi saat ukurannya membesar posisi dasarnya ikut bergeser. Karena itu
-    // geseran dihitung dari titik TENGAH wadah ke titik tujuan, bukan dari pojok kiri atas logo.
+    // logo melayang di tengah wadahnya, jadi geseran dihitung dari titik tengah wadah ke titik tujuan
     const w = refWadah.current.getBoundingClientRect()
     const lebar = window.innerWidth
     const tinggi = window.innerHeight
     const skTujuan = Math.max(8, Math.min(Math.floor((lebar * 0.9) / KOLOM), Math.floor((tinggi * 0.62) / BARIS)))
     const geserX = Math.round(lebar / 2 - (w.left + w.width / 2))
     const geserY = Math.round(tinggi * 0.47 - (w.top + w.height / 2))
-    const kurangGerak = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
-    const lama = kurangGerak ? 1 : 600
-    const opsi = { duration: lama, easing: 'cubic-bezier(0.65, 0, 0.35, 1)', fill: 'forwards' }
     const px = (n) => n + "px"
-    el.animate(
-      [
-        { transform: 'translate(-50%, -50%)', width: px(KOLOM * sk), height: px(BARIS * sk) },
-        { transform: 'translate(-50%, -50%) translate(' + px(geserX) + ', ' + px(geserY) + ')', width: px(KOLOM * skTujuan), height: px(BARIS * skTujuan) },
-      ],
-      opsi,
-    )
+    el.style.width = px(KOLOM * skTujuan)
+    el.style.height = px(BARIS * skTujuan)
+    el.style.willChange = "transform"
     kotak.forEach((k, i) => {
       const n = refKotak.current[i]
       if (!n) return
-      n.animate(
-        [
-          { left: px(k.c * sk), top: px(k.r * sk), width: px(sk), height: px(sk), background: "#5ED0FF", opacity: 0.35 },
-          { left: px(k.c * skTujuan), top: px(k.r * skTujuan), width: px(skTujuan), height: px(skTujuan), background: "rgb(158, 230, 255)", opacity: 0.32 },
-        ],
-        opsi,
-      )
+      n.style.left = px(k.c * skTujuan)
+      n.style.top = px(k.r * skTujuan)
+      n.style.width = px(skTujuan)
+      n.style.height = px(skTujuan)
     })
+    const kurangGerak = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    el.animate(
+      [
+        { transform: 'translate(-50%, -50%) scale(' + sk / skTujuan + ')' },
+        { transform: 'translate(-50%, -50%) translate(' + px(geserX) + ', ' + px(geserY) + ') scale(1)' },
+      ],
+      { duration: kurangGerak ? 1 : 600, easing: 'cubic-bezier(0.65, 0, 0.35, 1)', fill: 'forwards' },
+    )
   }, [terbang, sk, kotak])
 
   // dipicu dari luar (misalnya saklar demo dipencet): gelombang dari tengah logo
