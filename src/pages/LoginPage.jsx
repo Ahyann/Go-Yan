@@ -38,9 +38,9 @@ function usernameKeEmail(input) {
 }
 
 // Tulisan sambutan: diketik, ditahan, dihapus, lalu diketik lagi, dengan waktu yang sama seperti keterangan di konsol
-// penumpang (KeteranganKetik). Punya state sendiri supaya halaman login tidak digambar ulang tiap 50 ms.
-const KETIK_MS = 240
-const HAPUS_MS = 140
+// penumpang (KeteranganKetik), tapi mengetik dan menghapus lebih cepat. Punya state sendiri supaya halaman login tidak digambar ulang tiap 50 ms.
+const KETIK_MS = 90
+const HAPUS_MS = 55
 const TAHAN_MS = 10000
 const JEDA_MS = 500
 function SambutanKetik({ teks, mulaiMs }) {
