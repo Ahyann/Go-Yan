@@ -997,8 +997,25 @@ button:disabled[aria-label="◀"], button:disabled[aria-label="▶"] { opacity: 
 .login-keluar > :nth-child(5) { animation-delay: 0.16s !important; }
 .login-keluar > :nth-child(6) { animation-delay: 0.2s !important; }
 .login-keluar > :nth-child(7) { animation-delay: 0.24s !important; }
-/* Logo besar memudar saat layar welcome muncul di atasnya */
-@keyframes login-logo-pudar { to { opacity: 0; } }
-.login-logo-pudar { animation: login-logo-pudar 0.4s ease-out forwards; }
-@keyframes login-welcome-masuk { from { opacity: 0; } to { opacity: 1; } }
-.login-welcome-masuk { animation: login-welcome-masuk 0.35s ease-out both; }
+
+/* Layar welcome demo: latar di belakang logo pelan-pelan jadi kaca (buram + sedikit gelap + garis neon tipis di tepi),
+   lalu tulisan welcome muncul huruf demi huruf di bawah logo. */
+@keyframes login-kaca-masuk {
+  from { -webkit-backdrop-filter: blur(0); backdrop-filter: blur(0); background-color: rgba(2, 30, 46, 0); box-shadow: inset 0 0 0 0 rgba(94, 208, 255, 0); }
+  to { -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); background-color: rgba(2, 30, 46, 0.45); box-shadow: inset 0 0 0 2px rgba(94, 208, 255, 0.55), inset 0 0 40px rgba(94, 208, 255, 0.15); }
+}
+.login-welcome-kaca {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: auto;
+  animation: login-kaca-masuk 1.4s ease-out forwards;
+}
+@keyframes login-welcome-huruf {
+  0% { opacity: 0; transform: translateY(14px) scale(1.3); }
+  70% { opacity: 1; transform: translateY(-2px) scale(0.98); }
+  100% { opacity: 1; transform: none; }
+}
+.login-welcome-huruf { display: inline-block; opacity: 0; animation: login-welcome-huruf 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) var(--d, 0ms) forwards; }
+@keyframes login-welcome-sub { from { opacity: 0; letter-spacing: 0.6em; } to { opacity: 1; letter-spacing: 0.2em; } }
+.login-welcome-sub { opacity: 0; animation: login-welcome-sub 0.6s ease-out 1.3s forwards; }

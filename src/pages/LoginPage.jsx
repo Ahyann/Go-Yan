@@ -134,6 +134,10 @@ export default function LoginPage() {
   }
 
   const [pemicuLogo, setPemicuLogo] = useState(0)
+  function posisiTeksWelcome() {
+    const sk = Math.max(8, Math.min(Math.floor((window.innerWidth * 0.9) / 18), Math.floor((window.innerHeight * 0.62) / 23)))
+    return Math.min(window.innerHeight * 0.47 + (23 * sk) / 2 + 18, window.innerHeight - 110)
+  }
   // Alur masuk demo: 'terbang' (isi halaman menghilang, logo meluncur ke tengah dan membesar), lalu 'welcome'
   // (layar penuh bergaya layar menunggu ojek), baru setelah itu benar-benar login ke akun demo.
   const [transisi, setTransisi] = useState(null)
@@ -143,7 +147,7 @@ export default function LoginPage() {
     setDemoLoading(peran)
     setPemicuLogo((n) => n + 1)
     setTimeout(() => setTransisi({ peran, tahap: 'terbang' }), 300)
-    setTimeout(() => setTransisi({ peran, tahap: 'welcome', mulai: Date.now() }), 300 + 800)
+    setTimeout(() => { setTransisi({ peran, tahap: 'welcome', mulai: Date.now() }); playSambutKonsol() }, 300 + 800)
     // login ke demo baru dijalankan setelah welcome selesai; begitu login berhasil, halaman ini diganti app demo
     setTimeout(() => handleDemo(peran, jalankan), 300 + 800 + 3200)
   }
@@ -269,7 +273,7 @@ export default function LoginPage() {
       </div>
 
       {/* logo laba-laba besar mengisi ruang kosong; dipencet memancarkan gelombang cahaya. Saklar demo di bawahnya. */}
-      <div className={`login-naik login-logo-wadah${transisi?.tahap === 'welcome' ? ' login-logo-pudar' : ''}`} style={{ ...s.logoBawah, '--d': '1900ms' }}>
+      <div className="login-naik login-logo-wadah" style={{ ...s.logoBawah, '--d': '1900ms' }}>
         <LogoLabaSentuh pemicu={pemicuLogo} terbang={Boolean(transisi)} />
       </div>
       <div className="login-naik" style={{ ...s.saklarDemo, '--d': '2000ms' }}>
@@ -277,17 +281,18 @@ export default function LoginPage() {
       </div>
     </main>
     {transisi?.tahap === 'welcome' && (
-      <div className="login-welcome-masuk" style={s.welcomeLayar}>
-        <div style={s.blokOverlay}>
-          <SpideyMenunggu
-            dibuatPada={transisi.mulai}
-            teks={{ menunggu: t.demoSelamatDatangJudul, menungguSub: (transisi.peran === 'ojek' ? t.demoOjek : t.demoPenumpang).toUpperCase() }}
-            tanpaWaktu
-            logoLangsungJadi
-            bawahTeks="calc(var(--safe-bottom) + 40px)"
-          />
+      <>
+        {/* kaca: latar di belakang logo pelan-pelan buram dan menggelap; ada di bawah <main>, jadi logo tetap tajam di atasnya */}
+        <div className="login-welcome-kaca" aria-hidden="true" />
+        <div className="login-welcome-teks" style={{ ...s.welcomeTeks, top: posisiTeksWelcome() }} role="status">
+          <div style={s.welcomeJudul}>
+            {t.demoSelamatDatangJudul.split('').map((h, i) => (
+              <span key={i} className="login-welcome-huruf" style={{ '--d': `${500 + i * 35}ms` }}>{h === ' ' ? '\u00A0' : h}</span>
+            ))}
+          </div>
+          <div className="login-welcome-sub" style={s.welcomeSub}>{(transisi.peran === 'ojek' ? t.demoOjek : t.demoPenumpang).toUpperCase()}</div>
         </div>
-      </div>
+      </>
     )}
     {terblokir && (
       <div style={s.blokLayar}>
@@ -318,7 +323,9 @@ const s = {
   // kartu SpideyMenunggu melebar 14px ke kiri dan kanan dari induknya (dibuat untuk peta), jadi induknya disempitkan 14px
   // supaya kartu pas selebar layar dan logo laba-laba di latar tepat di tengah
   blokDemo: { position: 'absolute', left: 24, right: 24, bottom: 'calc(var(--safe-bottom) + 14px)', zIndex: 2 },
-  welcomeLayar: { position: 'fixed', inset: 0, zIndex: 60, overflow: 'hidden', WebkitBackdropFilter: 'blur(5px)', backdropFilter: 'blur(5px)' },
+  welcomeTeks: { position: 'fixed', left: 16, right: 16, zIndex: 2, textAlign: 'center', pointerEvents: 'none' },
+  welcomeJudul: { fontFamily: 'var(--font-judul)', fontSize: 34, letterSpacing: '1px', color: 'var(--glow-blue)', textShadow: '0 0 12px var(--glow-blue-mid), 2px 2px 0 var(--nav-red)', lineHeight: 1.05 },
+  welcomeSub: { fontFamily: 'var(--font-data)', fontSize: 12, letterSpacing: '0.2em', color: '#9FC3E8', marginTop: 10 },
   blokOverlay: { position: 'absolute', top: 0, bottom: 0, left: 14, right: 14 },
   wrap: {
     position: 'relative',
