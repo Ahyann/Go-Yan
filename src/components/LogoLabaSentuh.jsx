@@ -8,7 +8,7 @@ const BARIS = GAMBAR.length
 // Logo laba-laba piksel besar di ruang kosong bawah halaman login. Dipencet: cahaya putih menyebar dari titik
 // yang dipencet ke seluruh kotak logo. Ukuran kotak menyesuaikan ruang yang tersisa; kalau ruangnya terlalu
 // sempit (HP pendek), logo tidak ditampilkan supaya tidak menabrak form.
-export default function LogoLabaSentuh({ style }) {
+export default function LogoLabaSentuh({ style, pemicu = 0 }) {
   const refWadah = useRef(null)
   const refKotak = useRef([])
   const [sk, setSk] = useState(0)
@@ -49,6 +49,16 @@ export default function LogoLabaSentuh({ style }) {
     const pr = Math.max(0, Math.min(BARIS - 1, (e.clientY - grid.top) / sk))
     playTabPindah()
     getar(8)
+    gelombang(pc, pr)
+  }
+
+  // dipicu dari luar (misalnya saklar demo dipencet): gelombang dari tengah logo
+  useEffect(() => {
+    if (pemicu) gelombang(KOLOM / 2, BARIS / 2)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pemicu])
+
+  function gelombang(pc, pr) {
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return
     kotak.forEach((k, i) => {
       const node = refKotak.current[i]

@@ -133,6 +133,16 @@ export default function LoginPage() {
     }
   }
 
+  const [pemicuLogo, setPemicuLogo] = useState(0)
+  function pilihDemo(peran, jalankan) {
+    if (demoLoading) return
+    getar(8)
+    setDemoLoading(peran)
+    setPemicuLogo((n) => n + 1)
+    // jeda singkat supaya sisi yang menyala dan gelombang logo sempat terlihat sebelum pindah halaman
+    setTimeout(() => handleDemo(peran, jalankan), 450)
+  }
+
   async function handleDemo(peran, jalankan) {
     setError('')
     setDemoLoading(peran)
@@ -149,25 +159,19 @@ export default function LoginPage() {
     <button
       type="button"
       className="login-demo-btn"
-      style={s.demoBtn}
-      onClick={() => { getar(8); handleDemo('ojek', masukDemoOjek) }}
+      style={{ ...s.demoBtn, ...(demoLoading === 'ojek' ? s.demoPilihOjek : null) }}
+      onClick={() => pilihDemo('ojek', masukDemoOjek)}
       disabled={Boolean(demoLoading)}
     >
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <path d="M12 2.5C6.7 2.5 3 6.5 3 12s3.7 9.5 9 9.5 9-4 9-9.5-3.7-9.5-9-9.5z" />
-        <path d="M5.2 9.6c3.2.3 5.2 2 6.1 5-2.6 1.6-5.3.9-6.9-1.6z" />
-        <path d="M18.8 9.6c-3.2.3-5.2 2-6.1 5 2.6 1.6 5.3.9 6.9-1.6z" />
-      </svg>
       <span style={s.demoTeks}>{demoLoading === 'ojek' ? t.loginMemproses : t.demoOjek}</span>
     </button>
     <button
       type="button"
       className="login-demo-btn"
-      style={s.demoBtn}
-      onClick={() => { getar(8); handleDemo('penumpang', masukDemoPenumpang) }}
+      style={{ ...s.demoBtn, ...(demoLoading === 'penumpang' ? s.demoPilihPenumpang : null) }}
+      onClick={() => pilihDemo('penumpang', masukDemoPenumpang)}
       disabled={Boolean(demoLoading)}
     >
-      <svg width="22" height="22" viewBox="-2 -2 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="8" cy="5" r="3"/><path d="M2 15c0-3.3 2.7-5 6-5s6 1.7 6 5"/></svg>
       <span style={s.demoTeks}>{demoLoading === 'penumpang' ? t.loginMemproses : t.demoPenumpang}</span>
     </button>
   </div>
@@ -256,12 +260,14 @@ export default function LoginPage() {
           <span style={s.demoDividerTeks}>{t.demoAtau}</span>
           <span style={s.demoDividerGaris} />
         </div>
-        {barDemo}
       </div>
 
-      {/* logo laba-laba besar mengisi ruang kosong di bawah; dipencet memancarkan gelombang cahaya */}
+      {/* logo laba-laba besar mengisi ruang kosong; dipencet memancarkan gelombang cahaya. Saklar demo di bawahnya. */}
       <div className="login-naik" style={{ ...s.logoBawah, '--d': '1900ms' }}>
-        <LogoLabaSentuh />
+        <LogoLabaSentuh pemicu={pemicuLogo} />
+      </div>
+      <div className="login-naik" style={{ ...s.saklarDemo, '--d': '2000ms' }}>
+        {barDemo}
       </div>
     </main>
     {terblokir && (
@@ -387,8 +393,11 @@ const s = {
     borderRadius: 0,
     marginTop: 6,
   },
+  saklarDemo: { marginTop: 8 },
+  demoPilihOjek: { background: 'rgba(188, 30, 47, 0.55)', color: '#FFFFFF', opacity: 1 },
+  demoPilihPenumpang: { background: 'rgba(27, 111, 184, 0.6)', color: '#FFFFFF', opacity: 1 },
   demoWrap: {
-    marginTop: 24,
+    marginTop: 20,
     display: 'flex',
     flexDirection: 'column',
     gap: 14,
