@@ -164,19 +164,23 @@ export default function LoginPage() {
         <div style={s.demoRow}>
           <button
             type="button"
+            className="login-demo-btn"
             style={s.demoBtn}
-            onClick={() => handleDemo('ojek', masukDemoOjek)}
+            onClick={() => { getar(8); handleDemo('ojek', masukDemoOjek) }}
             disabled={Boolean(demoLoading)}
           >
-            {demoLoading === 'ojek' ? t.loginMemproses : t.demoOjek}
+            <svg width="22" height="16" viewBox="0 0 22 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="4" cy="12" r="3"/><circle cx="18" cy="12" r="3"/><path d="M4 12l5-7h5l4 7M9 5L8 2h3M14 5l2-2"/></svg>
+            <span style={s.demoTeks}>{demoLoading === 'ojek' ? t.loginMemproses : t.demoOjek}</span>
           </button>
           <button
             type="button"
+            className="login-demo-btn"
             style={s.demoBtn}
-            onClick={() => handleDemo('penumpang', masukDemoPenumpang)}
+            onClick={() => { getar(8); handleDemo('penumpang', masukDemoPenumpang) }}
             disabled={Boolean(demoLoading)}
           >
-            {demoLoading === 'penumpang' ? t.loginMemproses : t.demoPenumpang}
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="8" cy="5" r="3"/><path d="M2 15c0-3.3 2.7-5 6-5s6 1.7 6 5"/></svg>
+            <span style={s.demoTeks}>{demoLoading === 'penumpang' ? t.loginMemproses : t.demoPenumpang}</span>
           </button>
         </div>
       </div>
@@ -305,15 +309,24 @@ const s = {
   demoBtn: {
     flex: 1,
     minWidth: 0, // biar tombol gak melebar gara-gara teks panjang
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    background: 'var(--card-blue)',
+    color: 'var(--glow-blue)',
+    padding: '14px 6px 12px',
+    borderRadius: 0,
+    border: '1px solid var(--glow-blue-mid)',
+  },
+  demoTeks: {
+    maxWidth: '100%',
     whiteSpace: 'nowrap', // satu baris, tinggi tombol sama di semua bahasa
     overflow: 'hidden',
     textOverflow: 'ellipsis',
-    background: 'var(--card-blue)',
-    color: 'var(--glow-blue)',
-    fontSize: 13.5,
+    fontSize: 12.5,
     fontWeight: 600,
-    padding: '13px 8px',
-    borderRadius: 0,
-    border: '1px solid var(--glow-blue-mid)',
+    letterSpacing: '0.03em',
   },
 }

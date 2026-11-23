@@ -934,3 +934,30 @@ button:disabled[aria-label="◀"], button:disabled[aria-label="▶"] { opacity: 
   background: repeating-linear-gradient(180deg, transparent 0 2px, rgba(0, 0, 0, 0.16) 2px 3px);
   animation: login-garis-layar 0.5s ease-out 1.8s forwards;
 }
+
+/* Tombol demo di login: panel konsol dengan bayangan keras, naik saat disentuh dan menekan saat ditekan. */
+.login-demo-btn {
+  position: relative;
+  box-shadow: 3px 3px 0 var(--glow-blue-dark);
+  transition: transform 0.08s ease-out, box-shadow 0.08s ease-out, background-color 0.15s, color 0.15s;
+}
+.login-demo-btn::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 3px;
+  background: var(--glow-blue);
+  opacity: 0.85;
+}
+.login-demo-btn:active:not(:disabled) {
+  transform: translate(3px, 3px);
+  box-shadow: 0 0 0 var(--glow-blue-dark);
+  background-color: rgba(94, 208, 255, 0.16) !important;
+}
+.login-demo-btn:focus-visible { outline: 2px solid var(--glow-blue); outline-offset: 3px; }
+.login-demo-btn:disabled { opacity: 0.6; box-shadow: none; }
+@media (hover: hover) {
+  .login-demo-btn:hover:not(:disabled) { background-color: rgba(94, 208, 255, 0.12) !important; }
+}
