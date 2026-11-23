@@ -209,7 +209,7 @@ export const translations = {
     errTooManyRequests: 'Terlalu banyak percobaan gagal. Coba lagi sebentar.',
     blokJudul: 'TERLALU BANYAK PERCOBAAN',
     blokSub: 'LOGIN DIKUNCI SEMENTARA',
-    blokPesan: ['EITS!', 'Sabar ya...', 'Tunggu bentar', 'Zzz... istirahat', 'ERROR 403', 'HACI! Salah!'],
+    blokPesan: ['EITS!', 'Sabar ya...', 'Tunggu bentar', 'ERROR 403', 'Hmm curiga...', 'Coba lagi nanti'],
     errNetworkFailed: 'Gak ada koneksi internet.',
     errGeneric: 'Gagal masuk, coba lagi.',
 
@@ -462,7 +462,7 @@ export const translations = {
     errTooManyRequests: 'Too many failed attempts. Try again shortly.',
     blokJudul: 'TOO MANY TRIES',
     blokSub: 'SIGN-IN TEMPORARILY LOCKED',
-    blokPesan: ['WHOA!', 'Easy now...', 'Hold on', 'Zzz... rest up', 'ERROR 403', 'ACHOO! Wrong!'],
+    blokPesan: ['WHOA!', 'Easy now...', 'Hold on', 'ERROR 403', 'Hmm, suspicious...', 'Try again later'],
     errNetworkFailed: 'No internet connection.',
     errGeneric: 'Sign in failed, please try again.',
 

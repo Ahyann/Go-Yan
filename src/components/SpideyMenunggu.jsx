@@ -255,13 +255,16 @@ function GelembungKalimat({ teks, kunci }) {
   const baris = bungkusKata(teks, 13)
   const tinggi = 2 + baris.length * 2.1
   const atas = 5 - tinggi
+  // lebar mengikuti baris terpanjang (maks 17 kotak, supaya tidak keluar layar di kiri); sisi kanan tetap di tempatnya
+  const lebar = Math.min(17, Math.max(8, Math.max(...baris.map((b) => b.length)) * 1.05 + 2.4))
+  const kiri = 9 - lebar
   return (
     <g key={kunci}>
-      <rect x={-8} y={atas} width={17} height={tinggi} fill="#FFFFFF" />
-      <rect x={-9} y={atas + 1} width={1} height={tinggi - 2} fill="#FFFFFF" />
+      <rect x={kiri} y={atas} width={lebar} height={tinggi} fill="#FFFFFF" />
+      <rect x={kiri - 1} y={atas + 1} width={1} height={tinggi - 2} fill="#FFFFFF" />
       <rect x={9} y={atas + 1} width={1} height={tinggi - 2} fill="#FFFFFF" />
       <text fontSize="1.75" fontWeight="700" fill="#0A0A0A" style={{ fontFamily: 'var(--font-data)' }}>
-        {baris.map((b, n) => <tspan key={n} x={-7} y={atas + 2.3 + n * 2.1}>{b}</tspan>)}
+        {baris.map((b, n) => <tspan key={n} x={kiri + 1.2} y={atas + 2.3 + n * 2.1}>{b}</tspan>)}
       </text>
     </g>
   )
@@ -338,7 +341,7 @@ const REAKSI = [
 ]
 
 // Layar blokir login: hanya enam reaksi ini yang dipakai. Urutannya sama dengan urutan kalimat blokPesan.
-const REAKSI_BLOK = ['kaget', 'getar', 'angguk', 'ngantuk', 'glitch', 'bersin']
+const REAKSI_BLOK = ['kaget', 'getar', 'angguk', 'glitch', 'intip', 'kenyal']
 
 const SUDAH_WHOOSH = new Set()
 
