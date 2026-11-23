@@ -4,8 +4,30 @@ import { auth } from '../lib/firebase'
 import PilihBahasa from '../components/PilihBahasa.jsx'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
-import { bunyikanSetelahSiap, playSambutKonsol, playGoBuka } from '../lib/sound'
-import { getar } from '../lib/getar'
+import { bunyikanSetelahSiap, playSambutKonsol, playGoBuka, playPesananBatal } from '../lib/sound'
+import { getar, POLA_GETAR } from '../lib/getar'
+import SpideyMenunggu from '../components/SpideyMenunggu.jsx'
+
+// Blokir login setelah salah password berkali-kali. Disimpan di localStorage supaya refresh halaman tidak membuka blokir.
+// MODE_UJI: sementara setiap blokir hanya 5 detik untuk melihat animasinya. Nanti dimatikan: blokir pertama 1 menit,
+// berikutnya 10 menit.
+const MODE_UJI = true
+const BATAS_GAGAL = 3
+const DURASI_BLOK = MODE_UJI ? [5000, 5000] : [60_000, 600_000]
+const KUNCI_BLOK = 'goyan:loginBlok'
+const KODE_SALAH = ['auth/invalid-credential', 'auth/invalid-email', 'auth/wrong-password', 'auth/user-not-found']
+
+function bacaBlok() {
+  try {
+    const d = JSON.parse(localStorage.getItem(KUNCI_BLOK) || '{}')
+    return { gagal: d.gagal || 0, ke: d.ke || 0, sampai: d.sampai || 0 }
+  } catch {
+    return { gagal: 0, ke: 0, sampai: 0 }
+  }
+}
+function simpanBlok(d) {
+  try { localStorage.setItem(KUNCI_BLOK, JSON.stringify(d)) } catch { /* penyimpanan diblokir */ }
+}
 
 function usernameKeEmail(input) {
   const bersih = input.trim().toLowerCase().replace(/\s+/g, '')
@@ -45,6 +67,41 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [demoLoading, setDemoLoading] = useState('')
   const sambutan = useKetik(t.demoSelamatDatangJudul, 1150)
+  const [blok, setBlok] = useState(bacaBlok)
+  const [sekarang, setSekarang] = useState(() => Date.now())
+  const terblokir = blok.sampai > sekarang
+
+  // Selama terblokir, cek berkala; begitu waktunya habis layar blokir ditutup dan hitungan gagal mulai dari nol.
+  useEffect(() => {
+    if (!blok.sampai) return undefined
+    const id = setInterval(() => {
+      const kini = Date.now()
+      setSekarang(kini)
+      if (kini >= blok.sampai) {
+        const baru = { ...blok, gagal: 0, sampai: 0 }
+        simpanBlok(baru)
+        setBlok(baru)
+      }
+    }, 250)
+    return () => clearInterval(id)
+  }, [blok])
+
+  function catatGagal() {
+    const gagal = blok.gagal + 1
+    if (gagal < BATAS_GAGAL) {
+      const baru = { ...blok, gagal }
+      simpanBlok(baru)
+      setBlok(baru)
+      return
+    }
+    const durasi = DURASI_BLOK[Math.min(blok.ke, DURASI_BLOK.length - 1)]
+    const baru = { gagal, ke: blok.ke + 1, sampai: Date.now() + durasi }
+    simpanBlok(baru)
+    setBlok(baru)
+    setSekarang(Date.now())
+    playPesananBatal()
+    getar(POLA_GETAR.kaget)
+  }
 
   useEffect(() => {
     bunyikanSetelahSiap(playSambutKonsol)
@@ -59,6 +116,7 @@ export default function LoginPage() {
 
   async function handleSubmit(e) {
     e.preventDefault()
+    if (terblokir) return
     getar(12)
     playGoBuka()
     setError('')
@@ -68,6 +126,7 @@ export default function LoginPage() {
     } catch (err) {
       setError(PESAN_ERROR[err.code] || t.errGeneric)
       setLoading(false)
+      if (KODE_SALAH.includes(err.code)) catatGagal()
     }
   }
 
@@ -193,11 +252,27 @@ export default function LoginPage() {
         </div>
       </div>
     </main>
+    {terblokir && (
+      <div style={s.blokLayar}>
+        <div style={s.blokOverlay}>
+          <SpideyMenunggu
+            key={blok.sampai}
+            dibuatPada={blok.sampai}
+            sampai={blok.sampai}
+            teks={{ menunggu: t.blokJudul, menungguSub: t.blokSub }}
+            pesanSentuh={t.blokPesan}
+          />
+        </div>
+      </div>
+    )}
     </>
   )
 }
 
 const s = {
+  // layar blokir menutup seluruh layar di atas halaman login; dua lapis karena SpideyMenunggu mengukur ukurannya dari dua induk
+  blokLayar: { position: 'fixed', inset: 0, zIndex: 50, background: '#023854', overflow: 'hidden' },
+  blokOverlay: { position: 'absolute', inset: 0 },
   wrap: {
     position: 'relative',
     zIndex: 1, // di atas latar CRT

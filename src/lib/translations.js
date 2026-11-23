@@ -207,6 +207,9 @@ export const translations = {
     demoPenumpang: 'Demo Penumpang',
     errInvalidCredential: 'Email atau password salah.',
     errTooManyRequests: 'Terlalu banyak percobaan gagal. Coba lagi sebentar.',
+    blokJudul: 'TERLALU BANYAK PERCOBAAN',
+    blokSub: 'LOGIN DIKUNCI SEMENTARA',
+    blokPesan: ['Eits! Salah 3 kali, istirahat dulu ya.', 'Jangan ditebak-tebak, spider-sense-ku curiga nih.', 'Tunggu hitungannya habis, baru coba lagi.', 'Lupa password? Tanya Ahyan aja daripada nebak.', 'Makin sering salah, makin lama nunggunya lho.'],
     errNetworkFailed: 'Gak ada koneksi internet.',
     errGeneric: 'Gagal masuk, coba lagi.',
 
@@ -457,6 +460,9 @@ export const translations = {
     demoPenumpang: 'Demo as Passenger',
     errInvalidCredential: 'Incorrect email or password.',
     errTooManyRequests: 'Too many failed attempts. Try again shortly.',
+    blokJudul: 'TOO MANY TRIES',
+    blokSub: 'SIGN-IN TEMPORARILY LOCKED',
+    blokPesan: ['Whoa! 3 wrong tries, take a breather.', 'No guessing, my spider-sense is tingling.', 'Wait for the timer, then try again.', 'Forgot your password? Ask Ahyan instead of guessing.', 'The more you miss, the longer you wait.'],
     errNetworkFailed: 'No internet connection.',
     errGeneric: 'Sign in failed, please try again.',
 

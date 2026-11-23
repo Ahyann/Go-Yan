@@ -310,7 +310,7 @@ const REAKSI = [
 
 const SUDAH_WHOOSH = new Set()
 
-export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalkan = false, menyusut = false, isDemo = false, teks = null, gayaTolak = false, info = null, tanpaWhoosh = false, kompak = false, selesai = false, keluar = false }) {
+export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalkan = false, menyusut = false, isDemo = false, teks = null, gayaTolak = false, info = null, tanpaWhoosh = false, kompak = false, selesai = false, keluar = false, sampai = null, pesanSentuh = null }) {
   const { t } = useLanguage()
   const [sekarang, setSekarang] = useState(() => Date.now())
 
@@ -324,7 +324,11 @@ export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalka
   const antrianReaksi = useRef([])
   const timerGelembung = useRef(null)
   const [gelembungSentuh, setGelembungSentuh] = useState(null)
-  useEffect(() => () => clearTimeout(timerGelembung.current), [])
+  // pesanSentuh: kalimat-kalimat yang muncul bergiliran di gelembung besar tiap kali Spiderman dipencet
+  const [pesanAktif, setPesanAktif] = useState(null)
+  const urutPesan = useRef(0)
+  const timerPesan = useRef(null)
+  useEffect(() => () => { clearTimeout(timerGelembung.current); clearTimeout(timerPesan.current) }, [])
 
   function sentuh() {
     const el = refReaksi.current
@@ -352,6 +356,13 @@ export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalka
     clearTimeout(timerGelembung.current)
     setGelembungSentuh(r.gelembung)
     if (r.gelembung) timerGelembung.current = setTimeout(() => setGelembungSentuh(null), r.durasi + 500)
+    if (pesanSentuh?.length) {
+      const n = urutPesan.current % pesanSentuh.length
+      urutPesan.current += 1
+      setPesanAktif({ teks: pesanSentuh[n], kunci: urutPesan.current })
+      clearTimeout(timerPesan.current)
+      timerPesan.current = setTimeout(() => setPesanAktif(null), 3200)
+    }
   }
 
   // Kartu memenuhi layar dari atas sampai tepat di atas dock. Tinggi dan lebarnya diukur dari peta di
@@ -412,7 +423,8 @@ export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalka
 
   const menyalaSense = gelembungSentuh === 'sense' || diterima
   const tampilInfo = !!info && !diterima && !dibatalkan
-  const lama = dibuatPada ? formatLama(sekarang - dibuatPada) : '00:00'
+  // sampai: hitung mundur ke waktu itu (layar blokir login); tanpa itu, lama menunggu dihitung naik
+  const lama = sampai ? formatLama(sampai - sekarang + 999) : dibuatPada ? formatLama(sekarang - dibuatPada) : '00:00'
   // Latar kartu setengah transparan, jadi peta kelihatan di baliknya; bayangan teks menjaga tulisan tetap terbaca.
   const bayang = { textShadow: '0 1px 3px rgba(0, 0, 0, 0.9), 0 0 2px rgba(0, 0, 0, 0.9)' }
 
@@ -536,6 +548,13 @@ export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalka
       </svg>
       </div>
 
+      {pesanAktif && (
+        <div key={pesanAktif.kunci} className="sp-pesan" style={{ ...s.pesan, bottom: 120 + bawahDock }} role="status">
+          {pesanAktif.teks}
+          <span style={s.pesanEkor} aria-hidden="true" />
+        </div>
+      )}
+
       <div className="sp-teks-muncul" style={{ ...s.teks, bottom: 14 + bawahDock }}>
         {!(kompak && !diterima && !selesai) && <div style={{ ...s.judul, ...bayang, color: diterima || selesai ? '#4ADE80' : dibatalkan ? 'var(--merah-teks)' : '#FFFFFF' }}>
           {selesai ? teks?.selesai : diterima ? (teks?.diterima ?? t.spideyDiterima) : dibatalkan ? (teks?.batal ?? t.spideyBatal) : (teks?.menunggu ?? t.spideyMenunggu)}
@@ -573,6 +592,9 @@ const s = {
   // memantul turun atau jatuh masuk, benangnya tidak pernah putus atau menggantung pendek.
   benang: { position: 'absolute', left: (PAD + 9.5) * SKALA - 2, top: -2000, width: 4, height: 2088, background: '#E8E8E8', boxShadow: '0 0 4px rgba(94, 208, 255, 0.9)' },
   teks: { position: 'absolute', left: 0, right: 0, bottom: 28, textAlign: 'center' },
+  // gelembung kalimat saat Spiderman dipencet (layar blokir login): kotak putih bergaris hitam ala komik piksel
+  pesan: { position: 'absolute', left: '50%', width: 'min(280px, calc(100% - 48px))', transform: 'translateX(-50%)', background: '#FFFFFF', color: '#0A0A0A', border: '3px solid #0A0A0A', boxShadow: '4px 4px 0 rgba(0, 0, 0, 0.5)', padding: '10px 12px', fontFamily: 'var(--font-data)', fontSize: 13, fontWeight: 700, lineHeight: 1.35, textAlign: 'center', pointerEvents: 'none' },
+  pesanEkor: { position: 'absolute', left: '50%', top: -12, width: 16, height: 16, marginLeft: -8, background: '#FFFFFF', borderLeft: '3px solid #0A0A0A', borderTop: '3px solid #0A0A0A', transform: 'rotate(45deg)' },
   info: { fontFamily: 'var(--font-data)', fontSize: 11, letterSpacing: '0.08em', color: 'var(--glow-blue)', marginTop: 6, textTransform: 'uppercase', padding: '0 16px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' },
   judul: { fontFamily: 'var(--font-judul)', fontSize: 32, letterSpacing: 1, lineHeight: 1 },
   sub: { fontFamily: 'var(--font-data)', fontSize: 12, letterSpacing: '0.08em', color: '#E8EDF9', marginTop: 8 },
