@@ -57,9 +57,30 @@ export default function LogoLabaSentuh({ style, pemicu = 0, terbang = false }) {
   // terbang: logo meluncur ke tengah layar sambil membesar. Supaya halus di HP, yang dianimasikan hanya transform
   // (dikerjakan GPU). Supaya tajam, logo langsung digambar ulang di ukuran AKHIR, lalu dimulai dari skala kecil
   // (sama persis dengan ukuran semula) dan berakhir di skala 1, jadi di akhir tidak ada garis sambungan antarkotak.
+  const refTerbang = useRef(null)
   useEffect(() => {
     const el = refGrid.current
-    if (!terbang || !el || !sk) return
+    if (!terbang) {
+      // terbang dibatalkan (login gagal): logo langsung dikembalikan ke ukuran dan tempat semula
+      const a = refTerbang.current
+      refTerbang.current = null
+      if (a) a.cancel()
+      if (a && el && sk) {
+        el.style.width = KOLOM * sk + 'px'
+        el.style.height = BARIS * sk + 'px'
+        el.style.willChange = ''
+        kotak.forEach((k, i) => {
+          const n = refKotak.current[i]
+          if (!n) return
+          n.style.left = k.c * sk + 'px'
+          n.style.top = k.r * sk + 'px'
+          n.style.width = sk + 'px'
+          n.style.height = sk + 'px'
+        })
+      }
+      return
+    }
+    if (!el || !sk) return
     // logo melayang di tengah wadahnya, jadi geseran dihitung dari titik tengah wadah ke titik tujuan
     const w = refWadah.current.getBoundingClientRect()
     // di layar lebar app tampil sebagai kolom 430px; layar loading (position: fixed) mengikuti kolom itu, bukan jendela
@@ -83,7 +104,7 @@ export default function LogoLabaSentuh({ style, pemicu = 0, terbang = false }) {
       n.style.height = px(skTujuan)
     })
     const kurangGerak = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
-    el.animate(
+    refTerbang.current = el.animate(
       [
         { transform: 'translate(-50%, -50%) scale(' + sk / skTujuan + ')' },
         { transform: 'translate(-50%, -50%) translate(' + px(geserX) + ', ' + px(geserY) + ') scale(1)' },

@@ -36,6 +36,14 @@ export default function TransisiDemo() {
     if (transisi && !fokus && user) setFokus(true)
   }, [transisi, user, fokus])
 
+  // login biasa gagal: pudar keluar lalu tutup
+  const gagal = Boolean(transisi?.gagal)
+  useEffect(() => {
+    if (!gagal) return undefined
+    const id = setTimeout(selesaiTransisiDemo, 300)
+    return () => clearTimeout(id)
+  }, [gagal])
+
   useEffect(() => {
     if (!fokus) return undefined
     const id = setTimeout(selesaiTransisiDemo, LAMA_FOKUS + 50)
@@ -51,10 +59,11 @@ export default function TransisiDemo() {
   const kiri = Math.round(lebar / 2 - (KOLOM * sk) / 2)
   const atas = Math.round(tinggi * 0.47 - (BARIS * sk) / 2)
   const atasTeks = Math.min(atas + BARIS * sk + 34, tinggi - 130)
-  const peran = (transisi.peran === 'ojek' ? t.demoOjek : t.demoPenumpang).toUpperCase()
+  // akun demo menampilkan perannya; login biasa menampilkan sambutan
+  const peran = (transisi.peran === 'ojek' ? t.demoOjek : transisi.peran === 'penumpang' ? t.demoPenumpang : t.demoSelamatDatangJudul).toUpperCase()
 
   return (
-    <div className={`td-lapis${fokus ? ' td-fokus' : ''}`} role="status">
+    <div className={`td-lapis${fokus ? ' td-fokus' : ''}${gagal ? ' td-gagal' : ''}`} role="status">
       <div className="td-kaca" />
       <div className="td-isi" aria-hidden="true" style={{ position: 'absolute', left: kiri, top: atas, width: KOLOM * sk, height: BARIS * sk }}>
         {kotak.map((k) => (

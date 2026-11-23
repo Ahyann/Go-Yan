@@ -14,6 +14,14 @@ export function mulaiTransisiDemo(peran) {
   kabari()
 }
 
+// Login biasa gagal setelah layar welcome sempat tampil: layar memudar keluar (lalu selesaiTransisiDemo dipanggil
+// oleh TransisiDemo) supaya tidak hilang mendadak.
+export function gagalTransisiDemo() {
+  if (!keadaan) return
+  keadaan = { ...keadaan, gagal: true }
+  kabari()
+}
+
 export function selesaiTransisiDemo() {
   keadaan = null
   kabari()
