@@ -453,13 +453,13 @@ export const translations = {
     ariaTahunBerikutnya: 'Next year',
 
     // --- Login ---
-    loginTitle: 'Sign in',
+    loginTitle: 'Log in',
     loginUsername: 'Username',
     loginPassword: 'Password',
     tampilkanPw: 'Show password',
     sembunyikanPw: 'Hide password',
     loginMemproses: 'Signing in…',
-    loginSubmit: 'Sign in',
+    loginSubmit: 'Log in',
     demoAtau: 'OR TRY THE DEMO',
     demoSelamatDatangJudul: 'WELCOME TO GO-YAN',
     demoOjek: 'Demo as Driver',
@@ -474,7 +474,7 @@ export const translations = {
     blokSub: 'SIGN-IN TEMPORARILY LOCKED',
     blokPesan: ['WHOA!', 'Easy now...', 'Hold on', 'ERROR 403', 'Hmm, suspicious...', 'Try again later'],
     errNetworkFailed: 'No internet connection.',
-    errGeneric: 'Sign in failed, please try again.',
+    errGeneric: 'Log in failed, please try again.',
 
     // --- Nav ---
     navHome: 'Home',
