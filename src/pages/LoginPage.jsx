@@ -173,7 +173,6 @@ export default function LoginPage() {
               <path d="M12 2.5C6.7 2.5 3 6.5 3 12s3.7 9.5 9 9.5 9-4 9-9.5-3.7-9.5-9-9.5z" />
               <path d="M5.2 9.6c3.2.3 5.2 2 6.1 5-2.6 1.6-5.3.9-6.9-1.6z" />
               <path d="M18.8 9.6c-3.2.3-5.2 2-6.1 5 2.6 1.6 5.3.9 6.9-1.6z" />
-              <path d="M9.8 18.2L12 16.4l2.2 1.8" />
             </svg>
             <span style={s.demoTeks}>{demoLoading === 'ojek' ? t.loginMemproses : t.demoOjek}</span>
           </button>
