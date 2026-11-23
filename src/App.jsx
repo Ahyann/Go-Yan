@@ -147,8 +147,8 @@ function AppIsi() {
 
 // 7 bar mengikuti satu gelombang yang berjalan ke kanan; tiap bar tertinggal sedikit dari bar sebelumnya
 const BAR_LOADING = [0, 1, 2, 3, 4, 5, 6]
-const PERIODE_ONDA = 2.42
-const JEDA_ONDA = 0.27
+const PERIODE_ONDA = 1.2
+const JEDA_ONDA = 0.14
 const delayOnda = (i) => `${-(PERIODE_ONDA - i * JEDA_ONDA)}s`
 
 function LoadingScreen() {

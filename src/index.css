@@ -242,7 +242,7 @@ button {
   0%, 100% { transform: scaleY(0.2); }
   50% { transform: scaleY(1); }
 }
-.ld-onda { animation: ld-onda 2.42s ease-in-out infinite; }
+.ld-onda { animation: ld-onda 1.2s ease-in-out infinite; }
 
 @keyframes spider-swing {
   0%, 100% { transform: rotate(-10deg); }
