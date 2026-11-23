@@ -827,3 +827,24 @@ button {
 
 /* Tombol panah daftar trip bensin yang sudah mentok */
 button:disabled[aria-label="◀"], button:disabled[aria-label="▶"] { opacity: 0.3; cursor: default; }
+
+/* Jadwal ojek (mode baca, 1 sampai 4 hari): tiap susunan punya gerak masuk sendiri. Urutan waktunya dari --tunda. */
+@keyframes kartu-pop { 0% { opacity: 0; transform: translateY(14px) scale(0.86); } 65% { opacity: 1; transform: translateY(0) scale(1.03); } 100% { opacity: 1; transform: none; } }
+@keyframes masuk-kiri { from { opacity: 0; transform: translateX(-46px); } to { opacity: 1; transform: none; } }
+@keyframes masuk-kanan { from { opacity: 0; transform: translateX(46px); } to { opacity: 1; transform: none; } }
+@keyframes jam-nyala { 0% { opacity: 0; } 25% { opacity: 0.9; } 40% { opacity: 0.15; } 60% { opacity: 1; } 75% { opacity: 0.5; } 100% { opacity: 1; } }
+@keyframes garis-isi { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes rel-tumbuh { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+@keyframes titik-timbul { 0% { transform: scale(0); } 60% { transform: scale(1.5); } 100% { transform: scale(1); } }
+@keyframes denyut-titik { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
+.kartu-pop { animation: kartu-pop 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; animation-delay: var(--tunda, 0ms); }
+.masuk-kiri { animation: masuk-kiri 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; animation-delay: var(--tunda, 0ms); }
+.masuk-kanan { animation: masuk-kanan 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; animation-delay: var(--tunda, 0ms); }
+.jam-nyala { animation: jam-nyala 0.5s steps(1, end) both; animation-delay: var(--tunda, 0ms); }
+.garis-isi { animation: garis-isi 0.5s ease-out both; animation-delay: var(--tunda, 0ms); }
+.rel-tumbuh { animation: rel-tumbuh 0.7s ease-out both; }
+.titik-timbul { animation: titik-timbul 0.35s ease-out both; animation-delay: var(--tunda, 0ms); }
+.denyut-titik i { animation: denyut-titik 1.4s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .kartu-pop, .masuk-kiri, .masuk-kanan, .jam-nyala, .garis-isi, .rel-tumbuh, .titik-timbul, .denyut-titik i { animation: none; }
+}

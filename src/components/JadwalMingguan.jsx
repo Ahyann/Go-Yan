@@ -4,6 +4,7 @@ import { HARI_KERJA_KEYS } from '../lib/constants'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import TimeWheelPicker from './TimeWheelPicker.jsx'
 import SwipeableCheck from './SwipeableCheck.jsx'
+import JadwalBacaOjek, { MAKS_HARI_KARTU, ambilHariAktif } from './JadwalBacaOjek.jsx'
 
 function buatJadwalKosong() {
   const kosong = {}
@@ -87,6 +88,12 @@ const JadwalMingguan = forwardRef(function JadwalMingguan(
 
   const indexHariEditing = editing ? HARI_KERJA_KEYS.indexOf(editing.hari) : -1
   const labelHariEditing = indexHariEditing >= 0 ? t.hariLabel[indexHariEditing] : ''
+
+  // Akun ojek (mode baca) dengan jadwal 1 sampai 4 hari: susunan kartu khusus supaya layar tidak kosong
+  const hariAktif = ambilHariAktif(draft)
+  if (!bisaEdit && bisaTandaiSelesai && hariAktif.length >= 1 && hariAktif.length <= MAKS_HARI_KARTU) {
+    return <JadwalBacaOjek key={hariAktif.map((h) => h.key).join('-')} hari={hariAktif} onTandaiSelesai={onTandaiSelesai} />
+  }
 
   return (
     <div style={s.wrap}>
