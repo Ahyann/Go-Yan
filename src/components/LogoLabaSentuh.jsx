@@ -53,29 +53,43 @@ export default function LogoLabaSentuh({ style, pemicu = 0, terbang = false }) {
     gelombang(pc, pr)
   }
 
-  // terbang: logo meluncur ke tengah layar sambil membesar sampai seukuran logo latar di layar welcome
-  // (posisi dan ukurannya sama dengan logo laba-laba di layar menunggu ojek), jadi perpindahannya menyambung.
+  // terbang: logo meluncur ke tengah layar sambil membesar. Yang dianimasikan posisi dan ukuran ASLI tiap kotak
+  // (left/top/width/height), bukan transform scale. Scale membuat tepi tiap kotak dihaluskan browser, sehingga muncul
+  // garis tipis di sambungan antarkotak dan logonya terlihat bertekstur aneh.
   useEffect(() => {
     const el = refGrid.current
     if (!terbang || !el || !sk) return
-    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return
-    const r = el.getBoundingClientRect()
+    // Logo selalu dipusatkan oleh wadahnya, jadi saat ukurannya membesar posisi dasarnya ikut bergeser. Karena itu
+    // geseran dihitung dari titik TENGAH wadah ke titik tujuan, bukan dari pojok kiri atas logo.
+    const w = refWadah.current.getBoundingClientRect()
     const lebar = window.innerWidth
     const tinggi = window.innerHeight
     const skTujuan = Math.max(8, Math.min(Math.floor((lebar * 0.9) / KOLOM), Math.floor((tinggi * 0.62) / BARIS)))
-    const skala = skTujuan / sk
-    const dx = lebar / 2 - (r.left + r.width / 2)
-    const dy = tinggi * 0.47 - (r.top + r.height / 2)
+    const geserX = Math.round(lebar / 2 - (w.left + w.width / 2))
+    const geserY = Math.round(tinggi * 0.47 - (w.top + w.height / 2))
+    const kurangGerak = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    const lama = kurangGerak ? 1 : 600
+    const opsi = { duration: lama, easing: 'cubic-bezier(0.65, 0, 0.35, 1)', fill: 'forwards' }
+    const px = (n) => n + "px"
     el.animate(
-      [{ transform: 'none' }, { transform: `translate(${dx}px, ${dy}px) scale(${skala})` }],
-      { duration: 750, easing: 'cubic-bezier(0.65, 0, 0.35, 1)', fill: 'forwards' },
+      [
+        { transform: 'translate(-50%, -50%)', width: px(KOLOM * sk), height: px(BARIS * sk) },
+        { transform: 'translate(-50%, -50%) translate(' + px(geserX) + ', ' + px(geserY) + ')', width: px(KOLOM * skTujuan), height: px(BARIS * skTujuan) },
+      ],
+      opsi,
     )
-    // warna kotak ikut berubah ke warna logo di layar welcome (biru pucat, sedikit lebih samar), supaya saat berganti tidak terlihat beda
-    refKotak.current.forEach((n) => n?.animate(
-      [{ background: '#5ED0FF', opacity: 0.35 }, { background: 'rgb(158, 230, 255)', opacity: 0.3 }],
-      { duration: 750, easing: 'ease-in-out', fill: 'forwards' },
-    ))
-  }, [terbang, sk])
+    kotak.forEach((k, i) => {
+      const n = refKotak.current[i]
+      if (!n) return
+      n.animate(
+        [
+          { left: px(k.c * sk), top: px(k.r * sk), width: px(sk), height: px(sk), background: "#5ED0FF", opacity: 0.35 },
+          { left: px(k.c * skTujuan), top: px(k.r * skTujuan), width: px(skTujuan), height: px(skTujuan), background: "rgb(158, 230, 255)", opacity: 0.32 },
+        ],
+        opsi,
+      )
+    })
+  }, [terbang, sk, kotak])
 
   // dipicu dari luar (misalnya saklar demo dipencet): gelombang dari tengah logo
   useEffect(() => {
@@ -124,7 +138,8 @@ export default function LogoLabaSentuh({ style, pemicu = 0, terbang = false }) {
 }
 
 const s = {
-  wadah: { flex: '1 1 auto', minHeight: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' },
-  grid: { position: 'relative', cursor: 'pointer', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' },
+  wadah: { flex: '1 1 auto', minHeight: 0, position: 'relative' },
+  // logo melayang di tengah wadah (absolute), jadi saat membesar ia tidak ikut mendorong tinggi halaman
+  grid: { position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', cursor: 'pointer', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' },
   kotak: { position: 'absolute', background: '#5ED0FF', opacity: 0.35 },
 }

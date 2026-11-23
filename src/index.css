@@ -1009,13 +1009,14 @@ button:disabled[aria-label="◀"], button:disabled[aria-label="▶"] { opacity: 
   inset: 0;
   z-index: 0;
   pointer-events: auto;
-  animation: login-kaca-masuk 1.4s ease-out forwards;
+  animation: login-kaca-masuk 0.7s ease-out forwards;
 }
-@keyframes login-welcome-huruf {
-  0% { opacity: 0; transform: translateY(14px) scale(1.3); }
-  70% { opacity: 1; transform: translateY(-2px) scale(0.98); }
-  100% { opacity: 1; transform: none; }
-}
-.login-welcome-huruf { display: inline-block; opacity: 0; animation: login-welcome-huruf 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) var(--d, 0ms) forwards; }
-@keyframes login-welcome-sub { from { opacity: 0; letter-spacing: 0.6em; } to { opacity: 1; letter-spacing: 0.2em; } }
-.login-welcome-sub { opacity: 0; animation: login-welcome-sub 0.6s ease-out 1.3s forwards; }
+/* Tulisan welcome muncul memudar, sama seperti tulisan di layar menunggu ojek */
+.login-welcome-teks { animation: sp-isi-muncul 0.3s ease 0.15s backwards; }
+
+/* Keluar dari welcome ke app demo (0,35 dtk): logo dan tulisan memudar sambil sedikit membesar, kaca menggelap */
+@keyframes login-pergi { to { opacity: 0; transform: scale(1.06); } }
+.login-pergi .login-logo-wadah { animation: login-pergi 0.35s ease-in forwards !important; }
+.login-welcome-teks.login-welcome-pergi { animation: login-pergi 0.3s ease-in forwards; }
+@keyframes login-welcome-gelap { from { background-color: rgba(2, 30, 46, 0.45); } to { background-color: rgba(2, 30, 46, 0.92); } }
+.login-welcome-kaca.login-welcome-gelap { animation: login-kaca-masuk 0.01s forwards, login-welcome-gelap 0.35s ease-in forwards; }

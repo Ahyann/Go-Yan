@@ -146,10 +146,12 @@ export default function LoginPage() {
     getar(8)
     setDemoLoading(peran)
     setPemicuLogo((n) => n + 1)
-    setTimeout(() => setTransisi({ peran, tahap: 'terbang' }), 300)
-    setTimeout(() => { setTransisi({ peran, tahap: 'welcome', mulai: Date.now() }); playSambutKonsol() }, 300 + 800)
-    // login ke demo baru dijalankan setelah welcome selesai; begitu login berhasil, halaman ini diganti app demo
-    setTimeout(() => handleDemo(peran, jalankan), 300 + 800 + 3200)
+    // 0,15 dtk: logo terbang ke tengah (0,6 dtk) -> 0,75 dtk: kaca + tulisan welcome -> 2,05 dtk: logo dan tulisan
+    // memudar sambil sedikit membesar (0,35 dtk) -> 2,4 dtk: login ke akun demo, lalu halaman ini diganti app demo
+    setTimeout(() => setTransisi({ peran, tahap: 'terbang' }), 150)
+    setTimeout(() => { setTransisi({ peran, tahap: 'welcome' }); playSambutKonsol() }, 750)
+    setTimeout(() => setTransisi({ peran, tahap: 'keluar' }), 2050)
+    setTimeout(() => handleDemo(peran, jalankan), 2400)
   }
 
   async function handleDemo(peran, jalankan) {
@@ -192,7 +194,7 @@ export default function LoginPage() {
     {/* Latar CRT sengaja di luar <main>: selama animasi TV menyala <main> punya transform, dan elemen fixed di dalamnya
         jadi terkurung seukuran <main>, sehingga bagian bawah layar HP tampak kosong. */}
     <div className="login-latar-crt" aria-hidden="true" />
-    <main className={`login-tv${transisi ? ' login-keluar' : ''}`} style={s.wrap}>
+    <main className={`login-tv${transisi ? ' login-keluar' : ''}${transisi?.tahap === 'keluar' ? ' login-pergi' : ''}`} style={s.wrap}>
       <div className="login-garis-layar" aria-hidden="true" />
       <PilihBahasa style={s.bahasa} />
 
@@ -280,17 +282,13 @@ export default function LoginPage() {
         {barDemo}
       </div>
     </main>
-    {transisi?.tahap === 'welcome' && (
+    {(transisi?.tahap === 'welcome' || transisi?.tahap === 'keluar') && (
       <>
         {/* kaca: latar di belakang logo pelan-pelan buram dan menggelap; ada di bawah <main>, jadi logo tetap tajam di atasnya */}
-        <div className="login-welcome-kaca" aria-hidden="true" />
-        <div className="login-welcome-teks" style={{ ...s.welcomeTeks, top: posisiTeksWelcome() }} role="status">
-          <div style={s.welcomeJudul}>
-            {t.demoSelamatDatangJudul.split('').map((h, i) => (
-              <span key={i} className="login-welcome-huruf" style={{ '--d': `${500 + i * 35}ms` }}>{h === ' ' ? '\u00A0' : h}</span>
-            ))}
-          </div>
-          <div className="login-welcome-sub" style={s.welcomeSub}>{(transisi.peran === 'ojek' ? t.demoOjek : t.demoPenumpang).toUpperCase()}</div>
+        <div className={`login-welcome-kaca${transisi.tahap === 'keluar' ? ' login-welcome-gelap' : ''}`} aria-hidden="true" />
+        <div className={`login-welcome-teks${transisi.tahap === 'keluar' ? ' login-welcome-pergi' : ''}`} style={{ ...s.welcomeTeks, top: posisiTeksWelcome() }} role="status">
+          <div style={s.welcomeJudul}>{t.demoSelamatDatangJudul}</div>
+          <div style={s.welcomeSub}>{(transisi.peran === 'ojek' ? t.demoOjek : t.demoPenumpang).toUpperCase()}</div>
         </div>
       </>
     )}
@@ -324,8 +322,9 @@ const s = {
   // supaya kartu pas selebar layar dan logo laba-laba di latar tepat di tengah
   blokDemo: { position: 'absolute', left: 24, right: 24, bottom: 'calc(var(--safe-bottom) + 14px)', zIndex: 2 },
   welcomeTeks: { position: 'fixed', left: 16, right: 16, zIndex: 2, textAlign: 'center', pointerEvents: 'none' },
-  welcomeJudul: { fontFamily: 'var(--font-judul)', fontSize: 34, letterSpacing: '1px', color: 'var(--glow-blue)', textShadow: '0 0 12px var(--glow-blue-mid), 2px 2px 0 var(--nav-red)', lineHeight: 1.05 },
-  welcomeSub: { fontFamily: 'var(--font-data)', fontSize: 12, letterSpacing: '0.2em', color: '#9FC3E8', marginTop: 10 },
+  // sama dengan judul dan sub di layar menunggu ojek (SpideyMenunggu)
+  welcomeJudul: { fontFamily: 'var(--font-judul)', fontSize: 32, letterSpacing: 1, lineHeight: 1, color: '#FFFFFF', textShadow: '0 1px 3px rgba(0, 0, 0, 0.9), 0 0 2px rgba(0, 0, 0, 0.9)' },
+  welcomeSub: { fontFamily: 'var(--font-data)', fontSize: 12, letterSpacing: '0.08em', color: '#E8EDF9', marginTop: 8, textShadow: '0 1px 3px rgba(0, 0, 0, 0.9), 0 0 2px rgba(0, 0, 0, 0.9)' },
   blokOverlay: { position: 'absolute', top: 0, bottom: 0, left: 14, right: 14 },
   wrap: {
     position: 'relative',
