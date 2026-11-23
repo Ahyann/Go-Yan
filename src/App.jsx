@@ -145,20 +145,26 @@ function AppIsi() {
   )
 }
 
-// 7 bar mengikuti satu gelombang yang berjalan ke kanan; tiap bar tertinggal sedikit dari bar sebelumnya
 const BAR_LOADING = [0, 1, 2, 3, 4, 5, 6]
-const PERIODE_ONDA = 1.2
-const JEDA_ONDA = 0.14
-const delayOnda = (i) => `${-(PERIODE_ONDA - i * JEDA_ONDA)}s`
 
 function LoadingScreen() {
   return (
     <div style={s.loading}>
       <div style={s.loadingEyebrow}>GO-YAN</div>
-      {/* ombak bar yang berjalan, dengan pantulan samar di bawahnya */}
       <div aria-hidden="true">
-        <div style={s.eqRow}>{BAR_LOADING.map((i) => <span key={i} className="ld-onda" style={{ ...s.eqBar, transformOrigin: 'bottom', animationDelay: delayOnda(i) }} />)}</div>
-        <div style={s.eqRowPantul}>{BAR_LOADING.map((i) => <span key={i} className="ld-onda" style={{ ...s.eqBar, height: 14, transformOrigin: 'top', boxShadow: 'none', animationDelay: delayOnda(i) }} />)}</div>
+        <div style={s.eqRow}>
+          {BAR_LOADING.map((i) => (
+            <span key={i} className="eq-bar" style={{ ...s.eqBar, animationDelay: `${(i % 4) * 0.12}s` }} />
+          ))}
+        </div>
+        {/* pantulan: salinan bar yang dibalik, diperpendek, dan memudar ke bawah; animasinya sama persis dengan bar di atasnya */}
+        <div style={s.eqPantul}>
+          <div style={s.eqRowPantul}>
+            {BAR_LOADING.map((i) => (
+              <span key={i} className="eq-bar" style={{ ...s.eqBar, boxShadow: 'none', animationDelay: `${(i % 4) * 0.12}s` }} />
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   )
@@ -184,9 +190,44 @@ const s = {
     color: 'var(--glow-blue)',
     textShadow: '0 0 8px var(--glow-blue-mid)',
   },
-  eqRow: { display: 'flex', alignItems: 'flex-end', justifyContent: 'center', gap: 5, height: 34 },
-  eqBar: { width: 6, height: 34, background: 'var(--glow-blue)', boxShadow: '0 0 6px var(--glow-blue-mid)' },
-  eqRowPantul: { display: 'flex', alignItems: 'flex-start', justifyContent: 'center', gap: 5, height: 14, marginTop: 3, opacity: 0.25 },
+  eqRow: {
+    display: 'flex',
+    alignItems: 'flex-end',
+    justifyContent: 'center',
+    gap: 5,
+    height: 26,
+  },
+  eqBar: {
+    width: 6,
+    height: 26,
+    borderRadius: 0,
+    background: 'var(--glow-blue)',
+    boxShadow: '0 0 6px var(--glow-blue-mid)',
+  },
+  // pantulan: baris bar dibalik terhadap tepi BAWAHnya (jadi hasilnya jatuh ke bawah) dan diperpendek setengah. Barisnya
+  // ditaruh di atas pembungkus (top: -26) supaya tepi bawahnya tepat di tepi atas pembungkus.
+  eqPantul: {
+    position: 'relative',
+    height: 13,
+    overflow: 'hidden',
+    marginTop: 3,
+    opacity: 0.35,
+    WebkitMaskImage: 'linear-gradient(to bottom, #000, transparent)',
+    maskImage: 'linear-gradient(to bottom, #000, transparent)',
+  },
+  eqRowPantul: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: -26,
+    display: 'flex',
+    alignItems: 'flex-end',
+    justifyContent: 'center',
+    gap: 5,
+    height: 26,
+    transform: 'scaleY(-0.5)',
+    transformOrigin: 'bottom',
+  },
   uidDebug: {
     fontSize: 12,
     fontFamily: 'monospace',
