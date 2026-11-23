@@ -10,20 +10,17 @@ import SpideyMenunggu from '../components/SpideyMenunggu.jsx'
 
 // Blokir login setelah salah password berkali-kali. Disimpan di localStorage supaya refresh halaman tidak membuka blokir.
 // Setelah blokir pertama (3 kali salah), SETIAP salah lagi langsung memblokir dengan waktu yang makin lama.
-// MODE_UJI: sementara 10 detik, 20 detik, 30 detik, dan seterusnya. Nanti dimatikan: 1 menit, 10 menit, 10 menit x ke-n.
-const MODE_UJI = true
+// Lama blokir: 30 detik, 5 menit, 10 menit, lalu bertambah 10 menit tiap kali (maksimal 1 jam).
+// Berhasil login menghapus semua hitungan ini, jadi setelah logout dan salah 3 kali lagi, mulai lagi dari 30 detik.
 const BATAS_GAGAL = 3
-const BATAS_UJI = 30_000 // selama uji, waktu blokir tidak lebih dari ini
-const durasiBlok = (ke) => (MODE_UJI ? Math.min(10_000 * (ke + 1), BATAS_UJI) : ke === 0 ? 60_000 : 600_000 * ke)
+const durasiBlok = (ke) => (ke === 0 ? 30_000 : ke === 1 ? 300_000 : Math.min(600_000 * (ke - 1), 3_600_000))
 const KUNCI_BLOK = 'goyan:loginBlok'
 const KODE_SALAH = ['auth/invalid-credential', 'auth/invalid-email', 'auth/wrong-password', 'auth/user-not-found']
 
 function bacaBlok() {
   try {
     const d = JSON.parse(localStorage.getItem(KUNCI_BLOK) || '{}')
-    let sampai = d.sampai || 0
-    if (MODE_UJI && sampai - Date.now() > BATAS_UJI) sampai = Date.now() + BATAS_UJI
-    return { gagal: d.gagal || 0, ke: d.ke || 0, sampai }
+    return { gagal: d.gagal || 0, ke: d.ke || 0, sampai: d.sampai || 0 }
   } catch {
     return { gagal: 0, ke: 0, sampai: 0 }
   }
