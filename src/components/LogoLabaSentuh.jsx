@@ -13,7 +13,6 @@ export default function LogoLabaSentuh({ style, pemicu = 0, terbang = false }) {
   const refWadah = useRef(null)
   const refGrid = useRef(null)
   const refKotak = useRef([])
-  const refDebu = useRef(null)
   const [sk, setSk] = useState(0)
 
   const kotak = useMemo(() => {
@@ -107,52 +106,6 @@ export default function LogoLabaSentuh({ style, pemicu = 0, terbang = false }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sk, terbang])
 
-  // Debu cahaya: titik kecil warna campur (biru, putih, merah lembut) muncul di tempat acak di sekitar logo, naik pelan
-  // sambil memudar. Maksimal 10 titik sekaligus; berhenti saat logo terbang, tab disembunyikan, atau gerak dikurangi.
-  useEffect(() => {
-    const lapis = refDebu.current
-    if (!sk || terbang || !lapis) return undefined
-    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return undefined
-    const WARNA = ['#8FDDFF', '#FFFFFF', '#FF8A8A']
-    let id
-    let aktif = 0
-    const lahir = () => {
-      if (!document.hidden && aktif < 10) {
-        const w = lapis.clientWidth
-        const h = lapis.clientHeight
-        const lebarLogo = KOLOM * sk + 16
-        const tinggiLogo = BARIS * sk + 16
-        const x = Math.random() * (w - 4)
-        const y = Math.random() * (h - 4)
-        // jangan muncul di atas logo itu sendiri
-        if (!(Math.abs(x - w / 2) < lebarLogo / 2 && Math.abs(y - h / 2) < tinggiLogo / 2)) {
-          const ukuran = Math.random() < 0.3 ? 4 : 3
-          const n = document.createElement('i')
-          n.style.cssText = 'position:absolute;left:' + x + 'px;top:' + y + 'px;width:' + ukuran + 'px;height:' + ukuran + 'px;opacity:0;background:' + WARNA[Math.floor(Math.random() * WARNA.length)]
-          lapis.appendChild(n)
-          aktif++
-          const naik = 30 + Math.random() * 50
-          const a = n.animate(
-            [
-              { opacity: 0, transform: 'translateY(0)' },
-              { opacity: 0.9, offset: 0.25 },
-              { opacity: 0.6, offset: 0.7 },
-              { opacity: 0, transform: 'translateY(' + -naik + 'px)' },
-            ],
-            { duration: 4000 + Math.random() * 3000, easing: 'ease-out' },
-          )
-          a.onfinish = () => { n.remove(); aktif-- }
-        }
-      }
-      id = setTimeout(lahir, 500 + Math.random() * 700)
-    }
-    lahir()
-    return () => {
-      clearTimeout(id)
-      lapis.textContent = ''
-    }
-  }, [sk, terbang])
-
   function glitch() {
     if (document.hidden) return
     const pita = []
@@ -209,7 +162,6 @@ export default function LogoLabaSentuh({ style, pemicu = 0, terbang = false }) {
 
   return (
     <div ref={refWadah} style={{ ...s.wadah, ...style }}>
-      <div ref={refDebu} aria-hidden="true" style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }} />
       {sk > 0 && (
         <div
           ref={refGrid}
