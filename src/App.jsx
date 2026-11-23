@@ -145,19 +145,20 @@ function AppIsi() {
   )
 }
 
-// [lama satu putaran (dtk), jeda awal (dtk)] per bar; sengaja tidak seragam supaya geraknya terlihat acak
-const BAR_LOADING = [[1.1, -0.2], [0.9, -0.6], [1.3, -0.1], [1.0, -0.8], [1.2, -0.4], [0.95, -0.3], [1.25, -0.7], [1.05, -0.5], [1.15, -0.9]]
+// 7 bar mengikuti satu gelombang yang berjalan ke kanan; tiap bar tertinggal sedikit dari bar sebelumnya
+const BAR_LOADING = [0, 1, 2, 3, 4, 5, 6]
+const PERIODE_ONDA = 2.42
+const JEDA_ONDA = 0.27
+const delayOnda = (i) => `${-(PERIODE_ONDA - i * JEDA_ONDA)}s`
 
 function LoadingScreen() {
   return (
     <div style={s.loading}>
       <div style={s.loadingEyebrow}>GO-YAN</div>
-      {/* bar equalizer pendek bertepi: makin rendah makin gelap, dengan pantulan tipis di bawahnya */}
-      <div style={s.eqWadah} aria-hidden="true">
-        <div style={s.eqRow}>{BAR_LOADING.map((b, i) => <span key={i} className="ld-bar" style={{ animationDuration: b[0] + 's', animationDelay: b[1] + 's' }} />)}</div>
-        <div style={s.eqPantul}>
-          <div style={s.eqRowPantul}>{BAR_LOADING.map((b, i) => <span key={i} className="ld-bar" style={{ animationDuration: b[0] + 's', animationDelay: b[1] + 's' }} />)}</div>
-        </div>
+      {/* ombak bar yang berjalan, dengan pantulan samar di bawahnya */}
+      <div aria-hidden="true">
+        <div style={s.eqRow}>{BAR_LOADING.map((i) => <span key={i} className="ld-onda" style={{ ...s.eqBar, transformOrigin: 'bottom', animationDelay: delayOnda(i) }} />)}</div>
+        <div style={s.eqRowPantul}>{BAR_LOADING.map((i) => <span key={i} className="ld-onda" style={{ ...s.eqBar, height: 14, transformOrigin: 'top', boxShadow: 'none', animationDelay: delayOnda(i) }} />)}</div>
       </div>
     </div>
   )
@@ -183,11 +184,9 @@ const s = {
     color: 'var(--glow-blue)',
     textShadow: '0 0 8px var(--glow-blue-mid)',
   },
-  eqWadah: { display: 'flex', flexDirection: 'column', alignItems: 'center' },
-  eqRow: { display: 'flex', alignItems: 'flex-end', gap: 6, height: 30 },
-  // pantulan: salinan bar yang dibalik, diperpendek, lalu memudar ke bawah
-  eqPantul: { height: 14, overflow: 'hidden', marginTop: 3, opacity: 0.3, WebkitMaskImage: 'linear-gradient(to bottom, #000, transparent)', maskImage: 'linear-gradient(to bottom, #000, transparent)' },
-  eqRowPantul: { display: 'flex', alignItems: 'flex-end', gap: 6, height: 30, transform: 'scaleY(-0.5)', transformOrigin: 'top' },
+  eqRow: { display: 'flex', alignItems: 'flex-end', justifyContent: 'center', gap: 5, height: 34 },
+  eqBar: { width: 6, height: 34, background: 'var(--glow-blue)', boxShadow: '0 0 6px var(--glow-blue-mid)' },
+  eqRowPantul: { display: 'flex', alignItems: 'flex-start', justifyContent: 'center', gap: 5, height: 14, marginTop: 3, opacity: 0.25 },
   uidDebug: {
     fontSize: 12,
     fontFamily: 'monospace',

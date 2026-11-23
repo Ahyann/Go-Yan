@@ -237,21 +237,12 @@ button {
   animation: eq-bar 0.55s ease-in-out infinite;
 }
 
-/* Bar loading awal: pendek, bertepi, makin rendah makin gelap. Tinggi dan warna berubah bersama. */
-@keyframes ld-bar {
-  0%, 100% { height: 9px; background: #1F6B8F; }
-  30% { height: 26px; background: #8FDDFF; }
-  55% { height: 15px; background: #4FA9D2; }
-  80% { height: 21px; background: #6CC6EC; }
+/* Loading awal: bar naik turun mengikuti gelombang berjalan (transform saja, ringan) */
+@keyframes ld-onda {
+  0%, 100% { transform: scaleY(0.2); }
+  50% { transform: scaleY(1); }
 }
-.ld-bar {
-  width: 13px;
-  height: 9px;
-  background: #1F6B8F;
-  border: 2px solid rgba(2, 56, 84, 0.85);
-  box-sizing: border-box;
-  animation: ld-bar 1.1s ease-in-out infinite;
-}
+.ld-onda { animation: ld-onda 2.42s ease-in-out infinite; }
 
 @keyframes spider-swing {
   0%, 100% { transform: rotate(-10deg); }
