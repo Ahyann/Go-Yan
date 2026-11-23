@@ -144,6 +144,7 @@ export const translations = {
     memproses: 'Memproses…',
     bahasaLabel: 'Bahasa / Language',
     keluar: 'Keluar',
+    keluarTahan: 'Tahan untuk keluar',
 
     // --- Jadwal ---
     jadwalEyebrow: 'JADWAL',
@@ -401,6 +402,7 @@ export const translations = {
     memproses: 'Processing…',
     bahasaLabel: 'Bahasa / Language',
     keluar: 'Log out',
+    keluarTahan: 'Hold to log out',
 
     // --- Jadwal ---
     jadwalEyebrow: 'SCHEDULE',

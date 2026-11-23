@@ -8,6 +8,7 @@ import { useProfilIkon } from '../lib/useProfilIkon'
 import { useWarnaGlow } from '../lib/useWarnaGlow'
 import ProfilAkun from '../components/ProfilAkun.jsx'
 import TombolPindahPeran from '../components/TombolPindahPeran.jsx'
+import TombolLogout from '../components/TombolLogout.jsx'
 
 const PILIHAN_IKON_FAJRI = ['fajri.png', 'fajri2.png', 'fajri3.png']
 
@@ -25,7 +26,7 @@ function ketukBuild() {
 }
 
 export default function AccountTab() {
-  const { user, logout, isDemo } = useAuth()
+  const { user, isDemo } = useAuth()
   const { t } = useLanguage()
   const { ikonFajri, pilihIkonFajri } = useProfilIkon()
   const { warnaFajri, pilihWarnaFajri } = useWarnaGlow()
@@ -52,9 +53,7 @@ export default function AccountTab() {
 
       <TombolPindahPeran />
 
-      <button style={s.logoutBtn} onClick={logout}>
-        {t.keluar}
-      </button>
+      <TombolLogout />
 
       <div style={s.idBuild} onClick={ketukBuild}>
         build {__ID_BUILD__}{debugAktif ? ' · debug ON' : ''}
@@ -145,14 +144,6 @@ const s = {
     marginTop: -4,
     userSelect: 'none',
     WebkitUserSelect: 'none',
-  },
-  logoutBtn: {
-    background: 'var(--nav-red)',
-    color: '#fff',
-    fontSize: 15,
-    fontWeight: 600,
-    padding: '14px',
-    borderRadius: 0,
   },
   overlay: {
     position: 'fixed',

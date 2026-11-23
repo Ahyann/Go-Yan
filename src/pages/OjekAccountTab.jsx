@@ -8,6 +8,7 @@ import { useProfilIkon } from '../lib/useProfilIkon'
 import { useWarnaGlow } from '../lib/useWarnaGlow'
 import ProfilAkun from '../components/ProfilAkun.jsx'
 import TombolPindahPeran from '../components/TombolPindahPeran.jsx'
+import TombolLogout from '../components/TombolLogout.jsx'
 
 const PILIHAN_IKON = ['spidericon.png', 'preset_biru.png', 'preset_merah.png', 'preset_hijau.png']
 
@@ -25,7 +26,7 @@ function ketukBuild() {
 }
 
 export default function OjekAccountTab() {
-  const { user, logout, isDemo } = useAuth()
+  const { user, isDemo } = useAuth()
   const { t } = useLanguage()
   const { ikonAhyan, pilihIkonAhyan } = useProfilIkon()
   const { warnaAhyan, pilihWarnaAhyan } = useWarnaGlow()
@@ -53,9 +54,7 @@ export default function OjekAccountTab() {
 
       <TombolPindahPeran />
 
-      <button style={s.logoutBtn} onClick={logout}>
-        {t.keluar}
-      </button>
+      <TombolLogout />
 
       <div style={s.idBuild} onClick={ketukBuild}>
         build {__ID_BUILD__}{debugAktif ? ' · debug ON' : ''}
@@ -144,14 +143,6 @@ const s = {
     marginTop: -4,
     userSelect: 'none',
     WebkitUserSelect: 'none',
-  },
-  logoutBtn: {
-    background: 'var(--nav-red)',
-    color: '#fff',
-    fontSize: 15,
-    fontWeight: 600,
-    padding: '14px',
-    borderRadius: 0,
   },
   overlay: {
     position: 'fixed',
