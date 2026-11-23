@@ -145,18 +145,19 @@ function AppIsi() {
   )
 }
 
+// [lama satu putaran (dtk), jeda awal (dtk)] per bar; sengaja tidak seragam supaya geraknya terlihat acak
+const BAR_LOADING = [[1.1, -0.2], [0.9, -0.6], [1.3, -0.1], [1.0, -0.8], [1.2, -0.4], [0.95, -0.3], [1.25, -0.7], [1.05, -0.5], [1.15, -0.9]]
+
 function LoadingScreen() {
   return (
     <div style={s.loading}>
       <div style={s.loadingEyebrow}>GO-YAN</div>
-      <div style={s.eqRow}>
-        {[0, 1, 2, 3, 4, 5, 6].map((i) => (
-          <span
-            key={i}
-            className="eq-bar"
-            style={{ ...s.eqBar, animationDelay: `${(i % 4) * 0.12}s` }}
-          />
-        ))}
+      {/* bar equalizer pendek bertepi: makin rendah makin gelap, dengan pantulan tipis di bawahnya */}
+      <div style={s.eqWadah} aria-hidden="true">
+        <div style={s.eqRow}>{BAR_LOADING.map((b, i) => <span key={i} className="ld-bar" style={{ animationDuration: b[0] + 's', animationDelay: b[1] + 's' }} />)}</div>
+        <div style={s.eqPantul}>
+          <div style={s.eqRowPantul}>{BAR_LOADING.map((b, i) => <span key={i} className="ld-bar" style={{ animationDuration: b[0] + 's', animationDelay: b[1] + 's' }} />)}</div>
+        </div>
       </div>
     </div>
   )
@@ -182,19 +183,11 @@ const s = {
     color: 'var(--glow-blue)',
     textShadow: '0 0 8px var(--glow-blue-mid)',
   },
-  eqRow: {
-    display: 'flex',
-    alignItems: 'flex-end',
-    gap: 5,
-    height: 26,
-  },
-  eqBar: {
-    width: 6,
-    height: 26,
-    borderRadius: 0,
-    background: 'var(--glow-blue)',
-    boxShadow: '0 0 6px var(--glow-blue-mid)',
-  },
+  eqWadah: { display: 'flex', flexDirection: 'column', alignItems: 'center' },
+  eqRow: { display: 'flex', alignItems: 'flex-end', gap: 6, height: 30 },
+  // pantulan: salinan bar yang dibalik, diperpendek, lalu memudar ke bawah
+  eqPantul: { height: 14, overflow: 'hidden', marginTop: 3, opacity: 0.3, WebkitMaskImage: 'linear-gradient(to bottom, #000, transparent)', maskImage: 'linear-gradient(to bottom, #000, transparent)' },
+  eqRowPantul: { display: 'flex', alignItems: 'flex-end', gap: 6, height: 30, transform: 'scaleY(-0.5)', transformOrigin: 'top' },
   uidDebug: {
     fontSize: 12,
     fontFamily: 'monospace',
