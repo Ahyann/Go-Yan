@@ -274,7 +274,9 @@ export default function LoginPage() {
 const s = {
   // layar blokir menutup seluruh layar di atas halaman login; dua lapis karena SpideyMenunggu mengukur ukurannya dari dua induk
   blokLayar: { position: 'fixed', inset: 0, zIndex: 50, background: '#023854', overflow: 'hidden' },
-  blokOverlay: { position: 'absolute', inset: 0 },
+  // kartu SpideyMenunggu melebar 14px ke kiri dan kanan dari induknya (dibuat untuk peta), jadi induknya disempitkan 14px
+  // supaya kartu pas selebar layar dan logo laba-laba di latar tepat di tengah
+  blokOverlay: { position: 'absolute', top: 0, bottom: 0, left: 14, right: 14 },
   wrap: {
     position: 'relative',
     zIndex: 1, // di atas latar CRT
