@@ -33,7 +33,8 @@ export default function LogoLabaSentuh({ style }) {
       const width = el.clientWidth
       const height = el.clientHeight
       const ukuran = Math.floor(Math.min((width * 0.8) / KOLOM, (height * 0.86) / BARIS, 12))
-      setSk(ukuran >= 5 ? ukuran : 0)
+      // minimal 4px per kotak (logo setinggi 92px): cukup untuk iPhone mode app yang ruang bawahnya hanya sekitar 100-120px
+      setSk(ukuran >= 4 ? ukuran : 0)
     }
     ukur()
     const pengamat = new ResizeObserver(ukur)

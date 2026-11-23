@@ -301,7 +301,7 @@ const s = {
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
-    padding: 'calc(var(--safe-top) + 64px) 24px calc(var(--safe-bottom) + 16px)',
+    padding: 'calc(var(--safe-top) + 52px) 24px calc(var(--safe-bottom) + 12px)',
     maxWidth: 400,
     margin: '0 auto',
   },
@@ -311,7 +311,7 @@ const s = {
     top: 'calc(var(--safe-top) + 14px)',
     right: 24,
   },
-  brand: { marginBottom: 32 },
+  brand: { marginBottom: 24 },
   logo: {
     fontFamily: 'var(--font-judul)',
     fontSize: 64,

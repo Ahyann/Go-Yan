@@ -957,7 +957,12 @@ button:disabled[aria-label="◀"], button:disabled[aria-label="▶"] { opacity: 
 /* Latar login bergaya layar CRT: garis layar tipis dan pinggir layar sedikit gelap, tetap ada setelah animasi pembuka. */
 .login-latar-crt {
   position: fixed;
-  inset: 0;
+  /* diperpanjang ke bawah: di iPhone mode app tinggi halaman kadang lebih pendek dari layar, dan sisa layar di
+     bawahnya tampak sebagai celah berwarna polos. Latar yang lebih panjang menutup celah itu. */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: -160px;
   z-index: 0;
   pointer-events: none;
   background-image:
