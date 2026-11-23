@@ -265,8 +265,6 @@ export default function LoginPage() {
 
       <div className="login-naik" style={{ ...s.demoWrap, '--d': '1750ms' }}>
         <div style={s.demoDivider}>
-          <span style={{ ...s.demoDividerLubang, left: -24 }} aria-hidden="true" />
-          <span style={{ ...s.demoDividerLubang, right: -24 }} aria-hidden="true" />
           <span style={s.demoDividerGaris} />
           <span style={s.demoDividerTeks}>{t.demoAtau}</span>
           <span style={s.demoDividerGaris} />
@@ -418,28 +416,17 @@ const s = {
     position: 'relative',
     display: 'flex',
     alignItems: 'center',
-    gap: 12,
-    minHeight: 16,
+    gap: 10,
   },
   demoDividerGaris: {
     flex: 1,
-    height: 2,
-    background: 'rgba(94, 208, 255, 0.55)',
-  },
-  // lubang bulat di kedua tepi layar, seperti sobekan tiket
-  demoDividerLubang: {
-    position: 'absolute',
-    top: '50%',
-    width: 16,
-    height: 16,
-    marginTop: -8,
-    borderRadius: '50%',
-    background: '#021522',
+    height: 1,
+    background: 'rgba(94, 208, 255, 0.45)',
   },
   demoDividerTeks: {
-    fontSize: 12,
+    fontSize: 10.5,
     color: '#FFFFFF',
-    letterSpacing: '0.14em',
+    letterSpacing: '0.1em',
     whiteSpace: 'nowrap',
   },
   demoBtn: {
