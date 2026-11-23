@@ -4,7 +4,7 @@ import { auth } from '../lib/firebase'
 import PilihBahasa from '../components/PilihBahasa.jsx'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
-import { playTingMasuk, playGoBuka, playPesananBatal } from '../lib/sound'
+import { playGoBuka, playPesananBatal } from '../lib/sound'
 import { getar, POLA_GETAR } from '../lib/getar'
 import SpideyMenunggu from '../components/SpideyMenunggu.jsx'
 import LogoLabaSentuh from '../components/LogoLabaSentuh.jsx'
@@ -145,7 +145,6 @@ export default function LoginPage() {
     setTimeout(() => setTransisi({ peran, tahap: 'terbang' }), 150)
     setTimeout(() => {
       mulaiTransisiDemo(peran)
-      playTingMasuk() // ting hanya di sini: begitu layar loading demo muncul
       handleDemo(peran, jalankan)
     }, 750)
   }
