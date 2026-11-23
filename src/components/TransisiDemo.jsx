@@ -61,8 +61,7 @@ export default function TransisiDemo() {
         ))}
       </div>
       <div className="td-isi td-teks" style={{ ...s.teks, top: atasTeks }}>
-        <div style={s.judul}>{t.demoSelamatDatangJudul}</div>
-        <div style={s.sub}>{peran}</div>
+        <div style={s.judul}>{peran}</div>
         <div className="td-titik" aria-hidden="true"><i /><i /><i /></div>
       </div>
     </div>
@@ -75,5 +74,4 @@ const s = {
   teks: { position: 'absolute', left: 16, right: 16, textAlign: 'center' },
   // sama dengan judul dan sub di layar menunggu ojek (SpideyMenunggu)
   judul: { fontFamily: 'var(--font-judul)', fontSize: 32, letterSpacing: 1, lineHeight: 1, color: '#FFFFFF', textShadow: bayang },
-  sub: { fontFamily: 'var(--font-data)', fontSize: 12, letterSpacing: '0.08em', color: '#E8EDF9', marginTop: 8, textShadow: bayang },
 }
