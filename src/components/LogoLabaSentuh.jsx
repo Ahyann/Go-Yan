@@ -70,6 +70,11 @@ export default function LogoLabaSentuh({ style, pemicu = 0, terbang = false }) {
       [{ transform: 'none' }, { transform: `translate(${dx}px, ${dy}px) scale(${skala})` }],
       { duration: 750, easing: 'cubic-bezier(0.65, 0, 0.35, 1)', fill: 'forwards' },
     )
+    // warna kotak ikut berubah ke warna logo di layar welcome (biru pucat, sedikit lebih samar), supaya saat berganti tidak terlihat beda
+    refKotak.current.forEach((n) => n?.animate(
+      [{ background: '#5ED0FF', opacity: 0.35 }, { background: 'rgb(158, 230, 255)', opacity: 0.3 }],
+      { duration: 750, easing: 'ease-in-out', fill: 'forwards' },
+    ))
   }, [terbang, sk])
 
   // dipicu dari luar (misalnya saklar demo dipencet): gelombang dari tengah logo

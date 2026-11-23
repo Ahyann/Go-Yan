@@ -39,7 +39,9 @@ const campur = (a, b, u) => `rgb(${Math.round(a[0] + (b[0] - a[0]) * u)},${Math.
 // Logo laba-laba latar digambar di SATU kanvas (bukan ratusan elemen SVG yang masing-masing dianimasikan, yang
 // berat sekali di HP). Tiga keadaan: masuk (kotak meledak dari tengah lalu pita cahaya menyapu), diterima (menyala
 // hijau lalu melayang naik), dibatalkan (memerah, bergetar, lalu berjatuhan).
-function LogoLatar({ sk, lebar, tinggi, mode, pusat = 0.47, modeMerah = false }) {
+// langsungJadi: logo tampil utuh sejak awal tanpa efek kotak meledak dari tengah (dipakai saat logo dari halaman login
+// sudah membesar ke posisi ini, jadi perpindahannya menyambung tanpa logo dibangun ulang)
+function LogoLatar({ sk, lebar, tinggi, mode, pusat = 0.47, modeMerah = false, langsungJadi = false }) {
   const refKanvas = useRef(null)
   const refMulai = useRef({ mode: null, t: 0 })
   useEffect(() => {
@@ -74,7 +76,7 @@ function LogoLatar({ sk, lebar, tinggi, mode, pusat = 0.47, modeMerah = false })
       for (const g of PARAM_KOTAK) {
         let tx = 0, ty = 0, skala = 1, rot = 0, alfa = 1, warna = modeMerah ? campur(merah, merah, 0) : campur(biru, biru, 0)
         if (mode === 'masuk') {
-          const p = (t - g.dMasuk) / 1.1
+          const p = langsungJadi ? 1 : (t - g.dMasuk) / 1.1
           if (p < 0) { hidup = true; continue }
           if (p < 0.4) { const u = p / 0.4; tx = g.x * (1 - u); ty = g.y * (1 - u); skala = 1.4 * u }
           else if (p < 0.6) skala = 1.4 - 0.4 * ((p - 0.4) / 0.2)
@@ -142,7 +144,7 @@ function LogoLatar({ sk, lebar, tinggi, mode, pusat = 0.47, modeMerah = false })
     }
     id = requestAnimationFrame(gambar)
     return () => cancelAnimationFrame(id)
-  }, [sk, lebar, tinggi, mode, modeMerah])
+  }, [sk, lebar, tinggi, mode, modeMerah, langsungJadi])
   return <canvas ref={refKanvas} style={{ ...s.logoLatar, width: lebar, height: tinggi }} aria-hidden="true" />
 }
 
@@ -345,7 +347,7 @@ const REAKSI_BLOK = ['kaget', 'getar', 'angguk', 'glitch', 'intip', 'kenyal']
 
 const SUDAH_WHOOSH = new Set()
 
-export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalkan = false, menyusut = false, isDemo = false, teks = null, gayaTolak = false, info = null, tanpaWhoosh = false, kompak = false, selesai = false, keluar = false, sampai = null, pesanSentuh = null, bawahTeks = null, modeMerah = false, tanpaWaktu = false }) {
+export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalkan = false, menyusut = false, isDemo = false, teks = null, gayaTolak = false, info = null, tanpaWhoosh = false, kompak = false, selesai = false, keluar = false, sampai = null, pesanSentuh = null, bawahTeks = null, modeMerah = false, tanpaWaktu = false, logoLangsungJadi = false }) {
   const { t } = useLanguage()
   const [sekarang, setSekarang] = useState(() => Date.now())
 
@@ -474,7 +476,7 @@ export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalka
     >
       {/* Logo laba-laba dari layar pembuka sebagai latar. Masuk: kotak meledak dari tengah. Diterima: menyala
           hijau lalu kotaknya melayang naik. Dibatalkan: memerah, bergetar, lalu kotaknya berjatuhan. */}
-      <LogoLatar sk={sk} lebar={lebarPenuh} tinggi={tinggiPenuh} mode={diterima ? 'diterima' : dibatalkan ? 'batal' : 'masuk'} pusat={kompak ? 0.5 : 0.47} modeMerah={modeMerah} />
+      <LogoLatar sk={sk} lebar={lebarPenuh} tinggi={tinggiPenuh} mode={diterima ? 'diterima' : dibatalkan ? 'batal' : 'masuk'} pusat={kompak ? 0.5 : 0.47} modeMerah={modeMerah} langsungJadi={logoLangsungJadi} />
 
       <div className="sp-kilau" style={{ opacity: diterima || dibatalkan ? 0 : 1 }} aria-hidden="true" />
 

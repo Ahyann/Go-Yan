@@ -283,6 +283,7 @@ export default function LoginPage() {
             dibuatPada={transisi.mulai}
             teks={{ menunggu: t.demoSelamatDatangJudul, menungguSub: (transisi.peran === 'ojek' ? t.demoOjek : t.demoPenumpang).toUpperCase() }}
             tanpaWaktu
+            logoLangsungJadi
             bawahTeks="calc(var(--safe-bottom) + 40px)"
           />
         </div>
