@@ -37,26 +37,36 @@ function usernameKeEmail(input) {
   return `${bersih}@gmail.com`
 }
 
-// Teks sambutan diketik huruf demi huruf setelah judul selesai jatuh.
-function useKetik(teks, mulaiMs = 750, jedaMs = 38) {
-  const [jumlah, setJumlah] = useState(0)
+// Tulisan sambutan: diketik, ditahan, dihapus, lalu diketik lagi, dengan waktu yang sama seperti keterangan di konsol
+// penumpang (KeteranganKetik). Punya state sendiri supaya halaman login tidak digambar ulang tiap 50 ms.
+const KETIK_MS = 240
+const HAPUS_MS = 140
+const TAHAN_MS = 10000
+const JEDA_MS = 500
+function SambutanKetik({ teks, mulaiMs }) {
+  const [mulai] = useState(() => Date.now() + mulaiMs)
+  const [sekarang, setSekarang] = useState(() => Date.now())
   useEffect(() => {
-    setJumlah(0)
-    let tick
-    const mulai = setTimeout(() => {
-      let i = 0
-      tick = setInterval(() => {
-        i += 1
-        setJumlah(i)
-        if (i >= teks.length) clearInterval(tick)
-      }, jedaMs)
-    }, mulaiMs)
-    return () => {
-      clearTimeout(mulai)
-      clearInterval(tick)
-    }
-  }, [teks, mulaiMs, jedaMs])
-  return teks.slice(0, jumlah)
+    const id = setInterval(() => setSekarang(Date.now()), 50)
+    return () => clearInterval(id)
+  }, [])
+  const lama = teks.length * (KETIK_MS + HAPUS_MS) + TAHAN_MS + JEDA_MS
+  const t = sekarang - mulai
+  let huruf = 0
+  if (t > 0) {
+    const sisa = t % lama
+    const tKetik = teks.length * KETIK_MS
+    if (sisa < tKetik) huruf = Math.floor(sisa / KETIK_MS)
+    else if (sisa < tKetik + TAHAN_MS) huruf = teks.length
+    else huruf = Math.max(0, teks.length - Math.floor((sisa - tKetik - TAHAN_MS) / HAPUS_MS))
+  }
+  return (
+    <>
+      <span style={s.sambutanTanda} aria-hidden="true">&gt; </span>
+      {teks.slice(0, huruf)}
+      <span className="login-kursor" style={{ color: 'var(--glow-blue)' }} aria-hidden="true">_</span>
+    </>
+  )
 }
 
 export default function LoginPage() {
@@ -68,7 +78,6 @@ export default function LoginPage() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [demoLoading, setDemoLoading] = useState('')
-  const sambutan = useKetik(t.demoSelamatDatangJudul, 1150)
   const [blok, setBlok] = useState(bacaBlok)
   const [sekarang, setSekarang] = useState(() => Date.now())
   const terblokir = blok.sampai > sekarang
@@ -218,9 +227,7 @@ export default function LoginPage() {
         </div>
         <div className="login-garis" style={{ '--d': '1000ms', marginBottom: 10 }} aria-hidden="true" />
         <div style={s.sambutan} aria-live="off">
-          <span style={s.sambutanTanda} aria-hidden="true">&gt; </span>
-          {sambutan}
-          <span className="login-kursor" style={{ color: 'var(--glow-blue)' }} aria-hidden="true">_</span>
+          <SambutanKetik teks={t.demoSelamatDatangJudul} mulaiMs={1150} />
         </div>
         <h1 className="login-naik" style={{ ...s.title, '--d': '1250ms' }}>{t.loginTitle}</h1>
       </div>
