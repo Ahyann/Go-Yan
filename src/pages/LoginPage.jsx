@@ -161,7 +161,7 @@ export default function LoginPage() {
           <span style={s.demoDividerTeks}>{t.demoAtau}</span>
           <span style={s.demoDividerGaris} />
         </div>
-        <div style={s.demoRow}>
+        <div className="login-demo-bar">
           <button
             type="button"
             className="login-demo-btn"
@@ -169,7 +169,7 @@ export default function LoginPage() {
             onClick={() => { getar(8); handleDemo('ojek', masukDemoOjek) }}
             disabled={Boolean(demoLoading)}
           >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M12 2.5C6.7 2.5 3 6.5 3 12s3.7 9.5 9 9.5 9-4 9-9.5-3.7-9.5-9-9.5z" />
               <path d="M5.2 9.6c3.2.3 5.2 2 6.1 5-2.6 1.6-5.3.9-6.9-1.6z" />
               <path d="M18.8 9.6c-3.2.3-5.2 2-6.1 5 2.6 1.6 5.3.9 6.9-1.6z" />
@@ -183,7 +183,7 @@ export default function LoginPage() {
             onClick={() => { getar(8); handleDemo('penumpang', masukDemoPenumpang) }}
             disabled={Boolean(demoLoading)}
           >
-            <svg width="24" height="24" viewBox="-2 -2 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="8" cy="5" r="3"/><path d="M2 15c0-3.3 2.7-5 6-5s6 1.7 6 5"/></svg>
+            <svg width="22" height="22" viewBox="-2 -2 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="8" cy="5" r="3"/><path d="M2 15c0-3.3 2.7-5 6-5s6 1.7 6 5"/></svg>
             <span style={s.demoTeks}>{demoLoading === 'penumpang' ? t.loginMemproses : t.demoPenumpang}</span>
           </button>
         </div>
@@ -306,23 +306,19 @@ const s = {
     color: 'var(--text-dim)',
     letterSpacing: '0.04em',
   },
-  demoRow: {
-    display: 'flex',
-    gap: 10,
-  },
   demoBtn: {
     flex: 1,
     minWidth: 0, // biar tombol gak melebar gara-gara teks panjang
     display: 'flex',
-    flexDirection: 'column',
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 6,
-    background: 'var(--card-blue)',
+    gap: 8,
+    background: 'transparent',
     color: 'var(--glow-blue)',
-    padding: '14px 6px 12px',
+    padding: '13px 6px',
     borderRadius: 0,
-    border: '1px solid var(--glow-blue-mid)',
+    border: 'none',
   },
   demoTeks: {
     maxWidth: '100%',
