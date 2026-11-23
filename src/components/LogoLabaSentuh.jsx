@@ -108,7 +108,7 @@ export default function LogoLabaSentuh({ style, pemicu = 0, terbang = false }) {
   }, [sk, terbang])
 
   // Debu cahaya: titik kecil warna campur (biru, putih, merah lembut) muncul di tempat acak di sekitar logo, naik pelan
-  // sambil memudar. Maksimal 26 titik sekaligus; berhenti saat logo terbang, tab disembunyikan, atau gerak dikurangi.
+  // sambil memudar. Maksimal 10 titik sekaligus; berhenti saat logo terbang, tab disembunyikan, atau gerak dikurangi.
   useEffect(() => {
     const lapis = refDebu.current
     if (!sk || terbang || !lapis) return undefined
@@ -117,7 +117,7 @@ export default function LogoLabaSentuh({ style, pemicu = 0, terbang = false }) {
     let id
     let aktif = 0
     const lahir = () => {
-      if (!document.hidden && aktif < 26) {
+      if (!document.hidden && aktif < 10) {
         const w = lapis.clientWidth
         const h = lapis.clientHeight
         const lebarLogo = KOLOM * sk + 16
@@ -144,7 +144,7 @@ export default function LogoLabaSentuh({ style, pemicu = 0, terbang = false }) {
           a.onfinish = () => { n.remove(); aktif-- }
         }
       }
-      id = setTimeout(lahir, 150 + Math.random() * 250)
+      id = setTimeout(lahir, 500 + Math.random() * 700)
     }
     lahir()
     return () => {
