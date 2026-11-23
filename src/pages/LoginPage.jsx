@@ -166,7 +166,7 @@ export default function LoginPage() {
     getar(8)
     setDemoLoading(peran)
     setPemicuLogo((n) => n + 1)
-    // 0,15 dtk: isi halaman menghilang dan logo terbang ke tengah (0,75 dtk, memanjang lalu gepeng saat mendarat). 0,9 dtk: layar welcome (TransisiDemo, di
+    // 0,15 dtk: isi halaman menghilang dan logo terbang ke tengah (0,7 dtk, memantul seperti pegas). 0,9 dtk: layar welcome (TransisiDemo, di
     // tingkat App) mengambil alih dengan logo di posisi yang sama, dan login demo dimulai di baliknya. Begitu app demo
     // siap, layar welcome berubah dari buram ke bening memperlihatkan app.
     setTimeout(() => setTransisi({ peran, tahap: 'terbang' }), 150)
