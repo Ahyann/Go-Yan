@@ -169,7 +169,12 @@ export default function LoginPage() {
             onClick={() => { getar(8); handleDemo('ojek', masukDemoOjek) }}
             disabled={Boolean(demoLoading)}
           >
-            <img src={`${import.meta.env.BASE_URL}icons/spidericon.png`} alt="" aria-hidden="true" style={s.ikonSpidey} />
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M12 2.5C6.7 2.5 3 6.5 3 12s3.7 9.5 9 9.5 9-4 9-9.5-3.7-9.5-9-9.5z" />
+              <path d="M5.2 9.6c3.2.3 5.2 2 6.1 5-2.6 1.6-5.3.9-6.9-1.6z" />
+              <path d="M18.8 9.6c-3.2.3-5.2 2-6.1 5 2.6 1.6 5.3.9 6.9-1.6z" />
+              <path d="M9.8 18.2L12 16.4l2.2 1.8" />
+            </svg>
             <span style={s.demoTeks}>{demoLoading === 'ojek' ? t.loginMemproses : t.demoOjek}</span>
           </button>
           <button
@@ -320,8 +325,6 @@ const s = {
     borderRadius: 0,
     border: '1px solid var(--glow-blue-mid)',
   },
-  // spidericon.png asli app, merahnya diputar jadi biru; tajam kotak-kotak seperti di bagian lain app
-  ikonSpidey: { width: 24, height: 24, imageRendering: 'pixelated', filter: 'hue-rotate(205deg) saturate(1.3) brightness(1.1)' },
   demoTeks: {
     maxWidth: '100%',
     whiteSpace: 'nowrap', // satu baris, tinggi tombol sama di semua bahasa
