@@ -209,7 +209,7 @@ export const translations = {
     errTooManyRequests: 'Terlalu banyak percobaan gagal. Coba lagi sebentar.',
     blokJudul: 'TERLALU BANYAK PERCOBAAN',
     blokSub: 'LOGIN DIKUNCI SEMENTARA',
-    blokPesan: ['Eits! Salah 3 kali, istirahat dulu ya.', 'Jangan ditebak-tebak, spider-sense-ku curiga nih.', 'Tunggu hitungannya habis, baru coba lagi.', 'Lupa password? Tanya Ahyan aja daripada nebak.', 'Makin sering salah, makin lama nunggunya lho.'],
+    blokPesan: ['Eits! Salah 3 kali, istirahat dulu ya.', 'Jangan nebak, spider-sense-ku curiga!', 'Tunggu hitungannya habis ya.', 'Lupa password? Tanya Ahyan aja.', 'Makin sering salah, makin lama.'],
     errNetworkFailed: 'Gak ada koneksi internet.',
     errGeneric: 'Gagal masuk, coba lagi.',
 
@@ -462,7 +462,7 @@ export const translations = {
     errTooManyRequests: 'Too many failed attempts. Try again shortly.',
     blokJudul: 'TOO MANY TRIES',
     blokSub: 'SIGN-IN TEMPORARILY LOCKED',
-    blokPesan: ['Whoa! 3 wrong tries, take a breather.', 'No guessing, my spider-sense is tingling.', 'Wait for the timer, then try again.', 'Forgot your password? Ask Ahyan instead of guessing.', 'The more you miss, the longer you wait.'],
+    blokPesan: ['Whoa! 3 wrong tries, take a breather.', 'No guessing, spider-sense tingling!', 'Wait for the timer to finish.', 'Forgot it? Ask Ahyan instead.', 'More misses, longer the wait.'],
     errNetworkFailed: 'No internet connection.',
     errGeneric: 'Sign in failed, please try again.',
 

@@ -238,6 +238,35 @@ function mataSprite(k) {
   return hasil
 }
 
+// Kalimat dipotong per kata menjadi baris-baris pendek supaya muat di gelembung.
+function bungkusKata(teks, maks) {
+  const baris = []
+  let sekarang = ''
+  for (const kata of teks.split(' ')) {
+    if (sekarang && (sekarang + ' ' + kata).length > maks) { baris.push(sekarang); sekarang = kata } else sekarang = sekarang ? sekarang + ' ' + kata : kata
+  }
+  if (sekarang) baris.push(sekarang)
+  return baris
+}
+
+// Gelembung piksel yang sama dengan gelembung titik-titik di kiri kepala, hanya diperlebar ke kiri dan ke atas
+// untuk memuat kalimat. Sudut kanan-bawahnya tetap di tempat gelembung aslinya (ekor di kepala Spiderman).
+function GelembungKalimat({ teks, kunci }) {
+  const baris = bungkusKata(teks, 13)
+  const tinggi = 2 + baris.length * 2.1
+  const atas = 5 - tinggi
+  return (
+    <g key={kunci}>
+      <rect x={-8} y={atas} width={17} height={tinggi} fill="#FFFFFF" />
+      <rect x={-9} y={atas + 1} width={1} height={tinggi - 2} fill="#FFFFFF" />
+      <rect x={9} y={atas + 1} width={1} height={tinggi - 2} fill="#FFFFFF" />
+      <text fontSize="1.75" fontWeight="700" fill="#0A0A0A" style={{ fontFamily: 'var(--font-data)' }}>
+        {baris.map((b, n) => <tspan key={n} x={-7} y={atas + 2.3 + n * 2.1}>{b}</tspan>)}
+      </text>
+    </g>
+  )
+}
+
 function formatLama(ms) {
   const d = Math.max(0, Math.floor(ms / 1000))
   return `${String(Math.floor(d / 60)).padStart(2, '0')}:${String(d % 60).padStart(2, '0')}`
@@ -333,6 +362,15 @@ export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalka
   function sentuh() {
     const el = refReaksi.current
     if (!el || diterima || dibatalkan || keluar) return
+    if (pesanSentuh?.length) {
+      const n = urutPesan.current % pesanSentuh.length
+      urutPesan.current += 1
+      setPesanAktif({ teks: pesanSentuh[n], kunci: urutPesan.current })
+      getar(10)
+      clearTimeout(timerPesan.current)
+      timerPesan.current = setTimeout(() => setPesanAktif(null), 3200)
+      return
+    }
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return
     // Urutan diacak per putaran: semua reaksi keluar sekali dulu sebelum ada yang diulang, jadi tidak ada yang terlewat.
     if (antrianReaksi.current.length === 0) {
@@ -356,13 +394,6 @@ export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalka
     clearTimeout(timerGelembung.current)
     setGelembungSentuh(r.gelembung)
     if (r.gelembung) timerGelembung.current = setTimeout(() => setGelembungSentuh(null), r.durasi + 500)
-    if (pesanSentuh?.length) {
-      const n = urutPesan.current % pesanSentuh.length
-      urutPesan.current += 1
-      setPesanAktif({ teks: pesanSentuh[n], kunci: urutPesan.current })
-      clearTimeout(timerPesan.current)
-      timerPesan.current = setTimeout(() => setPesanAktif(null), 3200)
-    }
   }
 
   // Kartu memenuhi layar dari atas sampai tepat di atas dock. Tinggi dan lebarnya diukur dari peta di
@@ -475,8 +506,9 @@ export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalka
             <rect x="-1" y="1" width="1" height="3" fill="#FFFFFF" />
             <rect x="9" y="1" width="1" height="3" fill="#FFFFFF" />
             <rect x="10" y="6" width="1" height="1" fill="#FFFFFF" />
-            {/* misi selesai: centang hijau, tapi saat Spiderman dipencet gelembungnya ikut berganti reaksi */}
-            {diterima || (selesai && !gelembungSentuh) ? (
+            {pesanAktif ? (
+              <GelembungKalimat teks={pesanAktif.teks} kunci={pesanAktif.kunci} />
+            ) : diterima || (selesai && !gelembungSentuh) ? (
               <path d="M2.5 2.5h1v1h1v-1h1v-1h1v1h-1v1h-1v1h-1v-1h-1z" fill="#16A34A" />
             ) : dibatalkan ? (
               <>
@@ -547,13 +579,6 @@ export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalka
         {JANGKAR.flatMap((baris, r) => [...baris].map((ch, c) => (ch === '#' ? <rect key={`${r}-${c}`} x={c} y={r} width="1.04" height="1.04" fill="#E8E8E8" /> : null)))}
       </svg>
       </div>
-
-      {pesanAktif && (
-        <div key={pesanAktif.kunci} className="sp-pesan" style={{ ...s.pesan, top: topSpidey + 22 + TINGGI * SKALA + 16 }} role="status">
-          {pesanAktif.teks}
-          <span style={s.pesanEkor} aria-hidden="true" />
-        </div>
-      )}
 
       <div className="sp-teks-muncul" style={{ ...s.teks, bottom: bawahTeks ?? 14 + bawahDock }}>
         {!(kompak && !diterima && !selesai) && <div style={{ ...s.judul, ...bayang, color: diterima || selesai ? '#4ADE80' : dibatalkan ? 'var(--merah-teks)' : '#FFFFFF' }}>

@@ -141,6 +141,35 @@ export default function LoginPage() {
     }
   }
 
+  const barDemo = (
+  <div className="login-demo-bar">
+    <button
+      type="button"
+      className="login-demo-btn"
+      style={s.demoBtn}
+      onClick={() => { getar(8); handleDemo('ojek', masukDemoOjek) }}
+      disabled={Boolean(demoLoading)}
+    >
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M12 2.5C6.7 2.5 3 6.5 3 12s3.7 9.5 9 9.5 9-4 9-9.5-3.7-9.5-9-9.5z" />
+        <path d="M5.2 9.6c3.2.3 5.2 2 6.1 5-2.6 1.6-5.3.9-6.9-1.6z" />
+        <path d="M18.8 9.6c-3.2.3-5.2 2-6.1 5 2.6 1.6 5.3.9 6.9-1.6z" />
+      </svg>
+      <span style={s.demoTeks}>{demoLoading === 'ojek' ? t.loginMemproses : t.demoOjek}</span>
+    </button>
+    <button
+      type="button"
+      className="login-demo-btn"
+      style={s.demoBtn}
+      onClick={() => { getar(8); handleDemo('penumpang', masukDemoPenumpang) }}
+      disabled={Boolean(demoLoading)}
+    >
+      <svg width="22" height="22" viewBox="-2 -2 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="8" cy="5" r="3"/><path d="M2 15c0-3.3 2.7-5 6-5s6 1.7 6 5"/></svg>
+      <span style={s.demoTeks}>{demoLoading === 'penumpang' ? t.loginMemproses : t.demoPenumpang}</span>
+    </button>
+  </div>
+  )
+
   return (
     <>
     {/* Latar CRT sengaja di luar <main>: selama animasi TV menyala <main> punya transform, dan elemen fixed di dalamnya
@@ -224,36 +253,13 @@ export default function LoginPage() {
           <span style={s.demoDividerTeks}>{t.demoAtau}</span>
           <span style={s.demoDividerGaris} />
         </div>
-        <div className="login-demo-bar">
-          <button
-            type="button"
-            className="login-demo-btn"
-            style={s.demoBtn}
-            onClick={() => { getar(8); handleDemo('ojek', masukDemoOjek) }}
-            disabled={Boolean(demoLoading)}
-          >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="M12 2.5C6.7 2.5 3 6.5 3 12s3.7 9.5 9 9.5 9-4 9-9.5-3.7-9.5-9-9.5z" />
-              <path d="M5.2 9.6c3.2.3 5.2 2 6.1 5-2.6 1.6-5.3.9-6.9-1.6z" />
-              <path d="M18.8 9.6c-3.2.3-5.2 2-6.1 5 2.6 1.6 5.3.9 6.9-1.6z" />
-            </svg>
-            <span style={s.demoTeks}>{demoLoading === 'ojek' ? t.loginMemproses : t.demoOjek}</span>
-          </button>
-          <button
-            type="button"
-            className="login-demo-btn"
-            style={s.demoBtn}
-            onClick={() => { getar(8); handleDemo('penumpang', masukDemoPenumpang) }}
-            disabled={Boolean(demoLoading)}
-          >
-            <svg width="22" height="22" viewBox="-2 -2 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="8" cy="5" r="3"/><path d="M2 15c0-3.3 2.7-5 6-5s6 1.7 6 5"/></svg>
-            <span style={s.demoTeks}>{demoLoading === 'penumpang' ? t.loginMemproses : t.demoPenumpang}</span>
-          </button>
-        </div>
+        {barDemo}
       </div>
     </main>
     {terblokir && (
       <div style={s.blokLayar}>
+        {/* demo tidak butuh password, jadi tetap bisa dipakai selama login dikunci */}
+        <div style={s.blokDemo}>{barDemo}</div>
         <div style={s.blokOverlay}>
           <SpideyMenunggu
             key={blok.sampai}
@@ -276,6 +282,7 @@ const s = {
   blokLayar: { position: 'fixed', inset: 0, zIndex: 50, background: '#023854', overflow: 'hidden' },
   // kartu SpideyMenunggu melebar 14px ke kiri dan kanan dari induknya (dibuat untuk peta), jadi induknya disempitkan 14px
   // supaya kartu pas selebar layar dan logo laba-laba di latar tepat di tengah
+  blokDemo: { position: 'absolute', left: 24, right: 24, bottom: 'calc(var(--safe-bottom) + 118px)', zIndex: 2 },
   blokOverlay: { position: 'absolute', top: 0, bottom: 0, left: 14, right: 14 },
   wrap: {
     position: 'relative',
