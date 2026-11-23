@@ -69,6 +69,17 @@ function SambutanKetik({ teks, mulaiMs }) {
   )
 }
 
+// Ikon piksel 7x7 di kotak kiri kolom Username dan Password
+const IKON_ORANG = ['..###..', '..###..', '..###..', '.......', '.#####.', '#######', '#######']
+const IKON_GEMBOK = ['..###..', '.#...#.', '.#...#.', '#######', '###.###', '###.###', '#######']
+function IkonPiksel({ pola }) {
+  return (
+    <svg width="14" height="14" viewBox="0 0 7 7" shapeRendering="crispEdges" fill="var(--glow-blue)" aria-hidden="true">
+      {pola.flatMap((baris, y) => [...baris].map((sel, x) => (sel === '#' ? <rect key={`${x}-${y}`} x={x} y={y} width="1" height="1" /> : null)))}
+    </svg>
+  )
+}
+
 export default function LoginPage() {
   const { t } = useLanguage()
   const { masukDemoOjek, masukDemoPenumpang } = useAuth()
@@ -234,26 +245,34 @@ export default function LoginPage() {
 
       <form style={s.form} onSubmit={handleSubmit}>
         <label className="login-naik" style={{ ...s.label, '--d': '1400ms' }}>
-          {t.loginUsername}
-          <input
-            className="login-input"
-            style={s.input}
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            autoComplete="username"
-            autoCapitalize="none"
-            autoCorrect="off"
-            required
-          />
+          <span style={s.labelTeks}>{t.loginUsername}</span>
+          <span className="login-kolom" style={s.kolom}>
+            <span className="login-kolom-ikon" style={s.kolomIkon}>
+              <IkonPiksel pola={IKON_ORANG} />
+            </span>
+            <input
+              className="login-input"
+              style={s.input}
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              autoComplete="username"
+              autoCapitalize="none"
+              autoCorrect="off"
+              required
+            />
+          </span>
         </label>
 
         <label className="login-naik" style={{ ...s.label, '--d': '1500ms' }}>
-          {t.loginPassword}
-          <div style={s.pwWrap}>
+          <span style={s.labelTeks}>{t.loginPassword}</span>
+          <span className="login-kolom" style={s.kolom}>
+            <span className="login-kolom-ikon" style={s.kolomIkon}>
+              <IkonPiksel pola={IKON_GEMBOK} />
+            </span>
             <input
               className="login-input"
-              style={s.inputPw}
+              style={s.input}
               type={tampilkanPw ? 'text' : 'password'}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -278,7 +297,7 @@ export default function LoginPage() {
                 </svg>
               )}
             </button>
-          </div>
+          </span>
         </label>
 
         {error && <div style={s.error}>{error}</div>}
@@ -380,36 +399,36 @@ const s = {
     letterSpacing: '1px',
   },
   form: { display: 'flex', flexDirection: 'column', gap: 16 },
-  label: { display: 'flex', flexDirection: 'column', gap: 6, fontSize: 13, color: '#9FC3E8' },
-  input: {
-    background: 'var(--card-blue)',
-    border: '1px solid var(--blue-border)',
-    borderRadius: 0,
-    padding: '13px 14px',
-    fontSize: 15,
-    color: 'var(--text)',
+  label: { display: 'flex', flexDirection: 'column', gap: 6 },
+  labelTeks: { fontFamily: 'var(--font-data)', fontSize: 11, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#9FC3E8' },
+  // kotak kolom: ikon piksel di kiri (dengan garis pemisah), lalu isian; menyala cyan saat aktif (lihat .login-kolom)
+  kolom: { display: 'flex', alignItems: 'stretch', background: 'var(--card-blue)', border: '1px solid var(--blue-border)' },
+  kolomIkon: {
+    width: 44,
+    flexShrink: 0,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRight: '1px solid var(--blue-border)',
+    background: 'rgba(94, 208, 255, 0.08)',
   },
-  pwWrap: { position: 'relative' },
-  inputPw: {
-    width: '100%',
-    boxSizing: 'border-box',
-    background: 'var(--card-blue)',
-    border: '1px solid var(--blue-border)',
+  input: {
+    flex: 1,
+    minWidth: 0,
+    background: 'transparent',
+    border: 'none',
     borderRadius: 0,
-    padding: '13px 44px 13px 14px',
+    padding: '13px 12px',
     fontSize: 15,
     color: 'var(--text)',
   },
   pwToggle: {
-    position: 'absolute',
-    right: 6,
-    top: '50%',
-    transform: 'translateY(-50%)',
-    width: 34,
-    height: 34,
+    width: 44,
+    flexShrink: 0,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    background: 'transparent',
     color: '#8FB4DC',
     borderRadius: 0,
   },

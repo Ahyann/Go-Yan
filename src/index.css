@@ -907,6 +907,13 @@ button:disabled[aria-label="◀"], button:disabled[aria-label="▶"] { opacity: 
 }
 .login-input { transition: border-color 0.15s, box-shadow 0.15s; }
 .login-input:focus { border-color: var(--glow-blue) !important; box-shadow: 0 0 8px rgba(94, 208, 255, 0.35); }
+/* Kolom Username/Password berikon: yang menyala adalah seluruh kotaknya (termasuk kotak ikon), bukan isian di dalamnya */
+.login-kolom { transition: border-color 0.15s, box-shadow 0.15s; }
+.login-kolom-ikon { transition: background-color 0.15s, border-color 0.15s; }
+.login-kolom:focus-within { border-color: var(--glow-blue) !important; box-shadow: 0 0 8px rgba(94, 208, 255, 0.35); }
+.login-kolom:focus-within .login-kolom-ikon { background: rgba(94, 208, 255, 0.25) !important; border-right-color: var(--glow-blue) !important; }
+.login-kolom .login-input:focus,
+.login-kolom .login-input:focus-visible { outline: none; box-shadow: none !important; }
 
 /* Login gaya TV CRT: garis putih tipis melebar jadi layar penuh, logo berkedip, lalu isi muncul. */
 @keyframes login-tv {
