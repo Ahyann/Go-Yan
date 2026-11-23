@@ -4,6 +4,7 @@ import { playTabPindah } from '../lib/sound'
 import { getar } from '../lib/getar'
 
 const BARIS = GAMBAR.length
+const HOLD = 'steps(1, end)' // tahan nilai tiap keyframe sampai keyframe berikutnya (efek glitch patah-patah)
 
 // Logo laba-laba piksel besar di ruang kosong bawah halaman login. Dipencet: cahaya putih menyebar dari titik
 // yang dipencet ke seluruh kotak logo. Ukuran kotak menyesuaikan ruang yang tersisa; kalau ruangnya terlalu
@@ -118,19 +119,20 @@ export default function LogoLabaSentuh({ style, pemicu = 0, terbang = false }) {
       if (!node) return
       const p = pita.find((x) => k.r >= x.dari && k.r < x.sampai)
       if (!p) {
-        node.animate([{ opacity: 0.35 }, { opacity: 0.08, offset: 0.25 }, { opacity: 0.6, offset: 0.5 }, { opacity: 0.35 }], { duration: 340, easing: 'steps(1, end)' })
+        // easing 'steps(1, end)' dipasang per keyframe (bukan di opsi animasi) supaya tiap tahap benar-benar tampil bergantian
+        node.animate([{ opacity: 0.35, easing: HOLD }, { opacity: 0.08, offset: 0.25, easing: HOLD }, { opacity: 0.6, offset: 0.5, easing: HOLD }, { opacity: 0.35 }], { duration: 340 })
         return
       }
       const g = p.geser * sk
       node.animate(
         [
-          { transform: 'translateX(0)', background: '#5ED0FF', opacity: 0.35 },
-          { transform: `translateX(${g}px)`, background: p.warna, opacity: 1, offset: 0.15 },
-          { transform: `translateX(${-g / 2}px)`, background: '#5ED0FF', opacity: 0.6, offset: 0.5 },
-          { transform: `translateX(${g / 2}px)`, background: p.warna, opacity: 0.8, offset: 0.7 },
+          { transform: 'translateX(0)', background: '#5ED0FF', opacity: 0.35, easing: HOLD },
+          { transform: `translateX(${g}px)`, background: p.warna, opacity: 1, offset: 0.15, easing: HOLD },
+          { transform: `translateX(${-g / 2}px)`, background: '#5ED0FF', opacity: 0.6, offset: 0.5, easing: HOLD },
+          { transform: `translateX(${g / 2}px)`, background: p.warna, opacity: 0.8, offset: 0.7, easing: HOLD },
           { transform: 'translateX(0)', background: '#5ED0FF', opacity: 0.35 },
         ],
-        { duration: 340, easing: 'steps(1, end)' },
+        { duration: 340 },
       )
     })
   }
