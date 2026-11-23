@@ -1042,3 +1042,11 @@ button:disabled[aria-label="◀"], button:disabled[aria-label="▶"] { opacity: 
 }
 .logo-napas span { animation: logo-napas 7s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) { .logo-napas span { animation: none; } }
+
+/* Tombol Log in: tiga panah di kanan menyala bergantian ke arah kanan */
+@keyframes login-panah { 0%, 40% { opacity: 1; } 41%, 100% { opacity: 0.25; } }
+.login-panah { display: inline-flex; gap: 2px; }
+.login-panah i { font-style: normal; opacity: 0.25; animation: login-panah 1.2s steps(1) infinite; }
+.login-panah i:nth-child(2) { animation-delay: 0.2s; }
+.login-panah i:nth-child(3) { animation-delay: 0.4s; }
+@media (prefers-reduced-motion: reduce) { .login-panah i { animation: none; opacity: 1; } }

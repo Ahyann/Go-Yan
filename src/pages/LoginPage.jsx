@@ -284,7 +284,9 @@ export default function LoginPage() {
         {error && <div style={s.error}>{error}</div>}
 
         <button className="login-naik login-masuk-btn tekan" style={{ ...s.submit, '--d': '1600ms' }} type="submit" disabled={loading}>
-          {loading ? t.loginMemproses : t.loginSubmit}
+          <span>{loading ? t.loginMemproses : t.loginSubmit}</span>
+          {/* tiga panah yang menyala bergantian ke kanan */}
+          <span className="login-panah" aria-hidden="true"><i>▸</i><i>▸</i><i>▸</i></span>
         </button>
       </form>
 
@@ -420,11 +422,17 @@ const s = {
     padding: '10px 14px',
   },
   submit: {
-    background: 'var(--nav-red)',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    background: 'var(--web-red)',
     color: '#fff',
-    fontSize: 15,
-    fontWeight: 600,
-    padding: '14px',
+    fontFamily: 'var(--font-data)',
+    fontSize: 14,
+    fontWeight: 700,
+    letterSpacing: '0.2em',
+    textTransform: 'uppercase',
+    padding: '14px 16px',
     borderRadius: 0,
     marginTop: 6,
   },
