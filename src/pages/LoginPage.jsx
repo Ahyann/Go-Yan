@@ -284,7 +284,8 @@ export default function LoginPage() {
 
 const s = {
   // layar blokir menutup seluruh layar di atas halaman login; dua lapis karena SpideyMenunggu mengukur ukurannya dari dua induk
-  blokLayar: { position: 'fixed', inset: 0, zIndex: 50, background: '#023854', overflow: 'hidden' },
+  // tanpa warna latar: kartu Spidey sendiri setengah transparan, jadi halaman login terlihat samar di belakangnya (efek kaca seperti kartu menunggu ojek di atas peta)
+  blokLayar: { position: 'fixed', inset: 0, zIndex: 50, overflow: 'hidden', WebkitBackdropFilter: 'blur(5px)', backdropFilter: 'blur(5px)' },
   // kartu SpideyMenunggu melebar 14px ke kiri dan kanan dari induknya (dibuat untuk peta), jadi induknya disempitkan 14px
   // supaya kartu pas selebar layar dan logo laba-laba di latar tepat di tengah
   blokDemo: { position: 'absolute', left: 24, right: 24, bottom: 'calc(var(--safe-bottom) + 14px)', zIndex: 2 },
