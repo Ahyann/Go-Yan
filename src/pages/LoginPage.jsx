@@ -9,11 +9,11 @@ import { getar, POLA_GETAR } from '../lib/getar'
 import SpideyMenunggu from '../components/SpideyMenunggu.jsx'
 
 // Blokir login setelah salah password berkali-kali. Disimpan di localStorage supaya refresh halaman tidak membuka blokir.
-// MODE_UJI: sementara setiap blokir hanya 5 detik untuk melihat animasinya. Nanti dimatikan: blokir pertama 1 menit,
+// MODE_UJI: sementara setiap blokir hanya 10 detik untuk melihat animasinya. Nanti dimatikan: blokir pertama 1 menit,
 // berikutnya 10 menit.
 const MODE_UJI = true
 const BATAS_GAGAL = 3
-const DURASI_BLOK = MODE_UJI ? [5000, 5000] : [60_000, 600_000]
+const DURASI_BLOK = MODE_UJI ? [10_000, 10_000] : [60_000, 600_000]
 const KUNCI_BLOK = 'goyan:loginBlok'
 const KODE_SALAH = ['auth/invalid-credential', 'auth/invalid-email', 'auth/wrong-password', 'auth/user-not-found']
 
@@ -261,8 +261,10 @@ export default function LoginPage() {
             sampai={blok.sampai}
             teks={{ menunggu: t.blokJudul, menungguSub: t.blokSub }}
             pesanSentuh={t.blokPesan}
+            bawahTeks="calc(var(--safe-bottom) + 56px)"
           />
         </div>
+        <div className="login-blok-tepi" aria-hidden="true" />
       </div>
     )}
     </>

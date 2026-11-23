@@ -310,7 +310,7 @@ const REAKSI = [
 
 const SUDAH_WHOOSH = new Set()
 
-export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalkan = false, menyusut = false, isDemo = false, teks = null, gayaTolak = false, info = null, tanpaWhoosh = false, kompak = false, selesai = false, keluar = false, sampai = null, pesanSentuh = null }) {
+export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalkan = false, menyusut = false, isDemo = false, teks = null, gayaTolak = false, info = null, tanpaWhoosh = false, kompak = false, selesai = false, keluar = false, sampai = null, pesanSentuh = null, bawahTeks = null }) {
   const { t } = useLanguage()
   const [sekarang, setSekarang] = useState(() => Date.now())
 
@@ -549,13 +549,13 @@ export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalka
       </div>
 
       {pesanAktif && (
-        <div key={pesanAktif.kunci} className="sp-pesan" style={{ ...s.pesan, bottom: 120 + bawahDock }} role="status">
+        <div key={pesanAktif.kunci} className="sp-pesan" style={{ ...s.pesan, top: topSpidey + 22 + TINGGI * SKALA + 16 }} role="status">
           {pesanAktif.teks}
           <span style={s.pesanEkor} aria-hidden="true" />
         </div>
       )}
 
-      <div className="sp-teks-muncul" style={{ ...s.teks, bottom: 14 + bawahDock }}>
+      <div className="sp-teks-muncul" style={{ ...s.teks, bottom: bawahTeks ?? 14 + bawahDock }}>
         {!(kompak && !diterima && !selesai) && <div style={{ ...s.judul, ...bayang, color: diterima || selesai ? '#4ADE80' : dibatalkan ? 'var(--merah-teks)' : '#FFFFFF' }}>
           {selesai ? teks?.selesai : diterima ? (teks?.diterima ?? t.spideyDiterima) : dibatalkan ? (teks?.batal ?? t.spideyBatal) : (teks?.menunggu ?? t.spideyMenunggu)}
         </div>}
