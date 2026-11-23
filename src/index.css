@@ -975,3 +975,8 @@ button:disabled[aria-label="◀"], button:disabled[aria-label="▶"] { opacity: 
 
 /* Layar blokir login memakai bingkai neon kartu yang sama dengan keadaan ditolak: merah, bukan biru. */
 .sp-merah { --neon: 255, 90, 90; }
+
+/* Tombol demo di layar blokir login: versi lebih kecil, supaya tidak mengganggu layar blokirnya. */
+.login-demo-kecil .login-demo-btn { padding: 8px 4px !important; gap: 6px !important; }
+.login-demo-kecil .login-demo-btn span { font-size: 11px !important; letter-spacing: 0 !important; }
+.login-demo-kecil .login-demo-btn svg { width: 16px !important; height: 16px !important; }

@@ -13,14 +13,17 @@ import SpideyMenunggu from '../components/SpideyMenunggu.jsx'
 // MODE_UJI: sementara 10 detik, 20 detik, 30 detik, dan seterusnya. Nanti dimatikan: 1 menit, 10 menit, 10 menit x ke-n.
 const MODE_UJI = true
 const BATAS_GAGAL = 3
-const durasiBlok = (ke) => (MODE_UJI ? 10_000 * (ke + 1) : ke === 0 ? 60_000 : 600_000 * ke)
+const BATAS_UJI = 30_000 // selama uji, waktu blokir tidak lebih dari ini
+const durasiBlok = (ke) => (MODE_UJI ? Math.min(10_000 * (ke + 1), BATAS_UJI) : ke === 0 ? 60_000 : 600_000 * ke)
 const KUNCI_BLOK = 'goyan:loginBlok'
 const KODE_SALAH = ['auth/invalid-credential', 'auth/invalid-email', 'auth/wrong-password', 'auth/user-not-found']
 
 function bacaBlok() {
   try {
     const d = JSON.parse(localStorage.getItem(KUNCI_BLOK) || '{}')
-    return { gagal: d.gagal || 0, ke: d.ke || 0, sampai: d.sampai || 0 }
+    let sampai = d.sampai || 0
+    if (MODE_UJI && sampai - Date.now() > BATAS_UJI) sampai = Date.now() + BATAS_UJI
+    return { gagal: d.gagal || 0, ke: d.ke || 0, sampai }
   } catch {
     return { gagal: 0, ke: 0, sampai: 0 }
   }
@@ -261,7 +264,7 @@ export default function LoginPage() {
     {terblokir && (
       <div style={s.blokLayar}>
         {/* demo tidak butuh password, jadi tetap bisa dipakai selama login dikunci */}
-        <div style={s.blokDemo}>{barDemo}</div>
+        <div style={s.blokDemo} className="login-demo-kecil">{barDemo}</div>
         <div style={s.blokOverlay}>
           <SpideyMenunggu
             key={blok.sampai}
@@ -270,7 +273,7 @@ export default function LoginPage() {
             teks={{ menunggu: t.blokJudul, menungguSub: t.blokSub }}
             modeMerah
             pesanSentuh={t.blokPesan}
-            bawahTeks="calc(var(--safe-bottom) + 56px)"
+            bawahTeks="calc(var(--safe-bottom) + 66px)"
           />
         </div>
       </div>
@@ -284,7 +287,7 @@ const s = {
   blokLayar: { position: 'fixed', inset: 0, zIndex: 50, background: '#023854', overflow: 'hidden' },
   // kartu SpideyMenunggu melebar 14px ke kiri dan kanan dari induknya (dibuat untuk peta), jadi induknya disempitkan 14px
   // supaya kartu pas selebar layar dan logo laba-laba di latar tepat di tengah
-  blokDemo: { position: 'absolute', left: 24, right: 24, bottom: 'calc(var(--safe-bottom) + 118px)', zIndex: 2 },
+  blokDemo: { position: 'absolute', left: 24, right: 24, bottom: 'calc(var(--safe-bottom) + 14px)', zIndex: 2 },
   blokOverlay: { position: 'absolute', top: 0, bottom: 0, left: 14, right: 14 },
   wrap: {
     position: 'relative',

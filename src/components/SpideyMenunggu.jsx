@@ -337,6 +337,9 @@ const REAKSI = [
   { nama: 'getar', gelembung: 'titik', durasi: 550, easing: 'linear', kf: [{ transform: 'rotate(0)' }, { transform: 'rotate(-1.6deg)', offset: 0.12 }, { transform: 'rotate(1.6deg)', offset: 0.3 }, { transform: 'rotate(-1.6deg)', offset: 0.48 }, { transform: 'rotate(1.3deg)', offset: 0.66 }, { transform: 'rotate(-0.6deg)', offset: 0.85 }, { transform: 'rotate(0)' }] },
 ]
 
+// Layar blokir login: hanya enam reaksi ini yang dipakai. Urutannya sama dengan urutan kalimat blokPesan.
+const REAKSI_BLOK = ['kaget', 'getar', 'angguk', 'ngantuk', 'glitch', 'bersin']
+
 const SUDAH_WHOOSH = new Set()
 
 export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalkan = false, menyusut = false, isDemo = false, teks = null, gayaTolak = false, info = null, tanpaWhoosh = false, kompak = false, selesai = false, keluar = false, sampai = null, pesanSentuh = null, bawahTeks = null, modeMerah = false }) {
@@ -362,19 +365,11 @@ export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalka
   function sentuh() {
     const el = refReaksi.current
     if (!el || diterima || dibatalkan || keluar) return
-    if (pesanSentuh?.length) {
-      const n = urutPesan.current % pesanSentuh.length
-      urutPesan.current += 1
-      setPesanAktif({ teks: pesanSentuh[n], kunci: urutPesan.current })
-      getar(10)
-      clearTimeout(timerPesan.current)
-      timerPesan.current = setTimeout(() => setPesanAktif(null), 3200)
-      return
-    }
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return
+    const daftarReaksi = pesanSentuh?.length ? REAKSI_BLOK.map((nama) => REAKSI.findIndex((x) => x.nama === nama)) : REAKSI.map((_, n) => n)
     // Urutan diacak per putaran: semua reaksi keluar sekali dulu sebelum ada yang diulang, jadi tidak ada yang terlewat.
     if (antrianReaksi.current.length === 0) {
-      const urutan = REAKSI.map((_, n) => n)
+      const urutan = daftarReaksi.slice()
       for (let n = urutan.length - 1; n > 0; n--) {
         const k = Math.floor(Math.random() * (n + 1))
         ;[urutan[n], urutan[k]] = [urutan[k], urutan[n]]
@@ -392,6 +387,14 @@ export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalka
     playSpideySentuh(r.nama)
     getar(POLA_GETAR[r.nama] || 20)
     clearTimeout(timerGelembung.current)
+    if (pesanSentuh?.length) {
+      // layar blokir: gelembung kalimat pendek yang cocok dengan reaksinya
+      urutPesan.current += 1
+      setPesanAktif({ teks: pesanSentuh[daftarReaksi.indexOf(i)] || '', kunci: urutPesan.current })
+      clearTimeout(timerPesan.current)
+      timerPesan.current = setTimeout(() => setPesanAktif(null), r.durasi + 1500)
+      return
+    }
     setGelembungSentuh(r.gelembung)
     if (r.gelembung) timerGelembung.current = setTimeout(() => setGelembungSentuh(null), r.durasi + 500)
   }
