@@ -8,7 +8,7 @@ import { playGoBuka, playPesananBatal } from '../lib/sound'
 import { getar, POLA_GETAR } from '../lib/getar'
 import SpideyMenunggu from '../components/SpideyMenunggu.jsx'
 import LogoLabaSentuh from '../components/LogoLabaSentuh.jsx'
-import { mulaiTransisiDemo, selesaiTransisiDemo, gagalTransisiDemo, tahanHalamanLogin } from '../lib/transisiDemo'
+import { mulaiTransisiDemo, selesaiTransisiDemo, gagalTransisiDemo } from '../lib/transisiDemo'
 
 // Blokir login setelah salah password berkali-kali. Disimpan di localStorage supaya refresh halaman tidak membuka blokir.
 // Setelah blokir pertama (3 kali salah), SETIAP salah lagi langsung memblokir dengan waktu yang makin lama.
@@ -130,26 +130,25 @@ export default function LoginPage() {
     setError('')
     setLoading(true)
     // Animasi masuk berjalan bersamaan dengan permintaan login, sama seperti akun demo: logo terbang ke tengah (0,15 dtk),
-    // lalu layar welcome (0,75 dtk). Kalau login lebih cepat dari itu, halaman login ditahan sampai animasinya jalan penuh. Kalau gagal,
+    // lalu layar welcome (0,75 dtk). Kalau login lebih cepat dari itu, layar welcome langsung tampil. Kalau gagal,
     // semuanya dibatalkan dan logo kembali ke tempatnya.
     let layarMulai = false
     const mulaiLayar = () => {
       if (layarMulai) return
       layarMulai = true
-      mulaiTransisiDemo('masuk', 1000)
-      tahanHalamanLogin(false) // layar welcome sudah menutupi: app boleh menggantikan halaman login di baliknya
+      mulaiTransisiDemo('masuk')
     }
-    tahanHalamanLogin(true) // halaman login bertahan sampai logo selesai terbang, walau login selesai lebih cepat
     setPemicuLogo((n) => n + 1)
     const tTerbang = setTimeout(() => setTransisi({ peran: 'masuk', tahap: 'terbang' }), 150)
     const tLayar = setTimeout(mulaiLayar, 750)
     try {
       await signInWithEmailAndPassword(auth, usernameKeEmail(username), password)
       simpanBlok({ gagal: 0, ke: 0, sampai: 0 }) // berhasil masuk: hitungan salah dan tingkat blokir dimulai dari awal
+      clearTimeout(tLayar)
+      mulaiLayar()
     } catch (err) {
       clearTimeout(tTerbang)
       clearTimeout(tLayar)
-      tahanHalamanLogin(false)
       if (layarMulai) gagalTransisiDemo()
       setTransisi(null)
       setError(PESAN_ERROR[err.code] || t.errGeneric)

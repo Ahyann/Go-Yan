@@ -9,7 +9,6 @@ import { usePresence } from './lib/usePresence'
 import { usePesananSelesai } from './lib/usePesananSelesai'
 import LoginPage from './pages/LoginPage.jsx'
 import TransisiDemo from './components/TransisiDemo.jsx'
-import { useTahanHalamanLogin } from './lib/transisiDemo'
 import { ROLE, TARIF_PER_RIDE, STATUS_BAYAR, STATUS_PERMINTAAN } from './lib/constants'
 import { kosongkanRiwayatChat } from './lib/useRiwayatChat'
 
@@ -42,7 +41,6 @@ export default function App() {
 
 function AppIsi() {
   const { user, role, logout } = useAuth()
-  const tahanLogin = useTahanHalamanLogin()
   const { permintaan, kirimGo, terima, tolak, selesai, batal } = usePermintaanAktif()
   const { riwayat, siap: riwayatSiap, tambahRiwayat, tandaiLunas, hapusRiwayat, editRiwayat } = useRiwayat()
   const { jadwal: jadwalMingguan, simpanJadwal, tandaiSelesai: tandaiSelesaiJadwal } = useJadwalMingguan()
@@ -98,7 +96,7 @@ function AppIsi() {
     return <LoadingScreen />
   }
 
-  if (!user || tahanLogin) {
+  if (!user) {
     return <LoginPage />
   }
 

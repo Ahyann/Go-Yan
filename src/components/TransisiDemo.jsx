@@ -33,14 +33,7 @@ export default function TransisiDemo() {
 
   // begitu akun demo sudah login (app demo sudah ada di balik kaca), langsung masuk ke transisi fokus, tanpa menunggu
   useEffect(() => {
-    if (!transisi || fokus || !user) return undefined
-    const sisa = (transisi.fokusSetelah || 0) - Date.now()
-    if (sisa <= 0) {
-      setFokus(true)
-      return undefined
-    }
-    const id = setTimeout(() => setFokus(true), sisa)
-    return () => clearTimeout(id)
+    if (transisi && !fokus && user) setFokus(true)
   }, [transisi, user, fokus])
 
   // login biasa gagal: pudar keluar lalu tutup
