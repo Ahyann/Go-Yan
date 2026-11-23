@@ -8,8 +8,9 @@ const BARIS = GAMBAR.length
 // Logo laba-laba piksel besar di ruang kosong bawah halaman login. Dipencet: cahaya putih menyebar dari titik
 // yang dipencet ke seluruh kotak logo. Ukuran kotak menyesuaikan ruang yang tersisa; kalau ruangnya terlalu
 // sempit (HP pendek), logo tidak ditampilkan supaya tidak menabrak form.
-export default function LogoLabaSentuh({ style, pemicu = 0 }) {
+export default function LogoLabaSentuh({ style, pemicu = 0, terbang = false }) {
   const refWadah = useRef(null)
+  const refGrid = useRef(null)
   const refKotak = useRef([])
   const [sk, setSk] = useState(0)
 
@@ -52,6 +53,25 @@ export default function LogoLabaSentuh({ style, pemicu = 0 }) {
     gelombang(pc, pr)
   }
 
+  // terbang: logo meluncur ke tengah layar sambil membesar sampai seukuran logo latar di layar welcome
+  // (posisi dan ukurannya sama dengan logo laba-laba di layar menunggu ojek), jadi perpindahannya menyambung.
+  useEffect(() => {
+    const el = refGrid.current
+    if (!terbang || !el || !sk) return
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return
+    const r = el.getBoundingClientRect()
+    const lebar = window.innerWidth
+    const tinggi = window.innerHeight
+    const skTujuan = Math.max(8, Math.min(Math.floor((lebar * 0.9) / KOLOM), Math.floor((tinggi * 0.62) / BARIS)))
+    const skala = skTujuan / sk
+    const dx = lebar / 2 - (r.left + r.width / 2)
+    const dy = tinggi * 0.47 - (r.top + r.height / 2)
+    el.animate(
+      [{ transform: 'none' }, { transform: `translate(${dx}px, ${dy}px) scale(${skala})` }],
+      { duration: 750, easing: 'cubic-bezier(0.65, 0, 0.35, 1)', fill: 'forwards' },
+    )
+  }, [terbang, sk])
+
   // dipicu dari luar (misalnya saklar demo dipencet): gelombang dari tengah logo
   useEffect(() => {
     if (pemicu) gelombang(KOLOM / 2, BARIS / 2)
@@ -79,6 +99,7 @@ export default function LogoLabaSentuh({ style, pemicu = 0 }) {
     <div ref={refWadah} style={{ ...s.wadah, ...style }}>
       {sk > 0 && (
         <div
+          ref={refGrid}
           role="img"
           aria-label="Go-Yan"
           onPointerDown={sentuh}

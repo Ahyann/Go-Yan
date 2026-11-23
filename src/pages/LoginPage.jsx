@@ -134,13 +134,18 @@ export default function LoginPage() {
   }
 
   const [pemicuLogo, setPemicuLogo] = useState(0)
+  // Alur masuk demo: 'terbang' (isi halaman menghilang, logo meluncur ke tengah dan membesar), lalu 'welcome'
+  // (layar penuh bergaya layar menunggu ojek), baru setelah itu benar-benar login ke akun demo.
+  const [transisi, setTransisi] = useState(null)
   function pilihDemo(peran, jalankan) {
-    if (demoLoading) return
+    if (demoLoading || transisi) return
     getar(8)
     setDemoLoading(peran)
     setPemicuLogo((n) => n + 1)
-    // jeda singkat supaya sisi yang menyala dan gelombang logo sempat terlihat sebelum pindah halaman
-    setTimeout(() => handleDemo(peran, jalankan), 450)
+    setTimeout(() => setTransisi({ peran, tahap: 'terbang' }), 300)
+    setTimeout(() => setTransisi({ peran, tahap: 'welcome', mulai: Date.now() }), 300 + 800)
+    // login ke demo baru dijalankan setelah welcome selesai; begitu login berhasil, halaman ini diganti app demo
+    setTimeout(() => handleDemo(peran, jalankan), 300 + 800 + 3200)
   }
 
   async function handleDemo(peran, jalankan) {
@@ -151,6 +156,7 @@ export default function LoginPage() {
     } catch {
       setError(t.errGeneric)
       setDemoLoading('')
+      setTransisi(null)
     }
   }
 
@@ -159,11 +165,11 @@ export default function LoginPage() {
     <button
       type="button"
       className="login-demo-btn"
-      style={{ ...s.demoBtn, ...(demoLoading === 'ojek' ? s.demoPilihOjek : null) }}
+      style={{ ...s.demoBtn, ...s.demoSisiOjek, ...(demoLoading === 'ojek' ? s.demoPilihOjek : null) }}
       onClick={() => pilihDemo('ojek', masukDemoOjek)}
       disabled={Boolean(demoLoading)}
     >
-      <span style={s.demoTeks}>{demoLoading === 'ojek' ? t.loginMemproses : t.demoOjek}</span>
+      <span style={s.demoTeks}>{t.demoSisiOjek}</span>
     </button>
     <button
       type="button"
@@ -172,7 +178,7 @@ export default function LoginPage() {
       onClick={() => pilihDemo('penumpang', masukDemoPenumpang)}
       disabled={Boolean(demoLoading)}
     >
-      <span style={s.demoTeks}>{demoLoading === 'penumpang' ? t.loginMemproses : t.demoPenumpang}</span>
+      <span style={s.demoTeks}>{t.demoSisiPenumpang}</span>
     </button>
   </div>
   )
@@ -182,7 +188,7 @@ export default function LoginPage() {
     {/* Latar CRT sengaja di luar <main>: selama animasi TV menyala <main> punya transform, dan elemen fixed di dalamnya
         jadi terkurung seukuran <main>, sehingga bagian bawah layar HP tampak kosong. */}
     <div className="login-latar-crt" aria-hidden="true" />
-    <main className="login-tv" style={s.wrap}>
+    <main className={`login-tv${transisi ? ' login-keluar' : ''}`} style={s.wrap}>
       <div className="login-garis-layar" aria-hidden="true" />
       <PilihBahasa style={s.bahasa} />
 
@@ -263,13 +269,25 @@ export default function LoginPage() {
       </div>
 
       {/* logo laba-laba besar mengisi ruang kosong; dipencet memancarkan gelombang cahaya. Saklar demo di bawahnya. */}
-      <div className="login-naik" style={{ ...s.logoBawah, '--d': '1900ms' }}>
-        <LogoLabaSentuh pemicu={pemicuLogo} />
+      <div className={`login-naik login-logo-wadah${transisi?.tahap === 'welcome' ? ' login-logo-pudar' : ''}`} style={{ ...s.logoBawah, '--d': '1900ms' }}>
+        <LogoLabaSentuh pemicu={pemicuLogo} terbang={Boolean(transisi)} />
       </div>
       <div className="login-naik" style={{ ...s.saklarDemo, '--d': '2000ms' }}>
         {barDemo}
       </div>
     </main>
+    {transisi?.tahap === 'welcome' && (
+      <div className="login-welcome-masuk" style={s.welcomeLayar}>
+        <div style={s.blokOverlay}>
+          <SpideyMenunggu
+            dibuatPada={transisi.mulai}
+            teks={{ menunggu: t.demoSelamatDatangJudul, menungguSub: (transisi.peran === 'ojek' ? t.demoOjek : t.demoPenumpang).toUpperCase() }}
+            tanpaWaktu
+            bawahTeks="calc(var(--safe-bottom) + 40px)"
+          />
+        </div>
+      </div>
+    )}
     {terblokir && (
       <div style={s.blokLayar}>
         {/* demo tidak butuh password, jadi tetap bisa dipakai selama login dikunci */}
@@ -299,6 +317,7 @@ const s = {
   // kartu SpideyMenunggu melebar 14px ke kiri dan kanan dari induknya (dibuat untuk peta), jadi induknya disempitkan 14px
   // supaya kartu pas selebar layar dan logo laba-laba di latar tepat di tengah
   blokDemo: { position: 'absolute', left: 24, right: 24, bottom: 'calc(var(--safe-bottom) + 14px)', zIndex: 2 },
+  welcomeLayar: { position: 'fixed', inset: 0, zIndex: 60, overflow: 'hidden', WebkitBackdropFilter: 'blur(5px)', backdropFilter: 'blur(5px)' },
   blokOverlay: { position: 'absolute', top: 0, bottom: 0, left: 14, right: 14 },
   wrap: {
     position: 'relative',
@@ -436,8 +455,11 @@ const s = {
     whiteSpace: 'nowrap', // satu baris, tinggi tombol sama di semua bahasa
     overflow: 'hidden',
     textOverflow: 'ellipsis',
-    fontSize: 12.5,
-    fontWeight: 600,
-    letterSpacing: '0.03em',
+    fontFamily: 'var(--font-data)',
+    fontSize: 13,
+    fontWeight: 700,
+    letterSpacing: '0.12em',
   },
+  // sisi ojek bernuansa merah sejak awal (seperti mockup), sisi penumpang biru tua
+  demoSisiOjek: { background: 'rgba(188, 30, 47, 0.45)', color: '#FFFFFF' },
 }

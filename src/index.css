@@ -936,17 +936,17 @@ button:disabled[aria-label="◀"], button:disabled[aria-label="▶"] { opacity: 
 }
 
 /* Tombol demo di login: satu bar dua sisi bergaya saklar konsol, bayangan keras di bar-nya. Saat ditekan sisi itu menyala. */
+/* saklar demo sesuai mockup: garis biru muda 2px, tanpa bayangan */
 .login-demo-bar {
   display: flex;
-  border: 1px solid var(--glow-blue-mid);
+  border: 2px solid var(--glow-blue);
   background: var(--card-blue);
-  box-shadow: 3px 3px 0 var(--glow-blue-dark);
 }
 .login-demo-btn {
   position: relative;
   transition: background-color 0.1s, color 0.1s;
 }
-.login-demo-btn + .login-demo-btn { border-left: 1px solid var(--glow-blue-mid) !important; }
+.login-demo-btn + .login-demo-btn { border-left: 2px solid var(--glow-blue) !important; }
 .login-demo-btn:active:not(:disabled) { background-color: rgba(94, 208, 255, 0.22) !important; color: #fff !important; }
 .login-demo-btn:focus-visible { outline: 2px solid var(--glow-blue); outline-offset: -4px; }
 .login-demo-btn:disabled { opacity: 0.6; }
@@ -985,3 +985,20 @@ button:disabled[aria-label="◀"], button:disabled[aria-label="▶"] { opacity: 
 .login-demo-kecil .login-demo-btn { padding: 8px 4px !important; gap: 6px !important; }
 .login-demo-kecil .login-demo-btn span { font-size: 11px !important; letter-spacing: 0 !important; }
 .login-demo-kecil .login-demo-btn svg { width: 16px !important; height: 16px !important; }
+
+/* Masuk demo: semua isi halaman login selain logo laba-laba menghilang bergantian (naik sedikit sambil memudar). */
+@keyframes login-hilang {
+  to { opacity: 0; transform: translateY(-14px) scale(0.97); filter: blur(3px); }
+}
+.login-keluar > :not(.login-logo-wadah) { animation: login-hilang 0.38s ease-in forwards !important; pointer-events: none; }
+.login-keluar > :nth-child(2) { animation-delay: 0.04s !important; }
+.login-keluar > :nth-child(3) { animation-delay: 0.08s !important; }
+.login-keluar > :nth-child(4) { animation-delay: 0.12s !important; }
+.login-keluar > :nth-child(5) { animation-delay: 0.16s !important; }
+.login-keluar > :nth-child(6) { animation-delay: 0.2s !important; }
+.login-keluar > :nth-child(7) { animation-delay: 0.24s !important; }
+/* Logo besar memudar saat layar welcome muncul di atasnya */
+@keyframes login-logo-pudar { to { opacity: 0; } }
+.login-logo-pudar { animation: login-logo-pudar 0.4s ease-out forwards; }
+@keyframes login-welcome-masuk { from { opacity: 0; } to { opacity: 1; } }
+.login-welcome-masuk { animation: login-welcome-masuk 0.35s ease-out both; }

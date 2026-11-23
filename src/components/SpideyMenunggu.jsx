@@ -345,7 +345,7 @@ const REAKSI_BLOK = ['kaget', 'getar', 'angguk', 'glitch', 'intip', 'kenyal']
 
 const SUDAH_WHOOSH = new Set()
 
-export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalkan = false, menyusut = false, isDemo = false, teks = null, gayaTolak = false, info = null, tanpaWhoosh = false, kompak = false, selesai = false, keluar = false, sampai = null, pesanSentuh = null, bawahTeks = null, modeMerah = false }) {
+export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalkan = false, menyusut = false, isDemo = false, teks = null, gayaTolak = false, info = null, tanpaWhoosh = false, kompak = false, selesai = false, keluar = false, sampai = null, pesanSentuh = null, bawahTeks = null, modeMerah = false, tanpaWaktu = false }) {
   const { t } = useLanguage()
   const [sekarang, setSekarang] = useState(() => Date.now())
 
@@ -597,7 +597,7 @@ export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalka
             teks?.batalSub ?? t.spideyBatalSub
           ) : (
             <>
-              {teks?.menungguSub ?? (isDemo ? t.spideyBelumDemo : t.spideyBelum)} · <span style={{ color: modeMerah ? 'var(--merah-teks)' : 'var(--warn)' }}>{lama}</span>
+              {teks?.menungguSub ?? (isDemo ? t.spideyBelumDemo : t.spideyBelum)}{!tanpaWaktu && <> · <span style={{ color: modeMerah ? 'var(--merah-teks)' : 'var(--warn)' }}>{lama}</span></>}
             </>
           )}
         </div>
