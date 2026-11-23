@@ -9,11 +9,11 @@ import { getar, POLA_GETAR } from '../lib/getar'
 import SpideyMenunggu from '../components/SpideyMenunggu.jsx'
 
 // Blokir login setelah salah password berkali-kali. Disimpan di localStorage supaya refresh halaman tidak membuka blokir.
-// MODE_UJI: sementara setiap blokir hanya 10 detik untuk melihat animasinya. Nanti dimatikan: blokir pertama 1 menit,
-// berikutnya 10 menit.
+// Setelah blokir pertama (3 kali salah), SETIAP salah lagi langsung memblokir dengan waktu yang makin lama.
+// MODE_UJI: sementara 10 detik, 20 detik, 30 detik, dan seterusnya. Nanti dimatikan: 1 menit, 10 menit, 10 menit x ke-n.
 const MODE_UJI = true
 const BATAS_GAGAL = 3
-const DURASI_BLOK = MODE_UJI ? [10_000, 10_000] : [60_000, 600_000]
+const durasiBlok = (ke) => (MODE_UJI ? 10_000 * (ke + 1) : ke === 0 ? 60_000 : 600_000 * ke)
 const KUNCI_BLOK = 'goyan:loginBlok'
 const KODE_SALAH = ['auth/invalid-credential', 'auth/invalid-email', 'auth/wrong-password', 'auth/user-not-found']
 
@@ -78,7 +78,8 @@ export default function LoginPage() {
       const kini = Date.now()
       setSekarang(kini)
       if (kini >= blok.sampai) {
-        const baru = { ...blok, gagal: 0, sampai: 0 }
+        // gagal dibiarkan satu langkah di bawah batas: satu salah lagi langsung memblokir lagi, dengan waktu lebih lama
+        const baru = { ...blok, gagal: BATAS_GAGAL - 1, sampai: 0 }
         simpanBlok(baru)
         setBlok(baru)
       }
@@ -94,7 +95,7 @@ export default function LoginPage() {
       setBlok(baru)
       return
     }
-    const durasi = DURASI_BLOK[Math.min(blok.ke, DURASI_BLOK.length - 1)]
+    const durasi = durasiBlok(blok.ke)
     const baru = { gagal, ke: blok.ke + 1, sampai: Date.now() + durasi }
     simpanBlok(baru)
     setBlok(baru)
@@ -123,6 +124,7 @@ export default function LoginPage() {
     setLoading(true)
     try {
       await signInWithEmailAndPassword(auth, usernameKeEmail(username), password)
+      simpanBlok({ gagal: 0, ke: 0, sampai: 0 }) // berhasil masuk: hitungan salah dan tingkat blokir dimulai dari awal
     } catch (err) {
       setError(PESAN_ERROR[err.code] || t.errGeneric)
       setLoading(false)
@@ -266,11 +268,11 @@ export default function LoginPage() {
             dibuatPada={blok.sampai}
             sampai={blok.sampai}
             teks={{ menunggu: t.blokJudul, menungguSub: t.blokSub }}
+            modeMerah
             pesanSentuh={t.blokPesan}
             bawahTeks="calc(var(--safe-bottom) + 56px)"
           />
         </div>
-        <div className="login-blok-tepi" aria-hidden="true" />
       </div>
     )}
     </>

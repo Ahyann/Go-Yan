@@ -39,7 +39,7 @@ const campur = (a, b, u) => `rgb(${Math.round(a[0] + (b[0] - a[0]) * u)},${Math.
 // Logo laba-laba latar digambar di SATU kanvas (bukan ratusan elemen SVG yang masing-masing dianimasikan, yang
 // berat sekali di HP). Tiga keadaan: masuk (kotak meledak dari tengah lalu pita cahaya menyapu), diterima (menyala
 // hijau lalu melayang naik), dibatalkan (memerah, bergetar, lalu berjatuhan).
-function LogoLatar({ sk, lebar, tinggi, mode, pusat = 0.47 }) {
+function LogoLatar({ sk, lebar, tinggi, mode, pusat = 0.47, modeMerah = false }) {
   const refKanvas = useRef(null)
   const refMulai = useRef({ mode: null, t: 0 })
   useEffect(() => {
@@ -72,7 +72,7 @@ function LogoLatar({ sk, lebar, tinggi, mode, pusat = 0.47 }) {
         yPita = -10 + 33 * ((1 - Math.cos(Math.PI * k)) / 2)
       }
       for (const g of PARAM_KOTAK) {
-        let tx = 0, ty = 0, skala = 1, rot = 0, alfa = 1, warna = campur(biru, biru, 0)
+        let tx = 0, ty = 0, skala = 1, rot = 0, alfa = 1, warna = modeMerah ? campur(merah, merah, 0) : campur(biru, biru, 0)
         if (mode === 'masuk') {
           const p = (t - g.dMasuk) / 1.1
           if (p < 0) { hidup = true; continue }
@@ -142,7 +142,7 @@ function LogoLatar({ sk, lebar, tinggi, mode, pusat = 0.47 }) {
     }
     id = requestAnimationFrame(gambar)
     return () => cancelAnimationFrame(id)
-  }, [sk, lebar, tinggi, mode])
+  }, [sk, lebar, tinggi, mode, modeMerah])
   return <canvas ref={refKanvas} style={{ ...s.logoLatar, width: lebar, height: tinggi }} aria-hidden="true" />
 }
 
@@ -339,7 +339,7 @@ const REAKSI = [
 
 const SUDAH_WHOOSH = new Set()
 
-export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalkan = false, menyusut = false, isDemo = false, teks = null, gayaTolak = false, info = null, tanpaWhoosh = false, kompak = false, selesai = false, keluar = false, sampai = null, pesanSentuh = null, bawahTeks = null }) {
+export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalkan = false, menyusut = false, isDemo = false, teks = null, gayaTolak = false, info = null, tanpaWhoosh = false, kompak = false, selesai = false, keluar = false, sampai = null, pesanSentuh = null, bawahTeks = null, modeMerah = false }) {
   const { t } = useLanguage()
   const [sekarang, setSekarang] = useState(() => Date.now())
 
@@ -462,13 +462,13 @@ export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalka
   return (
     <div
       ref={refKartu}
-      className={`sp-kartu${diterima ? ' sp-diterima' : ''}${dibatalkan ? ' sp-batal' : ''}${dibatalkan && gayaTolak ? ' sp-tolak' : ''}${menyusut ? ' sp-susut' : ''}${keluar ? ' sp-keluar' : ''}`}
+      className={`sp-kartu${diterima ? ' sp-diterima' : ''}${dibatalkan ? ' sp-batal' : ''}${dibatalkan && gayaTolak ? ' sp-tolak' : ''}${modeMerah ? ' sp-merah' : ''}${menyusut ? ' sp-susut' : ''}${keluar ? ' sp-keluar' : ''}`}
       style={{ ...s.kartu, height: menyusut ? 0 : tinggiPenuh, bottom: -bawahDock }}
       role="status"
     >
       {/* Logo laba-laba dari layar pembuka sebagai latar. Masuk: kotak meledak dari tengah. Diterima: menyala
           hijau lalu kotaknya melayang naik. Dibatalkan: memerah, bergetar, lalu kotaknya berjatuhan. */}
-      <LogoLatar sk={sk} lebar={lebarPenuh} tinggi={tinggiPenuh} mode={diterima ? 'diterima' : dibatalkan ? 'batal' : 'masuk'} pusat={kompak ? 0.5 : 0.47} />
+      <LogoLatar sk={sk} lebar={lebarPenuh} tinggi={tinggiPenuh} mode={diterima ? 'diterima' : dibatalkan ? 'batal' : 'masuk'} pusat={kompak ? 0.5 : 0.47} modeMerah={modeMerah} />
 
       <div className="sp-kilau" style={{ opacity: diterima || dibatalkan ? 0 : 1 }} aria-hidden="true" />
 
@@ -564,7 +564,7 @@ export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalka
             </g>
           )}
         </svg>
-        <span className="sp-benang" style={s.benang} />
+        <span className="sp-benang" style={modeMerah ? { ...s.benang, boxShadow: '0 0 4px rgba(255, 90, 90, 0.9)' } : s.benang} />
         </div>
       </div>
         {dibatalkan && !gayaTolak && (
@@ -581,7 +581,7 @@ export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalka
       </div>
 
       <div className="sp-teks-muncul" style={{ ...s.teks, bottom: bawahTeks ?? 14 + bawahDock }}>
-        {!(kompak && !diterima && !selesai) && <div style={{ ...s.judul, ...bayang, color: diterima || selesai ? '#4ADE80' : dibatalkan ? 'var(--merah-teks)' : '#FFFFFF' }}>
+        {!(kompak && !diterima && !selesai) && <div style={{ ...s.judul, ...bayang, color: diterima || selesai ? '#4ADE80' : dibatalkan || modeMerah ? 'var(--merah-teks)' : '#FFFFFF' }}>
           {selesai ? teks?.selesai : diterima ? (teks?.diterima ?? t.spideyDiterima) : dibatalkan ? (teks?.batal ?? t.spideyBatal) : (teks?.menunggu ?? t.spideyMenunggu)}
         </div>}
         <div style={{ ...s.sub, ...bayang, ...(kompak && !diterima ? { fontSize: 11, marginTop: 0 } : null) }}>
@@ -591,7 +591,7 @@ export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalka
             teks?.batalSub ?? t.spideyBatalSub
           ) : (
             <>
-              {teks?.menungguSub ?? (isDemo ? t.spideyBelumDemo : t.spideyBelum)} · <span style={{ color: 'var(--warn)' }}>{lama}</span>
+              {teks?.menungguSub ?? (isDemo ? t.spideyBelumDemo : t.spideyBelum)} · <span style={{ color: modeMerah ? 'var(--merah-teks)' : 'var(--warn)' }}>{lama}</span>
             </>
           )}
         </div>

@@ -973,14 +973,5 @@ button:disabled[aria-label="◀"], button:disabled[aria-label="▶"] { opacity: 
 }
 .sp-pesan { animation: sp-pesan-muncul 0.28s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
 
-/* Layar blokir login: tepi layar menyala merah berdenyut, tanda peringatan */
-@keyframes login-blok-tepi {
-  0%, 100% { box-shadow: inset 0 0 0 4px #BC1E2F, inset 0 0 28px rgba(237, 28, 36, 0.55); }
-  50% { box-shadow: inset 0 0 0 4px #BC1E2F, inset 0 0 12px rgba(237, 28, 36, 0.25); }
-}
-.login-blok-tepi {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  animation: login-blok-tepi 1.4s ease-in-out infinite;
-}
+/* Layar blokir login memakai bingkai neon kartu yang sama dengan keadaan ditolak: merah, bukan biru. */
+.sp-merah { --neon: 255, 90, 90; }
