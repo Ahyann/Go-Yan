@@ -7,6 +7,13 @@ export const UANG_PER_LEVEL = 500000
 // di demo langsung naik level dan animasi LEVEL UP terlihat.
 export const UANG_PER_LEVEL_DEMO = TARIF_PER_RIDE * 4
 export const uangPerLevel = (isDemo) => (isDemo ? UANG_PER_LEVEL_DEMO : UANG_PER_LEVEL)
+// Pendapatan awal akun demo (4 level), supaya demo sudah di LV 5 saat dibuka
+export const PENDAPATAN_AWAL_DEMO = UANG_PER_LEVEL_DEMO * 4
+
+// Total pendapatan untuk level: semua riwayat, ditambah pendapatan awal kalau akun demo
+export function totalUangLevel(riwayat, isDemo) {
+  return totalUangRiwayat(riwayat) + (isDemo ? PENDAPATAN_AWAL_DEMO : 0)
+}
 // Sisa trip segini atau kurang dianggap "sudah dekat": tulisan di konsol berubah kuning berkedip
 export const TRIP_DEKAT = 3
 

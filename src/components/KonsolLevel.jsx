@@ -10,17 +10,22 @@ export default function KonsolLevel({ total, onKembali }) {
         <button type="button" onClick={onKembali} style={s.kembali} aria-label={lang === 'en' ? 'Back' : 'Kembali'}>
           <span aria-hidden="true" style={{ color: '#5ED0FF' }}>◀</span> {lang === 'en' ? 'BACK' : 'KEMBALI'}
         </button>
-        <span style={s.judul}>LEVEL</span>
+        {/* total pendapatan sepanjang waktu (yang dipakai untuk level) */}
+        <span style={s.total}>
+          <span style={s.judul}>TOTAL</span> <span style={s.angka}>Rp{Math.round(total ?? 0).toLocaleString('id-ID')}</span>
+        </span>
       </div>
-      <div style={{ marginTop: 6 }}>
-        <TampilanLevel total={total ?? 0} />
+      <div style={{ marginTop: 4 }}>
+        <TampilanLevel total={total ?? 0} rapat />
       </div>
     </div>
   )
 }
 
 const s = {
-  kepala: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 18 },
+  kepala: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 14 },
   kembali: { background: 'none', border: 'none', color: '#FFFFFF', font: 'inherit', fontSize: 8, letterSpacing: '0.1em', padding: '2px 6px 2px 0', cursor: 'pointer', whiteSpace: 'nowrap' },
-  judul: { fontSize: 8, letterSpacing: '0.14em', opacity: 0.6 },
+  judul: { fontSize: 7, letterSpacing: '0.14em', opacity: 0.6 },
+  total: { display: 'inline-flex', alignItems: 'baseline', gap: 5, whiteSpace: 'nowrap' },
+  angka: { fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: '#FFFFFF' },
 }

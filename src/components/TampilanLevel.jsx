@@ -38,7 +38,7 @@ function putarAngka(el, dari, ke, ms) {
 // Tampilan level di konsol: "LV n" dan rupiah di level ini, garis tipis, lalu sisa ke level berikutnya.
 // Kalau `dari` diisi (total sebelum perjalanan ini), garis dianimasikan dari nilai lama ke nilai baru. Kalau perjalanan
 // ini membuat level naik, garis penuh, memercikkan kotak-kotak piksel, lalu level berganti.
-export default function TampilanLevel({ total, dari = null, kananBawah = null }) {
+export default function TampilanLevel({ total, dari = null, kananBawah = null, rapat = false }) {
   const { lang } = useLanguage()
   const { isDemo } = useAuth()
   const perLevel = uangPerLevel(isDemo)
@@ -139,7 +139,7 @@ export default function TampilanLevel({ total, dari = null, kananBawah = null })
         <span style={s.lvLabel}>LV <b ref={refLv} style={s.lv}>{tampil.level}</b></span>
         <span style={s.uang}><span ref={refUang}>{rp(tampil.diLevel)}</span> / {rp(perLevel)}</span>
       </div>
-      <div style={s.garis}>
+      <div style={rapat ? { ...s.garis, margin: '5px 0 5px' } : s.garis}>
         <i ref={refIsi} style={{ ...s.isi, transform: `scaleX(${tampil.porsi})` }} />
         {dari != null && (
           <span ref={refTambah} style={{ ...s.tambah, left: `${awal.porsi * 100}%` }}>+{rp(total - dari)}</span>
