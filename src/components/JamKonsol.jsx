@@ -104,7 +104,7 @@ export default function JamKonsol({ keterangan, bergilir = false, totalTrip = nu
   }
 
   if (halaman === 'bensin') return <KonsolBensin onKembali={() => setHalaman(null)} />
-  if (halaman === 'level') return <KonsolLevel total={totalUang} onKembali={() => setHalaman(null)} />
+  if (halaman === 'level') return <KonsolLevel total={totalUang} totalTrip={totalTrip} onKembali={() => setHalaman(null)} />
   if (halaman === 'cuaca') return <KonsolCuaca lokasiAktif={lokasiAktif} jadwal={jadwal} onKembali={() => setHalaman(null)} />
 
   const tanggal = sekarang
