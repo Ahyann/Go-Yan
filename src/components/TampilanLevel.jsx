@@ -35,7 +35,8 @@ function putarAngka(el, dari, ke, ms) {
   requestAnimationFrame(langkah)
 }
 
-// Tampilan level di konsol: "LV n" dan rupiah di level ini, garis tipis, lalu sisa ke level berikutnya.
+// Tampilan level di konsol: "LV n", total uang sebenarnya dibanding target total level berikutnya (misalnya
+// Rp3.120.000 / Rp3.500.000), garis kemajuan di level ini, lalu sisa ke level berikutnya.
 // Kalau `dari` diisi (total sebelum perjalanan ini), garis dianimasikan dari nilai lama ke nilai baru. Kalau perjalanan
 // ini membuat level naik, garis penuh, memercikkan kotak-kotak piksel, lalu level berganti.
 export default function TampilanLevel({ total, dari = null, kananBawah = null, rapat = false }) {
@@ -48,6 +49,7 @@ export default function TampilanLevel({ total, dari = null, kananBawah = null, r
   const [selesai, setSelesai] = useState(dari == null)
   const refIsi = useRef(null)
   const refUang = useRef(null)
+  const refTarget = useRef(null)
   const refLv = useRef(null)
   const refTambah = useRef(null)
   const refPercik = useRef(null)
@@ -77,7 +79,7 @@ export default function TampilanLevel({ total, dari = null, kananBawah = null, r
       // Garis bertambah halus, angka rupiah ikut berputar
       nanti(() => {
         isi?.animate([{ transform: `scaleX(${awal.porsi})` }, { transform: `scaleX(${akhir.porsi})` }], { duration: 700, easing: 'cubic-bezier(.2,.8,.2,1)', fill: 'forwards' })
-        putarAngka(refUang.current, awal.diLevel, akhir.diLevel, 700)
+        putarAngka(refUang.current, awal.total, akhir.total, 700)
         getar(8)
         ;[0, 1, 2].forEach((i) => nanti(() => playGeserTik(i + 2), i * 120))
       }, 600)
@@ -86,7 +88,7 @@ export default function TampilanLevel({ total, dari = null, kananBawah = null, r
       // Naik level: garis penuh dulu, lalu percikan piksel dari ujungnya, level berganti, garis mulai dari awal lagi
       nanti(() => {
         isi?.animate([{ transform: `scaleX(${awal.porsi})` }, { transform: 'scaleX(1)' }], { duration: 400, fill: 'forwards' })
-        putarAngka(refUang.current, awal.diLevel, perLevel, 400)
+        putarAngka(refUang.current, awal.total, awal.target, 400)
       }, 600)
       nanti(() => {
         const wadah = refPercik.current
@@ -114,7 +116,8 @@ export default function TampilanLevel({ total, dari = null, kananBawah = null, r
           refLv.current.animate([{ transform: 'scale(1.7)', color: '#FFD45E' }, { transform: 'scale(1)', color: '#FFFFFF' }], { duration: 500 })
         }
         isi?.animate([{ transform: 'scaleX(0)' }, { transform: `scaleX(${akhir.porsi})` }], { duration: 400, fill: 'forwards' })
-        putarAngka(refUang.current, 0, akhir.diLevel, 400)
+        if (refTarget.current) refTarget.current.textContent = rp(akhir.target)
+        putarAngka(refUang.current, awal.target, akhir.total, 400)
         playLunasSemua()
         getar(POLA_GETAR.senang)
       }, 1050)
@@ -137,7 +140,7 @@ export default function TampilanLevel({ total, dari = null, kananBawah = null, r
     <div ref={refWadah} style={s.wadah}>
       <div style={s.atas}>
         <span style={s.lvLabel}>LV <b ref={refLv} style={s.lv}>{tampil.level}</b></span>
-        <span style={s.uang}><span ref={refUang}>{rp(tampil.diLevel)}</span> / {rp(perLevel)}</span>
+        <span style={s.uang}><span ref={refUang}>{rp(tampil.total)}</span> / <span ref={refTarget}>{rp(tampil.target)}</span></span>
       </div>
       <div style={rapat ? { ...s.garis, margin: '5px 0 5px' } : s.garis}>
         <i ref={refIsi} style={{ ...s.isi, transform: `scaleX(${tampil.porsi})` }} />

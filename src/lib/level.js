@@ -27,6 +27,9 @@ export function hitungLevel(total, perLevel = UANG_PER_LEVEL, tarif = TARIF_PER_
   const sisa = perLevel - diLevel
   return {
     level: Math.floor(aman / perLevel) + 1,
+    total: aman,
+    // total uang yang harus dicapai untuk naik ke level berikutnya
+    target: (Math.floor(aman / perLevel) + 1) * perLevel,
     diLevel,
     sisa,
     sisaTrip: Math.max(1, Math.ceil(sisa / tarif)),
