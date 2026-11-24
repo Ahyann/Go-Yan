@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { hitungLevel, uangPerLevel, tingkatPiala, TRIP_DEKAT } from '../lib/level'
-import { playGeserTik, playLevelIsi, playLevelNaik, playPialaMasuk, playLevelTercapai, playLevelLanjut, playMusikLevel, stopMusikLevel } from '../lib/sound'
+import { playGeserTik, playLevelIsi, playLevelNaik, playPialaMasuk, playLevelTercapai, playLevelLanjut } from '../lib/sound'
 import { getar, POLA_GETAR } from '../lib/getar'
 
 const rp = (n) => 'Rp' + Math.round(n).toLocaleString('id-ID')
@@ -121,8 +121,6 @@ function LayarPiala({ awal, akhir, lang, onLanjut }) {
       { duration: kurangGerak ? 1 : 900, easing: 'ease-out', fill: 'forwards' },
     )
     playPialaMasuk()
-    // musik sudah mulai sejak ledakan naik level; kalau belum (gerak dikurangi), mulai di sini. Berhenti saat diketuk.
-    playMusikLevel(0.6)
     getar(10)
     // angka total berputar pelan sampai target, dengan tik-tik yang makin tinggi
     nanti(() => {
@@ -142,10 +140,7 @@ function LayarPiala({ awal, akhir, lang, onLanjut }) {
       playLevelTercapai()
       getar(POLA_GETAR.senang)
     }, 2500)
-    return () => {
-      timer.forEach(clearTimeout)
-      stopMusikLevel()
-    }
+    return () => timer.forEach(clearTimeout)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -154,7 +149,6 @@ function LayarPiala({ awal, akhir, lang, onLanjut }) {
   const lanjut = () => {
     if (!sampai || keluar) return
     setKeluar(true)
-    stopMusikLevel()
     playLevelLanjut()
     getar(8)
     if (!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
@@ -281,7 +275,6 @@ export default function TampilanLevel({ total, dari = null, kananBawah = null, r
         percik(wadah, lebar - 4, 28, 90, 12, 0.5)
         cincin(wadah, lebar - 4, 30)
         playLevelNaik()
-        playMusikLevel(0.5)
         getar(POLA_GETAR.senang)
         const lvEl = refLv.current
         if (lvEl) {
@@ -308,10 +301,7 @@ export default function TampilanLevel({ total, dari = null, kananBawah = null, r
       nanti(() => setSelesai(true), 3300)
       nanti(() => setLayarPiala(true), 4800)
     }
-    return () => {
-      timer.forEach(clearTimeout)
-      stopMusikLevel()
-    }
+    return () => timer.forEach(clearTimeout)
     // animasi hanya sekali saat tampilan ini muncul
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])

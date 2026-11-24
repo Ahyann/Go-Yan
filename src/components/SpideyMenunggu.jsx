@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useLanguage } from '../context/LanguageContext.jsx'
-import { playWhooshMasuk, playSpideySentuh } from '../lib/sound'
+import { playWhooshMasuk, playSpideySentuh, playPingHijau } from '../lib/sound'
 import { getar, POLA_GETAR } from '../lib/getar'
 import { bentukKotak, KOLOM } from './SplashLabaLaba.jsx'
 
@@ -370,6 +370,20 @@ export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalka
   const urutPesan = useRef(0)
   const timerPesan = useRef(null)
   useEffect(() => () => { clearTimeout(timerGelembung.current); clearTimeout(timerPesan.current) }, [])
+
+  // Pesta naik level: satu ping tiap denyut pendar hijau (siklus 1,6 dtk, paling terang di 0,8 dtk), berhenti saat konsol diketuk
+  useEffect(() => {
+    if (!pesta || keluar || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return undefined
+    let ulang
+    const awal = setTimeout(() => {
+      playPingHijau()
+      ulang = setInterval(playPingHijau, 1600)
+    }, 800)
+    return () => {
+      clearTimeout(awal)
+      clearInterval(ulang)
+    }
+  }, [pesta, keluar])
 
   function sentuh() {
     const el = refReaksi.current

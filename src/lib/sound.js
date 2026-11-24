@@ -918,98 +918,11 @@ export function playLevelLanjut() {
   desisNaik(ctx, 0.25, 0.12, 0.04, 3000, 600)
 }
 
-// Musik layar piala naik level ("Lonceng + pixel", 124 bpm, 4 birama diulang): melodi lonceng lembut, arpeggio kotak,
-// bass, dan drum ringan. Mulai saat ledakan naik level dan terus berputar sampai layar piala diketuk (lalu berhenti pelan).
-// Kalau sudah berputar, panggilan berikutnya tidak melakukan apa-apa, jadi satu musik menyambung antar layar.
-const NOTA = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 }
-const frekNota = (n) => {
-  const m = /^([A-G])(#?)(\d)$/.exec(n)
-  return 440 * 2 ** ((NOTA[m[1]] + (m[2] ? 1 : 0) + (+m[3] + 1) * 12 - 69) / 12)
-}
-const MUSIK_MELODI = [
-  'C6 - C6 - D6 - E6 - G6 - - - E6 - - -',
-  'B5 - B5 - C6 - D6 - G6 - - - D6 - - -',
-  'A5 - A5 - B5 - C6 - E6 - - - C6 - - -',
-  'F6 - E6 - D6 - C6 - D6 - E6 - C6 - - -',
-].map((b) => b.split(' '))
-const MUSIK_BASS = ['C3', 'G2', 'A2', 'F2']
-const MUSIK_AKOR = [['C4', 'E4', 'G4'], ['G3', 'B3', 'D4'], ['A3', 'C4', 'E4'], ['F3', 'A3', 'C4']]
-const MUSIK_POLA_BASS = 'x.o.x.o.x.o.x.o.'
-const MUSIK_POLA_DRUM = 'k.h.s.h.k.h.s.hs'
-
-function desisMusik(ctx, tujuan, lama, vol, t, dari, ke) {
-  const n = Math.floor(ctx.sampleRate * lama)
-  const buf = ctx.createBuffer(1, n, ctx.sampleRate)
-  const d = buf.getChannelData(0)
-  for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * Math.sin((Math.PI * i) / n)
-  const sumber = ctx.createBufferSource()
-  sumber.buffer = buf
-  const saring = ctx.createBiquadFilter()
-  saring.type = 'bandpass'
-  saring.Q.value = 1.4
-  const w = ctx.currentTime + t
-  saring.frequency.setValueAtTime(dari, w)
-  saring.frequency.exponentialRampToValueAtTime(ke, w + lama)
-  const gain = ctx.createGain()
-  gain.gain.value = vol
-  sumber.connect(saring)
-  saring.connect(gain)
-  gain.connect(tujuan)
-  sumber.start(w)
-}
-
-function langkahMusik(ctx, tujuan, i, t, d) {
-  const bar = (i >> 4) % 4
-  const st = i % 16
-  const nm = MUSIK_MELODI[bar][st]
-  if (nm !== '-') nadaPendek(ctx, 'sine', frekNota(nm), frekNota(nm), d * 2.5, 0.07, t, tujuan)
-  if (st % 2 === 0) {
-    const f = frekNota(MUSIK_AKOR[bar][[0, 1, 2, 1][(i / 2) % 4 | 0] % 3])
-    nadaPendek(ctx, 'square', f, f, d * 2, 0.013, t, tujuan)
-  }
-  const pb = MUSIK_POLA_BASS[st]
-  if (pb === 'x' || pb === 'o') {
-    const f = frekNota(MUSIK_BASS[bar]) * (pb === 'o' ? 2 : 1)
-    nadaPendek(ctx, 'triangle', f, f, d * 3, 0.1, t, tujuan)
-  }
-  const dr = MUSIK_POLA_DRUM[st]
-  if (dr === 'k') nadaPendek(ctx, 'sine', 110, 45, 0.2, 0.14, t, tujuan)
-  else if (dr === 's') desisMusik(ctx, tujuan, 0.09, 0.05, t, 2000, 4500)
-  else if (dr === 'h') desisMusik(ctx, tujuan, 0.03, 0.03, t, 6000, 7500)
-}
-
-let musikLevel = null
-
-export function playMusikLevel(masukDtk = 1.2) {
-  if (musikLevel) return
+// Ping radar bulat, satu kali tiap denyut pendar hijau Spiderman (dipanggil tepat saat pendar paling terang)
+export function playPingHijau() {
   const ctx = ctxSiapEfek()
   if (!ctx) return
-  const master = ctx.createGain()
-  const sekarang = ctx.currentTime
-  master.gain.setValueAtTime(0.0001, sekarang)
-  master.gain.exponentialRampToValueAtTime(1, sekarang + masukDtk)
-  master.connect(ctx.destination)
-  const d = 60 / 124 / 4
-  let langkah = 0
-  let berikut = sekarang + 0.05
-  const timer = setInterval(() => {
-    while (berikut < ctx.currentTime + 0.2) {
-      langkahMusik(ctx, master, langkah, Math.max(0, berikut - ctx.currentTime), d)
-      langkah++
-      berikut += d
-    }
-  }, 25)
-  musikLevel = { ctx, master, timer }
-}
-
-export function stopMusikLevel() {
-  if (!musikLevel) return
-  const { ctx, master, timer } = musikLevel
-  musikLevel = null
-  clearInterval(timer)
-  const w = ctx.currentTime
-  master.gain.cancelScheduledValues(w)
-  master.gain.setValueAtTime(Math.max(master.gain.value, 0.0001), w)
-  master.gain.exponentialRampToValueAtTime(0.0001, w + 0.3)
-  setTimeout(() => master.disconnect(), 500)
+  nadaPendek(ctx, 'sine', 880, 880, 1.1, 0.05, 0)
+  nadaPendek(ctx, 'sine', 1760, 1760, 0.45, 0.015, 0)
+  desisNaik(ctx, 0.5, 0.03, 0, 3000, 800)
 }
