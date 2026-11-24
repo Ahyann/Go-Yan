@@ -1,6 +1,7 @@
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { TEKS_STATUS, jenisCuaca, useStatusSiaga } from '../lib/statusSiaga'
 import { JUMLAH_BAR, useBensin } from '../lib/bensin'
+import { hitungLevel, tingkatPiala } from '../lib/level'
 
 const svg = { shapeRendering: 'crispEdges', style: { flexShrink: 0, display: 'block' } }
 
@@ -62,8 +63,17 @@ export function MeterBensin({ pasti = 0, mungkin = 0, lebar = 5, tinggi = 10, ja
   )
 }
 
-// Piala emas piksel: kilap putih menyapu badan piala sesekali dan ada kilau kecil di pojok kanan atas
-function IkonTrip() {
+// Warna piala per tingkat level: [badan, kilap, alas]
+const WARNA_PIALA = {
+  emas: ['#FFD84A', '#FFF4B0', '#C99A12'],
+  perak: ['#D7DEE4', '#FFFFFF', '#8B98A3'],
+  perunggu: ['#CD7F32', '#F0B47A', '#8A4F1C'],
+}
+
+// Piala piksel: kilap putih menyapu badan piala sesekali dan ada kilau kecil di pojok kanan atas. Warnanya mengikuti
+// tingkat level (perunggu, perak, emas); tanpa level (akun penumpang) tetap emas.
+function IkonTrip({ tingkat = 'emas' }) {
+  const [badan, kilap, alas] = WARNA_PIALA[tingkat] || WARNA_PIALA.emas
   const bentuk = (
     <>
       <rect x="2" y="1" width="8" height="4" />
@@ -79,9 +89,9 @@ function IkonTrip() {
   return (
     <svg width="17" height="16" viewBox="0 0 14 13" aria-hidden="true" {...svg}>
       <defs><clipPath id="ik-piala-klip">{bentuk}</clipPath></defs>
-      <g fill="#FFD84A">{bentuk}</g>
-      <rect x="3" y="2" width="1" height="2" fill="#FFF4B0" />
-      <rect x="3" y="9" width="6" height="1" fill="#C99A12" />
+      <g fill={badan}>{bentuk}</g>
+      <rect x="3" y="2" width="1" height="2" fill={kilap} />
+      <rect x="3" y="9" width="6" height="1" fill={alas} />
       <g clipPath="url(#ik-piala-klip)">
         <g className="ik-kilap"><rect x="-1" y="0" width="2" height="12" fill="#FFFFFF" opacity="0.9" /><rect x="2" y="0" width="1" height="12" fill="#FFFFFF" opacity="0.5" /></g>
       </g>
@@ -91,7 +101,7 @@ function IkonTrip() {
 }
 
 // Baris di bawah jam konsol ojek saat siaga: cuaca, sinyal GPS, dan total trip, dengan ikon piksel.
-export default function BarisStatusSiaga({ totalTrip = null, lokasiAktif = false, onBukaCuaca = null, onBukaBensin = null, onBukaLevel = null }) {
+export default function BarisStatusSiaga({ totalTrip = null, totalUang = null, lokasiAktif = false, onBukaCuaca = null, onBukaBensin = null, onBukaLevel = null }) {
   const { lang } = useLanguage()
   const k = TEKS_STATUS[lang] || TEKS_STATUS.id
   const { cuaca } = useStatusSiaga(lokasiAktif)
@@ -127,6 +137,23 @@ export default function BarisStatusSiaga({ totalTrip = null, lokasiAktif = false
       </span>
     </button>
   )
+  const lv = totalUang != null ? hitungLevel(totalUang) : null
+  const slotLevel = lv && (
+    <button
+      type="button"
+      className="slot-status"
+      style={{ ...s.slot, ...s.tombolSlot }}
+      onClick={onBukaLevel || undefined}
+      aria-label={lang === 'en' ? `Driver level ${lv.level}, ${Math.round(lv.porsi * 100)}% to the next level` : `Level ojek ${lv.level}, ${Math.round(lv.porsi * 100)}% ke level berikutnya`}
+    >
+      <IkonTrip tingkat={tingkatPiala(lv.level)} />
+      {/* LV n di tempat angka trip, garis level tipis menggantikan tulisan TOTAL TRIPS */}
+      <span style={s.teks}>
+        <span style={s.nilai}>LV {lv.level}<span aria-hidden="true" style={s.panah}> ›</span></span>
+        <span style={s.garisLevel}><i style={{ ...s.isiLevel, width: `${lv.porsi * 100}%` }} /></span>
+      </span>
+    </button>
+  )
   const slotTombol = (ikon, nilai, label, aria, onKlik) => (
     <button type="button" className="slot-status" style={{ ...s.slot, ...s.tombolSlot }} onClick={onKlik} aria-label={aria}>{isiSlot(ikon, nilai, label, true)}</button>
   )
@@ -137,9 +164,7 @@ export default function BarisStatusSiaga({ totalTrip = null, lokasiAktif = false
         ? slotTombol(<IkonCuaca jenis={jenis || 'mendung'} />, cuaca ? `${cuaca.suhu}°` : '--°', jenis ? k.kode[jenis] : k.cuaca, lang === 'en' ? 'Open weather forecast' : 'Buka prakiraan cuaca', onBukaCuaca)
         : slot(<IkonCuaca jenis={jenis || 'mendung'} />, cuaca ? `${cuaca.suhu}°` : '--°', jenis ? k.kode[jenis] : k.cuaca)}
       {slotBensin}
-      {onBukaLevel
-        ? slotTombol(<IkonTrip />, totalTrip ?? '--', k.trip, lang === 'en' ? 'Open driver level' : 'Buka level ojek', onBukaLevel)
-        : slot(<IkonTrip />, totalTrip ?? '--', k.trip)}
+      {onBukaLevel && totalUang != null ? slotLevel : slot(<IkonTrip />, totalTrip ?? '--', k.trip)}
     </div>
   )
 }
@@ -152,4 +177,6 @@ const s = {
   teks: { display: 'flex', flexDirection: 'column', lineHeight: 1.05 },
   nilai: { fontFamily: "'JetBrains Mono', monospace", fontSize: 11, letterSpacing: '0.04em', color: '#FFFFFF', whiteSpace: 'nowrap' },
   label: { fontSize: 6, letterSpacing: '0.14em', opacity: 0.6, whiteSpace: 'nowrap', marginTop: 1 },
+  garisLevel: { position: 'relative', display: 'block', width: 46, height: 3, marginTop: 3, background: 'rgba(94, 208, 255, 0.18)' },
+  isiLevel: { position: 'absolute', left: 0, top: 0, bottom: 0, background: '#5ED0FF', boxShadow: '0 0 4px #5ED0FF' },
 }

@@ -129,7 +129,7 @@ export default function JamKonsol({ keterangan, bergilir = false, totalTrip = nu
           {menit}
         </div>
       </div>
-      <div style={s.bawah}><BarisStatusSiaga totalTrip={totalTrip} lokasiAktif={lokasiAktif} onBukaCuaca={() => setHalaman('cuaca')} onBukaBensin={() => setHalaman('bensin')} onBukaLevel={totalUang != null ? () => setHalaman('level') : null} /></div>
+      <div style={s.bawah}><BarisStatusSiaga totalTrip={totalTrip} totalUang={totalUang} lokasiAktif={lokasiAktif} onBukaCuaca={() => setHalaman('cuaca')} onBukaBensin={() => setHalaman('bensin')} onBukaLevel={totalUang != null ? () => setHalaman('level') : null} /></div>
     </div>
   )
 }

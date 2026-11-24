@@ -22,3 +22,10 @@ export function hitungLevel(total, tarif = TARIF_PER_RIDE) {
     porsi: diLevel / UANG_PER_LEVEL,
   }
 }
+
+// Warna piala di konsol: perunggu sampai LV 29, perak LV 30-49, emas mulai LV 50
+export function tingkatPiala(level) {
+  if (level >= 50) return 'emas'
+  if (level >= 30) return 'perak'
+  return 'perunggu'
+}
