@@ -919,7 +919,8 @@ export function playLevelLanjut() {
 }
 
 // Musik layar piala naik level ("Lonceng + pixel", 124 bpm, 4 birama diulang): melodi lonceng lembut, arpeggio kotak,
-// bass, dan drum ringan. Masuk pelan (1,2 dtk) setelah fanfare dan berhenti pelan saat layar diketuk.
+// bass, dan drum ringan. Mulai saat ledakan naik level dan terus berputar sampai layar piala diketuk (lalu berhenti pelan).
+// Kalau sudah berputar, panggilan berikutnya tidak melakukan apa-apa, jadi satu musik menyambung antar layar.
 const NOTA = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 }
 const frekNota = (n) => {
   const m = /^([A-G])(#?)(\d)$/.exec(n)
@@ -979,14 +980,14 @@ function langkahMusik(ctx, tujuan, i, t, d) {
 
 let musikLevel = null
 
-export function playMusikLevel() {
-  stopMusikLevel()
+export function playMusikLevel(masukDtk = 1.2) {
+  if (musikLevel) return
   const ctx = ctxSiapEfek()
   if (!ctx) return
   const master = ctx.createGain()
   const sekarang = ctx.currentTime
   master.gain.setValueAtTime(0.0001, sekarang)
-  master.gain.exponentialRampToValueAtTime(1, sekarang + 1.2)
+  master.gain.exponentialRampToValueAtTime(1, sekarang + masukDtk)
   master.connect(ctx.destination)
   const d = 60 / 124 / 4
   let langkah = 0

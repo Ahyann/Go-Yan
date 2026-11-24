@@ -106,7 +106,6 @@ function LayarPiala({ awal, akhir, lang, onLanjut }) {
   const refBlok = useRef(null)
   const [sampai, setSampai] = useState(false)
   const [keluar, setKeluar] = useState(false)
-  const sudahKeluar = useRef(false)
   const [badan, kilap, alas] = WARNA_PIALA[tingkatPiala(akhir.level)]
 
   useEffect(() => {
@@ -122,6 +121,8 @@ function LayarPiala({ awal, akhir, lang, onLanjut }) {
       { duration: kurangGerak ? 1 : 900, easing: 'ease-out', fill: 'forwards' },
     )
     playPialaMasuk()
+    // musik sudah mulai sejak ledakan naik level; kalau belum (gerak dikurangi), mulai di sini. Berhenti saat diketuk.
+    playMusikLevel(0.6)
     getar(10)
     // angka total berputar pelan sampai target, dengan tik-tik yang makin tinggi
     nanti(() => {
@@ -140,10 +141,6 @@ function LayarPiala({ awal, akhir, lang, onLanjut }) {
       }
       playLevelTercapai()
       getar(POLA_GETAR.senang)
-      // musik masuk pelan setelah fanfare selesai, lalu terus berputar sampai diketuk
-      nanti(() => {
-        if (!sudahKeluar.current) playMusikLevel()
-      }, 1100)
     }, 2500)
     return () => {
       timer.forEach(clearTimeout)
@@ -157,7 +154,6 @@ function LayarPiala({ awal, akhir, lang, onLanjut }) {
   const lanjut = () => {
     if (!sampai || keluar) return
     setKeluar(true)
-    sudahKeluar.current = true
     stopMusikLevel()
     playLevelLanjut()
     getar(8)
@@ -285,6 +281,7 @@ export default function TampilanLevel({ total, dari = null, kananBawah = null, r
         percik(wadah, lebar - 4, 28, 90, 12, 0.5)
         cincin(wadah, lebar - 4, 30)
         playLevelNaik()
+        playMusikLevel(0.5)
         getar(POLA_GETAR.senang)
         const lvEl = refLv.current
         if (lvEl) {
@@ -311,7 +308,10 @@ export default function TampilanLevel({ total, dari = null, kananBawah = null, r
       nanti(() => setSelesai(true), 3300)
       nanti(() => setLayarPiala(true), 4800)
     }
-    return () => timer.forEach(clearTimeout)
+    return () => {
+      timer.forEach(clearTimeout)
+      stopMusikLevel()
+    }
     // animasi hanya sekali saat tampilan ini muncul
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
