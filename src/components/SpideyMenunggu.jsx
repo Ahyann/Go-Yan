@@ -197,6 +197,10 @@ const KOTAK_MATA = [
   { r0: 20, r1: 22, c0: 13, c1: 14 },
 ]
 const WARNA = { R: '#E20101', K: '#0A0A0A', N: '#0B2E5C', W: '#FFFFFF' }
+// Panah hijau piksel (7 x 6 kotak) untuk pesta naik level, naik terus dari sekeliling badan Spiderman
+const PANAH = ['...#...', '..###..', '.#####.', '#######', '..###..', '..###..']
+// posisi tiap panah: [geser dari tengah kartu (px), jarak dari atas Spiderman (px)]
+const PANAH_PESTA = [[-87, 152], [59, 162], [-67, 82], [47, 68], [-97, 212], [79, 218], [-29, 226], [17, 220]]
 const PAD = 12 // ruang kiri untuk gelembung
 const LEBAR = 19
 const TINGGI = SPRITE.length
@@ -482,6 +486,21 @@ export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalka
 
       {/* Spiderman. Pembungkus diam; di dalamnya ada jangkar benang yang menempel di tepi atas kartu. */}
       <div style={s.pembungkus}>
+        {/* pesta naik level: panah hijau naik terus dari sekeliling badan sampai konsol diketuk */}
+        {pesta && !keluar && PANAH_PESTA.map(([dx, dy], i) => (
+          <svg
+            key={i}
+            className="sp-panah-naik"
+            width={21}
+            height={18}
+            viewBox="0 0 7 6"
+            shapeRendering="crispEdges"
+            aria-hidden="true"
+            style={{ position: 'absolute', left: `calc(50% + ${dx}px)`, top: topSpidey + dy, animationDelay: `${-(i * 0.19)}s` }}
+          >
+            {PANAH.flatMap((baris, y) => [...baris].map((ch, x) => (ch === '#' ? <rect key={`${x}-${y}`} x={x} y={y} width="1.05" height="1.05" fill="#6CF29A" /> : null)))}
+          </svg>
+        ))}
         {/* Area sentuh seluas logo laba-laba di belakang (di bawah Spiderman, jadi badannya tetap menangkap sentuhan sendiri). */}
         {!diterima && !dibatalkan && (<div onPointerDown={sentuh} style={{ position: 'absolute', left: '50%', top: '47%', width: KOLOM * sk, height: BARIS_LABA * sk, transform: 'translate(-50%, -50%)', pointerEvents: 'auto', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent', cursor: 'pointer' }} aria-hidden="true" />)}
       <div ref={refSpidey} className="sp-masuk" style={{ ...s.spidey, top: topSpidey, ...(dibatalkan && gayaTolak ? { transformOrigin: `${(PAD + 9.5) * SKALA}px ${-topSpidey}px` } : null), left: `calc(50% - ${(PAD + 9.5) * SKALA}px)`, '--awal': `${awalJatuh}px` }} aria-hidden="true">
@@ -495,7 +514,7 @@ export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalka
             ia berputar bersama badan dengan poros di jangkar (tepi atas kartu), bukan patah di tengah. */}
         {/* Area sentuh tak kasatmata yang lebih luas dari gambar badan (sekitar 28px di tiap sisi), supaya mudah diketuk jari. */}
         <span style={{ position: 'absolute', left: PAD * SKALA - 28, top: 0, width: LEBAR * SKALA + 56, height: 22 + TINGGI * SKALA + 28 }} aria-hidden="true" />
-        <svg className="sp-napas" width={(LEBAR + PAD) * SKALA} height={TINGGI * SKALA} viewBox={`0 0 ${LEBAR + PAD} ${TINGGI}`} shapeRendering="crispEdges" style={{ display: 'block', overflow: 'visible' }}>
+        <svg className={`sp-napas${pesta && !keluar ? ' sp-hijau' : ''}`} width={(LEBAR + PAD) * SKALA} height={TINGGI * SKALA} viewBox={`0 0 ${LEBAR + PAD} ${TINGGI}`} shapeRendering="crispEdges" style={{ display: 'block', overflow: 'visible' }}>
           {menyalaSense && (
             <g className="sp-kontur" fill="none" strokeLinejoin="miter" aria-hidden="true">
               <path d={KONTUR_SILUET} stroke="#4B5BFF" strokeWidth="1.7" className="sp-sense-b" />

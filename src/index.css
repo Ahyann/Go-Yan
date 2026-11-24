@@ -1067,8 +1067,9 @@ button:disabled[aria-label="◀"], button:disabled[aria-label="▶"] { opacity: 
 
 /* Spiderman berpesta saat naik level: berayun terus di benangnya, judul berdenyut, kembang api piksel naik berulang.
    Berhenti begitu konsol diketuk (kartu keluar memakai animasi tarik yang sudah ada). */
-@keyframes sp-ayun { 0%, 100% { transform: rotate(-13deg); } 50% { transform: rotate(13deg); } }
-.sp-pesta { animation: sp-ayun 1.3s ease-in-out infinite; }
+/* ayunan kecil dan pelan: poros ayunan jauh di atas (tepi atas kartu), jadi sudut kecil pun sudah menggeser badan belasan px */
+@keyframes sp-ayun { 0%, 100% { transform: rotate(-4deg); } 50% { transform: rotate(4deg); } }
+.sp-pesta { animation: sp-ayun 2s ease-in-out infinite; }
 /* Partikel naik di konsol (layar piala naik level): terus naik dan memudar sampai konsol diketuk */
 @keyframes level-kembang {
   0% { transform: translate(0, 0) scale(0.6); opacity: 0; }
@@ -1076,4 +1077,17 @@ button:disabled[aria-label="◀"], button:disabled[aria-label="▶"] { opacity: 
   100% { transform: translate(var(--dx, 0px), -52px) scale(1); opacity: 0; }
 }
 .level-kembang { position: absolute; bottom: 2px; width: 4px; height: 4px; animation: level-kembang 1.6s ease-out infinite; }
-@media (prefers-reduced-motion: reduce) { .sp-pesta { animation: none; } .level-kembang { animation: none; opacity: 0; } }
+/* Spiderman saat naik level: badan berpendar hijau berdenyut (digabung dengan napasnya), panah hijau naik berulang */
+@keyframes sp-hijau {
+  0% { filter: drop-shadow(0 0 0 #4ADE80); }
+  100% { filter: drop-shadow(0 0 4px #4ADE80) drop-shadow(0 0 10px #4ADE80); }
+}
+.sp-napas.sp-hijau { animation: sp-napas 4.4s ease-in-out infinite, sp-hijau 0.8s ease-in-out infinite alternate; }
+@keyframes sp-panah-naik {
+  0% { transform: translateY(0); opacity: 0; }
+  20% { opacity: 1; }
+  70% { opacity: 1; }
+  100% { transform: translateY(-80px); opacity: 0; }
+}
+.sp-panah-naik { animation: sp-panah-naik 1.5s linear infinite; filter: drop-shadow(0 0 3px #4ADE80); pointer-events: none; }
+@media (prefers-reduced-motion: reduce) { .sp-pesta { animation: none; } .level-kembang { animation: none; opacity: 0; } .sp-napas.sp-hijau { animation: none; } .sp-panah-naik { animation: none; opacity: 0; } }
