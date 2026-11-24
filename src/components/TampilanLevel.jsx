@@ -135,7 +135,7 @@ function LayarPiala({ awal, akhir, lang, onLanjut }) {
 // Rp3.120.000 / Rp3.500.000), garis kemajuan di level ini, lalu sisa ke level berikutnya.
 // Kalau `dari` diisi (total sebelum perjalanan ini), garis dianimasikan dari nilai lama ke nilai baru. Kalau perjalanan
 // ini membuat level naik, garis penuh, memercikkan kotak-kotak piksel, lalu level berganti.
-export default function TampilanLevel({ total, dari = null, kananBawah = null, rapat = false, onLanjut = null }) {
+export default function TampilanLevel({ total, dari = null, kananBawah = null, rapat = false, onLanjut = null, statistik = null }) {
   const { lang } = useLanguage()
   const { isDemo } = useAuth()
   const perLevel = uangPerLevel(isDemo)
@@ -250,10 +250,23 @@ export default function TampilanLevel({ total, dari = null, kananBawah = null, r
           <span ref={refTambah} style={{ ...s.tambah, left: `${awal.porsi * 100}%` }}>+{rp(total - dari)}</span>
         )}
       </div>
-      <div style={s.bawah}>
-        <span style={s.teksBawah}>{teksBawah}</span>
-        {kananBawah}
-      </div>
+      {statistik ? (
+        // halaman level di konsol: angka ringkas sejajar, kolom terakhir sisa trip ke level berikutnya (kuning berkedip saat dekat)
+        <div style={s.statBaris}>
+          {statistik.map(([nilai, label]) => (
+            <span key={label} style={s.statItem}><span style={s.statNilai}>{nilai}</span><span style={s.statLabel}>{label}</span></span>
+          ))}
+          <span style={s.statItem}>
+            <span className={bawah.dekat ? 'level-dekat' : undefined} style={s.statNilai}>{akhir.sisaTrip} TRIP</span>
+            <span style={s.statLabel}>{lang === 'en' ? `LEFT TO LV ${akhir.level + 1}` : `LAGI KE LV ${akhir.level + 1}`}</span>
+          </span>
+        </div>
+      ) : (
+        <div style={s.bawah}>
+          <span style={s.teksBawah}>{teksBawah}</span>
+          {kananBawah}
+        </div>
+      )}
       <div ref={refPercik} style={s.percik} aria-hidden="true" />
     </div>
   )
@@ -271,6 +284,10 @@ const s = {
   bawah: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, minHeight: 12 },
   teksBawah: { flex: 1, minWidth: 0, fontSize: 7, letterSpacing: '0.08em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' },
   kuning: { color: '#FFD45E', textShadow: '0 0 6px rgba(255, 212, 94, 0.6)' },
+  statBaris: { display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 6 },
+  statItem: { display: 'flex', flexDirection: 'column', lineHeight: 1.15, minWidth: 0 },
+  statNilai: { fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: '#FFFFFF', whiteSpace: 'nowrap' },
+  statLabel: { fontSize: 5.5, letterSpacing: '0.12em', opacity: 0.6, whiteSpace: 'nowrap' },
   percik: { position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'visible' },
   layarPiala: { position: 'relative', display: 'flex', alignItems: 'center', gap: 12, height: 58, cursor: 'pointer', outline: 'none' },
   pialaBesar: { flexShrink: 0, opacity: 0 },

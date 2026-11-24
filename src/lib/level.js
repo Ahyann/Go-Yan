@@ -9,6 +9,8 @@ export const UANG_PER_LEVEL_DEMO = TARIF_PER_RIDE * 4
 export const uangPerLevel = (isDemo) => (isDemo ? UANG_PER_LEVEL_DEMO : UANG_PER_LEVEL)
 // Pendapatan awal akun demo (4 level), supaya demo sudah di LV 5 saat dibuka
 export const PENDAPATAN_AWAL_DEMO = UANG_PER_LEVEL_DEMO * 4
+// jumlah trip yang setara dengan pendapatan awal demo, supaya total trip cocok dengan total uang
+export const TRIP_AWAL_DEMO = PENDAPATAN_AWAL_DEMO / TARIF_PER_RIDE
 
 // Total pendapatan untuk level: semua riwayat, ditambah pendapatan awal kalau akun demo
 export function totalUangLevel(riwayat, isDemo) {

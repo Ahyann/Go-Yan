@@ -7,7 +7,7 @@ import JamKonsol, { sambutSudahSelesai, dengarSambutSelesai } from '../component
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { useReminderKeberangkatan } from '../lib/useReminderKeberangkatan'
 import { STATUS_PERMINTAAN } from '../lib/constants'
-import { totalUangLevel } from '../lib/level'
+import { totalUangLevel, TRIP_AWAL_DEMO } from '../lib/level'
 import { useAuth } from '../context/AuthContext.jsx'
 import PermintaanBaruToast from '../components/PermintaanBaruToast.jsx'
 import PapanGoYan from '../components/PapanGoYan.jsx'
@@ -54,6 +54,8 @@ export default function OjekView({
   const { t } = useLanguage()
   const { isDemo } = useAuth()
   const totalUang = riwayatSiap ? totalUangLevel(riwayat, isDemo) : null
+  // total trip untuk konsol level; akun demo ditambah trip awal yang setara dengan pendapatan awalnya
+  const totalTripLevel = riwayatSiap ? riwayat.length + (isDemo ? TRIP_AWAL_DEMO : 0) : null
   const [tabAktif, setTabAktif] = useState('home')
   const [slotKonsol, setSlotKonsol] = useState(null)
   const [alarmKonsol, setAlarmKonsol] = useState(false)
@@ -286,7 +288,7 @@ export default function OjekView({
             slotKonsol={slotKonsol}
             putaranMasuk={putaranMasuk}
             sambutBeres={sambutBeres}
-            totalTrip={riwayatSiap ? riwayat.length : null}
+            totalTrip={totalTripLevel}
             totalUang={totalUang}
             jadwalMingguan={jadwalMingguan}
           />
@@ -346,7 +348,7 @@ export default function OjekView({
           {tabAktif !== 'home' && !(konsolSendiri && (tabAktif === 'riwayat' || tabAktif === 'jadwal')) && (
             <>
               <span className="label-konsol" style={s.labelStatus}>{sambutBeres || permintaan ? t.monitorStatus : t.monitorSambut}</span>
-              <JamKonsol lewatiSambut={!!permintaan} bergilir={permintaan?.status !== STATUS_PERMINTAAN.MENUNGGU} keterangan={permintaan?.status === STATUS_PERMINTAAN.MENUNGGU ? t.monitorMisiBaru : t.monitorStandby} totalTrip={riwayatSiap ? riwayat.length : null} totalUang={totalUang} lokasiAktif={lokasiAktif} jadwal={jadwalMingguan} />
+              <JamKonsol lewatiSambut={!!permintaan} bergilir={permintaan?.status !== STATUS_PERMINTAAN.MENUNGGU} keterangan={permintaan?.status === STATUS_PERMINTAAN.MENUNGGU ? t.monitorMisiBaru : t.monitorStandby} totalTrip={totalTripLevel} totalUang={totalUang} lokasiAktif={lokasiAktif} jadwal={jadwalMingguan} />
             </>
           )}
         </div>
