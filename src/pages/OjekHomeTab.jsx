@@ -115,7 +115,7 @@ export default function OjekHomeTab({ slotKonsol, putaranMasuk = 0,
       const tarif = uangPerLevel(isDemo)
       const lama = hitungLevel(misiSelesai.totalSebelum, tarif)
       const baru = hitungLevel(misiSelesai.totalSebelum + TARIF_PER_RIDE, tarif)
-      simpanAnimLevel({ levelLama: lama.level, porsiLama: lama.porsi, levelBaru: baru.level, porsiBaru: baru.porsi })
+      simpanAnimLevel({ tarif: TARIF_PER_RIDE, levelLama: lama.level, porsiLama: lama.porsi, levelBaru: baru.level, porsiBaru: baru.porsi })
     }
     setKeluarSelesai(true)
     playWhooshMasuk()

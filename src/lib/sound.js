@@ -925,18 +925,19 @@ export function playLevelKilat() {
   nadaLv(ctx, 'square', 659, 659, 0.5, 0.04, 1.33)
 }
 
-// Animasi level di konsol: blip pendek tiap bola exp masuk ke piala (nadanya makin tinggi), dentuman saat bar penuh,
-// lalu jingle naik saat tulisan LEVEL UP! muncul.
+// Animasi level di konsol: "ting" koin saat +Rp muncul, tik bernada naik saat bar terisi, lalu jingle naik saat LEVEL UP! muncul.
 export function playEkspMasuk(n = 0) {
   const ctx = ctxSiapEfek()
   if (!ctx) return
   nadaLv(ctx, 'square', 520 + n * 80, 520 + n * 80, 0.06, 0.04, 0)
   nadaLv(ctx, 'square', 780 + n * 120, 780 + n * 120, 0.09, 0.03, 0.05)
 }
-export function playBarPenuh() {
+// Uang masuk: "ting" koin dua nada
+export function playKoinRp() {
   const ctx = ctxSiapEfek()
   if (!ctx) return
-  nadaLv(ctx, 'sine', 150, 45, 0.35, 0.25, 0)
+  nadaLv(ctx, 'square', 988, 988, 0.06, 0.05, 0)
+  nadaLv(ctx, 'square', 1319, 1319, 0.16, 0.05, 0.06)
 }
 export function playLevelNaikKonsol() {
   const ctx = ctxSiapEfek()

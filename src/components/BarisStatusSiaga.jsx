@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { lihatAnimLevel, habisAnimLevel } from '../lib/animLevel'
-import { playEkspMasuk, playBarPenuh, playLevelNaikKonsol } from '../lib/sound'
+import { formatRupiah } from '../lib/constants'
+import { playEkspMasuk, playKoinRp, playLevelNaikKonsol } from '../lib/sound'
 import { TEKS_STATUS, jenisCuaca, useStatusSiaga } from '../lib/statusSiaga'
 import { JUMLAH_BAR, useBensin } from '../lib/bensin'
 import { hitungLevel, tingkatPiala, uangPerLevel } from '../lib/level'
@@ -164,54 +165,46 @@ export default function BarisStatusSiaga({ totalTrip = null, totalUang = null, l
     const nanti = (fn, ms) => timer.push(setTimeout(fn, ms))
     const denyut = () => refPiala.current?.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.45) rotate(-8deg)', offset: 0.3 }, { transform: 'scale(0.95)', offset: 0.6 }, { transform: 'scale(1)' }], { duration: 420 })
     const T0 = 600 // jeda sesudah konsol tampil (konsol menyala dari garis tipis dulu)
-    for (let n = 0; n < 7; n++) {
-      nanti(() => {
-        const slot = refSlot.current
-        if (!slot) return
-        const bola = document.createElement('i')
-        Object.assign(bola.style, { position: 'absolute', left: '0px', top: '0px', width: '8px', height: '8px', background: '#5ED0FF', boxShadow: '0 0 12px 3px #5ED0FF, 0 0 4px #fff', zIndex: 3, pointerEvents: 'none' })
-        slot.appendChild(bola)
-        dibuat.push(bola)
-        // widget LV ada di tepi kanan konsol, jadi bola datang dari kiri (melintasi konsol) dan dari atas (arah jam)
-        const dari = n % 2 === 0 ? `translate(-190px, ${-14 + (n % 4) * 8}px)` : `translate(-50px, ${-34 - (n % 3) * 4}px)`
-        const gerak = bola.animate([{ transform: dari, opacity: 1 }, { transform: 'translate(4px, 4px)', opacity: 1, offset: 0.92 }, { transform: 'translate(4px, 4px) scale(0)', opacity: 0 }], { duration: 650, easing: 'ease-in', fill: 'forwards' })
-        gerak.onfinish = () => { playEkspMasuk(n); denyut(); bola.remove() }
-      }, T0 + n * 200)
-    }
-    nanti(() => setTampil((p) => (p ? { ...p, porsi: 1 } : p)), T0 + 300)
-    nanti(() => {
-      playBarPenuh()
-      denyut()
-      refGaris.current?.animate([{ background: '#FFFFFF' }, { background: 'rgba(94, 208, 255, 0.18)' }, { background: '#FFFFFF' }, { background: 'rgba(94, 208, 255, 0.18)' }], { duration: 450 })
-      const slot = refSlot.current
-      const garis = refGaris.current
-      if (slot && garis) {
-        // ledakan: garis cahaya selebar konsol memancar dari bar, ditambah cincin kejut di sekeliling piala
-        const a = slot.getBoundingClientRect()
-        const b = garis.getBoundingClientRect()
-        const y = b.top - a.top + b.height / 2
-        const ledak = document.createElement('i')
-        Object.assign(ledak.style, { position: 'absolute', left: `${12 - a.left}px`, width: `${window.innerWidth - 24}px`, top: `${y - 2}px`, height: '4px', background: '#FFFFFF', boxShadow: '0 0 18px 8px #5ED0FF', zIndex: 3, pointerEvents: 'none' })
-        slot.appendChild(ledak)
-        dibuat.push(ledak)
-        ledak.animate([{ opacity: 1, transform: 'scaleY(1)' }, { opacity: 0, transform: 'scaleY(6)' }], { duration: 700, easing: 'ease-out', fill: 'forwards' }).onfinish = () => ledak.remove()
-        for (let k = 0; k < 2; k++) {
-          const cincin = document.createElement('i')
-          Object.assign(cincin.style, { position: 'absolute', left: '-4px', top: '-6px', width: '24px', height: '24px', boxSizing: 'border-box', border: '3px solid #6CF29A', boxShadow: '0 0 10px #6CF29A', zIndex: 3, pointerEvents: 'none' })
-          slot.appendChild(cincin)
-          dibuat.push(cincin)
-          cincin.animate([{ transform: 'scale(0.4)', opacity: 0.95 }, { transform: 'scale(3.6)', opacity: 0 }], { duration: 800, delay: k * 160, easing: 'ease-out', fill: 'both' }).onfinish = () => cincin.remove()
-        }
+    const slot = refSlot.current
+    // +Rp tarif trip muncul membal dan melayang naik di atas piala (bunyi koin)
+    if (slot) {
+      const uang = document.createElement('i')
+      Object.assign(uang.style, { position: 'absolute', left: '0px', top: '-12px', fontStyle: 'normal', fontFamily: "'JetBrains Mono', monospace", fontWeight: '700', fontSize: '12px', color: '#FFD84A', textShadow: '0 0 8px #FFD84A, 0 0 3px #000, 1px 1px 0 #000', whiteSpace: 'nowrap', zIndex: 3, pointerEvents: 'none', opacity: 0 })
+      uang.textContent = `+${formatRupiah(anim.tarif ?? 0)}`
+      slot.appendChild(uang)
+      dibuat.push(uang)
+      uang.animate([
+        { transform: 'translateY(0) scale(0.6)', opacity: 0 },
+        { transform: 'translateY(-8px) scale(1.25)', opacity: 1, offset: 0.3 },
+        { transform: 'translateY(-18px) scale(1)', opacity: 1, offset: 0.7 },
+        { transform: 'translateY(-26px) scale(0.85)', opacity: 0 },
+      ], { duration: 1100, delay: T0, fill: 'both' })
+      nanti(() => playKoinRp(), T0 + 100)
+      // percikan emas jatuh dari tulisan ke bar
+      for (let n = 0; n < 10; n++) {
+        nanti(() => {
+          const p = document.createElement('i')
+          Object.assign(p.style, { position: 'absolute', left: `${6 + n * 6}px`, top: '-14px', width: '4px', height: '4px', background: '#FFD84A', boxShadow: '0 0 6px #FFD84A', zIndex: 3, pointerEvents: 'none' })
+          slot.appendChild(p)
+          dibuat.push(p)
+          p.animate([{ transform: 'translate(0, 0)', opacity: 1 }, { transform: `translate(${(5 - n) * 3}px, 30px)`, opacity: 0 }], { duration: 600, easing: 'ease-in', fill: 'forwards' }).onfinish = () => p.remove()
+        }, T0 + 900 + n * 30)
       }
-    }, T0 + 2500)
+    }
+    // bar terisi sampai penuh dengan tik naik nada
+    nanti(() => setTampil((p) => (p ? { ...p, porsi: 1 } : p)), T0 + 1000)
+    for (let n = 0; n < 6; n++) nanti(() => playEkspMasuk(n), T0 + 1000 + n * 150)
+    // penuh: LEVEL UP! membal, jingle naik, piala berdenyut
     nanti(() => {
       setTampil((p) => (p ? { ...p, fase: 'naik' } : p))
       playLevelNaikKonsol()
+      denyut()
       requestAnimationFrame(() => refTeks.current?.animate([{ transform: 'scale(0.3)', opacity: 0 }, { transform: 'scale(1.7)', opacity: 1, offset: 0.35 }, { transform: 'scale(1)' }], { duration: 600 }))
-    }, T0 + 2650)
-    nanti(() => setTampil({ level: anim.levelBaru, porsi: 0, fase: 'turun' }), T0 + 3900)
-    nanti(() => { setTampil({ level: anim.levelBaru, porsi: anim.porsiBaru, fase: 'isi' }); denyut() }, T0 + 4000)
-    nanti(() => setTampil(null), T0 + 4900)
+    }, T0 + 2100)
+    // LV baru, bar kosong lalu terisi ke posisi sebenarnya
+    nanti(() => setTampil({ level: anim.levelBaru, porsi: 0, fase: 'turun' }), T0 + 3400)
+    nanti(() => { setTampil({ level: anim.levelBaru, porsi: anim.porsiBaru, fase: 'isi' }); denyut() }, T0 + 3500)
+    nanti(() => setTampil(null), T0 + 4400)
     return () => { timer.forEach(clearTimeout); dibuat.forEach((e) => e.remove()) }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -234,7 +227,7 @@ export default function BarisStatusSiaga({ totalTrip = null, totalUang = null, l
         ) : (
           <span style={s.nilai}>LV {levelTampil}<span aria-hidden="true" style={s.panah}> ›</span></span>
         )}
-        <span ref={refGaris} style={{ ...s.garisLevel, ...(tampil ? { transform: 'scaleY(2.2)', transformOrigin: 'left center' } : null) }}><i style={{ ...s.isiLevel, width: `${porsiTampil * 100}%`, transition: tampil?.fase === 'isi' ? 'width 1.9s ease-out' : 'none' }} /></span>
+        <span ref={refGaris} style={{ ...s.garisLevel, ...(tampil ? { transform: 'scaleY(2.2)', transformOrigin: 'left center' } : null) }}><i style={{ ...s.isiLevel, width: `${porsiTampil * 100}%`, transition: tampil?.fase === 'isi' ? 'width 0.9s ease-out' : 'none' }} /></span>
       </span>
     </button>
   )
