@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { hitungLevel, uangPerLevel, tingkatPiala, TRIP_DEKAT } from '../lib/level'
-import { playGeserTik, playLevelIsi, playLevelNaik, playPialaMasuk, playLevelTercapai, playLevelLanjut } from '../lib/sound'
+import { playGeserTik, playLevelIsi, playLevelNaik, playPialaMasuk, playLevelTercapai, playLevelLanjut, playMusikLevel, stopMusikLevel } from '../lib/sound'
 import { getar, POLA_GETAR } from '../lib/getar'
 
 const rp = (n) => 'Rp' + Math.round(n).toLocaleString('id-ID')
@@ -106,6 +106,7 @@ function LayarPiala({ awal, akhir, lang, onLanjut }) {
   const refBlok = useRef(null)
   const [sampai, setSampai] = useState(false)
   const [keluar, setKeluar] = useState(false)
+  const sudahKeluar = useRef(false)
   const [badan, kilap, alas] = WARNA_PIALA[tingkatPiala(akhir.level)]
 
   useEffect(() => {
@@ -139,8 +140,15 @@ function LayarPiala({ awal, akhir, lang, onLanjut }) {
       }
       playLevelTercapai()
       getar(POLA_GETAR.senang)
+      // musik masuk pelan setelah fanfare selesai, lalu terus berputar sampai diketuk
+      nanti(() => {
+        if (!sudahKeluar.current) playMusikLevel()
+      }, 1100)
     }, 2500)
-    return () => timer.forEach(clearTimeout)
+    return () => {
+      timer.forEach(clearTimeout)
+      stopMusikLevel()
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -149,6 +157,8 @@ function LayarPiala({ awal, akhir, lang, onLanjut }) {
   const lanjut = () => {
     if (!sampai || keluar) return
     setKeluar(true)
+    sudahKeluar.current = true
+    stopMusikLevel()
     playLevelLanjut()
     getar(8)
     if (!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
