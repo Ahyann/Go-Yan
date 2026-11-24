@@ -3,12 +3,11 @@ import { TARIF_PER_RIDE } from './constants'
 // Level akun ojek: naik satu level tiap total pendapatan bertambah Rp500.000. Semua perjalanan di riwayat dihitung
 // (sudah dibayar atau belum).
 export const UANG_PER_LEVEL = 500000
-// Akun demo: 4 trip per level (Rp128.000). Data demo diisi 3 riwayat contoh (Rp96.000), jadi trip pertama yang dicoba
-// di demo langsung naik level dan animasi LEVEL UP terlihat.
-export const UANG_PER_LEVEL_DEMO = TARIF_PER_RIDE * 4
-export const uangPerLevel = (isDemo) => (isDemo ? UANG_PER_LEVEL_DEMO : UANG_PER_LEVEL)
-// Pendapatan awal akun demo (4 level), supaya demo sudah di LV 5 saat dibuka
-export const PENDAPATAN_AWAL_DEMO = UANG_PER_LEVEL_DEMO * 4
+// Akun demo memakai aturan yang sama (Rp500.000 per level). Parameter isDemo disimpan supaya pemanggil tidak berubah.
+export const uangPerLevel = () => UANG_PER_LEVEL
+// Pendapatan awal akun demo: 75 trip (Rp2.400.000). Ditambah 3 riwayat contoh (Rp96.000) totalnya Rp2.496.000,
+// yaitu LV 5 tepat di bawah Rp2.500.000, jadi trip pertama yang dicoba di demo langsung naik ke LV 6.
+export const PENDAPATAN_AWAL_DEMO = TARIF_PER_RIDE * 75
 // jumlah trip yang setara dengan pendapatan awal demo, supaya total trip cocok dengan total uang
 export const TRIP_AWAL_DEMO = PENDAPATAN_AWAL_DEMO / TARIF_PER_RIDE
 
