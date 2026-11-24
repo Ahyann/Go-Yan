@@ -924,5 +924,4 @@ export function playPingHijau() {
   if (!ctx) return
   nadaPendek(ctx, 'sine', 880, 880, 1.1, 0.05, 0)
   nadaPendek(ctx, 'sine', 1760, 1760, 0.45, 0.015, 0)
-  desisNaik(ctx, 0.5, 0.03, 0, 3000, 800)
 }
