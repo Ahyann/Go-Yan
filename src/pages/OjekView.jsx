@@ -133,6 +133,12 @@ export default function OjekView({
     else if (statusMenungguRef.current) setAlarmKonsol(true)
   }
 
+  // Pesanan masuk sebelum WELCOME diketuk: JamKonsol sudah menandai sambutan selesai, jadi status di sini ikut selesai.
+  // Tanpa ini, sesudah misi berakhir (misalnya sesudah layar naik level diketuk) konsol kembali menampilkan WELCOME.
+  useEffect(() => {
+    if (permintaan) setSambutBeres(true)
+  }, [permintaan])
+
   useEffect(() => dengarSambutSelesai(() => {
     setSambutBeres(true)
     setTvNyala(true)
