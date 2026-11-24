@@ -865,57 +865,62 @@ function desisNaik(ctx, lama, vol, t = 0, dari = 500, ke = 6000) {
 }
 
 // Garis level terisi pelan (sekitar 1,1 detik): nada naik halus ditambah tik-tik yang makin tinggi
+// Efek naik level dan layar piala dibuat sedikit lebih keras dari efek lain (dengung pendar hijau dibiarkan pelan)
+const KERAS_LEVEL = 1.35
+const nadaLv = (ctx, tipe, f0, f1, dur, vol, t) => nadaPendek(ctx, tipe, f0, f1, dur, vol * KERAS_LEVEL, t)
+const desisLv = (ctx, lama, vol, t, dari, ke) => desisNaik(ctx, lama, vol * KERAS_LEVEL, t, dari, ke)
+
 export function playLevelIsi() {
   const ctx = ctxSiapEfek()
   if (!ctx) return
-  nadaPendek(ctx, 'triangle', 220, 988, 1.0, 0.09, 0)
-  nadaPendek(ctx, 'square', 440, 1760, 1.0, 0.025, 0)
-  for (let i = 0; i < 9; i++) nadaPendek(ctx, 'square', 600 + i * 110, 600 + i * 110, 0.03, 0.035, 0.1 + i * 0.11)
+  nadaLv(ctx, 'triangle', 220, 988, 1.0, 0.09, 0)
+  nadaLv(ctx, 'square', 440, 1760, 1.0, 0.025, 0)
+  for (let i = 0; i < 9; i++) nadaLv(ctx, 'square', 600 + i * 110, 600 + i * 110, 0.03, 0.035, 0.1 + i * 0.11)
 }
 
 // NAIK LEVEL: dentuman rendah, desis naik, arpeggio cepat, akor panjang dengan bass, lalu kilau di atasnya (sekitar 2 detik)
 export function playLevelNaik() {
   const ctx = ctxSiapEfek()
   if (!ctx) return
-  nadaPendek(ctx, 'sine', 150, 38, 0.5, 0.24, 0)
-  nadaPendek(ctx, 'sawtooth', 90, 30, 0.32, 0.06, 0)
-  desisNaik(ctx, 0.55, 0.25, 0, 400, 7000)
-  ;[523, 659, 784, 1046, 1318, 1568].forEach((f, i) => nadaPendek(ctx, 'square', f, f, 0.13, 0.06, 0.12 + i * 0.08))
+  nadaLv(ctx, 'sine', 150, 38, 0.5, 0.24, 0)
+  nadaLv(ctx, 'sawtooth', 90, 30, 0.32, 0.06, 0)
+  desisLv(ctx, 0.55, 0.25, 0, 400, 7000)
+  ;[523, 659, 784, 1046, 1318, 1568].forEach((f, i) => nadaLv(ctx, 'square', f, f, 0.13, 0.06, 0.12 + i * 0.08))
   const akor = 0.7
-  ;[1046, 1318, 1568, 2093].forEach((f) => nadaPendek(ctx, 'triangle', f, f, 1.2, 0.07, akor))
-  nadaPendek(ctx, 'triangle', 131, 131, 1.3, 0.13, akor)
-  nadaPendek(ctx, 'sine', 262, 262, 1.3, 0.08, akor)
-  ;[2637, 3136, 3951, 4186].forEach((f, i) => nadaPendek(ctx, 'sine', f, f, 0.2, 0.035, akor + 0.15 + i * 0.1))
+  ;[1046, 1318, 1568, 2093].forEach((f) => nadaLv(ctx, 'triangle', f, f, 1.2, 0.07, akor))
+  nadaLv(ctx, 'triangle', 131, 131, 1.3, 0.13, akor)
+  nadaLv(ctx, 'sine', 262, 262, 1.3, 0.08, akor)
+  ;[2637, 3136, 3951, 4186].forEach((f, i) => nadaLv(ctx, 'sine', f, f, 0.2, 0.035, akor + 0.15 + i * 0.1))
 }
 
 // Piala masuk di layar kedua: desis pendek yang naik lalu satu "ting"
 export function playPialaMasuk() {
   const ctx = ctxSiapEfek()
   if (!ctx) return
-  desisNaik(ctx, 0.35, 0.22, 0, 700, 5000)
-  nadaPendek(ctx, 'triangle', 660, 1320, 0.3, 0.07, 0.05)
-  nadaPendek(ctx, 'sine', 2093, 2093, 0.4, 0.05, 0.4)
+  desisLv(ctx, 0.35, 0.22, 0, 700, 5000)
+  nadaLv(ctx, 'triangle', 660, 1320, 0.3, 0.07, 0.05)
+  nadaLv(ctx, 'sine', 2093, 2093, 0.4, 0.05, 0.4)
 }
 
 // Angka mencapai target (YOU REACHED): tangga nada cepat naik, akor besar yang panjang, kilau di atasnya
 export function playLevelTercapai() {
   const ctx = ctxSiapEfek()
   if (!ctx) return
-  nadaPendek(ctx, 'sine', 120, 45, 0.35, 0.2, 0)
-  ;[784, 988, 1175, 1568].forEach((f, i) => nadaPendek(ctx, 'square', f, f, 0.11, 0.06, i * 0.07))
+  nadaLv(ctx, 'sine', 120, 45, 0.35, 0.2, 0)
+  ;[784, 988, 1175, 1568].forEach((f, i) => nadaLv(ctx, 'square', f, f, 0.11, 0.06, i * 0.07))
   const akor = 0.34
-  ;[784, 988, 1175, 1568].forEach((f) => nadaPendek(ctx, 'triangle', f, f, 1.0, 0.07, akor))
-  nadaPendek(ctx, 'triangle', 196, 196, 1.1, 0.12, akor)
-  ;[2349, 2960, 3136].forEach((f, i) => nadaPendek(ctx, 'sine', f, f, 0.18, 0.035, akor + 0.12 + i * 0.09))
+  ;[784, 988, 1175, 1568].forEach((f) => nadaLv(ctx, 'triangle', f, f, 1.0, 0.07, akor))
+  nadaLv(ctx, 'triangle', 196, 196, 1.1, 0.12, akor)
+  ;[2349, 2960, 3136].forEach((f, i) => nadaLv(ctx, 'sine', f, f, 0.18, 0.035, akor + 0.12 + i * 0.09))
 }
 
 // Ketuk untuk lanjut di layar naik level: dua nada naik cepat ("ba-ding") dan desis yang turun saat layar menutup
 export function playLevelLanjut() {
   const ctx = ctxSiapEfek()
   if (!ctx) return
-  nadaPendek(ctx, 'square', 660, 990, 0.09, 0.06, 0)
-  nadaPendek(ctx, 'triangle', 1320, 1980, 0.16, 0.06, 0.07)
-  desisNaik(ctx, 0.25, 0.12, 0.04, 3000, 600)
+  nadaLv(ctx, 'square', 660, 990, 0.09, 0.06, 0)
+  nadaLv(ctx, 'triangle', 1320, 1980, 0.16, 0.06, 0.07)
+  desisLv(ctx, 0.25, 0.12, 0.04, 3000, 600)
 }
 
 // Dengung yang "bernapas" mengikuti pendar hijau Spiderman: volume naik pelan selama 0,8 dtk (pendar menyala) lalu turun
@@ -928,7 +933,7 @@ export function mulaiDengungHijau(tunda = 0) {
   master.connect(ctx.destination)
   let berikut = ctx.currentTime + tunda + 0.02
   const siklus = (w) => {
-    ;[[196, 0.07], [294, 0.03]].forEach(([f, vol]) => {
+    ;[[196, 0.045], [294, 0.02]].forEach(([f, vol]) => {
       const osc = ctx.createOscillator()
       const gain = ctx.createGain()
       osc.type = 'sine'
