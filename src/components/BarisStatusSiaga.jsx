@@ -1,4 +1,7 @@
+import { useEffect, useRef, useState } from 'react'
 import { useLanguage } from '../context/LanguageContext.jsx'
+import { lihatAnimLevel, habisAnimLevel } from '../lib/animLevel'
+import { playEkspMasuk, playBarPenuh, playLevelNaikKonsol } from '../lib/sound'
 import { TEKS_STATUS, jenisCuaca, useStatusSiaga } from '../lib/statusSiaga'
 import { JUMLAH_BAR, useBensin } from '../lib/bensin'
 import { hitungLevel, tingkatPiala, uangPerLevel } from '../lib/level'
@@ -140,19 +143,85 @@ export default function BarisStatusSiaga({ totalTrip = null, totalUang = null, l
     </button>
   )
   const lv = totalUang != null ? hitungLevel(totalUang, uangPerLevel(isDemo)) : null
+
+  // Animasi level sesudah layar "KAMU MENCAPAI" diketuk: bola exp masuk ke piala, bar terisi penuh lalu meledak, tulisan
+  // LEVEL UP!, lalu LV baru dengan bar mulai dari awal. Selama berjalan, tampilan memakai `tampil` (level lama lalu baru).
+  const refSlot = useRef(null)
+  const refPiala = useRef(null)
+  const refTeks = useRef(null)
+  const refGaris = useRef(null)
+  const [anim] = useState(() => lihatAnimLevel())
+  const [tampil, setTampil] = useState(() => (anim ? { level: anim.levelLama, porsi: anim.porsiLama, fase: 'isi' } : null))
+  useEffect(() => {
+    if (!anim) return undefined
+    habisAnimLevel()
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+      setTampil(null)
+      return undefined
+    }
+    const timer = []
+    const dibuat = []
+    const nanti = (fn, ms) => timer.push(setTimeout(fn, ms))
+    const denyut = () => refPiala.current?.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.45) rotate(-8deg)', offset: 0.3 }, { transform: 'scale(0.95)', offset: 0.6 }, { transform: 'scale(1)' }], { duration: 420 })
+    const T0 = 600 // jeda sesudah konsol tampil (konsol menyala dari garis tipis dulu)
+    for (let n = 0; n < 6; n++) {
+      nanti(() => {
+        const slot = refSlot.current
+        if (!slot) return
+        const bola = document.createElement('i')
+        Object.assign(bola.style, { position: 'absolute', left: '0px', top: '0px', width: '6px', height: '6px', background: '#5ED0FF', boxShadow: '0 0 8px #5ED0FF', zIndex: 3, pointerEvents: 'none' })
+        slot.appendChild(bola)
+        dibuat.push(bola)
+        const y0 = -6 + (n % 3) * 10
+        const gerak = bola.animate([{ transform: `translate(130px, ${y0}px)`, opacity: 1 }, { transform: 'translate(4px, 5px)', opacity: 1, offset: 0.92 }, { transform: 'translate(4px, 5px) scale(0)', opacity: 0 }], { duration: 520, easing: 'ease-in', fill: 'forwards' })
+        gerak.onfinish = () => { playEkspMasuk(n); denyut(); bola.remove() }
+      }, T0 + n * 220)
+    }
+    nanti(() => setTampil((p) => (p ? { ...p, porsi: 1 } : p)), T0 + 300)
+    nanti(() => {
+      playBarPenuh()
+      denyut()
+      refGaris.current?.animate([{ background: '#FFFFFF' }, { background: 'rgba(94, 208, 255, 0.18)' }, { background: '#FFFFFF' }, { background: 'rgba(94, 208, 255, 0.18)' }], { duration: 450 })
+      const garis = refGaris.current
+      if (garis) {
+        const ledak = document.createElement('i')
+        Object.assign(ledak.style, { position: 'absolute', left: '0px', right: '0px', top: '-3px', height: '9px', background: '#FFFFFF', boxShadow: '0 0 14px 6px #5ED0FF', pointerEvents: 'none' })
+        garis.appendChild(ledak)
+        dibuat.push(ledak)
+        ledak.animate([{ opacity: 1, transform: 'scaleY(1)' }, { opacity: 0, transform: 'scaleY(5)' }], { duration: 600, easing: 'ease-out', fill: 'forwards' }).onfinish = () => ledak.remove()
+      }
+    }, T0 + 1900)
+    nanti(() => {
+      setTampil((p) => (p ? { ...p, fase: 'naik' } : p))
+      playLevelNaikKonsol()
+      requestAnimationFrame(() => refTeks.current?.animate([{ transform: 'scale(0.4)', opacity: 0 }, { transform: 'scale(1.25)', opacity: 1, offset: 0.35 }, { transform: 'scale(1)' }], { duration: 500 }))
+    }, T0 + 2050)
+    nanti(() => setTampil({ level: anim.levelBaru, porsi: 0, fase: 'turun' }), T0 + 3200)
+    nanti(() => { setTampil({ level: anim.levelBaru, porsi: anim.porsiBaru, fase: 'isi' }); denyut() }, T0 + 3300)
+    nanti(() => setTampil(null), T0 + 4200)
+    return () => { timer.forEach(clearTimeout); dibuat.forEach((e) => e.remove()) }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+  const levelTampil = tampil ? tampil.level : lv?.level
+  const porsiTampil = tampil ? tampil.porsi : lv?.porsi
   const slotLevel = lv && (
     <button
+      ref={refSlot}
       type="button"
       className="slot-status"
-      style={{ ...s.slot, ...s.tombolSlot }}
+      style={{ ...s.slot, ...s.tombolSlot, position: 'relative' }}
       onClick={onBukaLevel || undefined}
       aria-label={lang === 'en' ? `Driver level ${lv.level}, ${Math.round(lv.porsi * 100)}% to the next level` : `Level ojek ${lv.level}, ${Math.round(lv.porsi * 100)}% ke level berikutnya`}
     >
-      <IkonTrip tingkat={tingkatPiala(lv.level)} />
+      <span ref={refPiala} style={{ display: 'inline-flex' }}><IkonTrip tingkat={tingkatPiala(levelTampil)} /></span>
       {/* LV n di tempat angka trip, garis level tipis menggantikan tulisan TOTAL TRIPS */}
       <span style={s.teks}>
-        <span style={s.nilai}>LV {lv.level}<span aria-hidden="true" style={s.panah}> ›</span></span>
-        <span style={s.garisLevel}><i style={{ ...s.isiLevel, width: `${lv.porsi * 100}%` }} /></span>
+        {tampil?.fase === 'naik' ? (
+          <span ref={refTeks} style={{ ...s.nilai, color: '#6CF29A', textShadow: '0 0 8px #6CF29A', letterSpacing: '0.02em' }}>LEVEL UP!</span>
+        ) : (
+          <span style={s.nilai}>LV {levelTampil}<span aria-hidden="true" style={s.panah}> ›</span></span>
+        )}
+        <span ref={refGaris} style={s.garisLevel}><i style={{ ...s.isiLevel, width: `${porsiTampil * 100}%`, transition: tampil?.fase === 'isi' ? 'width 1.5s ease-out' : 'none' }} /></span>
       </span>
     </button>
   )

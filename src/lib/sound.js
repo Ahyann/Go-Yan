@@ -925,6 +925,27 @@ export function playLevelKilat() {
   nadaLv(ctx, 'square', 659, 659, 0.5, 0.04, 1.33)
 }
 
+// Animasi level di konsol: blip pendek tiap bola exp masuk ke piala (nadanya makin tinggi), dentuman saat bar penuh,
+// lalu jingle naik saat tulisan LEVEL UP! muncul.
+export function playEkspMasuk(n = 0) {
+  const ctx = ctxSiapEfek()
+  if (!ctx) return
+  nadaLv(ctx, 'square', 520 + n * 80, 520 + n * 80, 0.06, 0.04, 0)
+  nadaLv(ctx, 'square', 780 + n * 120, 780 + n * 120, 0.09, 0.03, 0.05)
+}
+export function playBarPenuh() {
+  const ctx = ctxSiapEfek()
+  if (!ctx) return
+  nadaLv(ctx, 'sine', 150, 45, 0.35, 0.25, 0)
+}
+export function playLevelNaikKonsol() {
+  const ctx = ctxSiapEfek()
+  if (!ctx) return
+  ;[523, 659, 784, 1046].forEach((f, i) => nadaLv(ctx, 'square', f, f, 0.11, 0.055, i * 0.08))
+  ;[1046, 1318, 1568].forEach((f) => nadaLv(ctx, 'triangle', f, f, 0.8, 0.06, 0.36))
+  nadaLv(ctx, 'triangle', 131, 131, 0.9, 0.1, 0.36)
+}
+
 // Ketuk untuk lanjut di layar naik level: dua nada naik cepat ("ba-ding") dan desis yang turun saat layar menutup
 export function playLevelLanjut() {
   const ctx = ctxSiapEfek()

@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom'
 import JamKonsol from '../components/JamKonsol.jsx'
 import { STATUS_PERMINTAAN, AKSI, TARIF_PER_RIDE } from '../lib/constants'
 import { hitungLevel, uangPerLevel } from '../lib/level'
+import { simpanAnimLevel } from '../lib/animLevel'
 import TampilanLevel from '../components/TampilanLevel.jsx'
 import { playMisiDiterima, playPesananBatal, playMissionSuccess, playWhooshMasuk, playTombolKamera, playTombolSuara } from '../lib/sound'
 import { useLokasiPenumpang, hapusLokasiPenumpangSekarang } from '../lib/useLokasiPenumpang'
@@ -108,6 +109,13 @@ export default function OjekHomeTab({ slotKonsol, putaranMasuk = 0,
     // app, atau penyelesaiannya gagal mengembalikan info) yang dicatat di sini.
     if (!misiSelesai?.tercatat) {
       Promise.resolve(onCatatRiwayat?.(misiSelesai)).catch((err) => console.error('Gagal mencatat riwayat:', err))
+    }
+    // naik level: animasi level di konsol dimainkan begitu baris LV tampil (bisa sesudah WELCOME diketuk)
+    if (naikLevel) {
+      const tarif = uangPerLevel(isDemo)
+      const lama = hitungLevel(misiSelesai.totalSebelum, tarif)
+      const baru = hitungLevel(misiSelesai.totalSebelum + TARIF_PER_RIDE, tarif)
+      simpanAnimLevel({ levelLama: lama.level, porsiLama: lama.porsi, levelBaru: baru.level, porsiBaru: baru.porsi })
     }
     setKeluarSelesai(true)
     playWhooshMasuk()
