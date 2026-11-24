@@ -12,11 +12,11 @@ function tanggalLaluISO(hariLalu) {
   return d.toISOString().slice(0, 10)
 }
 
-// 15 trip contoh: 12 sudah lunas dan 3 yang terbaru belum dibayar. Total Rp480.000 (15 x Rp32.000), tepat di bawah Rp500.000. Jadi akun demo mulai di
+// 15 trip contoh: 5 sudah lunas dan 10 yang terbaru belum dibayar. Total Rp480.000 (15 x Rp32.000), tepat di bawah Rp500.000. Jadi akun demo mulai di
 // LV 1 dan trip pertama yang dicoba langsung naik ke LV 2. Total level menghitung semua trip (lunas dan belum)
-// dari riwayat yang sama, sedangkan "Sudah diterima" di tab Riwayat hanya menghitung yang lunas (12 x Rp32.000 = Rp384.000).
+// dari riwayat yang sama, sedangkan "Sudah diterima" di tab Riwayat hanya menghitung yang lunas (5 x Rp32.000 = Rp160.000).
 const TEMPAT_CONTOH = ['Kampus UPN', 'Kantor']
-const JUMLAH_BELUM_BAYAR = 3 // trip contoh paling baru yang belum dibayar
+const JUMLAH_BELUM_BAYAR = 10 // trip contoh paling baru yang belum dibayar
 const RIWAYAT_CONTOH = Array.from({ length: 15 }, (_, i) => ({
   tanggal: tanggalLaluISO(1 + Math.floor(i * 1.4)),
   jam: i % 2 ? '16:40' : '07:15',
@@ -96,11 +96,15 @@ export async function seedDataDemo() {
   const riwayatSnap = await getDocs(collection(db, 'riwayat_demo')).catch(() => null)
   const ada = riwayatSnap ? riwayatSnap.size : 0
   if (riwayatSnap && ada >= RIWAYAT_CONTOH.length) {
-    // data demo lama yang semuanya sudah lunas: 3 trip terbaru dikembalikan jadi belum dibayar supaya riwayat terlihat hidup
+    // data demo lama yang trip belum dibayarnya kurang dari target: trip lunas yang terbaru dikembalikan jadi belum dibayar
     const docs = riwayatSnap.docs
-    if (docs.every((d) => d.data().statusBayar === STATUS_BAYAR.LUNAS)) {
-      const terbaru = [...docs].sort((a, b) => String(b.data().tanggal).localeCompare(String(a.data().tanggal))).slice(0, JUMLAH_BELUM_BAYAR)
-      await Promise.all(terbaru.map((d) => updateDoc(d.ref, { statusBayar: STATUS_BAYAR.BELUM }).catch(() => {})))
+    const kurang = JUMLAH_BELUM_BAYAR - docs.filter((d) => d.data().statusBayar !== STATUS_BAYAR.LUNAS).length
+    if (kurang > 0) {
+      const lunasTerbaru = docs
+        .filter((d) => d.data().statusBayar === STATUS_BAYAR.LUNAS)
+        .sort((a, b) => String(b.data().tanggal).localeCompare(String(a.data().tanggal)))
+        .slice(0, kurang)
+      await Promise.all(lunasTerbaru.map((d) => updateDoc(d.ref, { statusBayar: STATUS_BAYAR.BELUM }).catch(() => {})))
     }
     return // udah lengkap, gak usah di-seed ulang
   }
