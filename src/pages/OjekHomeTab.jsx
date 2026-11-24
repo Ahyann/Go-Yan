@@ -230,7 +230,9 @@ export default function OjekHomeTab({ slotKonsol, putaranMasuk = 0,
                 <TampilanLevel
                   total={misiSelesai.totalSebelum + TARIF_PER_RIDE}
                   dari={misiSelesai.totalSebelum}
-                  kananBawah={<button className="tekan" style={s.okKecil} onClick={tutupMisiSelesai} disabled={keluarSelesai}>OK</button>}
+                  // naik level: tanpa tombol OK, layar piala diketuk untuk lanjut
+                  kananBawah={naikLevel ? null : <button className="tekan" style={s.okKecil} onClick={tutupMisiSelesai} disabled={keluarSelesai}>OK</button>}
+                  onLanjut={tutupMisiSelesai}
                 />
               </div>
             ) : misiSelesai ? (

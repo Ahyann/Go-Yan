@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
-import { hitungLevel, uangPerLevel, TRIP_DEKAT } from '../lib/level'
-import { playGeserTik, playLunasSemua } from '../lib/sound'
+import { hitungLevel, uangPerLevel, tingkatPiala, TRIP_DEKAT } from '../lib/level'
+import { playGeserTik, playLunasSemua, playGoBuka } from '../lib/sound'
 import { getar, POLA_GETAR } from '../lib/getar'
 
 const rp = (n) => 'Rp' + Math.round(n).toLocaleString('id-ID')
@@ -35,11 +35,107 @@ function putarAngka(el, dari, ke, ms) {
   requestAnimationFrame(langkah)
 }
 
+// Kotak-kotak piksel memercik dari satu titik (dipakai saat naik level)
+function percik(wadah, x, y, lebar = 160) {
+  if (!wadah) return
+  for (let n = 0; n < 16; n++) {
+    const warna = ['#FFD45E', '#5ED0FF', '#FFFFFF'][n % 3]
+    const kotak = document.createElement('i')
+    kotak.style.cssText = `position:absolute;left:${x}px;top:${y}px;width:4px;height:4px;background:${warna};box-shadow:0 0 4px ${warna}`
+    wadah.appendChild(kotak)
+    const dx = (Math.random() - 0.3) * lebar
+    const dy = -8 - Math.random() * 24
+    kotak.animate(
+      [
+        { transform: 'translate(0,0)', opacity: 1 },
+        { transform: `translate(${dx}px,${dy}px)`, opacity: 1, offset: 0.6 },
+        { transform: `translate(${dx * 1.2}px,${dy + 40}px)`, opacity: 0 },
+      ],
+      { duration: 900, easing: 'ease-out', fill: 'forwards' },
+    ).onfinish = () => kotak.remove()
+  }
+}
+
+// Warna piala per tingkat level: [badan, kilap, alas]
+const WARNA_PIALA = {
+  emas: ['#FFD84A', '#FFF4B0', '#C99A12'],
+  perak: ['#D7DEE4', '#FFFFFF', '#8B98A3'],
+  perunggu: ['#CD7F32', '#F0B47A', '#8A4F1C'],
+}
+
+// Layar kedua setelah naik level: piala besar (warna sesuai tingkat) memantul masuk di kiri; di kanan total uang
+// berputar sampai angka yang baru dicapai (misalnya Rp3.500.000), lalu berkedip kuning dengan tulisan YOU REACHED.
+// Ketuk di mana saja untuk lanjut.
+function LayarPiala({ awal, akhir, lang, onLanjut }) {
+  const refPiala = useRef(null)
+  const refAngka = useRef(null)
+  const refPercik = useRef(null)
+  const [sampai, setSampai] = useState(false)
+  const [badan, kilap, alas] = WARNA_PIALA[tingkatPiala(akhir.level)]
+
+  useEffect(() => {
+    const kurangGerak = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    refPiala.current?.animate(
+      [
+        { transform: 'translateY(-30px) scale(0.6)', opacity: 0 },
+        { transform: 'translateY(3px) scale(1.1)', opacity: 1, offset: 0.6 },
+        { transform: 'none', opacity: 1 },
+      ],
+      { duration: kurangGerak ? 1 : 600, easing: 'ease-out', fill: 'forwards' },
+    )
+    playGoBuka()
+    getar(10)
+    const t1 = setTimeout(() => putarAngka(refAngka.current, awal.total, awal.target, kurangGerak ? 1 : 700), 400)
+    const t2 = setTimeout(() => {
+      setSampai(true)
+      if (refAngka.current) refAngka.current.textContent = rp(awal.target)
+      if (!kurangGerak) {
+        refAngka.current?.animate([{ opacity: 1 }, { opacity: 0.3 }, { opacity: 1 }, { opacity: 0.3 }, { opacity: 1 }], { duration: 500 })
+        percik(refPercik.current, 26, 22, 220)
+      }
+      getar(POLA_GETAR.kaget)
+    }, 1200)
+    return () => { clearTimeout(t1); clearTimeout(t2) }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const lanjut = () => onLanjut?.()
+  return (
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={lanjut}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); lanjut() } }}
+      aria-label={lang === 'en' ? `Level up to ${akhir.level}. Tap to continue` : `Naik ke level ${akhir.level}. Ketuk untuk lanjut`}
+      style={s.layarPiala}
+    >
+      <svg ref={refPiala} width="56" height="51" viewBox="0 0 12 11" shapeRendering="crispEdges" aria-hidden="true" style={{ ...s.pialaBesar, filter: `drop-shadow(0 0 5px ${badan})` }}>
+        <g fill={badan}>
+          <rect x="2" y="1" width="8" height="4" /><rect x="3" y="5" width="6" height="1" /><rect x="5" y="6" width="2" height="3" /><rect x="3" y="9" width="6" height="2" />
+          <rect x="0" y="1" width="2" height="1" /><rect x="0" y="2" width="1" height="2" /><rect x="10" y="1" width="2" height="1" /><rect x="11" y="2" width="1" height="2" />
+        </g>
+        <rect x="3" y="2" width="1" height="2" fill={kilap} />
+        <rect x="3" y="9" width="6" height="1" fill={alas} />
+      </svg>
+      <div style={s.kananPiala}>
+        <div style={{ ...s.kecilPiala, ...(sampai ? s.kuning : null) }}>{sampai ? (lang === 'en' ? 'YOU REACHED' : 'KAMU MENCAPAI') : 'TOTAL'}</div>
+        <div ref={refAngka} style={{ ...s.angkaBesar, color: sampai ? '#FFD45E' : '#FFFFFF' }}>{rp(awal.total)}</div>
+        <div style={s.barisPiala}>
+          <span>LV <b style={s.lvKecil}>{sampai ? akhir.level : awal.level}</b></span>
+          <span style={s.next}>NEXT {rp(akhir.target)}</span>
+        </div>
+      </div>
+      <span className="level-tap" style={s.tap}>TAP ▸</span>
+      <div ref={refPercik} style={s.percik} aria-hidden="true" />
+    </div>
+  )
+}
+
 // Tampilan level di konsol: "LV n", total uang sebenarnya dibanding target total level berikutnya (misalnya
 // Rp3.120.000 / Rp3.500.000), garis kemajuan di level ini, lalu sisa ke level berikutnya.
 // Kalau `dari` diisi (total sebelum perjalanan ini), garis dianimasikan dari nilai lama ke nilai baru. Kalau perjalanan
 // ini membuat level naik, garis penuh, memercikkan kotak-kotak piksel, lalu level berganti.
-export default function TampilanLevel({ total, dari = null, kananBawah = null, rapat = false }) {
+export default function TampilanLevel({ total, dari = null, kananBawah = null, rapat = false, onLanjut = null }) {
   const { lang } = useLanguage()
   const { isDemo } = useAuth()
   const perLevel = uangPerLevel(isDemo)
@@ -47,6 +143,8 @@ export default function TampilanLevel({ total, dari = null, kananBawah = null, r
   const awal = dari == null ? akhir : hitungLevel(dari, perLevel)
   const naik = akhir.level > awal.level
   const [selesai, setSelesai] = useState(dari == null)
+  // naik level: sesudah animasi garis, konsol pindah ke layar piala (ketuk untuk lanjut)
+  const [layarPiala, setLayarPiala] = useState(false)
   const refIsi = useRef(null)
   const refUang = useRef(null)
   const refTarget = useRef(null)
@@ -59,6 +157,7 @@ export default function TampilanLevel({ total, dari = null, kananBawah = null, r
     if (dari == null) return undefined
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
       setSelesai(true)
+      if (naik) setLayarPiala(true)
       return undefined
     }
     const timer = []
@@ -122,11 +221,14 @@ export default function TampilanLevel({ total, dari = null, kananBawah = null, r
         getar(POLA_GETAR.senang)
       }, 1050)
       nanti(() => setSelesai(true), 1600)
+      nanti(() => setLayarPiala(true), 2300)
     }
     return () => timer.forEach(clearTimeout)
     // animasi hanya sekali saat tampilan ini muncul
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  if (layarPiala) return <LayarPiala awal={awal} akhir={akhir} lang={lang} onLanjut={onLanjut} />
 
   const tampil = selesai ? akhir : awal
   const bawah = teksSisa(lang, akhir)
@@ -170,4 +272,13 @@ const s = {
   teksBawah: { flex: 1, minWidth: 0, fontSize: 7, letterSpacing: '0.08em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' },
   kuning: { color: '#FFD45E', textShadow: '0 0 6px rgba(255, 212, 94, 0.6)' },
   percik: { position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'visible' },
+  layarPiala: { position: 'relative', display: 'flex', alignItems: 'center', gap: 12, height: 58, cursor: 'pointer', outline: 'none' },
+  pialaBesar: { flexShrink: 0, opacity: 0 },
+  kananPiala: { flex: 1, minWidth: 0 },
+  kecilPiala: { fontSize: 7, letterSpacing: '0.16em' },
+  angkaBesar: { fontFamily: "'JetBrains Mono', monospace", fontSize: 18, lineHeight: 1.15, whiteSpace: 'nowrap' },
+  barisPiala: { display: 'flex', alignItems: 'baseline', gap: 10, fontSize: 9, marginTop: 2 },
+  lvKecil: { fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: '#FFFFFF' },
+  next: { fontSize: 7, letterSpacing: '0.08em', opacity: 0.7, whiteSpace: 'nowrap' },
+  tap: { position: 'absolute', right: 0, bottom: 0, fontSize: 8, letterSpacing: '0.1em', color: '#FFFFFF' },
 }

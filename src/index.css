@@ -1062,3 +1062,5 @@ button:disabled[aria-label="◀"], button:disabled[aria-label="▶"] { opacity: 
 @keyframes level-dekat { 50% { opacity: 0.35; } }
 .level-dekat { color: #FFD45E; text-shadow: 0 0 6px rgba(255, 212, 94, 0.6); animation: level-dekat 1.2s steps(1) infinite; }
 @media (prefers-reduced-motion: reduce) { .level-dekat { animation: none; } }
+.level-tap { animation: level-dekat 1.1s steps(1) infinite; }
+@media (prefers-reduced-motion: reduce) { .level-tap { animation: none; } }
