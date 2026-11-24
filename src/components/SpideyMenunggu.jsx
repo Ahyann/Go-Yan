@@ -589,21 +589,8 @@ export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalka
       </svg>
       </div>
 
-      {/* Pesta naik level: kembang api piksel naik terus-menerus sampai konsol diketuk (hilang begitu keluar) */}
-      {pesta && !keluar && (
-        <div aria-hidden="true" style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'hidden' }}>
-          {Array.from({ length: 16 }, (_, i) => (
-            <i
-              key={i}
-              className="sp-kembang"
-              style={{ left: `${5 + i * 6}%`, background: ['#FFD45E', '#5ED0FF', '#FFFFFF'][i % 3], animationDelay: `${-(i * 0.19)}s`, animationDuration: `${1.7 + (i % 4) * 0.25}s`, '--dx': `${((i % 5) - 2) * 14}px` }}
-            />
-          ))}
-        </div>
-      )}
-
       <div className="sp-teks-muncul" style={{ ...s.teks, bottom: bawahTeks ?? 14 + bawahDock }}>
-        {!(kompak && !diterima && !selesai) && <div className={selesai && pesta && !keluar ? 'sp-judul-pesta' : undefined} style={{ ...s.judul, ...bayang, color: selesai && pesta ? '#FFD45E' : diterima || selesai ? '#4ADE80' : dibatalkan || modeMerah ? 'var(--merah-teks)' : '#FFFFFF' }}>
+        {!(kompak && !diterima && !selesai) && <div style={{ ...s.judul, ...bayang, color: diterima || selesai ? '#4ADE80' : dibatalkan || modeMerah ? 'var(--merah-teks)' : '#FFFFFF' }}>
           {selesai ? teks?.selesai : diterima ? (teks?.diterima ?? t.spideyDiterima) : dibatalkan ? (teks?.batal ?? t.spideyBatal) : (teks?.menunggu ?? t.spideyMenunggu)}
         </div>}
         <div style={{ ...s.sub, ...bayang, ...(kompak && !diterima ? { fontSize: 11, marginTop: 0 } : null) }}>

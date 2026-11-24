@@ -187,6 +187,18 @@ function LayarPiala({ awal, akhir, lang, onLanjut }) {
         <b ref={refLvBesar} style={s.lvBesar}>{sampai ? akhir.level : awal.level}</b>
         <span className="level-tap" style={{ ...s.tap, visibility: sampai ? 'visible' : 'hidden' }}>TAP ▸</span>
       </div>
+      {/* partikel naik berulang sampai diketuk (hilang begitu keluar) */}
+      {sampai && !keluar && (
+        <div aria-hidden="true" style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'hidden' }}>
+          {Array.from({ length: 14 }, (_, i) => (
+            <i
+              key={i}
+              className="level-kembang"
+              style={{ left: `${3 + i * 7}%`, background: ['#FFD45E', '#5ED0FF', '#FFFFFF'][i % 3], animationDelay: `${-(i * 0.17)}s`, animationDuration: `${1.4 + (i % 4) * 0.2}s`, '--dx': `${((i % 5) - 2) * 8}px` }}
+            />
+          ))}
+        </div>
+      )}
       <div ref={refPercik} style={s.percik} aria-hidden="true" />
     </div>
   )

@@ -134,7 +134,7 @@ export default function OjekHomeTab({ slotKonsol, putaranMasuk = 0,
     diterima: t.ojekSpDiterima,
     diterimaSub: t.ojekSpMenuju,
     // Saat misi selesai hanya judul di atas; keterangan misi tampil di konsol bawah supaya tidak dobel
-    selesai: naikLevel ? 'LEVEL UP!' : t.ojekSpSelesai,
+    selesai: t.ojekSpSelesai,
     batal: transisiBatal === 'tolak' ? t.ojekSpTolak : t.ojekSpBatal,
     batalSub: t.ojekSpSiaga,
   }
