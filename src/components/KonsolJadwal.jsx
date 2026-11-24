@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLanguage } from '../context/LanguageContext.jsx'
+import { useAuth } from '../context/AuthContext.jsx'
 import { HARI_KERJA_KEYS } from '../lib/constants'
 import { playGeserTik, playLunasSemua, playKonsolMati } from '../lib/sound'
 import { getar } from '../lib/getar'
@@ -20,19 +21,19 @@ const PRESET = {
 const KUNCI_UNDO = 'goyan:undo-jadwal'
 const BATAS_UNDO = 24 * 60 * 60 * 1000
 
-function bacaUndo() {
+function bacaUndo(kunci) {
   try {
-    const u = JSON.parse(localStorage.getItem(KUNCI_UNDO) || 'null')
+    const u = JSON.parse(localStorage.getItem(kunci) || 'null')
     return u && u.basis && Date.now() - u.waktu < BATAS_UNDO ? u : null
   } catch {
     return null
   }
 }
 
-function simpanUndo(u) {
+function simpanUndo(kunci, u) {
   try {
-    if (u) localStorage.setItem(KUNCI_UNDO, JSON.stringify(u))
-    else localStorage.removeItem(KUNCI_UNDO)
+    if (u) localStorage.setItem(kunci, JSON.stringify(u))
+    else localStorage.removeItem(kunci)
   } catch {
     // penyimpanan diblokir: undo hanya berlaku selama app terbuka
   }
@@ -58,10 +59,13 @@ const TEKS = {
 // direset tiap Senin, jadi tidak perlu menggeser lagi.
 export default function KonsolJadwal({ jadwalRef, onHariBaru, onMasukAtur, onSelesaiIsi, onSedangIsi, jadwalAda, onSimpan }) {
   const { lang } = useLanguage()
+  const { isDemo } = useAuth()
+  // akun demo punya catatan undo sendiri supaya tidak tercampur dengan akun asli di perangkat yang sama
+  const kunci = isDemo ? `${KUNCI_UNDO}-demo` : KUNCI_UNDO
   const x = TEKS[lang] || TEKS.id
   const [fase, setFase] = useState('awal') // awal | isi | selesai (selesai: baru saja diisi lewat slide)
   const [langkah, setLangkah] = useState(0)
-  const [undo, setUndo] = useState(bacaUndo)
+  const [undo, setUndo] = useState(() => bacaUndo(kunci))
   const timerRef = useRef([])
 
   useEffect(() => () => timerRef.current.forEach(clearTimeout), [])
@@ -71,7 +75,7 @@ export default function KonsolJadwal({ jadwalRef, onHariBaru, onMasukAtur, onSel
     const basis = jadwalRef.current?.ambilDraft() || {}
     const akhir = { ...basis }
     const u = { waktu: Date.now(), basis }
-    simpanUndo(u)
+    simpanUndo(kunci, u)
     setUndo(u)
     HARI_KERJA_KEYS.forEach((h) => { akhir[h] = { ...(basis[h] || {}), ...PRESET[h] } })
     Promise.resolve(onSimpan?.(akhir)).catch((e) => console.error('Gagal simpan jadwal:', e))
@@ -106,7 +110,7 @@ export default function KonsolJadwal({ jadwalRef, onHariBaru, onMasukAtur, onSel
     const basis = undo?.basis ?? {}
     jadwalRef.current?.pasangDraft(basis)
     Promise.resolve(onSimpan?.(basis)).catch((e) => console.error('Gagal membatalkan jadwal:', e))
-    simpanUndo(null)
+    simpanUndo(kunci, null)
     setUndo(null)
     setFase('awal')
     playKonsolMati()

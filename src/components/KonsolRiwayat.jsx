@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { STATUS_BAYAR, formatRupiah } from '../lib/constants'
 import { useLanguage } from '../context/LanguageContext.jsx'
+import { useAuth } from '../context/AuthContext.jsx'
 import { usePesanOjek } from '../lib/usePesanOjek'
 import { playGeserTik, playLunasSemua, playKonsolMati, playTombolKamera, playTombolSuara } from '../lib/sound'
 import { getar } from '../lib/getar'
@@ -12,19 +13,19 @@ const LAMA_TAHAN = 1000 // ms menahan tombol sampai bar penuh
 // Kodenya tetap ada; nyalakan lagi setelah letaknya dipilih dari mockup.
 const TOMBOL_FUNGSI = false
 
-function bacaUndo() {
+function bacaUndo(kunci) {
   try {
-    const u = JSON.parse(localStorage.getItem(KUNCI_UNDO) || 'null')
+    const u = JSON.parse(localStorage.getItem(kunci) || 'null')
     return u && Array.isArray(u.ids) && Date.now() - u.waktu < BATAS_UNDO ? u : null
   } catch {
     return null
   }
 }
 
-function simpanUndo(u) {
+function simpanUndo(kunci, u) {
   try {
-    if (u) localStorage.setItem(KUNCI_UNDO, JSON.stringify(u))
-    else localStorage.removeItem(KUNCI_UNDO)
+    if (u) localStorage.setItem(kunci, JSON.stringify(u))
+    else localStorage.removeItem(kunci)
   } catch {
     // penyimpanan diblokir: undo hanya berlaku selama app terbuka
   }
@@ -65,10 +66,13 @@ function Ikon({ nama }) {
 // lalu bisa di-undo selama 24 jam. Di bawahnya tombol fungsi: tampilkan yang belum saja, salin rekap, tagih Fajri.
 export default function KonsolRiwayat({ riwayat, onEditRiwayat, hanyaBelum, onHanyaBelum }) {
   const { lang } = useLanguage()
+  const { isDemo } = useAuth()
+  // akun demo punya catatan undo sendiri supaya tidak tercampur dengan akun asli di perangkat yang sama
+  const kunci = isDemo ? `${KUNCI_UNDO}-demo` : KUNCI_UNDO
   const x = TEKS[lang] || TEKS.id
   const { kirimPesan } = usePesanOjek()
   const [fase, setFase] = useState('awal') // awal | konfirmasi
-  const [undo, setUndo] = useState(bacaUndo)
+  const [undo, setUndo] = useState(() => bacaUndo(kunci))
   const [tahan, setTahan] = useState(0)
   const [kilat, setKilat] = useState(null) // 'rekap' | 'tagih' sebentar setelah ditekan
   const [sekarang, setSekarang] = useState(() => Date.now())
@@ -82,7 +86,7 @@ export default function KonsolRiwayat({ riwayat, onEditRiwayat, hanyaBelum, onHa
     const id = setInterval(() => {
       setSekarang(Date.now())
       if (Date.now() - undo.waktu >= BATAS_UNDO) {
-        simpanUndo(null)
+        simpanUndo(kunci, null)
         setUndo(null)
       }
     }, 1000)
@@ -123,7 +127,7 @@ export default function KonsolRiwayat({ riwayat, onEditRiwayat, hanyaBelum, onHa
     const ids = belum.map((r) => r.id)
     ids.forEach((id) => Promise.resolve(onEditRiwayat(id, { statusBayar: STATUS_BAYAR.LUNAS })).catch((e) => console.error(e)))
     const u = { ids, waktu: Date.now(), total }
-    simpanUndo(u)
+    simpanUndo(kunci, u)
     setUndo(u)
     setFase('sukses')
     playLunasSemua()
@@ -139,7 +143,7 @@ export default function KonsolRiwayat({ riwayat, onEditRiwayat, hanyaBelum, onHa
 
   function batalkanLunas() {
     undo.ids.forEach((id) => Promise.resolve(onEditRiwayat(id, { statusBayar: STATUS_BAYAR.BELUM })).catch((e) => console.error(e)))
-    simpanUndo(null)
+    simpanUndo(kunci, null)
     setUndo(null)
     playKonsolMati()
   }
