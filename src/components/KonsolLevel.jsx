@@ -5,33 +5,21 @@ import TampilanLevel from './TampilanLevel.jsx'
 const rp = (n) => 'Rp' + Math.round(n).toLocaleString('id-ID')
 
 // Halaman level di konsol ojek, dibuka dengan memencet LV di baris status (seperti halaman cuaca dan bensin).
-// Satu layar: LV, total uang dibanding target, garis, lalu tiga angka ringkas (total trip, per trip, sisa trip).
+// Satu layar tanpa kepala: tombol kembali di baris LV, total uang dibanding target, garis, lalu tiga angka ringkas
+// berwarna (total trip cyan, per trip hijau, sisa trip ke level berikutnya kuning).
 export default function KonsolLevel({ total, totalTrip = null, onKembali }) {
   const { lang } = useLanguage()
   return (
     <div className="tv-nyala">
-      <div style={s.kepala}>
-        <button type="button" onClick={onKembali} style={s.kembali} aria-label={lang === 'en' ? 'Back' : 'Kembali'}>
-          <span aria-hidden="true" style={{ color: '#5ED0FF' }}>◀</span> {lang === 'en' ? 'BACK' : 'KEMBALI'}
-        </button>
-        <span style={s.judul}>LEVEL</span>
-      </div>
-      <div style={{ marginTop: 3 }}>
-        <TampilanLevel
-          total={total ?? 0}
-          rapat
-          statistik={[
-            [totalTrip ?? '--', 'TOTAL TRIPS'],
-            ['+' + rp(TARIF_PER_RIDE), 'PER TRIP'],
-          ]}
-        />
-      </div>
+      <TampilanLevel
+        total={total ?? 0}
+        rapat
+        onKembali={onKembali}
+        statistik={[
+          [`${totalTrip ?? '--'} TRIPS`, 'TOTAL', '#5ED0FF'],
+          ['+' + rp(TARIF_PER_RIDE), lang === 'en' ? 'PER TRIP' : 'PER TRIP', '#6CF29A'],
+        ]}
+      />
     </div>
   )
-}
-
-const s = {
-  kepala: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 14 },
-  kembali: { background: 'none', border: 'none', color: '#FFFFFF', font: 'inherit', fontSize: 8, letterSpacing: '0.1em', padding: '2px 6px 2px 0', cursor: 'pointer', whiteSpace: 'nowrap' },
-  judul: { fontSize: 7, letterSpacing: '0.14em', opacity: 0.6 },
 }
