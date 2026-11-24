@@ -7,6 +7,7 @@ import JamKonsol, { sambutSudahSelesai, dengarSambutSelesai } from '../component
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { useReminderKeberangkatan } from '../lib/useReminderKeberangkatan'
 import { STATUS_PERMINTAAN } from '../lib/constants'
+import { totalUangRiwayat } from '../lib/level'
 import PermintaanBaruToast from '../components/PermintaanBaruToast.jsx'
 import PapanGoYan from '../components/PapanGoYan.jsx'
 import OjekHomeTab from './OjekHomeTab.jsx'
@@ -57,8 +58,8 @@ export default function OjekView({
   // Pertama kali app dibuka, semua tab menampilkan WELCOME di konsol; baru sesudah diketuk tiap tab memakai layarnya sendiri
   const [sambutBeres, setSambutBeres] = useState(sambutSudahSelesai)
   const [tvNyala, setTvNyala] = useState(false)
-  // Misi yang sudah di-slide selesai tapi OK belum ditekan: kartu MISSION COMPLETE tetap ada walau pindah tab atau app ditutup,
-  // dan riwayatnya baru dicatat setelah OK.
+  // Misi yang sudah di-slide selesai tapi OK belum ditekan: kartu MISSION COMPLETE tetap ada walau pindah tab atau app ditutup.
+  // Riwayatnya sudah dicatat saat slide selesai; OK hanya menutup kartu.
   const [misiSelesai, setMisiSelesai] = useState(() => {
     try { return JSON.parse(localStorage.getItem('goyan:misi-selesai') || 'null') } catch { return null }
   })
@@ -283,6 +284,7 @@ export default function OjekView({
             putaranMasuk={putaranMasuk}
             sambutBeres={sambutBeres}
             totalTrip={riwayatSiap ? riwayat.length : null}
+            totalUang={riwayatSiap ? totalUangRiwayat(riwayat) : null}
             jadwalMingguan={jadwalMingguan}
           />
         )}
@@ -341,7 +343,7 @@ export default function OjekView({
           {tabAktif !== 'home' && !(konsolSendiri && (tabAktif === 'riwayat' || tabAktif === 'jadwal')) && (
             <>
               <span className="label-konsol" style={s.labelStatus}>{sambutBeres || permintaan ? t.monitorStatus : t.monitorSambut}</span>
-              <JamKonsol lewatiSambut={!!permintaan} bergilir={permintaan?.status !== STATUS_PERMINTAAN.MENUNGGU} keterangan={permintaan?.status === STATUS_PERMINTAAN.MENUNGGU ? t.monitorMisiBaru : t.monitorStandby} totalTrip={riwayatSiap ? riwayat.length : null} lokasiAktif={lokasiAktif} jadwal={jadwalMingguan} />
+              <JamKonsol lewatiSambut={!!permintaan} bergilir={permintaan?.status !== STATUS_PERMINTAAN.MENUNGGU} keterangan={permintaan?.status === STATUS_PERMINTAAN.MENUNGGU ? t.monitorMisiBaru : t.monitorStandby} totalTrip={riwayatSiap ? riwayat.length : null} totalUang={riwayatSiap ? totalUangRiwayat(riwayat) : null} lokasiAktif={lokasiAktif} jadwal={jadwalMingguan} />
             </>
           )}
         </div>

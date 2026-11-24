@@ -91,7 +91,7 @@ function IkonTrip() {
 }
 
 // Baris di bawah jam konsol ojek saat siaga: cuaca, sinyal GPS, dan total trip, dengan ikon piksel.
-export default function BarisStatusSiaga({ totalTrip = null, lokasiAktif = false, onBukaCuaca = null, onBukaBensin = null }) {
+export default function BarisStatusSiaga({ totalTrip = null, lokasiAktif = false, onBukaCuaca = null, onBukaBensin = null, onBukaLevel = null }) {
   const { lang } = useLanguage()
   const k = TEKS_STATUS[lang] || TEKS_STATUS.id
   const { cuaca } = useStatusSiaga(lokasiAktif)
@@ -137,7 +137,9 @@ export default function BarisStatusSiaga({ totalTrip = null, lokasiAktif = false
         ? slotTombol(<IkonCuaca jenis={jenis || 'mendung'} />, cuaca ? `${cuaca.suhu}°` : '--°', jenis ? k.kode[jenis] : k.cuaca, lang === 'en' ? 'Open weather forecast' : 'Buka prakiraan cuaca', onBukaCuaca)
         : slot(<IkonCuaca jenis={jenis || 'mendung'} />, cuaca ? `${cuaca.suhu}°` : '--°', jenis ? k.kode[jenis] : k.cuaca)}
       {slotBensin}
-      {slot(<IkonTrip />, totalTrip ?? '--', k.trip)}
+      {onBukaLevel
+        ? slotTombol(<IkonTrip />, totalTrip ?? '--', k.trip, lang === 'en' ? 'Open driver level' : 'Buka level ojek', onBukaLevel)
+        : slot(<IkonTrip />, totalTrip ?? '--', k.trip)}
     </div>
   )
 }

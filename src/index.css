@@ -1057,3 +1057,8 @@ button:disabled[aria-label="◀"], button:disabled[aria-label="▶"] { opacity: 
 .login-panah i:nth-child(2) { animation-delay: 0.2s; }
 .login-panah i:nth-child(3) { animation-delay: 0.4s; }
 @media (prefers-reduced-motion: reduce) { .login-panah i { animation: none; opacity: 1; } }
+
+/* Level ojek di konsol: tulisan "x TRIP LAGI" saat sudah dekat naik level, kuning berkedip */
+@keyframes level-dekat { 50% { opacity: 0.35; } }
+.level-dekat { color: #FFD45E; text-shadow: 0 0 6px rgba(255, 212, 94, 0.6); animation: level-dekat 1.2s steps(1) infinite; }
+@media (prefers-reduced-motion: reduce) { .level-dekat { animation: none; } }

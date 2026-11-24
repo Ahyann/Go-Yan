@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import JamKonsol from '../components/JamKonsol.jsx'
-import { STATUS_PERMINTAAN, AKSI } from '../lib/constants'
+import { STATUS_PERMINTAAN, AKSI, TARIF_PER_RIDE } from '../lib/constants'
+import { hitungLevel } from '../lib/level'
+import TampilanLevel from '../components/TampilanLevel.jsx'
 import { playMisiDiterima, playPesananBatal, playMissionSuccess, playWhooshMasuk, playTombolKamera, playTombolSuara } from '../lib/sound'
 import { useLokasiPenumpang, hapusLokasiPenumpangSekarang } from '../lib/useLokasiPenumpang'
 import { usePesanOjek } from '../lib/usePesanOjek'
@@ -29,6 +31,7 @@ export default function OjekHomeTab({ slotKonsol, putaranMasuk = 0,
   mulaiLokasi,
   berhentiLokasi,
   totalTrip = null,
+  totalUang = null,
   jadwalMingguan = null,
   sambutBeres = true,
 }) {
@@ -101,14 +104,20 @@ export default function OjekHomeTab({ slotKonsol, putaranMasuk = 0,
   // Tombol OK di konsol: Spiderman ditarik naik keluar, lalu kartu menyusut dan hilang
   function tutupMisiSelesai() {
     if (keluarSelesai) return
-    // Riwayat dicatat sekarang (setelah OK), bukan saat slide selesai
-    Promise.resolve(onCatatRiwayat?.(misiSelesai)).catch((err) => console.error('Gagal mencatat riwayat:', err))
+    // Riwayat biasanya sudah dicatat saat slide selesai. Hanya misi yang belum tercatat (misalnya kartu dari versi lama
+    // app, atau penyelesaiannya gagal mengembalikan info) yang dicatat di sini.
+    if (!misiSelesai?.tercatat) {
+      Promise.resolve(onCatatRiwayat?.(misiSelesai)).catch((err) => console.error('Gagal mencatat riwayat:', err))
+    }
     setKeluarSelesai(true)
     playWhooshMasuk()
     setTimeout(() => setSusutSelesai(true), 800)
     setTimeout(() => { setMisiSelesai(null); setSusutSelesai(false); setKeluarSelesai(false) }, 1400)
   }
   const tampilSpidey = adaPermintaanMasuk || transisiDiterima || !!transisiBatal || !!misiSelesai
+  // Perjalanan yang baru selesai membuat level naik (tiap Rp500.000): label konsol jadi LEVEL UP! kuning
+  const naikLevel = Boolean(misiSelesai && misiSelesai.tercatat && misiSelesai.totalSebelum != null
+    && hitungLevel(misiSelesai.totalSebelum + TARIF_PER_RIDE).level > hitungLevel(misiSelesai.totalSebelum).level)
   const teksSpidey = {
     menunggu: t.ojekSpMasuk,
     menungguSub: t.ojekSpMenungguSub,
@@ -152,14 +161,18 @@ export default function OjekHomeTab({ slotKonsol, putaranMasuk = 0,
     berhentiLokasi()
     hapusLokasiPenumpangSekarang(isDemo, user?.uid)
     hapusPesan()
-    const info = permintaan ? { aksi: permintaan.aksi, waktu: permintaan.waktu, where: permintaan.where, mulai: Date.now() } : null
+    // totalSebelum: total pendapatan sebelum perjalanan ini, untuk animasi garis level di konsol
+    const info = permintaan ? { aksi: permintaan.aksi, waktu: permintaan.waktu, where: permintaan.where, mulai: Date.now(), totalSebelum: totalUang } : null
     if (info) setMisiSelesai(info)
     setSusutSelesai(false)
     setKeluarSelesai(false)
     playMissionSuccess()
-    // Info riwayat (tanggal dan jam saat selesai) dikembalikan oleh onSelesai dan disimpan bersama misi yang menunggu OK
+    // Info riwayat (tanggal dan jam saat selesai) dikembalikan oleh onSelesai, lalu langsung dicatat ke riwayat. Kartu
+    // MISSION COMPLETE tetap menunggu OK, tapi OK hanya menutupnya.
     Promise.resolve(onSelesai()).then((hasil) => {
-      if (info && hasil) setMisiSelesai({ ...info, ...hasil })
+      if (!info || !hasil) return
+      setMisiSelesai({ ...info, ...hasil, tercatat: true })
+      Promise.resolve(onCatatRiwayat?.(hasil)).catch((err) => console.error('Gagal mencatat riwayat:', err))
     }).catch((err) => console.error('Gagal menyelesaikan misi:', err))
   }
 
@@ -199,8 +212,8 @@ export default function OjekHomeTab({ slotKonsol, putaranMasuk = 0,
             Dikirim lewat portal supaya konsol tetap satu dan tingginya tidak berubah. */}
         {slotKonsol && createPortal(
           <>
-            <span className="label-konsol" style={{ ...s.labelMonitor, ...(sesiFoto.fase ? s.labelBiru : misiSelesai && !adaPermintaanMasuk ? s.labelHijau : adaPermintaanMasuk || transisiBatal ? s.labelMerah : s.labelBiru) }}>
-              {sesiFoto.fase ? labelSesiFoto(sesiFoto.fase, lang) : misiSelesai && !adaPermintaanMasuk ? t.monitorSelesai : adaPermintaanMasuk ? t.monitorMisiBaru : transisiBatal ? (transisiBatal === 'tolak' ? t.monitorDitolak : t.monitorDibatalkan) : sedangJalan ? t.monitorBerjalan : sambutBeres ? t.monitorStatus : t.monitorSambut}
+            <span className="label-konsol" style={{ ...s.labelMonitor, ...(sesiFoto.fase ? s.labelBiru : misiSelesai && !adaPermintaanMasuk ? (naikLevel ? s.labelKuning : s.labelHijau) : adaPermintaanMasuk || transisiBatal ? s.labelMerah : s.labelBiru) }}>
+              {sesiFoto.fase ? labelSesiFoto(sesiFoto.fase, lang) : misiSelesai && !adaPermintaanMasuk ? (naikLevel ? 'LEVEL UP!' : t.monitorSelesai) : adaPermintaanMasuk ? t.monitorMisiBaru : transisiBatal ? (transisiBatal === 'tolak' ? t.monitorDitolak : t.monitorDibatalkan) : sedangJalan ? t.monitorBerjalan : sambutBeres ? t.monitorStatus : t.monitorSambut}
             </span>
             {sesiFoto.fase ? (
               <FotoKonsol sesi={sesiFoto} />
@@ -211,6 +224,14 @@ export default function OjekHomeTab({ slotKonsol, putaranMasuk = 0,
                   <button className="tekan" style={s.tolakBtn} onClick={handleTolak}>{t.batalMisi}</button>
                   <button className="tekan" style={s.terimaBtn} onClick={handleTerima}>{t.mulaiMisi}</button>
                 </div>
+              </div>
+            ) : misiSelesai && misiSelesai.totalSebelum != null && misiSelesai.tercatat ? (
+              <div key={`level-${misiSelesai.mulai}`}>
+                <TampilanLevel
+                  total={misiSelesai.totalSebelum + TARIF_PER_RIDE}
+                  dari={misiSelesai.totalSebelum}
+                  kananBawah={<button className="tekan" style={s.okKecil} onClick={tutupMisiSelesai} disabled={keluarSelesai}>OK</button>}
+                />
               </div>
             ) : misiSelesai ? (
               <div key="selesai" className="glitch-masuk" style={{ animationDelay: '0.2s' }}>
@@ -273,7 +294,7 @@ export default function OjekHomeTab({ slotKonsol, putaranMasuk = 0,
               </>
             ) : (
               <>
-                <JamKonsol bergilir keterangan={t.monitorStandby} totalTrip={totalTrip} lokasiAktif={lokasiAktif} jadwal={jadwalMingguan} />
+                <JamKonsol bergilir keterangan={t.monitorStandby} totalTrip={totalTrip} totalUang={totalUang} lokasiAktif={lokasiAktif} jadwal={jadwalMingguan} />
               </>
             )}
           </>,
@@ -422,6 +443,12 @@ const s = {
   labelBiru: { background: '#5ED0FF', color: '#04192A' },
   labelMerah: { background: '#BC1E2F', color: '#fff' },
   labelHijau: { background: '#4ADE80', color: '#04192A' },
+  labelKuning: { background: '#FFD45E', color: '#04192A' },
+  // tombol OK kecil di baris bawah garis level (setelah perjalanan selesai)
+  okKecil: {
+    flexShrink: 0, height: 22, padding: '0 16px', background: '#BC1E2F', color: '#fff', fontFamily: "'Silkscreen', monospace",
+    fontSize: 10, letterSpacing: '0.06em', borderRadius: 0, border: '2px solid #FF6B78', boxShadow: 'inset 0 -2px 0 rgba(0, 0, 0, 0.3)',
+  },
   garisScan: {
     position: 'absolute', inset: 0, pointerEvents: 'none',
     background: 'repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.22) 0 1px, transparent 1px 3px)',

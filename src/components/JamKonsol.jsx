@@ -5,6 +5,7 @@ import KeteranganKetik from './KeteranganKetik.jsx'
 import BarisStatusSiaga from './BarisStatusSiaga.jsx'
 import KonsolCuaca from './KonsolCuaca.jsx'
 import KonsolBensin from './KonsolBensin.jsx'
+import KonsolLevel from './KonsolLevel.jsx'
 import { playSambutGlitch, playKonsolMati, playSambutKonsol, bunyikanSetelahSiap } from '../lib/sound'
 
 // Status sambutan selama app terbuka: null (belum), 'tunggu' (WELCOME sudah tampil, menunggu diketuk), 'selesai'.
@@ -30,7 +31,7 @@ const SELESAI_SESUDAH_TAP = MATI_SESUDAH_TAP + 220 // lalu tampilan jam "dinyala
 // menyusul, lalu muncul TAP HERE. Saat layar diketuk (baru di sini ada suara) keduanya glitch sekali. Sesudah itu layar mengecil jadi garis seperti TV dimatikan, dan tampilan jam
 // menyala dari garis yang sama (hari dan tanggal + keterangan di kiri, jam besar di kanan, baris status di bawah).
 // lewatiSambut: sudah ada pesanan, jadi WELCOME tidak ditampilkan dan konsol langsung ke tampilan jam
-export default function JamKonsol({ keterangan, bergilir = false, totalTrip = null, lokasiAktif = false, jadwal = null, lewatiSambut = false }) {
+export default function JamKonsol({ keterangan, bergilir = false, totalTrip = null, totalUang = null, lokasiAktif = false, jadwal = null, lewatiSambut = false }) {
   if (lewatiSambut) statusSambut = 'selesai'
   const { lang, t } = useLanguage()
   const { isDemo } = useAuth()
@@ -38,7 +39,7 @@ export default function JamKonsol({ keterangan, bergilir = false, totalTrip = nu
   const [fase, setFase] = useState(() => (statusSambut === 'selesai' ? 'jam' : statusSambut === 'tunggu' ? 'tunggu' : 'ketik')) // ketik | tunggu | glitch | mati | jam
   const [huruf, setHuruf] = useState(() => (statusSambut === 'tunggu' ? KATA.length : 0))
   const [dariSambut, setDariSambut] = useState(false)
-  const [halaman, setHalaman] = useState(null) // null: jam biasa, 'cuaca': prakiraan cuaca, 'bensin': halaman bensin
+  const [halaman, setHalaman] = useState(null) // null: jam biasa, 'cuaca': prakiraan cuaca, 'bensin': halaman bensin, 'level': level ojek
   const nama = (isDemo ? t.namaDemo : 'Ahyan').toUpperCase()
 
   // Pesanan masuk saat WELCOME masih tampil: langsung pindah ke jam
@@ -103,6 +104,7 @@ export default function JamKonsol({ keterangan, bergilir = false, totalTrip = nu
   }
 
   if (halaman === 'bensin') return <KonsolBensin onKembali={() => setHalaman(null)} />
+  if (halaman === 'level') return <KonsolLevel total={totalUang} onKembali={() => setHalaman(null)} />
   if (halaman === 'cuaca') return <KonsolCuaca lokasiAktif={lokasiAktif} jadwal={jadwal} onKembali={() => setHalaman(null)} />
 
   const tanggal = sekarang
@@ -127,7 +129,7 @@ export default function JamKonsol({ keterangan, bergilir = false, totalTrip = nu
           {menit}
         </div>
       </div>
-      <div style={s.bawah}><BarisStatusSiaga totalTrip={totalTrip} lokasiAktif={lokasiAktif} onBukaCuaca={() => setHalaman('cuaca')} onBukaBensin={() => setHalaman('bensin')} /></div>
+      <div style={s.bawah}><BarisStatusSiaga totalTrip={totalTrip} lokasiAktif={lokasiAktif} onBukaCuaca={() => setHalaman('cuaca')} onBukaBensin={() => setHalaman('bensin')} onBukaLevel={totalUang != null ? () => setHalaman('level') : null} /></div>
     </div>
   )
 }
