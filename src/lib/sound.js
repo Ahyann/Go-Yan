@@ -839,3 +839,72 @@ export function playGoTutup() {
   nadaPendek(ctx, 'triangle', 780, 520, 0.08, 0.09, 0)
   nadaPendek(ctx, 'square', 520, 340, 0.1, 0.06, 0.06)
 }
+
+// ===== Level ojek =====
+
+// Desis angin menyapu naik (derau yang disaring), dipakai sebagai lapisan di beberapa suara level
+function desisNaik(ctx, lama, vol, t = 0, dari = 500, ke = 6000) {
+  const n = Math.floor(ctx.sampleRate * lama)
+  const buf = ctx.createBuffer(1, n, ctx.sampleRate)
+  const d = buf.getChannelData(0)
+  for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * Math.sin((Math.PI * i) / n)
+  const sumber = ctx.createBufferSource()
+  sumber.buffer = buf
+  const saring = ctx.createBiquadFilter()
+  saring.type = 'bandpass'
+  saring.Q.value = 1.4
+  const w = ctx.currentTime + t
+  saring.frequency.setValueAtTime(dari, w)
+  saring.frequency.exponentialRampToValueAtTime(ke, w + lama)
+  const gain = ctx.createGain()
+  gain.gain.value = vol
+  sumber.connect(saring)
+  saring.connect(gain)
+  gain.connect(ctx.destination)
+  sumber.start(w)
+}
+
+// Garis level terisi pelan (sekitar 1,1 detik): nada naik halus ditambah tik-tik yang makin tinggi
+export function playLevelIsi() {
+  const ctx = ctxSiapEfek()
+  if (!ctx) return
+  nadaPendek(ctx, 'triangle', 220, 988, 1.0, 0.09, 0)
+  nadaPendek(ctx, 'square', 440, 1760, 1.0, 0.025, 0)
+  for (let i = 0; i < 9; i++) nadaPendek(ctx, 'square', 600 + i * 110, 600 + i * 110, 0.03, 0.035, 0.1 + i * 0.11)
+}
+
+// NAIK LEVEL: dentuman rendah, desis naik, arpeggio cepat, akor panjang dengan bass, lalu kilau di atasnya (sekitar 2 detik)
+export function playLevelNaik() {
+  const ctx = ctxSiapEfek()
+  if (!ctx) return
+  nadaPendek(ctx, 'sine', 150, 38, 0.5, 0.24, 0)
+  nadaPendek(ctx, 'sawtooth', 90, 30, 0.32, 0.06, 0)
+  desisNaik(ctx, 0.55, 0.25, 0, 400, 7000)
+  ;[523, 659, 784, 1046, 1318, 1568].forEach((f, i) => nadaPendek(ctx, 'square', f, f, 0.13, 0.06, 0.12 + i * 0.08))
+  const akor = 0.7
+  ;[1046, 1318, 1568, 2093].forEach((f) => nadaPendek(ctx, 'triangle', f, f, 1.2, 0.07, akor))
+  nadaPendek(ctx, 'triangle', 131, 131, 1.3, 0.13, akor)
+  nadaPendek(ctx, 'sine', 262, 262, 1.3, 0.08, akor)
+  ;[2637, 3136, 3951, 4186].forEach((f, i) => nadaPendek(ctx, 'sine', f, f, 0.2, 0.035, akor + 0.15 + i * 0.1))
+}
+
+// Piala masuk di layar kedua: desis pendek yang naik lalu satu "ting"
+export function playPialaMasuk() {
+  const ctx = ctxSiapEfek()
+  if (!ctx) return
+  desisNaik(ctx, 0.35, 0.22, 0, 700, 5000)
+  nadaPendek(ctx, 'triangle', 660, 1320, 0.3, 0.07, 0.05)
+  nadaPendek(ctx, 'sine', 2093, 2093, 0.4, 0.05, 0.4)
+}
+
+// Angka mencapai target (YOU REACHED): tangga nada cepat naik, akor besar yang panjang, kilau di atasnya
+export function playLevelTercapai() {
+  const ctx = ctxSiapEfek()
+  if (!ctx) return
+  nadaPendek(ctx, 'sine', 120, 45, 0.35, 0.2, 0)
+  ;[784, 988, 1175, 1568].forEach((f, i) => nadaPendek(ctx, 'square', f, f, 0.11, 0.06, i * 0.07))
+  const akor = 0.34
+  ;[784, 988, 1175, 1568].forEach((f) => nadaPendek(ctx, 'triangle', f, f, 1.0, 0.07, akor))
+  nadaPendek(ctx, 'triangle', 196, 196, 1.1, 0.12, akor)
+  ;[2349, 2960, 3136].forEach((f, i) => nadaPendek(ctx, 'sine', f, f, 0.18, 0.035, akor + 0.12 + i * 0.09))
+}

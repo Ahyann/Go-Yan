@@ -5,9 +5,9 @@ import { TARIF_PER_RIDE } from './constants'
 export const UANG_PER_LEVEL = 500000
 // Akun demo memakai aturan yang sama (Rp500.000 per level). Parameter isDemo disimpan supaya pemanggil tidak berubah.
 export const uangPerLevel = () => UANG_PER_LEVEL
-// Pendapatan awal akun demo: 75 trip (Rp2.400.000). Ditambah 3 riwayat contoh (Rp96.000) totalnya Rp2.496.000,
-// yaitu LV 5 tepat di bawah Rp2.500.000, jadi trip pertama yang dicoba di demo langsung naik ke LV 6.
-export const PENDAPATAN_AWAL_DEMO = TARIF_PER_RIDE * 75
+// Pendapatan awal akun demo: 12 trip (Rp384.000). Ditambah 3 riwayat contoh (Rp96.000) totalnya Rp480.000, yaitu LV 1
+// tepat di bawah Rp500.000, jadi trip pertama yang dicoba di demo langsung naik ke LV 2.
+export const PENDAPATAN_AWAL_DEMO = TARIF_PER_RIDE * 12
 // jumlah trip yang setara dengan pendapatan awal demo, supaya total trip cocok dengan total uang
 export const TRIP_AWAL_DEMO = PENDAPATAN_AWAL_DEMO / TARIF_PER_RIDE
 

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { hitungLevel, uangPerLevel, tingkatPiala, TRIP_DEKAT } from '../lib/level'
-import { playGeserTik, playLunasSemua, playGoBuka } from '../lib/sound'
+import { playGeserTik, playLevelIsi, playLevelNaik, playPialaMasuk, playLevelTercapai } from '../lib/sound'
 import { getar, POLA_GETAR } from '../lib/getar'
 
 const rp = (n) => 'Rp' + Math.round(n).toLocaleString('id-ID')
@@ -35,25 +35,56 @@ function putarAngka(el, dari, ke, ms) {
   requestAnimationFrame(langkah)
 }
 
-// Kotak-kotak piksel memercik dari satu titik (dipakai saat naik level)
-function percik(wadah, x, y, lebar = 160) {
+// Kotak-kotak piksel memercik dari satu titik (dipakai saat naik level). miring: 0,3 = ke kanan-kiri hampir rata,
+// 1 = semuanya ke kiri (misalnya dari ujung kanan garis).
+function percik(wadah, x, y, lebar = 160, jumlah = 16, miring = 0.3) {
   if (!wadah) return
-  for (let n = 0; n < 16; n++) {
+  for (let n = 0; n < jumlah; n++) {
     const warna = ['#FFD45E', '#5ED0FF', '#FFFFFF'][n % 3]
     const kotak = document.createElement('i')
-    kotak.style.cssText = `position:absolute;left:${x}px;top:${y}px;width:4px;height:4px;background:${warna};box-shadow:0 0 4px ${warna}`
+    const ukuran = n % 4 === 0 ? 5 : 4
+    kotak.style.cssText = `position:absolute;left:${x}px;top:${y}px;width:${ukuran}px;height:${ukuran}px;background:${warna};box-shadow:0 0 4px ${warna}`
     wadah.appendChild(kotak)
-    const dx = (Math.random() - 0.3) * lebar
-    const dy = -8 - Math.random() * 24
+    const dx = (Math.random() - miring) * lebar
+    const dy = -10 - Math.random() * 30
     kotak.animate(
       [
         { transform: 'translate(0,0)', opacity: 1 },
-        { transform: `translate(${dx}px,${dy}px)`, opacity: 1, offset: 0.6 },
-        { transform: `translate(${dx * 1.2}px,${dy + 40}px)`, opacity: 0 },
+        { transform: `translate(${dx}px,${dy}px)`, opacity: 1, offset: 0.55 },
+        { transform: `translate(${dx * 1.2}px,${dy + 44}px)`, opacity: 0 },
       ],
-      { duration: 900, easing: 'ease-out', fill: 'forwards' },
+      { duration: 1100, easing: 'ease-out', fill: 'forwards' },
     ).onfinish = () => kotak.remove()
   }
+}
+
+// Dua cincin cahaya (cyan lalu kuning) melebar dari satu titik
+function cincin(wadah, x, y) {
+  if (!wadah) return
+  for (let i = 0; i < 2; i++) {
+    const cin = document.createElement('i')
+    cin.style.cssText = `position:absolute;left:${x}px;top:${y}px;width:30px;height:30px;margin:-15px 0 0 -15px;border:2px solid ${i ? '#FFD45E' : '#5ED0FF'};border-radius:50%`
+    wadah.appendChild(cin)
+    cin.animate([{ transform: 'scale(0.3)', opacity: 0.9 }, { transform: 'scale(5)', opacity: 0 }], { duration: 900, delay: i * 160, easing: 'ease-out', fill: 'both' }).onfinish = () => cin.remove()
+  }
+}
+
+// Layar berkilat putih dua kali di atas seluruh app
+function kilat() {
+  const el = document.createElement('div')
+  el.style.cssText = 'position:fixed;inset:0;z-index:99999;pointer-events:none;background:#fff;opacity:0'
+  ;(document.getElementById('root') || document.body).appendChild(el)
+  el.animate([{ opacity: 0 }, { opacity: 0.7, offset: 0.15 }, { opacity: 0.1, offset: 0.4 }, { opacity: 0.45, offset: 0.55 }, { opacity: 0 }], { duration: 650 }).onfinish = () => el.remove()
+}
+
+function guncang(el) {
+  el?.animate(
+    [
+      { transform: 'translate(0,0)' }, { transform: 'translate(-4px,2px)' }, { transform: 'translate(4px,-2px)' },
+      { transform: 'translate(-3px,-1px)' }, { transform: 'translate(3px,1px)' }, { transform: 'translate(0,0)' },
+    ],
+    { duration: 400 },
+  )
 }
 
 // Warna piala per tingkat level: [badan, kilap, alas]
@@ -76,32 +107,42 @@ function LayarPiala({ awal, akhir, lang, onLanjut }) {
 
   useEffect(() => {
     const kurangGerak = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    const timer = []
+    const nanti = (fn, ms) => timer.push(setTimeout(fn, ms))
     refPiala.current?.animate(
       [
-        { transform: 'translateY(-30px) scale(0.6)', opacity: 0 },
-        { transform: 'translateY(3px) scale(1.1)', opacity: 1, offset: 0.6 },
+        { transform: 'translateY(-40px) scale(0.5)', opacity: 0 },
+        { transform: 'translateY(4px) scale(1.15)', opacity: 1, offset: 0.65 },
         { transform: 'none', opacity: 1 },
       ],
-      { duration: kurangGerak ? 1 : 600, easing: 'ease-out', fill: 'forwards' },
+      { duration: kurangGerak ? 1 : 900, easing: 'ease-out', fill: 'forwards' },
     )
-    playGoBuka()
+    playPialaMasuk()
     getar(10)
-    const t1 = setTimeout(() => putarAngka(refAngka.current, awal.total, awal.target, kurangGerak ? 1 : 700), 400)
-    const t2 = setTimeout(() => {
+    // angka total berputar pelan sampai target, dengan tik-tik yang makin tinggi
+    nanti(() => {
+      putarAngka(refAngka.current, awal.total, awal.target, kurangGerak ? 1 : 1500)
+      if (!kurangGerak) for (let i = 0; i < 14; i++) nanti(() => playGeserTik(i % 9), i * 105)
+    }, 900)
+    nanti(() => {
       setSampai(true)
       if (refAngka.current) refAngka.current.textContent = rp(awal.target)
       if (!kurangGerak) {
-        refAngka.current?.animate([{ opacity: 1 }, { opacity: 0.3 }, { opacity: 1 }, { opacity: 0.3 }, { opacity: 1 }], { duration: 500 })
-        percik(refPercik.current, 26, 22, 220)
-        refLvBesar.current?.animate([{ transform: 'scale(1.8)', color: '#FFD45E' }, { transform: 'scale(1)', color: '#FFFFFF' }], { duration: 500, easing: 'ease-out' })
+        refAngka.current?.animate([{ opacity: 1 }, { opacity: 0.3 }, { opacity: 1 }, { opacity: 0.3 }, { opacity: 1 }], { duration: 600 })
+        percik(refPercik.current, 28, 24, 320, 28)
+        cincin(refPercik.current, 28, 26)
+        refLvBesar.current?.animate([{ transform: 'scale(2.6)', color: '#FFD45E' }, { transform: 'scale(1)', color: '#FFFFFF' }], { duration: 700, easing: 'cubic-bezier(0.34, 1.4, 0.64, 1)' })
+        guncang(refPercik.current?.parentElement)
       }
-      getar(POLA_GETAR.kaget)
-    }, 1200)
-    return () => { clearTimeout(t1); clearTimeout(t2) }
+      playLevelTercapai()
+      getar(POLA_GETAR.senang)
+    }, 2500)
+    return () => timer.forEach(clearTimeout)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const lanjut = () => onLanjut?.()
+  // ketuk baru berlaku setelah angka sampai (supaya animasinya tidak terpotong)
+  const lanjut = () => { if (sampai) onLanjut?.() }
   return (
     <div
       role="button"
@@ -128,7 +169,7 @@ function LayarPiala({ awal, akhir, lang, onLanjut }) {
       <div style={s.blokLv}>
         <span style={s.kecilPiala}>LEVEL</span>
         <b ref={refLvBesar} style={s.lvBesar}>{sampai ? akhir.level : awal.level}</b>
-        <span className="level-tap" style={s.tap}>TAP ▸</span>
+        <span className="level-tap" style={{ ...s.tap, visibility: sampai ? 'visible' : 'hidden' }}>TAP ▸</span>
       </div>
       <div ref={refPercik} style={s.percik} aria-hidden="true" />
     </div>
@@ -188,44 +229,49 @@ export default function TampilanLevel({ total, dari = null, kananBawah = null, r
       }, 600)
       nanti(() => setSelesai(true), 1400)
     } else {
-      // Naik level: garis penuh dulu, lalu percikan piksel dari ujungnya, level berganti, garis mulai dari awal lagi
+      // Naik level, dibuat panjang supaya terasa: garis mengisi pelan sampai penuh (1,1 dtk) dengan nada naik. Saat penuh,
+      // layar berkilat, konsol bergetar, kotak piksel dan cincin cahaya meledak dari ujung garis sambil fanfare, angka LV
+      // berputar lalu mendarat di level baru, dan garis mulai lagi dari awal. Sesudahnya konsol pindah ke layar piala.
       nanti(() => {
-        isi?.animate([{ transform: `scaleX(${awal.porsi})` }, { transform: 'scaleX(1)' }], { duration: 400, fill: 'forwards' })
-        putarAngka(refUang.current, awal.total, awal.target, 400)
+        isi?.animate([{ transform: `scaleX(${awal.porsi})` }, { transform: 'scaleX(1)' }], { duration: 1100, easing: 'ease-in', fill: 'forwards' })
+        putarAngka(refUang.current, awal.total, awal.target, 1100)
+        playLevelIsi()
+        getar([10, 40, 10, 40, 10, 40, 12])
       }, 600)
       nanti(() => {
         const wadah = refPercik.current
         const lebar = refWadah.current?.clientWidth || 300
-        if (wadah) {
-          for (let n = 0; n < 16; n++) {
-            const warna = ['#FFD45E', '#5ED0FF', '#FFFFFF'][n % 3]
-            const kotak = document.createElement('i')
-            kotak.style.cssText = `position:absolute;left:${lebar - 4}px;top:28px;width:4px;height:4px;background:${warna};box-shadow:0 0 4px ${warna}`
-            wadah.appendChild(kotak)
-            const dx = -20 - Math.random() * Math.min(160, lebar * 0.6)
-            const dy = -8 - Math.random() * 24
-            kotak.animate(
-              [
-                { transform: 'translate(0,0)', opacity: 1 },
-                { transform: `translate(${dx}px,${dy}px)`, opacity: 1, offset: 0.6 },
-                { transform: `translate(${dx * 1.2}px,${dy + 40}px)`, opacity: 0 },
-              ],
-              { duration: 900, easing: 'ease-out', fill: 'forwards' },
-            ).onfinish = () => kotak.remove()
-          }
-        }
-        if (refLv.current) {
-          refLv.current.textContent = String(akhir.level)
-          refLv.current.animate([{ transform: 'scale(1.7)', color: '#FFD45E' }, { transform: 'scale(1)', color: '#FFFFFF' }], { duration: 500 })
-        }
-        isi?.animate([{ transform: 'scaleX(0)' }, { transform: `scaleX(${akhir.porsi})` }], { duration: 400, fill: 'forwards' })
-        if (refTarget.current) refTarget.current.textContent = rp(akhir.target)
-        putarAngka(refUang.current, awal.target, akhir.total, 400)
-        playLunasSemua()
+        kilat()
+        guncang(refWadah.current)
+        percik(wadah, lebar - 4, 28, lebar * 0.95, 32, 1)
+        percik(wadah, lebar - 4, 28, 90, 12, 0.5)
+        cincin(wadah, lebar - 4, 30)
+        playLevelNaik()
         getar(POLA_GETAR.senang)
-      }, 1050)
-      nanti(() => setSelesai(true), 1600)
-      nanti(() => setLayarPiala(true), 2300)
+        const lvEl = refLv.current
+        if (lvEl) {
+          // angka LV berputar acak sekitar 0,7 dtk, lalu mendarat di level baru dengan membesar
+          let putaran = 0
+          const id = setInterval(() => {
+            putaran += 1
+            if (putaran >= 12) {
+              clearInterval(id)
+              lvEl.textContent = String(akhir.level)
+              lvEl.animate([{ transform: 'scale(2.2)', color: '#FFD45E' }, { transform: 'scale(1)', color: '#FFFFFF' }], { duration: 650, easing: 'cubic-bezier(0.34, 1.4, 0.64, 1)' })
+            } else {
+              lvEl.textContent = String(1 + Math.floor(Math.random() * 90))
+            }
+          }, 58)
+          timer.push(id)
+        }
+      }, 1750)
+      nanti(() => {
+        isi?.animate([{ transform: 'scaleX(0)' }, { transform: `scaleX(${akhir.porsi})` }], { duration: 500, fill: 'forwards' })
+        if (refTarget.current) refTarget.current.textContent = rp(akhir.target)
+        putarAngka(refUang.current, awal.target, akhir.total, 500)
+      }, 2750)
+      nanti(() => setSelesai(true), 3300)
+      nanti(() => setLayarPiala(true), 4800)
     }
     return () => timer.forEach(clearTimeout)
     // animasi hanya sekali saat tampilan ini muncul
