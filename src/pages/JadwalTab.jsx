@@ -1,10 +1,17 @@
-import { useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import JadwalMingguan from '../components/JadwalMingguan.jsx'
 
 export default function JadwalTab({ jadwalMingguan, simpanJadwal }) {
   const { t } = useLanguage()
   const jadwalRef = useRef(null)
+  // Jadwal yang sudah terisi tampil sebagai kartu; mengisi/mengubah memakai daftar ringkas satu layar
+  const [modeIsi, setModeIsi] = useState(null)
+  const jadwalAda = Object.values(jadwalMingguan || {}).some((h) => h?.antar?.aktif || h?.jemput?.aktif)
+  useEffect(() => {
+    if (modeIsi === null && jadwalMingguan) setModeIsi(!jadwalAda)
+  }, [jadwalMingguan, jadwalAda, modeIsi])
+  const mengisi = modeIsi !== false
 
   return (
     <main style={s.wrap}>
@@ -13,12 +20,17 @@ export default function JadwalTab({ jadwalMingguan, simpanJadwal }) {
           <div style={s.eyebrow}>{t.jadwalEyebrow}</div>
           <h1 style={s.title}>{t.jadwalTitlePenumpang}</h1>
         </div>
-        <button className="tekan" style={s.resetBtn} onClick={() => jadwalRef.current?.reset()}>
-          {t.resetJadwal}
+        <button className="tekan" style={s.resetBtn} onClick={() => (mengisi ? jadwalRef.current?.reset() : setModeIsi(true))}>
+          {mengisi ? t.resetJadwal : t.ubahJadwal}
         </button>
       </header>
 
-      <JadwalMingguan ref={jadwalRef} jadwal={jadwalMingguan} onSimpan={simpanJadwal} bisaEdit />
+      <JadwalMingguan
+        ref={jadwalRef}
+        jadwal={jadwalMingguan}
+        onSimpan={async (d) => { await simpanJadwal(d); if (Object.values(d).some((h) => h?.antar?.aktif || h?.jemput?.aktif)) setModeIsi(false) }}
+        bisaEdit={mengisi}
+      />
 
       <p style={s.catatan}>{t.jadwalCatatanPenumpang}</p>
     </main>

@@ -4,7 +4,7 @@ import { HARI_KERJA_KEYS } from '../lib/constants'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import TimeWheelPicker from './TimeWheelPicker.jsx'
 import SwipeableCheck from './SwipeableCheck.jsx'
-import JadwalBacaOjek, { MAKS_HARI_KARTU, ambilHariAktif } from './JadwalBacaOjek.jsx'
+import JadwalBacaOjek, { ambilHariAktif } from './JadwalBacaOjek.jsx'
 
 function buatJadwalKosong() {
   const kosong = {}
@@ -89,10 +89,10 @@ const JadwalMingguan = forwardRef(function JadwalMingguan(
   const indexHariEditing = editing ? HARI_KERJA_KEYS.indexOf(editing.hari) : -1
   const labelHariEditing = indexHariEditing >= 0 ? t.hariLabel[indexHariEditing] : ''
 
-  // Akun ojek (mode baca) dengan jadwal 1 sampai 4 hari: susunan kartu khusus supaya layar tidak kosong
+  // Mode baca (ojek, atau penumpang setelah jadwal disimpan): kartu per hari. Mode isi tetap daftar ringkas satu layar.
   const hariAktif = ambilHariAktif(draft)
-  if (!bisaEdit && bisaTandaiSelesai && hariAktif.length >= 1 && hariAktif.length <= MAKS_HARI_KARTU) {
-    return <JadwalBacaOjek key={hariAktif.map((h) => h.key).join('-')} hari={hariAktif} onTandaiSelesai={onTandaiSelesai} />
+  if (!bisaEdit && hariAktif.length >= 1) {
+    return <JadwalBacaOjek key={hariAktif.map((h) => h.key).join('-')} hari={hariAktif} onTandaiSelesai={bisaTandaiSelesai ? onTandaiSelesai : undefined} />
   }
 
   return (
@@ -220,10 +220,9 @@ const s = {
     boxSizing: 'border-box',
     background: 'var(--bg)',
     borderBottom: '1px solid var(--garis)',
-    // padding sama untuk semua baris (juga yang selesai) supaya kolom Antar/Jemput selalu lurus
-    padding: '9px 8px',
+    padding: '4px 0',
     display: 'grid',
-    gridTemplateColumns: '96px 1fr',
+    gridTemplateColumns: '98px 1fr',
     alignItems: 'center',
     gap: 8,
     transition: 'box-shadow 0.25s ease, background 0.25s ease',
@@ -231,13 +230,14 @@ const s = {
   hariBlokSelesai: {
     background: 'var(--panel)',
     boxShadow: 'inset 0 0 0 1px var(--glow-blue)',
+    padding: '10px 8px',
   },
   hariLabel: {
     display: 'flex',
     alignItems: 'center',
     gap: 8,
-    fontSize: 14,
-    fontWeight: 700,
+    fontSize: 13.5,
+    fontWeight: 600,
     lineHeight: 1.3,
     color: 'var(--text)',
   },
@@ -275,7 +275,6 @@ const s = {
     gridTemplateColumns: '1fr 1fr',
     alignItems: 'center',
     background: 'var(--panel)',
-    boxShadow: 'inset 0 0 0 1px var(--garis)',
     borderRadius: 0,
     minWidth: 0,
   },
@@ -324,25 +323,20 @@ const s = {
   },
   bacaJam: {
     fontFamily: 'var(--font-data)',
-    fontSize: 14,
-    fontVariantNumeric: 'tabular-nums',
+    fontSize: 13,
     lineHeight: '34px',
     textAlign: 'center',
     color: 'var(--text)',
     borderLeft: '1px solid var(--garis)',
   },
-  // sel kosong: bentuk dan tinggi sama dengan sel aktif, tapi putus-putus dan redup
   bacaRedup: {
     whiteSpace: 'nowrap',
-    boxSizing: 'border-box',
-    height: 34,
     fontSize: 12,
     fontWeight: 600,
-    lineHeight: '32px',
+    lineHeight: '34px',
     textAlign: 'center',
     color: 'var(--text-dim)',
-    border: '1px dashed var(--garis)',
-    opacity: 0.55,
+    opacity: 0.6,
   },
   simpanBtn: {
     marginTop: 14,

@@ -161,6 +161,7 @@ export const translations = {
     tersimpan: 'Tersimpan ✓',
     simpanJadwal: 'Simpan jadwal',
     resetJadwal: 'Reset',
+    ubahJadwal: 'Ubah Jadwal',
     jamOpsional: 'Jam',
     batal: 'Batal',
 
@@ -419,6 +420,7 @@ export const translations = {
     tersimpan: 'Saved ✓',
     simpanJadwal: 'Save schedule',
     resetJadwal: 'Reset',
+    ubahJadwal: 'Edit Schedule',
     jamOpsional: 'Time',
     batal: 'Cancel',
 
