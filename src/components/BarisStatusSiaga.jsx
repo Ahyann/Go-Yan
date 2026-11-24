@@ -1,7 +1,8 @@
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { TEKS_STATUS, jenisCuaca, useStatusSiaga } from '../lib/statusSiaga'
 import { JUMLAH_BAR, useBensin } from '../lib/bensin'
-import { hitungLevel, tingkatPiala } from '../lib/level'
+import { hitungLevel, tingkatPiala, uangPerLevel } from '../lib/level'
+import { useAuth } from '../context/AuthContext.jsx'
 
 const svg = { shapeRendering: 'crispEdges', style: { flexShrink: 0, display: 'block' } }
 
@@ -103,6 +104,7 @@ function IkonTrip({ tingkat = 'emas' }) {
 // Baris di bawah jam konsol ojek saat siaga: cuaca, sinyal GPS, dan total trip, dengan ikon piksel.
 export default function BarisStatusSiaga({ totalTrip = null, totalUang = null, lokasiAktif = false, onBukaCuaca = null, onBukaBensin = null, onBukaLevel = null }) {
   const { lang } = useLanguage()
+  const { isDemo } = useAuth()
   const k = TEKS_STATUS[lang] || TEKS_STATUS.id
   const { cuaca } = useStatusSiaga(lokasiAktif)
   const bensin = useBensin()
@@ -137,7 +139,7 @@ export default function BarisStatusSiaga({ totalTrip = null, totalUang = null, l
       </span>
     </button>
   )
-  const lv = totalUang != null ? hitungLevel(totalUang) : null
+  const lv = totalUang != null ? hitungLevel(totalUang, uangPerLevel(isDemo)) : null
   const slotLevel = lv && (
     <button
       type="button"
@@ -170,7 +172,8 @@ export default function BarisStatusSiaga({ totalTrip = null, totalUang = null, l
 }
 
 const s = {
-  baris: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 26, borderTop: '1px solid rgba(94, 208, 255, 0.22)', paddingTop: 4 },
+  // tiga kolom sama lebar, tiap slot di tengah kolomnya: jarak antarslot rata dan tidak menempel ke tepi konsol
+  baris: { display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', justifyItems: 'center', alignItems: 'center', height: 26, borderTop: '1px solid rgba(94, 208, 255, 0.22)', paddingTop: 4 },
   slot: { display: 'inline-flex', alignItems: 'center', gap: 7 },
   tombolSlot: { background: 'none', border: 'none', padding: 0, margin: 0, color: 'inherit', font: 'inherit', textAlign: 'left', cursor: 'pointer' },
   panah: { color: '#5ED0FF' },

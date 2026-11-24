@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLanguage } from '../context/LanguageContext.jsx'
-import { hitungLevel, UANG_PER_LEVEL, TRIP_DEKAT } from '../lib/level'
+import { useAuth } from '../context/AuthContext.jsx'
+import { hitungLevel, uangPerLevel, TRIP_DEKAT } from '../lib/level'
 import { playGeserTik, playLunasSemua } from '../lib/sound'
 import { getar, POLA_GETAR } from '../lib/getar'
 
@@ -39,8 +40,10 @@ function putarAngka(el, dari, ke, ms) {
 // ini membuat level naik, garis penuh, memercikkan kotak-kotak piksel, lalu level berganti.
 export default function TampilanLevel({ total, dari = null, kananBawah = null }) {
   const { lang } = useLanguage()
-  const akhir = hitungLevel(total)
-  const awal = dari == null ? akhir : hitungLevel(dari)
+  const { isDemo } = useAuth()
+  const perLevel = uangPerLevel(isDemo)
+  const akhir = hitungLevel(total, perLevel)
+  const awal = dari == null ? akhir : hitungLevel(dari, perLevel)
   const naik = akhir.level > awal.level
   const [selesai, setSelesai] = useState(dari == null)
   const refIsi = useRef(null)
@@ -83,7 +86,7 @@ export default function TampilanLevel({ total, dari = null, kananBawah = null })
       // Naik level: garis penuh dulu, lalu percikan piksel dari ujungnya, level berganti, garis mulai dari awal lagi
       nanti(() => {
         isi?.animate([{ transform: `scaleX(${awal.porsi})` }, { transform: 'scaleX(1)' }], { duration: 400, fill: 'forwards' })
-        putarAngka(refUang.current, awal.diLevel, UANG_PER_LEVEL, 400)
+        putarAngka(refUang.current, awal.diLevel, perLevel, 400)
       }, 600)
       nanti(() => {
         const wadah = refPercik.current
@@ -134,7 +137,7 @@ export default function TampilanLevel({ total, dari = null, kananBawah = null })
     <div ref={refWadah} style={s.wadah}>
       <div style={s.atas}>
         <span style={s.lvLabel}>LV <b ref={refLv} style={s.lv}>{tampil.level}</b></span>
-        <span style={s.uang}><span ref={refUang}>{rp(tampil.diLevel)}</span> / {rp(UANG_PER_LEVEL)}</span>
+        <span style={s.uang}><span ref={refUang}>{rp(tampil.diLevel)}</span> / {rp(perLevel)}</span>
       </div>
       <div style={s.garis}>
         <i ref={refIsi} style={{ ...s.isi, transform: `scaleX(${tampil.porsi})` }} />

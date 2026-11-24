@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import JamKonsol from '../components/JamKonsol.jsx'
 import { STATUS_PERMINTAAN, AKSI, TARIF_PER_RIDE } from '../lib/constants'
-import { hitungLevel } from '../lib/level'
+import { hitungLevel, uangPerLevel } from '../lib/level'
 import TampilanLevel from '../components/TampilanLevel.jsx'
 import { playMisiDiterima, playPesananBatal, playMissionSuccess, playWhooshMasuk, playTombolKamera, playTombolSuara } from '../lib/sound'
 import { useLokasiPenumpang, hapusLokasiPenumpangSekarang } from '../lib/useLokasiPenumpang'
@@ -117,7 +117,7 @@ export default function OjekHomeTab({ slotKonsol, putaranMasuk = 0,
   const tampilSpidey = adaPermintaanMasuk || transisiDiterima || !!transisiBatal || !!misiSelesai
   // Perjalanan yang baru selesai membuat level naik (tiap Rp500.000): label konsol jadi LEVEL UP! kuning
   const naikLevel = Boolean(misiSelesai && misiSelesai.tercatat && misiSelesai.totalSebelum != null
-    && hitungLevel(misiSelesai.totalSebelum + TARIF_PER_RIDE).level > hitungLevel(misiSelesai.totalSebelum).level)
+    && hitungLevel(misiSelesai.totalSebelum + TARIF_PER_RIDE, uangPerLevel(isDemo)).level > hitungLevel(misiSelesai.totalSebelum, uangPerLevel(isDemo)).level)
   const teksSpidey = {
     menunggu: t.ojekSpMasuk,
     menungguSub: t.ojekSpMenungguSub,
