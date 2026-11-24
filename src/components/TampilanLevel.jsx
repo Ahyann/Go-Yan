@@ -70,6 +70,7 @@ function LayarPiala({ awal, akhir, lang, onLanjut }) {
   const refPiala = useRef(null)
   const refAngka = useRef(null)
   const refPercik = useRef(null)
+  const refLvBesar = useRef(null)
   const [sampai, setSampai] = useState(false)
   const [badan, kilap, alas] = WARNA_PIALA[tingkatPiala(akhir.level)]
 
@@ -92,6 +93,7 @@ function LayarPiala({ awal, akhir, lang, onLanjut }) {
       if (!kurangGerak) {
         refAngka.current?.animate([{ opacity: 1 }, { opacity: 0.3 }, { opacity: 1 }, { opacity: 0.3 }, { opacity: 1 }], { duration: 500 })
         percik(refPercik.current, 26, 22, 220)
+        refLvBesar.current?.animate([{ transform: 'scale(1.8)', color: '#FFD45E' }, { transform: 'scale(1)', color: '#FFFFFF' }], { duration: 500, easing: 'ease-out' })
       }
       getar(POLA_GETAR.kaget)
     }, 1200)
@@ -120,12 +122,14 @@ function LayarPiala({ awal, akhir, lang, onLanjut }) {
       <div style={s.kananPiala}>
         <div style={{ ...s.kecilPiala, ...(sampai ? s.kuning : null) }}>{sampai ? (lang === 'en' ? 'YOU REACHED' : 'KAMU MENCAPAI') : 'TOTAL'}</div>
         <div ref={refAngka} style={{ ...s.angkaBesar, color: sampai ? '#FFD45E' : '#FFFFFF' }}>{rp(awal.total)}</div>
-        <div style={s.barisPiala}>
-          <span>LV <b style={s.lvKecil}>{sampai ? akhir.level : awal.level}</b></span>
-          <span style={s.next}>NEXT {rp(akhir.target)}</span>
-        </div>
+        <div style={s.next}>NEXT {rp(akhir.target)}</div>
       </div>
-      <span className="level-tap" style={s.tap}>TAP ▸</span>
+      {/* blok kanan: angka level besar (membesar saat tercapai) dan TAP untuk lanjut */}
+      <div style={s.blokLv}>
+        <span style={s.kecilPiala}>LEVEL</span>
+        <b ref={refLvBesar} style={s.lvBesar}>{sampai ? akhir.level : awal.level}</b>
+        <span className="level-tap" style={s.tap}>TAP ▸</span>
+      </div>
       <div ref={refPercik} style={s.percik} aria-hidden="true" />
     </div>
   )
@@ -294,8 +298,8 @@ const s = {
   kananPiala: { flex: 1, minWidth: 0 },
   kecilPiala: { fontSize: 7, letterSpacing: '0.16em' },
   angkaBesar: { fontFamily: "'JetBrains Mono', monospace", fontSize: 18, lineHeight: 1.15, whiteSpace: 'nowrap' },
-  barisPiala: { display: 'flex', alignItems: 'baseline', gap: 10, fontSize: 9, marginTop: 2 },
-  lvKecil: { fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: '#FFFFFF' },
-  next: { fontSize: 7, letterSpacing: '0.08em', opacity: 0.7, whiteSpace: 'nowrap' },
-  tap: { position: 'absolute', right: 0, bottom: 0, fontSize: 8, letterSpacing: '0.1em', color: '#FFFFFF' },
+  next: { fontSize: 7, letterSpacing: '0.08em', opacity: 0.7, whiteSpace: 'nowrap', marginTop: 3 },
+  blokLv: { flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', alignSelf: 'stretch', justifyContent: 'center', gap: 2, paddingLeft: 12, borderLeft: '1px solid rgba(94, 208, 255, 0.22)' },
+  lvBesar: { display: 'inline-block', fontFamily: "'JetBrains Mono', monospace", fontSize: 26, lineHeight: 1, color: '#FFFFFF', textShadow: '0 0 8px rgba(94, 208, 255, 0.6)' },
+  tap: { fontSize: 8, letterSpacing: '0.1em', color: '#FFFFFF', marginTop: 2 },
 }
