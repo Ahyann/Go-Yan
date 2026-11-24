@@ -359,7 +359,9 @@ function efekNaikLevel(kartu, cx, cy, atas, tubuh, gambar) {
   const timer = []
   const buat = (css) => {
     const e = document.createElement('div')
-    Object.assign(e.style, { position: 'absolute', pointerEvents: 'none', zIndex: 5, ...css })
+    // angka tanpa satuan diberi px (di DOM langsung, tidak seperti React yang menambahkannya sendiri)
+    const gaya = { position: 'absolute', pointerEvents: 'none', zIndex: 5, ...css }
+    Object.keys(gaya).forEach((k) => { e.style[k] = typeof gaya[k] === 'number' && k !== 'zIndex' && k !== 'opacity' ? `${gaya[k]}px` : gaya[k] })
     kartu.appendChild(e)
     dibuat.push(e)
     return e
