@@ -914,6 +914,17 @@ export function playLevelTercapai() {
   ;[2349, 2960, 3136].forEach((f, i) => nadaLv(ctx, 'sine', f, f, 0.18, 0.035, akor + 0.12 + i * 0.09))
 }
 
+// Pesta Spiderman saat naik level (kombo petir, cincin, konfeti, tulisan): zzap beruntun mengiringi sambaran petir, lalu fanfare
+// pendek saat tulisan LEVEL UP! muncul. Dentuman dan arpeggio sudah dibunyikan playLevelNaik di konsol, jadi tidak diulang di sini.
+export function playLevelKilat() {
+  const ctx = ctxSiapEfek()
+  if (!ctx) return
+  for (let i = 0; i < 4; i++) nadaLv(ctx, 'sawtooth', 1400 - i * 180, 220, 0.09, 0.055, i * 0.13)
+  ;[392, 392, 392].forEach((f, i) => nadaLv(ctx, 'square', f, f, 0.1, 0.055, 0.95 + i * 0.12))
+  nadaLv(ctx, 'square', 523, 523, 0.5, 0.06, 1.33)
+  nadaLv(ctx, 'square', 659, 659, 0.5, 0.04, 1.33)
+}
+
 // Ketuk untuk lanjut di layar naik level: dua nada naik cepat ("ba-ding") dan desis yang turun saat layar menutup
 export function playLevelLanjut() {
   const ctx = ctxSiapEfek()

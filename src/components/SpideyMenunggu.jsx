@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useLanguage } from '../context/LanguageContext.jsx'
-import { playWhooshMasuk, playSpideySentuh, mulaiDengungHijau } from '../lib/sound'
+import { playWhooshMasuk, playSpideySentuh, mulaiDengungHijau, playLevelKilat } from '../lib/sound'
 import { getar, POLA_GETAR } from '../lib/getar'
 import { bentukKotak, KOLOM } from './SplashLabaLaba.jsx'
 
@@ -351,6 +351,80 @@ const REAKSI_BLOK = ['kaget', 'getar', 'angguk', 'glitch', 'intip', 'kenyal']
 
 const SUDAH_WHOOSH = new Set()
 
+// Kombo naik level di kartu atas: petir hijau menyambar dari benang ke badan, lalu cincin kejut, konfeti piksel, dan tulisan
+// LEVEL UP! berurutan sekitar dua detik. Semua elemen dibuat sementara langsung di kartu (cx, cy = pusat badan, atas = tinggi
+// tulisan dari tepi atas kartu) dan dibersihkan lagi. Mengembalikan fungsi pembersih.
+function efekNaikLevel(kartu, cx, cy, atas, tubuh, gambar) {
+  const dibuat = []
+  const timer = []
+  const buat = (css) => {
+    const e = document.createElement('div')
+    Object.assign(e.style, { position: 'absolute', pointerEvents: 'none', zIndex: 5, ...css })
+    kartu.appendChild(e)
+    dibuat.push(e)
+    return e
+  }
+  const nanti = (fn, ms) => timer.push(setTimeout(fn, ms))
+  const palet = ['#6CF29A', '#5ED0FF', '#FFD84A', '#FF5A7A', '#FFFFFF', '#FF9A3C']
+
+  const petir = () => {
+    for (let k = 0; k < 4; k++) {
+      let d = `M${cx} 0`
+      let y = 0
+      while (y < cy - 20) {
+        y += 22 + Math.random() * 10
+        d += ` L${(cx + (Math.random() - 0.5) * 60).toFixed(0)} ${y.toFixed(0)}`
+      }
+      const e = buat({ left: 0, top: 0, opacity: 0 })
+      e.innerHTML = `<svg width="${cx * 2}" height="${cy + 40}" style="overflow:visible"><path d="${d}" stroke="#6CF29A" stroke-width="7" fill="none" opacity=".5"/><path d="${d}" stroke="#fff" stroke-width="3" fill="none"/></svg>`
+      e.animate([{ opacity: 0 }, { opacity: 1, offset: 0.1 }, { opacity: 0, offset: 0.5 }, { opacity: 0 }], { duration: 160, delay: k * 130, fill: 'both' })
+    }
+    tubuh?.animate([{ filter: 'brightness(1)' }, { filter: 'brightness(3.2)', offset: 0.15 }, { filter: 'brightness(1)', offset: 0.3 }, { filter: 'brightness(3.2)', offset: 0.45 }, { filter: 'brightness(1)', offset: 0.6 }, { filter: 'brightness(2.2)', offset: 0.75 }, { filter: 'brightness(1)' }], { duration: 650 })
+  }
+  const cincin = () => {
+    for (let i = 0; i < 2; i++) {
+      const e = buat({ left: cx - 30, top: cy - 30, width: 60, height: 60, boxSizing: 'border-box', border: '4px solid #6CF29A', boxShadow: '0 0 14px #6CF29A, inset 0 0 14px #6CF29A', opacity: 0 })
+      e.animate([{ transform: 'scale(.3)', opacity: 0.95 }, { transform: 'scale(4.5)', opacity: 0 }], { duration: 900, delay: i * 160, easing: 'ease-out', fill: 'both' })
+    }
+    if (gambar) {
+      gambar.style.transformOrigin = `${(PAD + 9.5) * SKALA}px 50%`
+      gambar.animate([{ scale: 1 }, { scale: 1.3, offset: 0.2 }, { scale: 0.92, offset: 0.45 }, { scale: 1.08, offset: 0.7 }, { scale: 1 }], { duration: 800, easing: 'ease-out' })
+    }
+  }
+  const konfeti = () => {
+    for (let i = 0; i < 50; i++) {
+      const ukuran = 5 + Math.floor(Math.random() * 5)
+      const e = buat({ left: cx, top: cy, width: ukuran, height: ukuran, background: palet[i % palet.length] })
+      const sudut = Math.random() * Math.PI * 2
+      const laju = 70 + Math.random() * 130
+      const dx = Math.cos(sudut) * laju
+      const dy = Math.sin(sudut) * laju - 60
+      e.animate([
+        { transform: 'translate(0,0) rotate(0)', opacity: 1 },
+        { transform: `translate(${dx}px,${dy}px) rotate(${Math.random() * 360}deg)`, opacity: 1, offset: 0.45 },
+        { transform: `translate(${dx * 1.2}px,${dy + 190}px) rotate(${Math.random() * 720}deg)`, opacity: 0 },
+      ], { duration: 1500 + Math.random() * 500, easing: 'cubic-bezier(.2,.7,.4,1)', fill: 'both' })
+    }
+  }
+  const tulisan = () => {
+    const e = buat({ left: 0, right: 0, top: atas, textAlign: 'center', fontFamily: 'var(--font-judul)', fontSize: 46, letterSpacing: 2, color: '#fff', textShadow: '0 0 14px #6CF29A, 0 0 28px #6CF29A, 3px 3px 0 #0b5a3a', opacity: 0 })
+    e.textContent = 'LEVEL UP!'
+    e.animate([
+      { transform: 'scale(.2) rotate(-6deg)', opacity: 0 },
+      { transform: 'scale(1.3) rotate(2deg)', opacity: 1, offset: 0.3 },
+      { transform: 'scale(1) rotate(0)', opacity: 1, offset: 0.45 },
+      { transform: 'scale(1) rotate(0)', opacity: 1, offset: 0.85 },
+      { transform: 'scale(1.1) translateY(-20px)', opacity: 0 },
+    ], { duration: 1900, fill: 'both' })
+  }
+  petir()
+  nanti(cincin, 520)
+  nanti(konfeti, 620)
+  nanti(tulisan, 760)
+  nanti(() => dibuat.forEach((e) => e.remove()), 3200)
+  return () => { timer.forEach(clearTimeout); dibuat.forEach((e) => e.remove()) }
+}
+
 export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalkan = false, menyusut = false, isDemo = false, teks = null, gayaTolak = false, info = null, tanpaWhoosh = false, kompak = false, selesai = false, keluar = false, pesta = false, sampai = null, pesanSentuh = null, bawahTeks = null, modeMerah = false, tanpaWaktu = false, logoLangsungJadi = false }) {
   const { t } = useLanguage()
   const [sekarang, setSekarang] = useState(() => Date.now())
@@ -443,6 +517,16 @@ export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalka
   // kompak (akun ojek): judul dan info di kartu dihilangkan karena sudah ada di konsol bawah, jadi logo dan Spiderman turun mengisi ruangnya
   const topSpidey = Math.round(tinggiPenuh * (kompak ? 0.23 : 0.2))
   const awalJatuh = -(topSpidey + 22 + TINGGI * SKALA + 40)
+
+  // Kombo naik level (petir, cincin, konfeti, tulisan) sekali saat pesta dimulai
+  useEffect(() => {
+    if (!pesta || keluar || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return undefined
+    const kartu = refKartu.current
+    if (!kartu) return undefined
+    playLevelKilat()
+    return efekNaikLevel(kartu, kartu.clientWidth / 2, topSpidey + 22 + 14 * SKALA + 10, Math.max(8, topSpidey - 44), refReaksi.current, kartu.querySelector('svg.sp-napas'))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pesta, keluar])
   useEffect(() => {
     // Jaring hanya berbunyi sekali untuk tiap pesanan, dan tidak untuk kartu yang baru terpasang karena pindah tab
     // atau saat pesanan sedang dibatalkan (sebelumnya bunyi jaring ikut muncul saat batal lalu pindah ke Home).
