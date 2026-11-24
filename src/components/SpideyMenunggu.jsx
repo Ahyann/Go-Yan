@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useLanguage } from '../context/LanguageContext.jsx'
-import { playWhooshMasuk, playSpideySentuh, playPingHijau } from '../lib/sound'
+import { playWhooshMasuk, playSpideySentuh, mulaiDengungHijau } from '../lib/sound'
 import { getar, POLA_GETAR } from '../lib/getar'
 import { bentukKotak, KOLOM } from './SplashLabaLaba.jsx'
 
@@ -371,18 +371,14 @@ export default function SpideyMenunggu({ dibuatPada, diterima = false, dibatalka
   const timerPesan = useRef(null)
   useEffect(() => () => { clearTimeout(timerGelembung.current); clearTimeout(timerPesan.current) }, [])
 
-  // Pesta naik level: satu ping tiap denyut pendar hijau (siklus 1,6 dtk, paling terang di 0,8 dtk), berhenti saat konsol diketuk
+  // Pesta naik level: dengung yang membesar dan mengecil mengikuti pendar hijau (siklus 1,6 dtk). Waktunya dikunci ke fase
+  // animasi pendar yang sedang berjalan, dan berhenti saat konsol diketuk.
   useEffect(() => {
     if (!pesta || keluar || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return undefined
-    let ulang
-    const awal = setTimeout(() => {
-      playPingHijau()
-      ulang = setInterval(playPingHijau, 1600)
-    }, 800)
-    return () => {
-      clearTimeout(awal)
-      clearInterval(ulang)
-    }
+    const pendar = refKartu.current?.querySelector('.sp-hijau')?.getAnimations().find((a) => a.animationName === 'sp-hijau')
+    const fase = pendar ? Number(pendar.currentTime) % 1600 : 0
+    const hentikan = mulaiDengungHijau(((1600 - fase) % 1600) / 1000)
+    return hentikan
   }, [pesta, keluar])
 
   function sentuh() {

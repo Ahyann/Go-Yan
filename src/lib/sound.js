@@ -918,10 +918,44 @@ export function playLevelLanjut() {
   desisNaik(ctx, 0.25, 0.12, 0.04, 3000, 600)
 }
 
-// Ping radar bulat, satu kali tiap denyut pendar hijau Spiderman (dipanggil tepat saat pendar paling terang)
-export function playPingHijau() {
+// Dengung yang "bernapas" mengikuti pendar hijau Spiderman: volume naik pelan selama 0,8 dtk (pendar menyala) lalu turun
+// selama 0,8 dtk (pendar meredup), diulang tiap 1,6 dtk. tunda = detik sampai siklus berikutnya mulai (pendar paling redup),
+// supaya bunyi dan cahaya jatuh di fase yang sama. Mengembalikan fungsi untuk menghentikan dengan pelan.
+export function mulaiDengungHijau(tunda = 0) {
   const ctx = ctxSiapEfek()
-  if (!ctx) return
-  nadaPendek(ctx, 'sine', 880, 880, 1.1, 0.05, 0)
-  nadaPendek(ctx, 'sine', 1760, 1760, 0.45, 0.015, 0)
+  if (!ctx) return () => {}
+  const master = ctx.createGain()
+  master.connect(ctx.destination)
+  let berikut = ctx.currentTime + tunda + 0.02
+  const siklus = (w) => {
+    ;[[196, 0.07], [294, 0.03]].forEach(([f, vol]) => {
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
+      osc.type = 'sine'
+      osc.frequency.value = f
+      gain.gain.setValueAtTime(0.0001, w)
+      gain.gain.exponentialRampToValueAtTime(vol, w + 0.8)
+      gain.gain.exponentialRampToValueAtTime(0.0001, w + 1.6)
+      osc.connect(gain)
+      gain.connect(master)
+      osc.start(w)
+      osc.stop(w + 1.65)
+    })
+  }
+  const jadwalkan = () => {
+    while (berikut < ctx.currentTime + 1.8) {
+      siklus(berikut)
+      berikut += 1.6
+    }
+  }
+  jadwalkan()
+  const timer = setInterval(jadwalkan, 400)
+  return () => {
+    clearInterval(timer)
+    const w = ctx.currentTime
+    master.gain.cancelScheduledValues(w)
+    master.gain.setValueAtTime(master.gain.value, w)
+    master.gain.linearRampToValueAtTime(0, w + 0.25)
+    setTimeout(() => master.disconnect(), 400)
+  }
 }
