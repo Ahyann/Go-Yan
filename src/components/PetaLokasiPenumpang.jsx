@@ -149,7 +149,6 @@ export default function PetaLokasiPenumpang({
 }) {
   const { t } = useLanguage()
   const { isDemo } = useAuth()
-  const teksKosongFinal = teksKosong ?? (isDemo ? t.passengerBelumShare : t.fajriBelumShare)
   const posisiValid = lokasi?.lat != null && lokasi?.lng != null
   const lokasiSaya = useLokasiOjek()
   const posisiSayaValid = lokasiSaya?.lat != null && lokasiSaya?.lng != null
@@ -173,12 +172,11 @@ export default function PetaLokasiPenumpang({
     [posisiSayaValid, lokasiSaya?.lat, lokasiSaya?.lng]
   )
   const pusat = posisiValid ? [lokasi.lat, lokasi.lng] : posisiAwal.center
-  const tampilkanTombolLokasi = typeof onToggleLokasi === 'function'
   const mapRef = useRef(null)
   const wrapRef = useRef(null)
   const bubblePenumpang = useBubblePesan(pesan, hapusPesan, 'peta-ahyan:bubble-fajri')
   const bubbleSaya = useBubblePesan(pesanSaya, hapusPesanSaya, 'peta-ahyan:bubble-ahyan')
-  const [sinyalLive, setSinyalLive] = useState(0)
+  const [sinyalLive] = useState(0)
   const markerOfficeRef = useRef(null)
   const markerKampusRef = useRef(null)
 
@@ -191,20 +189,6 @@ export default function PetaLokasiPenumpang({
   const fotoBubbleSaya = pesanSaya?.foto ?? ''
   const suaraBubble = pesan?.suara ?? ''
   const suaraBubbleSaya = pesanSaya?.suara ?? ''
-
-  function handleRecenter() {
-    if (posisiValid && mapRef.current) {
-      mapRef.current.invalidateSize({ animate: false })
-      mapRef.current.setView([lokasi.lat, lokasi.lng], 16)
-    }
-  }
-
-  function handleRecenterSaya() {
-    if (posisiSayaValid && mapRef.current) {
-      mapRef.current.invalidateSize({ animate: false })
-      mapRef.current.setView([lokasiSaya.lat, lokasiSaya.lng], 16)
-    }
-  }
 
   return (
     <div ref={wrapRef} className="peta-embed" style={isiPenuh ? s.wrapPolos : s.wrap}>

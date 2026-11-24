@@ -179,7 +179,6 @@ export function PenunjukKarakter({ posisi, ikon, label, bawah }) {
 
   if (!info) return null
   const { sisi } = info
-  const kiriKanan = sisi === 'kiri' || sisi === 'kanan'
   const gaya = { position: 'absolute', zIndex: 900, transition: 'bottom 0.2s ease-out' }
   if (sisi === 'kiri') Object.assign(gaya, { left: 0, top: info.y, transform: 'translateY(-50%)' })
   else if (sisi === 'kanan') Object.assign(gaya, { right: 0, top: info.y, transform: 'translateY(-50%)' })

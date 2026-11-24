@@ -42,10 +42,9 @@ export default function OjekHomeTab({ slotKonsol, putaranMasuk = 0,
   const adaPermintaanMasuk = permintaan?.status === STATUS_PERMINTAAN.MENUNGGU
   const sedangJalan = permintaan?.status === STATUS_PERMINTAAN.DITERIMA
   const lokasiPenumpang = useLokasiPenumpang()
-  const { kirimPesan, kirimFoto, kirimSuara, hapusPesan } = usePesanOjek()
+  const { kirimFoto, kirimSuara, hapusPesan } = usePesanOjek()
   // Sesi foto: peta berganti viewfinder dan layar konsol berganti tombol potret selama kamera dipakai
   const sesiFoto = useSesiFoto({ aktif: permintaan?.status === STATUS_PERMINTAAN.DITERIMA, onKirimFoto: kirimFoto })
-  const [teksPesan, setTeksPesan] = useState('')
   const [showMissionSuccess, setShowMissionSuccess] = useState(false)
 
   // Layar pembuka abu-abu dilewati kalau halaman di-refresh saat ada misi yang menunggu jawaban.
@@ -145,15 +144,6 @@ export default function OjekHomeTab({ slotKonsol, putaranMasuk = 0,
     selesai: t.ojekSpSelesai,
     batal: transisiBatal === 'tolak' ? t.ojekSpTolak : t.ojekSpBatal,
     batalSub: t.ojekSpSiaga,
-  }
-
-  function handleKirimPesan() {
-    if (!teksPesan.trim()) return
-    Promise.resolve(kirimPesan(teksPesan)).catch((err) => {
-      console.error('Gagal kirim pesan:', err)
-      alert('Gagal kirim pesan: ' + err.message)
-    })
-    setTeksPesan('')
   }
 
   async function handleTerima() {

@@ -17,14 +17,6 @@ export function mulaiTransisiDemo(peran, minMs = 0) {
   kabari()
 }
 
-// Login biasa gagal setelah layar welcome sempat tampil: layar memudar keluar (lalu selesaiTransisiDemo dipanggil
-// oleh TransisiDemo) supaya tidak hilang mendadak.
-export function gagalTransisiDemo() {
-  if (!keadaan) return
-  keadaan = { ...keadaan, gagal: true }
-  kabari()
-}
-
 export function selesaiTransisiDemo() {
   keadaan = null
   kabari()

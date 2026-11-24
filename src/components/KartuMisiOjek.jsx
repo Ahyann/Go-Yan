@@ -1,13 +1,9 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { AKSI } from '../lib/constants'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
-import { useProfilIkon } from '../lib/useProfilIkon'
 import { usePesanOjek } from '../lib/usePesanOjek'
 import { usePesanPenumpang } from '../lib/usePesanPenumpang'
 import { useRiwayatChat } from '../lib/useRiwayatChat'
-import TombolFoto from './TombolFoto.jsx'
-import TombolSuara from './TombolSuara.jsx'
 import PemutarSuara from './PemutarSuara.jsx'
 
 function formatJam(ms) {
@@ -47,11 +43,9 @@ function gayaSlot(slot, bawah) {
 export default function KartuMisiOjek({ permintaan, lokasiAktif, mulaiLokasi, berhentiLokasi, onBawah }) {
   const { t } = useLanguage()
   const { isDemo } = useAuth()
-  const { ikonFajri } = useProfilIkon()
-  const { pesan, kirimPesan, kirimFoto, kirimSuara } = usePesanOjek()
+  const { pesan, kirimPesan } = usePesanOjek()
   const { pesan: pesanFajri } = usePesanPenumpang()
   const riwayatChat = useRiwayatChat(pesan, pesanFajri)
-  const [kartuBuka, setKartuBuka] = useState(true)
   // Kotak chat: awalnya tertutup, lalu mengikuti perlakuan terakhir selama app dibuka (tidak ikut terbuka sendiri saat kembali dari tab lain)
   const [chatBuka, setChatBukaState] = useState(() => {
     try { return sessionStorage.getItem('goyan:chat-ojek-buka') === '1' } catch { return false }
@@ -158,7 +152,6 @@ export default function KartuMisiOjek({ permintaan, lokasiAktif, mulaiLokasi, be
 
   // Chat bisa dipakai tanpa menyalakan live location
   const bisaPesan = true
-  const labelShare = lokasiAktif ? t.ariaMatikanShare : (isDemo ? t.ariaNyalakanShareDemo : t.ariaNyalakanShare)
   const idTerakhir = riwayatChat[riwayatChat.length - 1]?.id
 
   useEffect(() => {

@@ -66,14 +66,6 @@ export default function TransisiDemo() {
     return () => clearTimeout(id)
   }, [transisi, user, fokus])
 
-  // login biasa gagal: pudar keluar lalu tutup
-  const gagal = Boolean(transisi?.gagal)
-  useEffect(() => {
-    if (!gagal) return undefined
-    const id = setTimeout(selesaiTransisiDemo, 300)
-    return () => clearTimeout(id)
-  }, [gagal])
-
   useEffect(() => {
     if (!fokus) return undefined
     const id = setTimeout(selesaiTransisiDemo, LAMA_FOKUS + 50)
@@ -93,7 +85,7 @@ export default function TransisiDemo() {
   const peran = (transisi.peran === 'ojek' ? t.demoOjek : transisi.peran === 'penumpang' ? t.demoPenumpang : t.demoSelamatDatangJudul).toUpperCase()
 
   return (
-    <div className={`td-lapis${fokus ? ' td-fokus' : ''}${gagal ? ' td-gagal' : ''}`} role="status">
+    <div className={`td-lapis${fokus ? ' td-fokus' : ''}`} role="status">
       <div className="td-kaca" />
       <div className="td-isi" aria-hidden="true" style={{ position: 'absolute', left: kiri, top: atas, width: KOLOM * sk, height: BARIS * sk }}>
         {kotak.map((k, i) => (

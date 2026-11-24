@@ -3,7 +3,7 @@ import { useLanguage } from '../context/LanguageContext.jsx'
 import { JUMLAH_BAR, bisaUrungReset, catatIsiBensin, resetBensin, urungResetBensin, sinkronBensin, useBensin, useRiwayatBensin, useTripBensin } from '../lib/bensin'
 import { playGeserHalus, playGeserTik, playKonsolMati, playLunasSemua } from '../lib/sound'
 import { getar } from '../lib/getar'
-import { IkonPompa, MeterBensin, warnaBar } from './BarisStatusSiaga.jsx'
+import { IkonPompa, warnaBar } from './BarisStatusSiaga.jsx'
 
 const TEKS = {
   id: {

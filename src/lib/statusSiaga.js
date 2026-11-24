@@ -31,14 +31,6 @@ export function jenisCuaca(kode) {
   return 'mendung'
 }
 
-export function tingkatSinyal(akurasi) {
-  if (akurasi == null) return 0
-  if (akurasi <= 20) return 4
-  if (akurasi <= 50) return 3
-  if (akurasi <= 150) return 2
-  return 1
-}
-
 function bacaCache() {
   try { return JSON.parse(localStorage.getItem(KEY_CUACA) || 'null') } catch { return null }
 }

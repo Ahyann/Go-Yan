@@ -26,7 +26,7 @@ function ketukBuild() {
 }
 
 export default function OjekAccountTab() {
-  const { user, isDemo } = useAuth()
+  const { isDemo } = useAuth()
   const { t } = useLanguage()
   const { ikonAhyan, pilihIkonAhyan } = useProfilIkon()
   const { warnaAhyan, pilihWarnaAhyan } = useWarnaGlow()

@@ -26,7 +26,7 @@ function ketukBuild() {
 }
 
 export default function AccountTab() {
-  const { user, isDemo } = useAuth()
+  const { isDemo } = useAuth()
   const { t } = useLanguage()
   const { ikonFajri, pilihIkonFajri } = useProfilIkon()
   const { warnaFajri, pilihWarnaFajri } = useWarnaGlow()
