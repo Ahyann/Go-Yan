@@ -26,14 +26,63 @@ const RIWAYAT_CONTOH = Array.from({ length: 15 }, (_, i) => ({
   where: TEMPAT_CONTOH[i % 2],
 }))
 
-const JADWAL_CONTOH = {
-  senin: { antar: { aktif: false, jam: '' }, jemput: { aktif: true, jam: '07:15' }, selesai: false },
-  selasa: { antar: { aktif: true, jam: '16:30' }, jemput: { aktif: false, jam: '' }, selesai: false },
-  rabu: { antar: { aktif: false, jam: '' }, jemput: { aktif: false, jam: '' }, selesai: false },
-  kamis: { antar: { aktif: true, jam: '17:00' }, jemput: { aktif: true, jam: '07:15' }, selesai: false },
-  jumat: { antar: { aktif: false, jam: '' }, jemput: { aktif: false, jam: '' }, selesai: false },
-  sabtu: { antar: { aktif: false, jam: '' }, jemput: { aktif: false, jam: '' }, selesai: false },
-  minggu: { antar: { aktif: false, jam: '' }, jemput: { aktif: false, jam: '' }, selesai: false },
+// Jadwal mingguan contoh: tiap hari isinya beda (jemput saja, antar saja, dua-duanya, jam berbeda-beda).
+const HARI_JADWAL = ['minggu', 'senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu']
+const POLA_JADWAL = {
+  senin: { jemput: '07:15' },
+  selasa: { antar: '16:30' },
+  rabu: { jemput: '07:30', antar: '17:15' },
+  kamis: { antar: '12:30' },
+  jumat: { jemput: '07:00', antar: '15:30' },
+  sabtu: { jemput: '09:00' },
+  minggu: { antar: '18:00' },
+}
+// Kandidat jam trip supaya selalu ada perjalanan dalam 24 jam ke depan (untuk prakiraan cuaca di konsol)
+const KANDIDAT_TRIP = [
+  ['07:15', 'jemput'],
+  ['10:30', 'antar'],
+  ['12:00', 'jemput'],
+  ['16:30', 'antar'],
+  ['19:30', 'jemput'],
+  ['21:00', 'antar'],
+]
+
+// Membuat jadwal minggu ini: pola tiap hari yang berbeda-beda, hari yang sudah lewat ditandai selesai, lalu dua trip terdekat
+// setelah sekarang (dalam 24 jam) dipastikan ada, jadi konsol cuaca selalu punya perjalanan untuk ditampilkan.
+export function buatJadwalDemo(sekarang = new Date()) {
+  const jadwal = {}
+  HARI_JADWAL.forEach((nama) => {
+    const p = POLA_JADWAL[nama]
+    jadwal[nama] = {
+      antar: { aktif: Boolean(p.antar), jam: p.antar || '' },
+      jemput: { aktif: Boolean(p.jemput), jam: p.jemput || '' },
+      selesai: false,
+    }
+  })
+  const hariIni = (sekarang.getDay() + 6) % 7 // Senin = 0
+  HARI_JADWAL.forEach((nama) => {
+    const urut = (HARI_JADWAL.indexOf(nama) + 6) % 7
+    if (urut < hariIni) jadwal[nama].selesai = true
+  })
+  // dua trip terdekat setelah sekarang (minimal 30 menit lagi) dalam 24 jam ke depan
+  const batas = sekarang.getTime() + 30 * 60000
+  const akhir = sekarang.getTime() + 24 * 3600000
+  const calon = []
+  for (let d = 0; d <= 1; d++) {
+    const tgl = new Date(sekarang.getFullYear(), sekarang.getMonth(), sekarang.getDate() + d)
+    KANDIDAT_TRIP.forEach(([jam, jenis]) => {
+      const t = new Date(tgl.getFullYear(), tgl.getMonth(), tgl.getDate(), Number(jam.slice(0, 2)), Number(jam.slice(3, 5))).getTime()
+      if (t >= batas && t <= akhir) calon.push({ t, jam, jenis, nama: HARI_JADWAL[tgl.getDay()] })
+    })
+  }
+  calon
+    .sort((x, y) => x.t - y.t)
+    .slice(0, 2)
+    .forEach(({ jam, jenis, nama }) => {
+      jadwal[nama][jenis] = { aktif: true, jam }
+      jadwal[nama].selesai = false
+    })
+  return jadwal
 }
 
 // Dipanggil begitu sesi demo baru mulai, biar app-nya keliatan "hidup"
@@ -41,6 +90,9 @@ const JADWAL_CONTOH = {
 // Semua sesi demo sengaja berbagi 1 data yang sama (lihat demoPath.js)
 // biar demo Ojek & Penumpang di 2 window bisa saling connect.
 export async function seedDataDemo() {
+  // jadwal dibuat ulang tiap sesi demo supaya selalu ada trip dalam 24 jam ke depan (untuk prakiraan cuaca)
+  setDoc(doc(db, 'state', 'jadwalMingguan_demo'), { ...buatJadwalDemo(), kodeMinggu: kodeMingguIni() }).catch(() => {})
+
   const riwayatSnap = await getDocs(collection(db, 'riwayat_demo')).catch(() => null)
   const ada = riwayatSnap ? riwayatSnap.size : 0
   if (riwayatSnap && ada >= RIWAYAT_CONTOH.length) {
@@ -53,18 +105,13 @@ export async function seedDataDemo() {
     return // udah lengkap, gak usah di-seed ulang
   }
 
-  // data demo lama yang jumlahnya kurang (misalnya hanya 3 contoh) dilengkapi sampai 15; kalau kosong, jadwal ikut diisi
-  const kosong = ada === 0
+  // data demo lama yang jumlahnya kurang (misalnya hanya 3 contoh) dilengkapi sampai 15
   const tambahan = RIWAYAT_CONTOH.slice(0, RIWAYAT_CONTOH.length - ada)
 
   await Promise.all([
     ...tambahan.map((data) =>
       addDoc(collection(db, 'riwayat_demo'), { ...data, dibuatPada: Date.now() - (RIWAYAT_CONTOH.length - tambahan.indexOf(data)) * 1000 }).catch(() => {})
     ),
-    kosong && setDoc(doc(db, 'state', 'jadwalMingguan_demo'), {
-      ...JADWAL_CONTOH,
-      kodeMinggu: kodeMingguIni(),
-    }).catch(() => {}),
   ])
 }
 
