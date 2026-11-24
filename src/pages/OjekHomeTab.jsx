@@ -118,13 +118,23 @@ export default function OjekHomeTab({ slotKonsol, putaranMasuk = 0,
   // Perjalanan yang baru selesai membuat level naik (tiap Rp500.000): label konsol jadi LEVEL UP! kuning
   const naikLevel = Boolean(misiSelesai && misiSelesai.tercatat && misiSelesai.totalSebelum != null
     && hitungLevel(misiSelesai.totalSebelum + TARIF_PER_RIDE, uangPerLevel(isDemo)).level > hitungLevel(misiSelesai.totalSebelum, uangPerLevel(isDemo)).level)
+  // Spiderman berpesta (berayun, kembang api) mulai saat ledakan naik level di konsol, sampai konsol diketuk
+  const [pesta, setPesta] = useState(false)
+  useEffect(() => {
+    if (!naikLevel || keluarSelesai) {
+      setPesta(false)
+      return undefined
+    }
+    const id = setTimeout(() => setPesta(true), 1900)
+    return () => clearTimeout(id)
+  }, [naikLevel, keluarSelesai])
   const teksSpidey = {
     menunggu: t.ojekSpMasuk,
     menungguSub: t.ojekSpMenungguSub,
     diterima: t.ojekSpDiterima,
     diterimaSub: t.ojekSpMenuju,
     // Saat misi selesai hanya judul di atas; keterangan misi tampil di konsol bawah supaya tidak dobel
-    selesai: t.ojekSpSelesai,
+    selesai: naikLevel ? 'LEVEL UP!' : t.ojekSpSelesai,
     batal: transisiBatal === 'tolak' ? t.ojekSpTolak : t.ojekSpBatal,
     batalSub: t.ojekSpSiaga,
   }
@@ -201,7 +211,7 @@ export default function OjekHomeTab({ slotKonsol, putaranMasuk = 0,
           )}
           {tampilSpidey && (
             <div style={{ position: 'absolute', top: 0, bottom: 0, left: 14, right: 14, zIndex: 1100 }}>
-              <SpideyMenunggu key={misiSelesai ? `selesai-${misiSelesai.mulai}` : `misi-${putaranMasuk}`} dibuatPada={misiSelesai ? misiSelesai.mulai : dibuatPadaRef.current} diterima={transisiDiterima} selesai={!!misiSelesai} keluar={keluarSelesai} dibatalkan={!!transisiBatal} menyusut={susutBatal || susutSelesai} isDemo={isDemo} teks={teksSpidey} gayaTolak kompak />
+              <SpideyMenunggu key={misiSelesai ? `selesai-${misiSelesai.mulai}` : `misi-${putaranMasuk}`} dibuatPada={misiSelesai ? misiSelesai.mulai : dibuatPadaRef.current} diterima={transisiDiterima} selesai={!!misiSelesai} keluar={keluarSelesai} pesta={pesta} dibatalkan={!!transisiBatal} menyusut={susutBatal || susutSelesai} isDemo={isDemo} teks={teksSpidey} gayaTolak kompak />
             </div>
           )}
         </div>

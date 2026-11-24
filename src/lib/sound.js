@@ -908,3 +908,12 @@ export function playLevelTercapai() {
   nadaPendek(ctx, 'triangle', 196, 196, 1.1, 0.12, akor)
   ;[2349, 2960, 3136].forEach((f, i) => nadaPendek(ctx, 'sine', f, f, 0.18, 0.035, akor + 0.12 + i * 0.09))
 }
+
+// Ketuk untuk lanjut di layar naik level: dua nada naik cepat ("ba-ding") dan desis yang turun saat layar menutup
+export function playLevelLanjut() {
+  const ctx = ctxSiapEfek()
+  if (!ctx) return
+  nadaPendek(ctx, 'square', 660, 990, 0.09, 0.06, 0)
+  nadaPendek(ctx, 'triangle', 1320, 1980, 0.16, 0.06, 0.07)
+  desisNaik(ctx, 0.25, 0.12, 0.04, 3000, 600)
+}

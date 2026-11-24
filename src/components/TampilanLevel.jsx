@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { hitungLevel, uangPerLevel, tingkatPiala, TRIP_DEKAT } from '../lib/level'
-import { playGeserTik, playLevelIsi, playLevelNaik, playPialaMasuk, playLevelTercapai } from '../lib/sound'
+import { playGeserTik, playLevelIsi, playLevelNaik, playPialaMasuk, playLevelTercapai, playLevelLanjut } from '../lib/sound'
 import { getar, POLA_GETAR } from '../lib/getar'
 
 const rp = (n) => 'Rp' + Math.round(n).toLocaleString('id-ID')
@@ -102,7 +102,10 @@ function LayarPiala({ awal, akhir, lang, onLanjut }) {
   const refAngka = useRef(null)
   const refPercik = useRef(null)
   const refLvBesar = useRef(null)
+  const refKanan = useRef(null)
+  const refBlok = useRef(null)
   const [sampai, setSampai] = useState(false)
+  const [keluar, setKeluar] = useState(false)
   const [badan, kilap, alas] = WARNA_PIALA[tingkatPiala(akhir.level)]
 
   useEffect(() => {
@@ -141,8 +144,21 @@ function LayarPiala({ awal, akhir, lang, onLanjut }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // ketuk baru berlaku setelah angka sampai (supaya animasinya tidak terpotong)
-  const lanjut = () => { if (sampai) onLanjut?.() }
+  // Ketuk baru berlaku setelah angka sampai (supaya animasinya tidak terpotong). Ada suara dan animasi keluar: piala
+  // melesat naik sambil memudar, teks bergeser ke kiri dan memudar, angka LEVEL membesar lalu hilang, percikan kecil.
+  const lanjut = () => {
+    if (!sampai || keluar) return
+    setKeluar(true)
+    playLevelLanjut()
+    getar(8)
+    if (!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+      refPiala.current?.animate([{ transform: 'none', opacity: 1 }, { transform: 'translateY(-20px) scale(1.3)', opacity: 0 }], { duration: 420, easing: 'ease-in', fill: 'forwards' })
+      refKanan.current?.animate([{ transform: 'none', opacity: 1 }, { transform: 'translateX(-16px)', opacity: 0 }], { duration: 360, delay: 40, easing: 'ease-in', fill: 'forwards' })
+      refBlok.current?.animate([{ transform: 'none', opacity: 1 }, { transform: 'scale(1.6)', opacity: 0 }], { duration: 380, delay: 60, easing: 'ease-in', fill: 'forwards' })
+      percik(refPercik.current, 28, 26, 200, 12)
+    }
+    onLanjut?.()
+  }
   return (
     <div
       role="button"
@@ -150,7 +166,7 @@ function LayarPiala({ awal, akhir, lang, onLanjut }) {
       onClick={lanjut}
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); lanjut() } }}
       aria-label={lang === 'en' ? `Level up to ${akhir.level}. Tap to continue` : `Naik ke level ${akhir.level}. Ketuk untuk lanjut`}
-      style={s.layarPiala}
+      style={{ ...s.layarPiala, pointerEvents: keluar ? 'none' : 'auto' }}
     >
       <svg ref={refPiala} width="56" height="51" viewBox="0 0 12 11" shapeRendering="crispEdges" aria-hidden="true" style={{ ...s.pialaBesar, filter: `drop-shadow(0 0 5px ${badan})` }}>
         <g fill={badan}>
@@ -160,13 +176,13 @@ function LayarPiala({ awal, akhir, lang, onLanjut }) {
         <rect x="3" y="2" width="1" height="2" fill={kilap} />
         <rect x="3" y="9" width="6" height="1" fill={alas} />
       </svg>
-      <div style={s.kananPiala}>
+      <div ref={refKanan} style={s.kananPiala}>
         <div style={{ ...s.kecilPiala, ...(sampai ? s.kuning : null) }}>{sampai ? (lang === 'en' ? 'YOU REACHED' : 'KAMU MENCAPAI') : 'TOTAL'}</div>
         <div ref={refAngka} style={{ ...s.angkaBesar, color: sampai ? '#FFD45E' : '#FFFFFF' }}>{rp(awal.total)}</div>
         <div style={s.next}>NEXT {rp(akhir.target)}</div>
       </div>
       {/* blok kanan: angka level besar (membesar saat tercapai) dan TAP untuk lanjut */}
-      <div style={s.blokLv}>
+      <div ref={refBlok} style={s.blokLv}>
         <span style={s.kecilPiala}>LEVEL</span>
         <b ref={refLvBesar} style={s.lvBesar}>{sampai ? akhir.level : awal.level}</b>
         <span className="level-tap" style={{ ...s.tap, visibility: sampai ? 'visible' : 'hidden' }}>TAP ▸</span>
@@ -302,7 +318,7 @@ export default function TampilanLevel({ total, dari = null, kananBawah = null, r
       <div style={statistik ? { ...s.garis, margin: '7px 0 8px' } : rapat ? { ...s.garis, margin: '5px 0 5px' } : s.garis}>
         <i ref={refIsi} style={{ ...s.isi, transform: `scaleX(${tampil.porsi})` }} />
         {dari != null && (
-          <span ref={refTambah} style={{ ...s.tambah, left: `${awal.porsi * 100}%` }}>+{rp(total - dari)}</span>
+          <span ref={refTambah} style={s.tambah}>+{rp(total - dari)}</span>
         )}
       </div>
       {statistik ? (
@@ -339,7 +355,8 @@ const s = {
   uang: { fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: '#FFFFFF', whiteSpace: 'nowrap' },
   garis: { position: 'relative', height: 4, margin: '8px 0 7px', background: 'rgba(94, 208, 255, 0.18)' },
   isi: { position: 'absolute', inset: 0, background: '#5ED0FF', boxShadow: '0 0 6px #5ED0FF', transformOrigin: 'left' },
-  tambah: { position: 'absolute', top: -16, fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: '#6CF29A', opacity: 0, whiteSpace: 'nowrap' },
+  // di ruang kosong antara LV (kiri) dan total (kanan), jadi tidak menabrak keduanya dan tidak keluar layar
+  tambah: { position: 'absolute', left: '34%', marginLeft: -28, top: -17, fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 700, color: '#6CF29A', opacity: 0, whiteSpace: 'nowrap', textShadow: '0 0 6px rgba(108, 242, 154, 0.7)' },
   bawah: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, minHeight: 12 },
   teksBawah: { flex: 1, minWidth: 0, fontSize: 7, letterSpacing: '0.08em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' },
   kuning: { color: '#FFD45E', textShadow: '0 0 6px rgba(255, 212, 94, 0.6)' },
