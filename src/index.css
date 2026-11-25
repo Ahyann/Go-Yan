@@ -926,3 +926,16 @@ button:disabled[aria-label="◀"], button:disabled[aria-label="▶"] { opacity: 
 }
 .sp-panah-naik { animation: sp-panah-naik 1.5s linear infinite; filter: drop-shadow(0 0 3px #4ADE80); pointer-events: none; }
 @media (prefers-reduced-motion: reduce) { .sp-pesta { animation: none; } .level-kembang { animation: none; opacity: 0; } .sp-napas.sp-hijau { animation: none; } .sp-panah-naik { animation: none; opacity: 0; } }
+
+/* Tombol kecil bersiku empat seperti tab aktif di dock (ubah jadwal ojek). Hijau saat sedang mengubah. */
+.tombol-siku { position: relative; flex-shrink: 0; display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 12px; border: 0; border-radius: 0; background: rgba(94, 208, 255, 0.12); color: #5ED0FF; font-family: 'Silkscreen', monospace; font-size: 10px; letter-spacing: 0.04em; text-transform: uppercase; transition: transform 0.12s ease-out, color 0.15s ease, background-color 0.15s ease; }
+/* area sentuh diperluas melebihi ukuran yang terlihat */
+.tombol-siku::after { content: ''; position: absolute; inset: -7px -4px; }
+.tombol-siku:active { transform: scale(0.96); }
+.tombol-siku i { position: absolute; width: 7px; height: 7px; border: 0 solid currentColor; }
+.tombol-siku i:nth-of-type(1) { top: 0; left: 0; border-width: 2px 0 0 2px; }
+.tombol-siku i:nth-of-type(2) { top: 0; right: 0; border-width: 2px 2px 0 0; }
+.tombol-siku i:nth-of-type(3) { bottom: 0; left: 0; border-width: 0 0 2px 2px; }
+.tombol-siku i:nth-of-type(4) { bottom: 0; right: 0; border-width: 0 2px 2px 0; }
+.tombol-siku.aktif { color: #4ADE80; background: rgba(74, 222, 128, 0.14); }
+@media (prefers-reduced-motion: reduce) { .tombol-siku { transition: none; } }
