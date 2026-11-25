@@ -24,15 +24,30 @@ function teksSisa(lang, lv) {
 }
 
 // Angka rupiah berputar dari `dari` ke `ke` langsung di elemen (tanpa render ulang tiap frame)
+// Mengembalikan fungsi untuk menghentikan putaran.
 function putarAngka(el, dari, ke, ms) {
-  if (!el) return
+  if (!el) return () => {}
   const t0 = performance.now()
+  let id = 0
   const langkah = (t) => {
     const p = Math.min(1, (t - t0) / ms)
     el.textContent = rp(dari + (ke - dari) * (1 - Math.pow(1 - p, 3)))
-    if (p < 1) requestAnimationFrame(langkah)
+    if (p < 1) id = requestAnimationFrame(langkah)
   }
-  requestAnimationFrame(langkah)
+  id = requestAnimationFrame(langkah)
+  return () => cancelAnimationFrame(id)
+}
+
+// Selama `aksi` diisi, ketukan di bagian mana pun layar info konsol (bukan hanya di atas elemennya) menjalankannya.
+function useKetukKonsol(ref, aksi) {
+  useEffect(() => {
+    const area = ref.current?.closest('[data-konsol-info]')
+    if (!area || !aksi) return undefined
+    // ketukan di atas elemennya sendiri sudah ditangani onClick elemen itu
+    const ketuk = (e) => { if (!ref.current?.contains(e.target)) aksi() }
+    area.addEventListener('click', ketuk)
+    return () => area.removeEventListener('click', ketuk)
+  })
 }
 
 // Kotak-kotak piksel memercik dari satu titik (dipakai saat naik level). miring: 0,3 = ke kanan-kiri hampir rata,
@@ -96,14 +111,17 @@ const WARNA_PIALA = {
 
 // Layar kedua setelah naik level: piala besar (warna sesuai tingkat) memantul masuk di kiri; di kanan total uang
 // berputar sampai angka yang baru dicapai (misalnya Rp3.500.000), lalu berkedip kuning dengan tulisan YOU REACHED.
-// Ketuk di mana saja untuk lanjut.
-function LayarPiala({ awal, akhir, lang, onLanjut }) {
+// Ketuk saat angka masih berputar untuk langsung ke hasil; ketuk sekali lagi untuk lanjut. langsung = tampil sudah di hasil.
+function LayarPiala({ awal, akhir, lang, onLanjut, langsung = false }) {
   const refPiala = useRef(null)
   const refAngka = useRef(null)
   const refPercik = useRef(null)
   const refLvBesar = useRef(null)
   const refKanan = useRef(null)
   const refBlok = useRef(null)
+  const refLewati = useRef(null)
+  const refSampaiPada = useRef(0)
+  const refLayar = useRef(null)
   const [sampai, setSampai] = useState(false)
   const [keluar, setKeluar] = useState(false)
   const [badan, kilap, alas] = WARNA_PIALA[tingkatPiala(akhir.level)]
@@ -123,11 +141,13 @@ function LayarPiala({ awal, akhir, lang, onLanjut }) {
     playPialaMasuk()
     getar(10)
     // angka total berputar pelan sampai target, dengan tik-tik yang makin tinggi
+    let hentikanPutar = () => {}
     nanti(() => {
-      putarAngka(refAngka.current, awal.total, awal.target, kurangGerak ? 1 : 1500)
+      hentikanPutar = putarAngka(refAngka.current, awal.total, awal.target, kurangGerak ? 1 : 1500)
       if (!kurangGerak) for (let i = 0; i < 14; i++) nanti(() => playGeserTik(i % 9), i * 105)
     }, 900)
-    nanti(() => {
+    const capai = () => {
+      refSampaiPada.current = Date.now()
       setSampai(true)
       if (refAngka.current) refAngka.current.textContent = rp(awal.target)
       if (!kurangGerak) {
@@ -139,15 +159,26 @@ function LayarPiala({ awal, akhir, lang, onLanjut }) {
       }
       playLevelTercapai()
       getar(POLA_GETAR.senang)
-    }, 2500)
-    return () => timer.forEach(clearTimeout)
+    }
+    nanti(capai, 2500)
+    refLewati.current = () => {
+      timer.forEach(clearTimeout)
+      hentikanPutar()
+      refPiala.current?.getAnimations().forEach((a) => a.finish())
+      capai()
+    }
+    if (langsung) refLewati.current()
+    return () => { timer.forEach(clearTimeout); hentikanPutar() }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // Ketuk baru berlaku setelah angka sampai (supaya animasinya tidak terpotong). Ada suara dan animasi keluar: piala
+  // Ketuk sebelum angka sampai melompat ke hasil; sesudahnya ketuk untuk lanjut (jeda pendek supaya ketukan dobel tidak
+  // langsung menutup layar hasil). Ada suara dan animasi keluar: piala
   // melesat naik sambil memudar, teks bergeser ke kiri dan memudar, angka LEVEL membesar lalu hilang, percikan kecil.
   const lanjut = () => {
-    if (!sampai || keluar) return
+    if (keluar) return
+    if (!sampai) { refLewati.current?.(); return }
+    if (Date.now() - refSampaiPada.current < 350) return
     setKeluar(true)
     playLevelLanjut()
     getar(8)
@@ -159,8 +190,10 @@ function LayarPiala({ awal, akhir, lang, onLanjut }) {
     }
     onLanjut?.()
   }
+  useKetukKonsol(refLayar, lanjut)
   return (
     <div
+      ref={refLayar}
       role="button"
       tabIndex={0}
       onClick={lanjut}
@@ -225,6 +258,18 @@ export default function TampilanLevel({ total, dari = null, kananBawah = null, r
   const refTambah = useRef(null)
   const refPercik = useRef(null)
   const refWadah = useRef(null)
+  const refTimer = useRef([])
+  const [dilewati, setDilewati] = useState(false)
+  // naik level: garis yang masih bergerak bisa diketuk untuk langsung ke layar piala
+  const bisaLewati = dari != null && naik
+  const lewati = () => {
+    refTimer.current.forEach(clearTimeout)
+    onNaik?.()
+    setDilewati(true)
+    setLayarPiala(true)
+  }
+
+  useKetukKonsol(refWadah, bisaLewati && !layarPiala ? lewati : null)
 
   useEffect(() => {
     // tahan: garis diam di nilai lama selama animasi layar atas masih berjalan
@@ -235,6 +280,7 @@ export default function TampilanLevel({ total, dari = null, kananBawah = null, r
       return undefined
     }
     const timer = []
+    refTimer.current = timer
     const nanti = (fn, ms) => timer.push(setTimeout(fn, ms))
     const isi = refIsi.current
     const tambah = refTambah.current
@@ -308,7 +354,7 @@ export default function TampilanLevel({ total, dari = null, kananBawah = null, r
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tahan])
 
-  if (layarPiala) return <LayarPiala awal={awal} akhir={akhir} lang={lang} onLanjut={onLanjut} />
+  if (layarPiala) return <LayarPiala awal={awal} akhir={akhir} lang={lang} onLanjut={onLanjut} langsung={dilewati} />
 
   const tampil = selesai ? akhir : awal
   const bawah = teksSisa(lang, akhir)
@@ -319,7 +365,17 @@ export default function TampilanLevel({ total, dari = null, kananBawah = null, r
       : bawah.dekat ? <span className="level-dekat">{bawah.teks}</span> : bawah.teks
 
   return (
-    <div ref={refWadah} style={s.wadah}>
+    <div
+      ref={refWadah}
+      style={bisaLewati ? { ...s.wadah, cursor: 'pointer' } : s.wadah}
+      {...(bisaLewati ? {
+        role: 'button',
+        tabIndex: 0,
+        'aria-label': lang === 'en' ? 'Skip level up animation' : 'Lewati animasi naik level',
+        onClick: lewati,
+        onKeyDown: (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); lewati() } },
+      } : null)}
+    >
       <div style={s.atas}>
         <span style={s.lvGrup}>
           {onKembali && (

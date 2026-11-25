@@ -339,7 +339,7 @@ export default function OjekView({
         style={s.konsol}
       >
         <div aria-hidden="true" style={s.garisScan} />
-        <div ref={setSlotKonsol} className={glitchBerkala ? 'glitch-berkala' : undefined} style={s.areaInfo}>
+        <div ref={setSlotKonsol} data-konsol-info className={glitchBerkala ? 'glitch-berkala' : undefined} style={s.areaInfo}>
           {tabAktif === 'riwayat' && konsolSendiri && (
             <>
               <span className="label-konsol" style={s.labelStatus}>{t.navRiwayat}</span>

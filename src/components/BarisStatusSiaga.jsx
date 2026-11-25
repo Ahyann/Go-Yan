@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { lihatAnimLevel, habisAnimLevel } from '../lib/animLevel'
 import { formatRupiah } from '../lib/constants'
-import { playEkspMasuk, playKoinRp, playLevelNaikKonsol } from '../lib/sound'
+import { playEkspMasuk, playKoinRp, playLevelLanjut, playLevelNaikKonsol } from '../lib/sound'
 import { TEKS_STATUS, jenisCuaca, useStatusSiaga } from '../lib/statusSiaga'
 import { JUMLAH_BAR, useBensin } from '../lib/bensin'
 import { hitungLevel, tingkatPiala, uangPerLevel } from '../lib/level'
@@ -237,7 +237,22 @@ export default function BarisStatusSiaga({ totalTrip = null, totalUang = null, l
     nanti(() => setTampil({ level: anim.levelBaru, porsi: 0, fase: 'turun' }), T0 + 3650)
     nanti(() => { setTampil({ level: anim.levelBaru, porsi: anim.porsiBaru, fase: 'isi' }); denyut() }, T0 + 3750)
     nanti(() => setTampil(null), T0 + 4700)
-    return () => { timer.forEach(clearTimeout); dibuat.forEach((e) => e.remove()) }
+    const bersihkan = () => { timer.forEach(clearTimeout); dibuat.forEach((e) => e.remove()) }
+    // diketuk di mana saja pada layar info konsol saat animasinya berjalan: langsung ke tampilan akhir (ketukan itu tidak
+    // membuka halaman lain)
+    const area = slot?.closest('[data-konsol-info]')
+    const lewati = (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+      area.removeEventListener('click', lewati, true)
+      bersihkan()
+      ;[garis, refIsi.current, refPiala.current].forEach((el) => el?.getAnimations().forEach((x) => x.cancel()))
+      setTampil(null)
+      playLevelLanjut()
+    }
+    area?.addEventListener('click', lewati, true)
+    nanti(() => area?.removeEventListener('click', lewati, true), T0 + 4700)
+    return () => { bersihkan(); area?.removeEventListener('click', lewati, true) }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   const levelTampil = tampil ? tampil.level : lv?.level
