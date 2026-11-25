@@ -20,7 +20,6 @@ import KartuMisiOjek from '../components/KartuMisiOjek.jsx'
 import SwipeToFinish from '../components/SwipeToFinish.jsx'
 
 const LAMA_KARTU_MASUK = 1700 // ms sampai logo tersusun dan Spiderman selesai turun
-const LAMA_KOMBO_NAIK = 2700 // ms kombo naik level di kartu atas, dari petir sampai tulisan LEVEL UP! hilang
 
 export default function OjekHomeTab({ slotKonsol, putaranMasuk = 0,
   permintaan,
@@ -128,30 +127,21 @@ export default function OjekHomeTab({ slotKonsol, putaranMasuk = 0,
   // Perjalanan yang baru selesai membuat level naik (tiap Rp500.000): label konsol jadi LEVEL UP! kuning
   const naikLevel = Boolean(misiSelesai && misiSelesai.tercatat && misiSelesai.totalSebelum != null
     && hitungLevel(misiSelesai.totalSebelum + TARIF_PER_RIDE, uangPerLevel(isDemo)).level > hitungLevel(misiSelesai.totalSebelum, uangPerLevel(isDemo)).level)
-  // Urutan sesudah slide selesai, bergantian: animasi layar atas dulu (Spiderman turun, lalu kalau naik level kombo
-  // petir sampai tulisan LEVEL UP!), baru sesudah itu garis level di konsol bergerak.
-  // Spiderman tetap berpesta (berayun, panah naik) sampai konsol diketuk.
-  const [pesta, setPesta] = useState(false)
+  // Urutan sesudah slide selesai: kartu atas dulu (Spiderman turun, MISSION COMPLETE), baru garis level di konsol
+  // bergerak. Saat garis penuh dan berganti level, kombo naik level di kartu atas dimainkan berbarengan. Spiderman
+  // tetap berpesta (berayun, panah naik) sampai konsol diketuk.
   const [atasBeres, setAtasBeres] = useState(false)
-  const refKartuMuncul = useRef(0)
+  const [sudahNaik, setSudahNaik] = useState(false) // garis di konsol sudah penuh dan berganti level
+  const pesta = naikLevel && sudahNaik && !keluarSelesai
   const kunciSelesai = misiSelesai?.mulai
-  const sudahTercatat = Boolean(misiSelesai?.tercatat)
   useEffect(() => {
-    refKartuMuncul.current = Date.now()
     setAtasBeres(false)
-  }, [kunciSelesai])
-  useEffect(() => {
-    if (!kunciSelesai || keluarSelesai) {
-      setPesta(false)
-      return undefined
-    }
-    if (!sudahTercatat) return undefined
+    setSudahNaik(false)
+    if (!kunciSelesai) return undefined
     const kurangGerak = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
-    const sisaMasuk = kurangGerak ? 0 : Math.max(0, refKartuMuncul.current + LAMA_KARTU_MASUK - Date.now())
-    const timer = [setTimeout(() => setAtasBeres(true), sisaMasuk + (naikLevel && !kurangGerak ? LAMA_KOMBO_NAIK : 0))]
-    if (naikLevel) timer.push(setTimeout(() => setPesta(true), sisaMasuk))
-    return () => timer.forEach(clearTimeout)
-  }, [kunciSelesai, sudahTercatat, naikLevel, keluarSelesai])
+    const id = setTimeout(() => setAtasBeres(true), kurangGerak ? 0 : LAMA_KARTU_MASUK)
+    return () => clearTimeout(id)
+  }, [kunciSelesai])
   const teksSpidey = {
     menunggu: t.ojekSpMasuk,
     menungguSub: t.ojekSpMenungguSub,
@@ -237,8 +227,8 @@ export default function OjekHomeTab({ slotKonsol, putaranMasuk = 0,
             Dikirim lewat portal supaya konsol tetap satu dan tingginya tidak berubah. */}
         {slotKonsol && createPortal(
           <>
-            <span className="label-konsol" style={{ ...s.labelMonitor, ...(sesiFoto.fase ? s.labelBiru : misiSelesai && !adaPermintaanMasuk ? (naikLevel && atasBeres ? s.labelKuning : s.labelHijau) : adaPermintaanMasuk || transisiBatal ? s.labelMerah : s.labelBiru) }}>
-              {sesiFoto.fase ? labelSesiFoto(sesiFoto.fase, lang) : misiSelesai && !adaPermintaanMasuk ? (naikLevel && atasBeres ? 'LEVEL UP!' : t.monitorSelesai) : adaPermintaanMasuk ? t.monitorMisiBaru : transisiBatal ? (transisiBatal === 'tolak' ? t.monitorDitolak : t.monitorDibatalkan) : sedangJalan ? t.monitorBerjalan : sambutBeres ? t.monitorStatus : t.monitorSambut}
+            <span className="label-konsol" style={{ ...s.labelMonitor, ...(sesiFoto.fase ? s.labelBiru : misiSelesai && !adaPermintaanMasuk ? (naikLevel && sudahNaik ? s.labelKuning : s.labelHijau) : adaPermintaanMasuk || transisiBatal ? s.labelMerah : s.labelBiru) }}>
+              {sesiFoto.fase ? labelSesiFoto(sesiFoto.fase, lang) : misiSelesai && !adaPermintaanMasuk ? (naikLevel && sudahNaik ? 'LEVEL UP!' : t.monitorSelesai) : adaPermintaanMasuk ? t.monitorMisiBaru : transisiBatal ? (transisiBatal === 'tolak' ? t.monitorDitolak : t.monitorDibatalkan) : sedangJalan ? t.monitorBerjalan : sambutBeres ? t.monitorStatus : t.monitorSambut}
             </span>
             {sesiFoto.fase ? (
               <FotoKonsol sesi={sesiFoto} />
@@ -256,6 +246,7 @@ export default function OjekHomeTab({ slotKonsol, putaranMasuk = 0,
                   total={misiSelesai.totalSebelum + TARIF_PER_RIDE}
                   dari={misiSelesai.totalSebelum}
                   tahan={!atasBeres}
+                  onNaik={() => setSudahNaik(true)}
                   // naik level: tanpa tombol OK, layar piala diketuk untuk lanjut
                   kananBawah={naikLevel ? null : <button className="tekan" style={s.okKecil} onClick={tutupMisiSelesai} disabled={keluarSelesai}>OK</button>}
                   onLanjut={tutupMisiSelesai}
