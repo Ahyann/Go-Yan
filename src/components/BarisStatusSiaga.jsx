@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import { lihatAnimLevel, habisAnimLevel } from '../lib/animLevel'
 import { formatRupiah } from '../lib/constants'
@@ -152,6 +152,7 @@ export default function BarisStatusSiaga({ totalTrip = null, totalUang = null, l
   const refSlot = useRef(null)
   const refPiala = useRef(null)
   const refTeks = useRef(null)
+  const refNilai = useRef(null)
   const refGaris = useRef(null)
   const refIsi = useRef(null)
   const [anim] = useState(() => lihatAnimLevel())
@@ -233,10 +234,15 @@ export default function BarisStatusSiaga({ totalTrip = null, totalUang = null, l
       sentak(1, 1.6)
       requestAnimationFrame(() => refTeks.current?.animate([{ transform: 'scale(0.3)', opacity: 0 }, { transform: 'scale(1.7)', opacity: 1, offset: 0.35 }, { transform: 'scale(1)' }], { duration: 600 }))
     }, T0 + 2350)
+    // peralihan ke level baru: LEVEL UP! naik sambil memudar dan garis penuhnya meredup, baru LV baru muncul dari bawah
+    nanti(() => {
+      refTeks.current?.animate([{ transform: 'translateY(0)', opacity: 1 }, { transform: 'translateY(-10px)', opacity: 0 }], { duration: 300, easing: 'ease-in', fill: 'forwards' })
+      refIsi.current?.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 300, easing: 'ease-in', fill: 'forwards' })
+    }, T0 + 3350)
     // LV baru, bar kosong lalu terisi ke posisi sebenarnya
-    nanti(() => setTampil({ level: anim.levelBaru, porsi: 0, fase: 'turun' }), T0 + 3650)
-    nanti(() => { setTampil({ level: anim.levelBaru, porsi: anim.porsiBaru, fase: 'isi' }); denyut() }, T0 + 3750)
-    nanti(() => setTampil(null), T0 + 4700)
+    nanti(() => setTampil({ level: anim.levelBaru, porsi: 0, fase: 'turun' }), T0 + 3660)
+    nanti(() => { setTampil({ level: anim.levelBaru, porsi: anim.porsiBaru, fase: 'isi' }); denyut() }, T0 + 3900)
+    nanti(() => setTampil(null), T0 + 4850)
     const bersihkan = () => { timer.forEach(clearTimeout); dibuat.forEach((e) => e.remove()) }
     // diketuk di mana saja pada layar info konsol saat animasinya berjalan: langsung ke tampilan akhir (ketukan itu tidak
     // membuka halaman lain)
@@ -251,10 +257,16 @@ export default function BarisStatusSiaga({ totalTrip = null, totalUang = null, l
       playLevelLanjut()
     }
     area?.addEventListener('click', lewati, true)
-    nanti(() => area?.removeEventListener('click', lewati, true), T0 + 4700)
+    nanti(() => area?.removeEventListener('click', lewati, true), T0 + 4850)
     return () => { bersihkan(); area?.removeEventListener('click', lewati, true) }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+  // sebelum digambar: garis (sudah kosong) dikembalikan terlihat, dan tulisan LV baru masuk dari bawah
+  useLayoutEffect(() => {
+    if (tampil?.fase !== 'turun') return
+    refIsi.current?.getAnimations().forEach((a) => a.cancel())
+    refNilai.current?.animate([{ transform: 'translateY(10px)', opacity: 0 }, { transform: 'translateY(-2px)', opacity: 1, offset: 0.7 }, { transform: 'translateY(0)', opacity: 1 }], { duration: 360, easing: 'ease-out' })
+  }, [tampil?.fase])
   const levelTampil = tampil ? tampil.level : lv?.level
   const porsiTampil = tampil ? tampil.porsi : lv?.porsi
   const slotLevel = lv && (
@@ -270,9 +282,9 @@ export default function BarisStatusSiaga({ totalTrip = null, totalUang = null, l
       {/* LV n di tempat angka trip, garis level tipis menggantikan tulisan TOTAL TRIPS */}
       <span style={s.teks}>
         {tampil?.fase === 'naik' ? (
-          <span ref={refTeks} style={{ ...s.nilai, color: '#6CF29A', textShadow: '0 0 8px #6CF29A', letterSpacing: '0.02em' }}>LEVEL UP!</span>
+          <span key="naik" ref={refTeks} style={{ ...s.nilai, color: '#6CF29A', textShadow: '0 0 8px #6CF29A', letterSpacing: '0.02em' }}>LEVEL UP!</span>
         ) : (
-          <span style={s.nilai}>LV {levelTampil}<span aria-hidden="true" style={s.panah}> ›</span></span>
+          <span key="lv" ref={refNilai} style={s.nilai}>LV {levelTampil}<span aria-hidden="true" style={s.panah}> ›</span></span>
         )}
         <span ref={refGaris} style={{ ...s.garisLevel, ...(tampil ? { transform: 'scaleY(2.2)', transformOrigin: 'left center' } : null) }}><i ref={refIsi} style={{ ...s.isiLevel, width: `${porsiTampil * 100}%`, transition: tampil?.fase === 'isi' ? 'width 0.9s ease-out' : tampil?.fase === 'tambah' ? 'width 0.14s ease-out' : 'none' }} /></span>
       </span>
@@ -302,6 +314,6 @@ const s = {
   teks: { display: 'flex', flexDirection: 'column', lineHeight: 1.05 },
   nilai: { fontFamily: "'JetBrains Mono', monospace", fontSize: 11, letterSpacing: '0.04em', color: '#FFFFFF', whiteSpace: 'nowrap' },
   label: { fontSize: 6, letterSpacing: '0.14em', opacity: 0.6, whiteSpace: 'nowrap', marginTop: 1 },
-  garisLevel: { position: 'relative', display: 'block', width: 46, height: 3, marginTop: 3, background: 'rgba(94, 208, 255, 0.18)' },
+  garisLevel: { position: 'relative', display: 'block', width: 46, height: 3, marginTop: 3, background: 'rgba(94, 208, 255, 0.18)', transformOrigin: 'left center', transition: 'transform 0.35s ease-out' },
   isiLevel: { position: 'absolute', left: 0, top: 0, bottom: 0, background: '#5ED0FF', boxShadow: '0 0 4px #5ED0FF' },
 }
