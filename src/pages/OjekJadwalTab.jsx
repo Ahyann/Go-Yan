@@ -18,13 +18,14 @@ export default function OjekJadwalTab({ jadwalMingguan, onTandaiSelesai, simpanJ
   return (
     <main style={s.wrap}>
       <header style={s.header}>
-        <div>
+        <div style={s.barisAtas}>
           <div style={s.eyebrow}>{t.jadwalEyebrow}</div>
-          <h1 style={s.title}>{isDemo ? t.jadwalTitleOjekDemo : t.jadwalTitleOjek}</h1>
+          <button style={s.aturBtn} onClick={() => setModeAtur((v) => !v)}>
+            {modeAtur ? t.selesaiAturJadwal : t.aturJadwalSendiri}
+          </button>
         </div>
-        <button style={s.aturBtn} onClick={() => setModeAtur((v) => !v)}>
-          {modeAtur ? t.selesaiAturJadwal : t.aturJadwalSendiri}
-        </button>
+        {/* judul memakai lebar penuh supaya tidak terpotong jadi tiga baris di layar HP */}
+        <h1 style={s.title}>{isDemo ? t.jadwalTitleOjekDemo : t.jadwalTitleOjek}</h1>
       </header>
 
       <JadwalMingguan
@@ -55,19 +56,16 @@ const s = {
     flexDirection: 'column',
     gap: 20,
   },
-  header: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'flex-end',
-    gap: 10,
-  },
-  eyebrow: { fontSize: 11, letterSpacing: '0.12em', color: 'var(--text-dim)', marginBottom: 4 },
+  header: { display: 'flex', flexDirection: 'column', gap: 6 },
+  barisAtas: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10 },
+  eyebrow: { fontSize: 11, letterSpacing: '0.12em', color: 'var(--text-dim)' },
   title: {
     fontFamily: 'var(--font-judul)',
     fontSize: 22,
     color: 'var(--text)',
     letterSpacing: '1px',
     lineHeight: 1.3,
+    textWrap: 'balance',
   },
   aturBtn: {
     fontSize: 12.5,
