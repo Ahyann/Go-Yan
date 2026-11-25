@@ -1,4 +1,6 @@
-// Animasi level di konsol (exp masuk ke piala, bar penuh meledak, LEVEL UP!, lalu LV baru) dimainkan sesudah layar
+import { saatSesiBerakhir } from './bersihkanSesi'
+
+// Animasi level di konsol (butir emas masuk ke garis, LEVEL UP!, lalu LV baru) dimainkan sesudah layar
 // "KAMU MENCAPAI" diketuk. Layar yang sedang tampil saat itu bisa konsol WELCOME, jadi datanya disimpan di sini dan
 // baru dimainkan begitu baris status LV benar-benar tampil di konsol (sesudah WELCOME diketuk).
 let tertunda = null
@@ -13,3 +15,4 @@ export function lihatAnimLevel() {
 export function habisAnimLevel() {
   tertunda = null
 }
+saatSesiBerakhir(habisAnimLevel)

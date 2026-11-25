@@ -4,6 +4,7 @@ import { auth } from '../lib/firebase'
 import { ROLE_BY_UID } from '../lib/roles'
 import { ROLE } from '../lib/constants'
 import { resetDataDemo, seedDataDemo } from '../lib/demo'
+import { bersihkanSesi } from '../lib/bersihkanSesi'
 
 const AuthContext = createContext(null)
 const KEY_DEMO_ROLE = 'go-yan-demo-role'
@@ -31,6 +32,7 @@ export function AuthProvider({ children }) {
   const role = isDemo ? demoRole : user ? ROLE_BY_UID[user.uid] ?? null : null
 
   async function masukDemo(roleDipilih) {
+    bersihkanSesi() // sisa percobaan sebelumnya di perangkat ini tidak ikut terbawa
     try {
       localStorage.setItem(KEY_DEMO_ROLE, roleDipilih)
     } catch {}
@@ -59,6 +61,8 @@ export function AuthProvider({ children }) {
       setDemoRole(null)
     }
     await signOut(auth)
+    // sesudah keluar, supaya layar yang masih terbuka tidak sempat menyimpan ulang datanya
+    bersihkanSesi()
   }
 
   const value = {

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { saatSesiBerakhir } from './bersihkanSesi'
 
 // Riwayat chat sederhana: mencatat tiap pesan baru yang terlihat di perangkat ini
 // (dari Ojek maupun Penumpang). Disimpan di localStorage supaya tidak hilang walau app
@@ -46,6 +47,8 @@ export function kosongkanRiwayatChat() {
   try { localStorage.removeItem(KUNCI) } catch { /* abaikan */ }
   pendengar.forEach((fn) => fn(daftar))
 }
+
+saatSesiBerakhir(kosongkanRiwayatChat)
 
 // pesanOjek dan pesanPenumpang: nilai `pesan` dari usePesanOjek / usePesanPenumpang.
 export function useRiwayatChat(pesanOjek, pesanPenumpang) {

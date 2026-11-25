@@ -89,19 +89,7 @@ export function buatJadwalDemo(sekarang = new Date()) {
 // (ada riwayat & jadwal contoh) daripada kosong melompong pas dicoba.
 // Semua sesi demo sengaja berbagi 1 data yang sama (lihat demoPath.js)
 // biar demo Ojek & Penumpang di 2 window bisa saling connect.
-// Catatan undo (lunaskan semua, isi jadwal) milik sesi demo disimpan di perangkat; dibersihkan tiap sesi demo baru
-// supaya tulisan UNDO dari percobaan sebelumnya tidak muncul di konsol.
-function bersihkanUndoDemo() {
-  try {
-    localStorage.removeItem('goyan:undo-lunas-demo')
-    localStorage.removeItem('goyan:undo-jadwal-demo')
-  } catch {
-    // penyimpanan diblokir: tidak ada yang perlu dibersihkan
-  }
-}
-
 export async function seedDataDemo() {
-  bersihkanUndoDemo()
   // jadwal dibuat ulang tiap sesi demo supaya selalu ada trip dalam 24 jam ke depan (untuk prakiraan cuaca)
   setDoc(doc(db, 'state', 'jadwalMingguan_demo'), { ...buatJadwalDemo(), kodeMinggu: kodeMingguIni() }).catch(() => {})
 
@@ -140,7 +128,6 @@ async function hapusKoleksiRiwayatDemo() {
 // (permintaan, riwayat, jadwal, icon/warna profil demo, lokasi/chat di
 // RTDB) biar orang berikutnya yang nyoba demo mulai dari kondisi bersih.
 export async function resetDataDemo() {
-  bersihkanUndoDemo()
   await Promise.all([
     ...NAMA_DOKUMEN_STATE.map((nama) => deleteDoc(doc(db, 'state', `${nama}_demo`)).catch(() => {})),
     hapusKoleksiRiwayatDemo().catch(() => {}),

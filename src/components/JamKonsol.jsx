@@ -7,11 +7,13 @@ import KonsolCuaca from './KonsolCuaca.jsx'
 import KonsolBensin from './KonsolBensin.jsx'
 import KonsolLevel from './KonsolLevel.jsx'
 import { playSambutGlitch, playKonsolMati, playSambutKonsol, bunyikanSetelahSiap } from '../lib/sound'
+import { saatSesiBerakhir } from '../lib/bersihkanSesi'
 
 // Status sambutan selama app terbuka: null (belum), 'tunggu' (WELCOME sudah tampil, menunggu diketuk), 'selesai'.
 // Pindah tab sebelum diketuk tetap menampilkan WELCOME + TAP HERE; sesudah diketuk langsung jam.
 let statusSambut = null
 const pendengarSelesai = new Set()
+saatSesiBerakhir(() => { statusSambut = null }) // masuk lagi sesudah logout: WELCOME dari awal
 export const sambutSudahSelesai = () => statusSambut === 'selesai'
 // OjekView memakai ini: sebelum sambutan diketuk semua tab menampilkan WELCOME; sesudahnya tiap tab memakai layarnya sendiri
 export function dengarSambutSelesai(fn) {

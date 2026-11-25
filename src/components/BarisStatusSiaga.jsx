@@ -10,6 +10,11 @@ import { useAuth } from '../context/AuthContext.jsx'
 
 const svg = { shapeRendering: 'crispEdges', style: { flexShrink: 0, display: 'block' } }
 
+// Saat naik level, sisa garis sebelum penuh hanya beberapa persen (satu trip), nyaris tidak terlihat di garis selebar 46px.
+// Karena itu animasinya mulai dari posisi yang lebih rendah supaya kenaikannya terasa.
+const PORSI_AWAL_ANIM = 0.35
+const JUMLAH_EMAS = 8 // butir emas yang masuk ke garis; tiap butir menaikkan garis satu langkah
+
 export function IkonCuaca({ jenis }) {
   const awan = <g fill="#DCEBFF" className="ik-awan"><rect x="2" y="8" width="10" height="3" /><rect x="3" y="7" width="3" height="1" /><rect x="5" y="5" width="4" height="3" /><rect x="1" y="9" width="1" height="1" /></g>
   const matahari = (
@@ -145,14 +150,15 @@ export default function BarisStatusSiaga({ totalTrip = null, totalUang = null, l
   )
   const lv = totalUang != null ? hitungLevel(totalUang, uangPerLevel(isDemo)) : null
 
-  // Animasi level sesudah layar "KAMU MENCAPAI" diketuk: bola exp masuk ke piala, bar terisi penuh lalu meledak, tulisan
-  // LEVEL UP!, lalu LV baru dengan bar mulai dari awal. Selama berjalan, tampilan memakai `tampil` (level lama lalu baru).
+  // Animasi level sesudah layar "KAMU MENCAPAI" diketuk: +Rp muncul, butir emas masuk ke garis dan tiap butir membuat
+  // garis menyentak naik, lalu tulisan LEVEL UP!, lalu LV baru dengan bar mulai dari awal. Selama berjalan, tampilan memakai `tampil` (level lama lalu baru).
   const refSlot = useRef(null)
   const refPiala = useRef(null)
   const refTeks = useRef(null)
   const refGaris = useRef(null)
+  const refIsi = useRef(null)
   const [anim] = useState(() => lihatAnimLevel())
-  const [tampil, setTampil] = useState(() => (anim ? { level: anim.levelLama, porsi: anim.porsiLama, fase: 'isi' } : null))
+  const [tampil, setTampil] = useState(() => (anim ? { level: anim.levelLama, porsi: Math.min(anim.porsiLama, PORSI_AWAL_ANIM), fase: 'isi' } : null))
   useEffect(() => {
     if (!anim) return undefined
     habisAnimLevel()
@@ -166,45 +172,74 @@ export default function BarisStatusSiaga({ totalTrip = null, totalUang = null, l
     const denyut = () => refPiala.current?.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.45) rotate(-8deg)', offset: 0.3 }, { transform: 'scale(0.95)', offset: 0.6 }, { transform: 'scale(1)' }], { duration: 420 })
     const T0 = 600 // jeda sesudah konsol tampil (konsol menyala dari garis tipis dulu)
     const slot = refSlot.current
-    // +Rp tarif trip muncul membal dan melayang naik di atas piala (bunyi koin)
+    const garis = refGaris.current
+    const buat = (induk, gaya) => {
+      const e = document.createElement('i')
+      Object.assign(e.style, { position: 'absolute', pointerEvents: 'none', zIndex: 3, ...gaya })
+      induk.appendChild(e)
+      dibuat.push(e)
+      return e
+    }
+    // garis menyentak: menebal sesaat, isinya menyala putih lalu emas, dan ada kilatan tegak di ujung isi
+    const sentak = (porsi, kuat = 1) => {
+      garis?.animate([{ transform: 'scaleY(2.2)' }, { transform: `scaleY(${2.2 + 2.2 * kuat})`, offset: 0.3 }, { transform: 'scaleY(1.9)', offset: 0.7 }, { transform: 'scaleY(2.2)' }], { duration: 200 })
+      refIsi.current?.animate([
+        { background: '#FFFFFF', boxShadow: '0 0 10px #FFD84A, 0 0 4px #FFFFFF' },
+        { background: '#FFD84A', boxShadow: '0 0 9px #FFD84A', offset: 0.45 },
+        { background: '#5ED0FF', boxShadow: '0 0 4px #5ED0FF' },
+      ], { duration: 340 })
+      if (!garis) return
+      const kilat = buat(garis, { left: `calc(${porsi * 100}% - 1px)`, top: '-2px', width: '3px', height: '7px', background: '#FFFFFF', boxShadow: '0 0 8px #FFD84A, 0 0 4px #FFFFFF' })
+      kilat.animate([{ transform: 'scaleY(0.6)', opacity: 1 }, { transform: `scaleY(${1.4 + kuat})`, opacity: 0 }], { duration: 260, easing: 'ease-out', fill: 'forwards' }).onfinish = () => kilat.remove()
+    }
+    // +Rp tarif trip muncul membal di atas piala (bunyi koin) dan bertahan selama butir emasnya masuk
     if (slot) {
-      const uang = document.createElement('i')
-      Object.assign(uang.style, { position: 'absolute', left: '0px', top: '-12px', fontStyle: 'normal', fontFamily: "'JetBrains Mono', monospace", fontWeight: '700', fontSize: '12px', color: '#FFD84A', textShadow: '0 0 8px #FFD84A, 0 0 3px #000, 1px 1px 0 #000', whiteSpace: 'nowrap', zIndex: 3, pointerEvents: 'none', opacity: 0 })
+      const uang = buat(slot, { left: '0px', top: '-12px', fontStyle: 'normal', fontFamily: "'JetBrains Mono', monospace", fontWeight: '700', fontSize: '12px', color: '#FFD84A', textShadow: '0 0 8px #FFD84A, 0 0 3px #000, 1px 1px 0 #000', whiteSpace: 'nowrap', opacity: 0 })
       uang.textContent = `+${formatRupiah(anim.tarif ?? 0)}`
-      slot.appendChild(uang)
-      dibuat.push(uang)
       uang.animate([
         { transform: 'translateY(0) scale(0.6)', opacity: 0 },
-        { transform: 'translateY(-8px) scale(1.25)', opacity: 1, offset: 0.3 },
-        { transform: 'translateY(-18px) scale(1)', opacity: 1, offset: 0.7 },
+        { transform: 'translateY(-8px) scale(1.25)', opacity: 1, offset: 0.18 },
+        { transform: 'translateY(-16px) scale(1)', opacity: 1, offset: 0.85 },
         { transform: 'translateY(-26px) scale(0.85)', opacity: 0 },
-      ], { duration: 1100, delay: T0, fill: 'both' })
+      ], { duration: 2000, delay: T0, fill: 'both' })
       nanti(() => playKoinRp(), T0 + 100)
-      // percikan emas jatuh dari tulisan ke bar
-      for (let n = 0; n < 10; n++) {
-        nanti(() => {
-          const p = document.createElement('i')
-          Object.assign(p.style, { position: 'absolute', left: `${6 + n * 6}px`, top: '-14px', width: '4px', height: '4px', background: '#FFD84A', boxShadow: '0 0 6px #FFD84A', zIndex: 3, pointerEvents: 'none' })
-          slot.appendChild(p)
-          dibuat.push(p)
-          p.animate([{ transform: 'translate(0, 0)', opacity: 1 }, { transform: `translate(${(5 - n) * 3}px, 30px)`, opacity: 0 }], { duration: 600, easing: 'ease-in', fill: 'forwards' }).onfinish = () => p.remove()
-        }, T0 + 900 + n * 30)
-      }
     }
-    // bar terisi sampai penuh dengan tik naik nada
-    nanti(() => setTampil((p) => (p ? { ...p, porsi: 1 } : p)), T0 + 1000)
-    for (let n = 0; n < 6; n++) nanti(() => playEkspMasuk(n), T0 + 1000 + n * 150)
-    // penuh: LEVEL UP! membal, jingle naik, piala berdenyut
+    // butir emas terbang dari tulisan ke ujung isi garis; saat masuk, garis naik satu langkah dengan sentakan dan tik naik nada
+    const awal = Math.min(anim.porsiLama, PORSI_AWAL_ANIM)
+    for (let n = 0; n < JUMLAH_EMAS; n++) {
+      const sebelum = awal + ((1 - awal) * n) / JUMLAH_EMAS
+      const sesudah = awal + ((1 - awal) * (n + 1)) / JUMLAH_EMAS
+      const berangkat = T0 + 500 + n * 160
+      nanti(() => {
+        if (!slot || !garis) return
+        const x = 8 + ((n * 23) % 50)
+        const dx = garis.offsetLeft + sebelum * garis.offsetWidth - x - 3
+        const dy = garis.offsetTop + garis.offsetHeight / 2 + 10 - 3
+        const butir = buat(slot, { left: `${x}px`, top: '-10px', width: '6px', height: '6px', background: '#FFD84A', boxShadow: '0 0 8px #FFD84A' })
+        butir.animate([
+          { transform: 'translate(0, 0) scale(1.2)' },
+          { transform: `translate(${dx * 0.35}px, ${dy * 0.1 - 8}px) scale(1)`, offset: 0.4 },
+          { transform: `translate(${dx}px, ${dy}px) scale(0.6)` },
+        ], { duration: 360, easing: 'ease-in', fill: 'forwards' }).onfinish = () => butir.remove()
+      }, berangkat)
+      nanti(() => {
+        setTampil((p) => (p ? { ...p, porsi: sesudah, fase: 'tambah' } : p))
+        playEkspMasuk(n)
+        sentak(sesudah)
+      }, berangkat + 360)
+    }
+    // penuh: sentakan besar, LEVEL UP! membal, jingle naik, piala berdenyut
     nanti(() => {
       setTampil((p) => (p ? { ...p, fase: 'naik' } : p))
       playLevelNaikKonsol()
       denyut()
+      sentak(1, 1.6)
       requestAnimationFrame(() => refTeks.current?.animate([{ transform: 'scale(0.3)', opacity: 0 }, { transform: 'scale(1.7)', opacity: 1, offset: 0.35 }, { transform: 'scale(1)' }], { duration: 600 }))
-    }, T0 + 2100)
+    }, T0 + 2350)
     // LV baru, bar kosong lalu terisi ke posisi sebenarnya
-    nanti(() => setTampil({ level: anim.levelBaru, porsi: 0, fase: 'turun' }), T0 + 3400)
-    nanti(() => { setTampil({ level: anim.levelBaru, porsi: anim.porsiBaru, fase: 'isi' }); denyut() }, T0 + 3500)
-    nanti(() => setTampil(null), T0 + 4400)
+    nanti(() => setTampil({ level: anim.levelBaru, porsi: 0, fase: 'turun' }), T0 + 3650)
+    nanti(() => { setTampil({ level: anim.levelBaru, porsi: anim.porsiBaru, fase: 'isi' }); denyut() }, T0 + 3750)
+    nanti(() => setTampil(null), T0 + 4700)
     return () => { timer.forEach(clearTimeout); dibuat.forEach((e) => e.remove()) }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -227,7 +262,7 @@ export default function BarisStatusSiaga({ totalTrip = null, totalUang = null, l
         ) : (
           <span style={s.nilai}>LV {levelTampil}<span aria-hidden="true" style={s.panah}> ›</span></span>
         )}
-        <span ref={refGaris} style={{ ...s.garisLevel, ...(tampil ? { transform: 'scaleY(2.2)', transformOrigin: 'left center' } : null) }}><i style={{ ...s.isiLevel, width: `${porsiTampil * 100}%`, transition: tampil?.fase === 'isi' ? 'width 0.9s ease-out' : 'none' }} /></span>
+        <span ref={refGaris} style={{ ...s.garisLevel, ...(tampil ? { transform: 'scaleY(2.2)', transformOrigin: 'left center' } : null) }}><i ref={refIsi} style={{ ...s.isiLevel, width: `${porsiTampil * 100}%`, transition: tampil?.fase === 'isi' ? 'width 0.9s ease-out' : tampil?.fase === 'tambah' ? 'width 0.14s ease-out' : 'none' }} /></span>
       </span>
     </button>
   )

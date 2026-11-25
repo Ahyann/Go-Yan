@@ -208,7 +208,7 @@ function LayarPiala({ awal, akhir, lang, onLanjut }) {
 // Rp3.120.000 / Rp3.500.000), garis kemajuan di level ini, lalu sisa ke level berikutnya.
 // Kalau `dari` diisi (total sebelum perjalanan ini), garis dianimasikan dari nilai lama ke nilai baru. Kalau perjalanan
 // ini membuat level naik, garis penuh, memercikkan kotak-kotak piksel, lalu level berganti.
-export default function TampilanLevel({ total, dari = null, kananBawah = null, rapat = false, onLanjut = null, statistik = null, onKembali = null }) {
+export default function TampilanLevel({ total, dari = null, kananBawah = null, rapat = false, onLanjut = null, statistik = null, onKembali = null, tahan = false }) {
   const { lang } = useLanguage()
   const { isDemo } = useAuth()
   const perLevel = uangPerLevel(isDemo)
@@ -227,7 +227,8 @@ export default function TampilanLevel({ total, dari = null, kananBawah = null, r
   const refWadah = useRef(null)
 
   useEffect(() => {
-    if (dari == null) return undefined
+    // tahan: garis diam di nilai lama selama animasi layar atas masih berjalan
+    if (dari == null || tahan) return undefined
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
       setSelesai(true)
       if (naik) setLayarPiala(true)
@@ -302,9 +303,9 @@ export default function TampilanLevel({ total, dari = null, kananBawah = null, r
       nanti(() => setLayarPiala(true), 4800)
     }
     return () => timer.forEach(clearTimeout)
-    // animasi hanya sekali saat tampilan ini muncul
+    // animasi hanya sekali, begitu tidak ditahan lagi
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [tahan])
 
   if (layarPiala) return <LayarPiala awal={awal} akhir={akhir} lang={lang} onLanjut={onLanjut} />
 
