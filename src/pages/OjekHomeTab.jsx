@@ -19,7 +19,7 @@ import TombolSuara from '../components/TombolSuara.jsx'
 import KartuMisiOjek from '../components/KartuMisiOjek.jsx'
 import SwipeToFinish from '../components/SwipeToFinish.jsx'
 
-const LAMA_KARTU_MASUK = 1700 // ms sampai logo tersusun dan Spiderman selesai turun
+const LAMA_KARTU_MASUK = 1600 // ms sampai logo tersusun dan Spiderman selesai turun
 
 export default function OjekHomeTab({ slotKonsol, putaranMasuk = 0,
   permintaan,

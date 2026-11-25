@@ -245,7 +245,7 @@ export default function TampilanLevel({ total, dari = null, kananBawah = null, r
         { opacity: 1, transform: 'translateY(-4px)', offset: 0.8 },
         { opacity: 0, transform: 'translateY(-8px)' },
       ],
-      { duration: 1600, delay: 300, fill: 'forwards' },
+      { duration: 1600, fill: 'forwards' },
     )
 
     if (!naik) {
@@ -255,8 +255,8 @@ export default function TampilanLevel({ total, dari = null, kananBawah = null, r
         putarAngka(refUang.current, awal.total, akhir.total, 700)
         getar(8)
         ;[0, 1, 2].forEach((i) => nanti(() => playGeserTik(i + 2), i * 120))
-      }, 600)
-      nanti(() => setSelesai(true), 1400)
+      }, 0)
+      nanti(() => setSelesai(true), 800)
     } else {
       // Naik level, dibuat panjang supaya terasa: garis mengisi pelan sampai penuh (1,1 dtk) dengan nada naik. Saat penuh,
       // layar berkilat, konsol bergetar, kotak piksel dan cincin cahaya meledak dari ujung garis sambil fanfare, angka LV
@@ -266,7 +266,7 @@ export default function TampilanLevel({ total, dari = null, kananBawah = null, r
         putarAngka(refUang.current, awal.total, awal.target, 1100)
         playLevelIsi()
         getar([10, 40, 10, 40, 10, 40, 12])
-      }, 600)
+      }, 0)
       nanti(() => {
         const wadah = refPercik.current
         const lebar = refWadah.current?.clientWidth || 300
@@ -294,14 +294,14 @@ export default function TampilanLevel({ total, dari = null, kananBawah = null, r
           }, 58)
           timer.push(id)
         }
-      }, 1750)
+      }, 1150)
       nanti(() => {
         isi?.animate([{ transform: 'scaleX(0)' }, { transform: `scaleX(${akhir.porsi})` }], { duration: 500, fill: 'forwards' })
         if (refTarget.current) refTarget.current.textContent = rp(akhir.target)
         putarAngka(refUang.current, awal.target, akhir.total, 500)
-      }, 2750)
-      nanti(() => setSelesai(true), 3300)
-      nanti(() => setLayarPiala(true), 4800)
+      }, 2150)
+      nanti(() => setSelesai(true), 2700)
+      nanti(() => setLayarPiala(true), 4200)
     }
     return () => timer.forEach(clearTimeout)
     // animasi hanya sekali, begitu tidak ditahan lagi

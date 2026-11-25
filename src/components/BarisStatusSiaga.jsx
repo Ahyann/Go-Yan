@@ -10,9 +10,6 @@ import { useAuth } from '../context/AuthContext.jsx'
 
 const svg = { shapeRendering: 'crispEdges', style: { flexShrink: 0, display: 'block' } }
 
-// Saat naik level, sisa garis sebelum penuh hanya beberapa persen (satu trip), nyaris tidak terlihat di garis selebar 46px.
-// Karena itu animasinya mulai dari posisi yang lebih rendah supaya kenaikannya terasa.
-const PORSI_AWAL_ANIM = 0.35
 const JUMLAH_EMAS = 8 // butir emas yang masuk ke garis; tiap butir menaikkan garis satu langkah
 
 export function IkonCuaca({ jenis }) {
@@ -158,7 +155,7 @@ export default function BarisStatusSiaga({ totalTrip = null, totalUang = null, l
   const refGaris = useRef(null)
   const refIsi = useRef(null)
   const [anim] = useState(() => lihatAnimLevel())
-  const [tampil, setTampil] = useState(() => (anim ? { level: anim.levelLama, porsi: Math.min(anim.porsiLama, PORSI_AWAL_ANIM), fase: 'isi' } : null))
+  const [tampil, setTampil] = useState(() => (anim ? { level: anim.levelLama, porsi: anim.porsiLama, fase: 'isi' } : null))
   useEffect(() => {
     if (!anim) return undefined
     habisAnimLevel()
@@ -205,7 +202,7 @@ export default function BarisStatusSiaga({ totalTrip = null, totalUang = null, l
       nanti(() => playKoinRp(), T0 + 100)
     }
     // butir emas terbang dari tulisan ke ujung isi garis; saat masuk, garis naik satu langkah dengan sentakan dan tik naik nada
-    const awal = Math.min(anim.porsiLama, PORSI_AWAL_ANIM)
+    const awal = anim.porsiLama // sudah mepet di ujung karena satu trip lagi naik level
     for (let n = 0; n < JUMLAH_EMAS; n++) {
       const sebelum = awal + ((1 - awal) * n) / JUMLAH_EMAS
       const sesudah = awal + ((1 - awal) * (n + 1)) / JUMLAH_EMAS
